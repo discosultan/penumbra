@@ -3,6 +3,15 @@
 	float4x4 WorldTransform;
 };
 
+cbuffer cbPerLight
+{
+	float3 LightColor;
+	float LightIntensity;
+	float2 LightPosition;
+	float LightRadius;
+	float LightRange;
+};
+
 cbuffer cbPerFrame
 {
 	float4x4 ProjectionTransform;
@@ -33,7 +42,15 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	float len = length(pin.TexCoord - float2(0.5f, 0.5f));
+	float alpha = GetAlphaAtTexCoord(pin.TexCoord);
+	float4 color = float4(alpha, alpha, alpha, 1);
+	float4 lightColor = float4(LightColor.x, LightColor.y, LightColor.z, 1);
+	return pow(abs(color) * lightColor, LightIntensity);
+}
+
+float GetAlphaAtTexCoord(float2 texCoord)
+{
+	float len = length(texCoord - float2(0.5, 0.5));
 	return saturate(1 - len * 2);
 }
 

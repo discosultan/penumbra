@@ -84,7 +84,18 @@ namespace Penumbra.Graphics.Providers
             }
         }
 
-        private static void Load(GraphicsDevice graphicsDevice, ContentManager content)
+        private static RenderStep NewRenderStep(GraphicsDevice device, ContentManager content, DepthStencilState dss, BlendState bs,
+            RasterizerState rs, string effectName, params ShaderParameter[] parameters)
+        {
+            return new RenderStep(
+                device, 
+                new RenderState(dss, bs, rs), 
+                content.Load<Effect>(effectName), 
+                parameters, 
+                isDebug: effectName.IndexOf("Debug", StringComparison.Ordinal) >= 0);
+        }
+
+        private static void Load(GraphicsDevice device, ContentManager content)
         {            
             var rsDebug = new RasterizerState
             {
@@ -126,17 +137,16 @@ namespace Penumbra.Graphics.Providers
             };
 
             _penumbraIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
-                new RenderStep(new RenderState(dss, bs, rs), content.Load<Effect>("Penumbra"))
-                , new RenderStep(new RenderState(DepthStencilState.None, BlendState.Opaque, rsDebug), content.Load<Effect>("Debug"), isDebug: true)
+                NewRenderStep(device, content, dss, bs, rs, "Penumbra", ShaderParameter.ProjectionTransform),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)                
                 ), isThreadSafe: true);
             _umbraIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
-                new RenderStep(new RenderState(dss, bs2, rs), content.Load<Effect>("SolidDark")),
-                //new RenderStep(new RenderState(dssLess, bs2, rs), ToDispose(effectSystem.LoadEffect("SolidDark"))),
-                new RenderStep(new RenderState(DepthStencilState.None, BlendState.Opaque, rsDebug), content.Load<Effect>("Debug"), isDebug: true)
+                NewRenderStep(device, content, dss, bs2, rs, "SolidDark"),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)
             ), isThreadSafe: true);
             _solidIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
-                new RenderStep(new RenderState(dss, bs2, rs), content.Load<Effect>("SolidLit")),
-                new RenderStep(new RenderState(DepthStencilState.None, BlendState.Opaque, rsDebug), content.Load<Effect>("Debug"), isDebug: true)
+                NewRenderStep(device, content, dss, bs2, rs, "SolidLit"),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)
             ), isThreadSafe: true);           
 
             //**************//
@@ -144,8 +154,8 @@ namespace Penumbra.Graphics.Providers
             //**************//        
 
             _solidSolid = new Lazy<RenderProcess>(() => new RenderProcess(
-                new RenderStep(new RenderState(dss, bs2, rs), content.Load<Effect>("SolidDark")),
-                new RenderStep(new RenderState(DepthStencilState.None, BlendState.Opaque, rsDebug), content.Load<Effect>("Debug"), isDebug: true)
+                NewRenderStep(device, content, dss, bs2, rs, "SolidDark"),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)
             ), isThreadSafe: true);
 
             //*****************//
@@ -175,8 +185,8 @@ namespace Penumbra.Graphics.Providers
             };
 
             _solidOccluded = new Lazy<RenderProcess>(() => new RenderProcess(
-                new RenderStep(new RenderState(dss3, bs2, rs, 1), content.Load<Effect>("SolidLit"))
-                , new RenderStep(new RenderState(DepthStencilState.None, BlendState.Opaque, rsDebug), content.Load<Effect>("Debug"), isDebug: true)
+                NewRenderStep(device, content, dss3, bs2, rs, 1, "SolidLit")
+                , NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug")
             ), isThreadSafe: true);
 
             //*******//
@@ -193,11 +203,11 @@ namespace Penumbra.Graphics.Providers
 
             _light = new RenderProcess(
                 //new RenderStep(new RenderState(dss, bs3, rs), ToDispose(effectSystem.LoadEffect("Light")))
-                new RenderStep(new RenderState(dss, bs3, RasterizerState.CullCounterClockwise), content.Load<Effect>("Light"))                
-                ,new RenderStep(new RenderState(DepthStencilState.None, BlendState.Opaque, rsDebug), content.Load<Effect>("DebugLight"), true)
+                NewRenderStep(device, content, dss, bs3, RasterizerState.CullCounterClockwise, "Light")                
+                , NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "DebugLight")
             );
             _lightSource = new RenderProcess(
-                new RenderStep(new RenderState(DepthStencilState.None, BlendState.Opaque, rsDebug), content.Load<Effect>("DebugLight"), true)
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "DebugLight")
             );
 
             //*************//
@@ -213,7 +223,7 @@ namespace Penumbra.Graphics.Providers
             };
 
             _clearAlpha = new RenderProcess(
-                new RenderStep(new RenderState(dss, bs4, rs), content.Load<Effect>("ClearAlpha"))
+                NewRenderStep(device, content, dss, bs4, rs, "ClearAlpha")
             );
 
             //*********//
@@ -232,10 +242,7 @@ namespace Penumbra.Graphics.Providers
             };
 
             _present = new RenderProcess(
-                new RenderStep(new RenderState(DepthStencilState.None, bs5, RasterizerState.CullCounterClockwise), 
-                //new RenderStep(new RenderState(graphicsDevice.DepthStencilStates.None, graphicsDevice.BlendStates.Additive, graphicsDevice.RasterizerStates.CullNone), 
-                    //effectSystem.LoadEffect("SpriteBase")) // TODO: How to keep this alive/dispose?
-                    content.Load<Effect>("Present"))
+                NewRenderStep(device, content, DepthStencilState.None, bs5, RasterizerState.CullCounterClockwise, "Present")
             );
         }
     }

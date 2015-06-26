@@ -42,14 +42,14 @@ namespace Penumbra.Graphics.Helpers
             // Translation.
             transform.M41 = position.X;
             transform.M42 = position.Y;
-            
+
+            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);
+            _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, color.ToVector4());
+
             _graphicsDevice.SetVertexArrayObject(_circleVao);
             foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
-            {
-                step.Parameters["Projection"].SetValue(_lightRenderer.Camera.ViewProjection);
-                step.Parameters["WorldTransform"].SetValue(transform);
-                step.Parameters["Color"].SetValue(color.ToVector4());
-                step.Apply(_graphicsDevice);
+            {                
+                step.Apply(_lightRenderer.ShaderParameters);
                 _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _circleVao.VertexBuffer.VertexCount, 0, _circleVao.IndexBuffer.IndexCount / 3);
             }
         }
@@ -64,25 +64,25 @@ namespace Penumbra.Graphics.Helpers
             // Translation.
             transform.M41 = position.X;
             transform.M42 = position.Y;
-            
+
+            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);
+            _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, color.ToVector4());
+
             _graphicsDevice.SetVertexArrayObject(_quadVao);
             foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
-            {
-                step.Parameters["Projection"].SetValue(_lightRenderer.Camera.ViewProjection);
-                step.Parameters["WorldTransform"].SetValue(transform);
-                step.Parameters["Color"].SetValue(color.ToVector4());
-                step.Apply(_graphicsDevice);
+            {                
+                step.Apply(_lightRenderer.ShaderParameters);
                 _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
             }
         }
 
-        public void DrawFullscreenQuad(RenderProcess process, Texture texture = null)
+        public void DrawFullscreenQuad(RenderProcess process, Texture2D texture = null)
         {
-            _graphicsDevice.SetVertexArrayObject(_fullscreenQuadVao);
+            _lightRenderer.ShaderParameters.SetTexture(ShaderParameter.Texture, texture);
+            _graphicsDevice.SetVertexArrayObject(_fullscreenQuadVao);            
             foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
-            {
-                if (texture != null) step.Parameters["Texture"].SetValue(texture);                
-                step.Apply(_graphicsDevice);
+            {                
+                step.Apply(_lightRenderer.ShaderParameters);
                 _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
             }                        
         }        

@@ -42,7 +42,11 @@ namespace Sandbox
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            _penumbraEngine.Lights.Add(new Light
+            {
+                Position = new Vector2(100, 100),
+                Color = Color.White
+            });
             // TODO: use this.Content to load your game content here
         }
 

@@ -12,8 +12,9 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-	<MonoGamePlatform>Windows</MonoGamePlatform>
-    <MonoGameContentBuilderExe></MonoGameContentBuilderExe>
+    <MonoGamePlatform>Windows</MonoGamePlatform>
+    <MonoGameContentBuilderExe>
+    </MonoGameContentBuilderExe>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,14 +50,14 @@
     <Compile Include="Graphics\Builders\CPUUmbraBuilder.cs" />
     <Compile Include="Graphics\Builders\ICPUBuilder.cs" />
     <Compile Include="Graphics\Builders\PointProcessingContext.cs" />
-    <Compile Include="Graphics\Helpers\BufferedCPUShadowRenderHelper.cs" />
-    <Compile Include="Graphics\Helpers\BufferedGPUShadowRenderHelper.cs" />
+    <Compile Include="Graphics\Helpers\BufferedShadowRenderHelper.cs" />
     <Compile Include="Graphics\Helpers\PrimitiveRenderHelper.cs" />
     <Compile Include="Graphics\LightVaos.cs" />
     <Compile Include="Graphics\Providers\Camera.cs" />
     <Compile Include="Graphics\Providers\LightmapTextureBuffer.cs" />
     <Compile Include="Graphics\Providers\RenderProcessProvider.cs" />
     <Compile Include="Graphics\Providers\RenderProvider.cs" />
+    <Compile Include="Graphics\ShaderParameterCollection.cs" />
     <Compile Include="Hull.cs" />
     <Compile Include="HullFactory.cs" />
     <Compile Include="HullList.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Mathematics\Triangulation\Vertex.cs" />
     <Compile Include="PenumbraComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShaderParameter.cs" />
     <Compile Include="ShadowType.cs" />
     <Compile Include="Mathematics\ApexNormals.cs" />
     <Compile Include="Utilities\ArrayPool.cs" />

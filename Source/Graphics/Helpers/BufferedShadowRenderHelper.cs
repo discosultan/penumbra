@@ -10,7 +10,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Helpers
 {
-    internal class BufferedCPUShadowRenderHelper : IDisposable
+    internal class BufferedShadowRenderHelper : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
         private readonly PenumbraComponent _lightRenderer;
@@ -23,7 +23,7 @@ namespace Penumbra.Graphics.Helpers
 
         //private readonly PointProcessingContext _currentContext = new PointProcessingContext();
 
-        public BufferedCPUShadowRenderHelper(GraphicsDevice device, PenumbraComponent lightRenderer)
+        public BufferedShadowRenderHelper(GraphicsDevice device, PenumbraComponent lightRenderer)
         {
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;
@@ -45,13 +45,11 @@ namespace Penumbra.Graphics.Helpers
             // Draw penumbra.
             if (vaos.HasPenumbra)
             {
+                _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, Color.Red.ToVector4());
                 _graphicsDevice.SetVertexArrayObject(vaos.PenumbraVao);                
                 foreach (RenderStep step in penumbraProcess.Steps(_lightRenderer.DebugDraw))
-                {
-                    SetLightParameters(step, light);
-                    step.Parameters["Projection"].SetValue(_lightRenderer.Camera.ViewProjection);
-                    step.Parameters["Color"].SetValue(Color.Red.ToVector4());
-                    step.Apply(_graphicsDevice);
+                {                                    
+                    step.Apply(_lightRenderer.ShaderParameters);
                     _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vaos.PenumbraVao.VertexBuffer.VertexCount, 0, vaos.PenumbraVao.IndexCount / 3);
                 }
             }
@@ -60,26 +58,22 @@ namespace Penumbra.Graphics.Helpers
             // Draw umbra.
             if (vaos.HasUmbra)
             {
+                _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, Color.Green.ToVector4());
                 _graphicsDevice.SetVertexArrayObject(vaos.UmbraVao);                
                 foreach (RenderStep step in umbraProcess.Steps(_lightRenderer.DebugDraw))
-                {
-                    SetLightParameters(step, light);
-                    step.Parameters["Projection"].SetValue(_lightRenderer.Camera.ViewProjection);
-                    step.Parameters["Color"].SetValue(Color.Green.ToVector4());
-                    step.Apply(_graphicsDevice);
+                {                                                            
+                    step.Apply(_lightRenderer.ShaderParameters);
                     _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vaos.UmbraVao.VertexBuffer.VertexCount, 0, vaos.UmbraVao.IndexCount / 3);
                 }
             }
             // Draw solid.
             if (vaos.HasSolid)
             {
+                _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, Color.Blue.ToVector4());
                 _graphicsDevice.SetVertexArrayObject(vaos.SolidVao);                
                 foreach (RenderStep step in solidProcess.Steps(_lightRenderer.DebugDraw))
-                {
-                    SetLightParameters(step, light);
-                    step.Parameters["Projection"].SetValue(_lightRenderer.Camera.ViewProjection);
-                    step.Parameters["Color"].SetValue(Color.Blue.ToVector4());
-                    step.Apply(_graphicsDevice);
+                {                    
+                    step.Apply(_lightRenderer.ShaderParameters);
                     _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vaos.SolidVao.VertexBuffer.VertexCount, 0, vaos.SolidVao.IndexCount / 3);
                 }
             }
@@ -192,15 +186,6 @@ namespace Penumbra.Graphics.Helpers
                 vaos.Dispose();
             }
             _shadowVaos.Clear();
-        }
-
-        private void SetLightParameters(RenderStep context, Light light)
-        {
-            context.Parameters["LightColor"].SetValue(light.Color.ToVector3());
-            context.Parameters["LightRadius"].SetValue(light.Radius);
-            context.Parameters["LightRange"].SetValue(light.Range);
-            context.Parameters["LightPosition"].SetValue(light.Position);
-            context.Parameters["LightIntensity"].SetValue(light.IntensityFactor);
         }
     }
 }
