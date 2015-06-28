@@ -28,6 +28,11 @@ namespace Penumbra.Graphics
         /// The texture coordinate of the vertex.
         /// </summary>        
         public Vector2 TexCoord;
+
+        public override string ToString()
+        {
+            return $"Position:{Position} TexCoord:{TexCoord}";
+        }
     }
 
     internal struct VertexPosition2

@@ -33,9 +33,15 @@ namespace Penumbra.Graphics.Builders
 
         private bool _addNext;
         private PointProcessingContext _previousCtx;
+        private PointProcessingContext _firstCtx;
         private bool _addLast;
         public void ProcessHullPoint(Light light, CPUHullPart hull, ref PointProcessingContext context)
         {
+            if (context.Index == 0)
+            {
+                _firstCtx = context;
+            }
+
             if (_addNext)
             {                
                 _fins.Add(CreateFin(light, context, hull.Inner.TransformedHullVertices, Side.Left, false));
@@ -43,7 +49,7 @@ namespace Penumbra.Graphics.Builders
             }
             else if (_addLast && context.Index == hull.Inner.TransformedHullVertices.Length - 1)
             {
-                CreateFin(light, context, hull.Inner.TransformedHullVertices, Side.Right, false);
+                _fins.Add(CreateFin(light, context, hull.Inner.TransformedHullVertices, Side.Right, false));
                 _addLast = false;
             }
             else if ((context.Dot1 >= 0 && context.Dot2 < 0 ||
@@ -59,7 +65,14 @@ namespace Penumbra.Graphics.Builders
                     switch (fin.Side)
                     {
                         case Side.Left:
-                            _addNext = true;
+                            if (context.Index == hull.Inner.TransformedHullVertices.Length - 1)
+                            {
+                                _fins.Add(CreateFin(light, _firstCtx, hull.Inner.TransformedHullVertices, Side.Left, false));
+                            }
+                            else
+                            {
+                                _addNext = true;
+                            }                            
                             break;
                         case Side.Right:
                             if (context.Index == 0)
@@ -289,23 +302,27 @@ namespace Penumbra.Graphics.Builders
                     // TODO: TEMP DISABLE EXTRA SHADOW GEN
                     result.Intersects = true;
 
-                    var from = result.InnerProjectedVertex;
-                    var to = result.OuterProjectedVertex;
-                    Vector2 asd = context.Position + currentToInnerDir * range;
-                    Vector2 intersectionPos;
-                    VectorUtil.LineIntersect(ref from.Position, ref to.Position, ref context.Position, ref asd, out intersectionPos);
-                    float leftLerpAmount =
-                        Vector2.DistanceSquared(from.Position, intersectionPos) /
-                        Vector2.DistanceSquared(from.Position, to.Position);
-                    Vector2 tex = Vector2.Lerp(from.TexCoord, to.TexCoord, leftLerpAmount);
-                    if (result.Side == Side.Left)
-                    {
-                        result.Vertex3 = new VertexPosition2Texture(intersectionPos, tex);
-                    }
-                    else
-                    {
-                        result.Vertex2 = new VertexPosition2Texture(intersectionPos, tex);                        
-                    }
+
+
+                    //var from = result.InnerProjectedVertex;
+                    //var to = result.OuterProjectedVertex;
+                    //Vector2 asd = context.Position + currentToInnerDir * range;
+                    //Vector2 intersectionPos;
+                    //VectorUtil.LineIntersect(ref from.Position, ref to.Position, ref context.Position, ref asd, out intersectionPos);
+                    //float leftLerpAmount =
+                    //    Vector2.DistanceSquared(from.Position, intersectionPos) /
+                    //    Vector2.DistanceSquared(from.Position, to.Position);
+                    //Vector2 tex = Vector2.Lerp(from.TexCoord, to.TexCoord, leftLerpAmount);
+                    //if (result.Side == Side.Left)
+                    //{
+                    //    result.Vertex3 = new VertexPosition2Texture(intersectionPos, tex);
+                    //}
+                    //else
+                    //{
+                    //    result.Vertex2 = new VertexPosition2Texture(intersectionPos, tex);                        
+                    //}
+
+
 
                     //float dotOuter = Vector2.Dot(lightToCurrentDir, currentToOuterDir);
 

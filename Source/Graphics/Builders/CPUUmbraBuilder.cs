@@ -7,7 +7,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
-    internal class CPUUmbraBuilder : ICPUBuilder
+    internal class CPUUmbraBuilder
     {
         private readonly ArrayPool<Vector2> _vertexArrayPool;
         private readonly ArrayPool<int> _indexArrayPool;
@@ -77,7 +77,7 @@ namespace Penumbra.Graphics.Builders
         {
             _firstSegmentBuffer.Clear();
             _isFirstSegment = true;
-            Logger.Write("Hull processed");
+            //Logger.Write("Hull processed");
         }
 
         public void Build(Light light, LightVaos vaos)

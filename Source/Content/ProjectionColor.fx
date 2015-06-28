@@ -1,4 +1,9 @@
-﻿cbuffer cbPerFrame
+﻿cbuffer cbPerObject
+{
+	float4 Color;
+};
+
+cbuffer cbPerFrame
 {
 	float4x4 ProjectionTransform;
 };
@@ -6,33 +11,28 @@
 struct VertexIn
 {
 	float2 Position : SV_POSITION0;
-	float2 TexCoord : TEXCOORD0;
 };
 
 struct VertexOut
 {
 	float4 Position : SV_POSITION;
-	float2 TexCoord : TEXCOORD0;
 };
 
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
-	
+
 	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), ProjectionTransform);
-	vout.TexCoord = vin.TexCoord;
 
 	return vout;
 }
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	// Ref: http://stackoverflow.com/a/28667361/1466456
-	float alpha = 1 - pow(pin.TexCoord.x / (1 - pin.TexCoord.y), 4);	
-	return float4(0,0,0,alpha);
+	return Color;
 }
 
-technique Penumbra
+technique Main
 {
 	pass P0
 	{		

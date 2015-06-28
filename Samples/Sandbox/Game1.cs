@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
 
@@ -10,16 +9,34 @@ namespace Sandbox
     /// </summary>
     public class Game1 : Game
     {
-        private readonly GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-        private readonly PenumbraComponent _penumbraEngine;
+        public const Keys PreviousScenarioKey = Keys.Left;
+        public const Keys NextScenarioKey = Keys.Right;
+        public const Keys PauseKey = Keys.Space;
+        public const Keys DebugKey = Keys.D;
+        public const Keys ShadowTypeKey = Keys.S;
+
+        private readonly GraphicsDeviceManager _graphics;        
+
+        private readonly PenumbraComponent _penumbra;
+        private readonly ScenariosComponent _scenarios;        
+
+        private KeyboardState _currentKeyState;
+        private KeyboardState _previousKeyState;
+
+        internal ScenariosComponent Scenarios => _scenarios;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            _penumbraEngine = new PenumbraComponent(this);
-            Components.Add(_penumbraEngine);
+            _penumbra = new PenumbraComponent(this);            
+            Components.Add(_penumbra);
+            _scenarios = new ScenariosComponent(this, _penumbra);
+            Components.Add(_scenarios);
+            var ui = new UIComponent(this) { DrawOrder = int.MaxValue };
+            Components.Add(ui);
+            
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -39,14 +56,13 @@ namespace Sandbox
         /// all of your content.
         /// </summary>
         protected override void LoadContent()
-        {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _penumbraEngine.Lights.Add(new Light
-            {
-                Position = new Vector2(100, 100),
-                Color = Color.White
-            });
+        {            
+            _penumbra.ViewProjection = Matrix.CreateOrthographicOffCenter(
+                -GraphicsDevice.PresentationParameters.BackBufferWidth/2f,
+                GraphicsDevice.PresentationParameters.BackBufferWidth/2f,
+                -GraphicsDevice.PresentationParameters.BackBufferHeight/2f,
+                GraphicsDevice.PresentationParameters.BackBufferHeight/2f,
+                0f, 1f);
             // TODO: use this.Content to load your game content here
         }
 
@@ -69,7 +85,24 @@ namespace Sandbox
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            _currentKeyState = Keyboard.GetState();
+
+            if (IsKeyPressed(PauseKey))
+                _scenarios.Enabled = !_scenarios.Enabled;
+
+            if (IsKeyPressed(NextScenarioKey))
+                _scenarios.NextScenario();
+
+            if (IsKeyPressed(PreviousScenarioKey))
+                _scenarios.PreviousScenario();
+
+            if (IsKeyPressed(DebugKey))
+                _penumbra.DebugDraw = !_penumbra.DebugDraw;
+
+            if (IsKeyPressed(ShadowTypeKey))
+                _scenarios.NextShadowType();
+
+            _previousKeyState = _currentKeyState;
 
             base.Update(gameTime);
         }
@@ -80,11 +113,16 @@ namespace Sandbox
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            _penumbra.BeginDraw();
 
-            // TODO: Add your drawing code here
+            GraphicsDevice.Clear(Color.CornflowerBlue);            
 
             base.Draw(gameTime);
+        }
+
+        private bool IsKeyPressed(Keys key)
+        {
+            return !_previousKeyState.IsKeyDown(key) && _currentKeyState.IsKeyDown(key);
         }
     }
 }

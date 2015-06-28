@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics
@@ -11,28 +12,33 @@ namespace Penumbra.Graphics
         private readonly GraphicsDevice _device;
         private readonly RenderState _renderState;
         private readonly Effect _effect;
-        private readonly ShaderParameter[] _requiredParameters;  
+        private readonly ShaderParameter[] _requiredParameters;
+        private readonly Action<ShaderParameterCollection> _addParams;
 
         public RenderStep(
             GraphicsDevice device, 
             RenderState renderState, 
             Effect effect, 
-            ShaderParameter[] parameters = null, 
-            bool isDebug = false)
+            ShaderParameter[] parameters, 
+            bool isDebug, 
+            Action<ShaderParameterCollection> addParams)
         {
-            _requiredParameters = parameters ?? new ShaderParameter[0];
+            _requiredParameters = parameters;
             _device = device;
             _renderState = renderState;
             _effect = effect;
             IsDebug = isDebug;
+            _addParams = addParams;
         }
         
         public bool IsDebug { get; }        
 
         public void Apply(ShaderParameterCollection parameters)
         {
+            _addParams?.Invoke(parameters);
             MapParametersToEffect(parameters);
-            _device.SetRenderState(_renderState);            
+            _device.SetRenderState(_renderState);      
+            // Assume single tech and pass.      
             _effect.CurrentTechnique.Passes[0].Apply();
         }
 
@@ -52,23 +58,6 @@ namespace Penumbra.Graphics
                     case ShaderParameter.LightIntensity:
                     {                        
                         _effect.Parameters[nameof(ShaderParameter.LightIntensity)].SetValue(parameters.GetSingle(reqParam));
-                        break;
-                    }
-                    case ShaderParameter.LightPosition:
-                    {
-                        Vector2 result;
-                        parameters.GetVector2(reqParam, out result);
-                        _effect.Parameters[nameof(ShaderParameter.LightPosition)].SetValue(result);
-                        break;
-                    }
-                    case ShaderParameter.LightRadius:
-                    {
-                        _effect.Parameters[nameof(ShaderParameter.LightRadius)].SetValue(parameters.GetSingle(reqParam));
-                        break;
-                    }
-                    case ShaderParameter.LightRange:
-                    {
-                        _effect.Parameters[nameof(ShaderParameter.LightRange)].SetValue(parameters.GetSingle(reqParam));
                         break;
                     }
                     case ShaderParameter.Color:

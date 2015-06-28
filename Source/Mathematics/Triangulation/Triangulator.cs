@@ -755,7 +755,7 @@ namespace Penumbra.Mathematics.Triangulation
 		[Conditional("DEBUG")]
 		private static void Log(string format, params object[] parameters)
 		{
-			Debug.WriteLine(format, parameters);
+			//Debug.WriteLine(format, parameters);
 		}
 
 		#endregion

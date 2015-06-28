@@ -1,12 +1,9 @@
-﻿namespace Penumbra
+﻿namespace Penumbra.Graphics
 {
     internal enum ShaderParameter
     {
         LightColor,
-        LightIntensity,
-        LightPosition,
-        LightRadius,
-        LightRange,
+        LightIntensity,        
 
         Color,
         ProjectionTransform,

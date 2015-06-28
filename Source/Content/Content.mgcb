@@ -13,51 +13,39 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin ClearAlpha.fx
+#begin Color.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:ClearAlpha.fx
+/build:Color.fx
 
-#begin Debug.fx
+#begin ProjectionColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Debug.fx
+/build:ProjectionColor.fx
 
-#begin Light.fx
+#begin ProjectionPenumbra.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Light.fx
+/build:ProjectionPenumbra.fx
 
-#begin Penumbra.fx
+#begin Texture.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Penumbra.fx
+/build:Texture.fx
 
-#begin Present.fx
+#begin WorldProjectionColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Present.fx
+/build:WorldProjectionColor.fx
 
-#begin SolidDark.fx
+#begin WorldProjectionLight.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:SolidDark.fx
-
-#begin SolidLit.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:SolidLit.fx
-
-#begin DebugLight.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:DebugLight.fx
+/build:WorldProjectionLight.fx
 

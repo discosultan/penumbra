@@ -1,4 +1,15 @@
-﻿struct VertexIn
+﻿cbuffer cbPerObject
+{
+	float4 Color;
+	float4x4 WorldTransform;
+};
+
+cbuffer cbPerFrame
+{
+	float4x4 ProjectionTransform;
+};
+
+struct VertexIn
 {
 	float2 Position : SV_POSITION0;
 };
@@ -12,17 +23,18 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 
-	vout.Position = float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f);
+	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldTransform);
+	vout.Position = mul(posW, ProjectionTransform);
 
 	return vout;
 }
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	return float4(1, 1 , 1, 1);
+	return Color;
 }
 
-technique SolidLit
+technique Main
 {
 	pass P0
 	{		

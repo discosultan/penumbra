@@ -31,7 +31,7 @@ namespace Penumbra
             Logger.Add(new DelegateLogger(x => Debug.WriteLine(x)));
 
             // Set default values.            
-            AmbientColor = new Color(0.2f, 0.2f, 0.2f);
+            AmbientColor = new Color(0.2f, 0.2f, 0.2f, 1f);            
             DebugDraw = true;
             ViewProjection = Matrix.Identity;
         }
@@ -59,9 +59,8 @@ namespace Penumbra
         internal Camera Camera => _camera;
 
         protected override void LoadContent()
-        {
-            base.LoadContent();
-            GraphicsDeviceManager graphicsDeviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
+        {            
+            var graphicsDeviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
             _camera.Load(GraphicsDevice, graphicsDeviceManager);
             _textureBuffer.Load(GraphicsDevice, graphicsDeviceManager);
             _renderProcessProvider = new RenderProcessProvider(GraphicsDevice, Game.Content);
@@ -69,19 +68,26 @@ namespace Penumbra
             _bufferedCPUShadowRenderHelper = new BufferedShadowRenderHelper(GraphicsDevice, this);
         }
 
+        public void BeginDraw()
+        {
+            if (Visible)
+            {
+                GraphicsDevice.SetRenderTarget(_textureBuffer.Scene);
+            }
+        }
+
         public override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
             // Switch render target to lightmap.
             GraphicsDevice.SetRenderTarget(_textureBuffer.LightMap);
-            GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, AmbientColor, 0f, 0);
-            
+            GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, AmbientColor, 1f, 0);
+
             ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref _camera.ViewProjection);
 
             // Generate lightmap.
             foreach (Light light in Lights)
             {
-                if (!light.Enabled) continue;
+                if (!light.Enabled) continue;                                
 
                 // TODO: Cache and/or spatial tree?
                 if (Hulls.Any(hull => light.IsInside(hull))) continue;
@@ -89,17 +95,11 @@ namespace Penumbra
                 // Clear stencil.
                 // TODO: use incremental stencil values to avoid clearing every light?
                 if (light.ShadowType == ShadowType.Occluded)
-                    GraphicsDevice.Clear(ClearOptions.Stencil, AmbientColor, 0f, 0);
+                    GraphicsDevice.Clear(ClearOptions.Stencil, AmbientColor, 1f, 0);
 
                 // Set scissor rectangle.
                 // DO NOT USE params overload. Causes unnecessary garbage.                
-                GraphicsDevice.ScissorRectangle = _camera.GetScissorRectangle(light);
-
-                ShaderParameters.SetVector3(ShaderParameter.LightColor, light.Color.ToVector3());
-                ShaderParameters.SetSingle(ShaderParameter.LightRadius, light.Radius);
-                ShaderParameters.SetSingle(ShaderParameter.LightRange, light.Range);
-                ShaderParameters.SetVector2(ShaderParameter.LightPosition, light.Position);
-                ShaderParameters.SetSingle(ShaderParameter.LightIntensity, light.Intensity);                
+                GraphicsDevice.ScissorRectangle = _camera.GetScissorRectangle(light);                
 
                 // Draw shadows for light.
                 if (light.CastsShadows)
@@ -112,10 +112,12 @@ namespace Penumbra
                 }
 
                 // Draw light.                
-                _primitiveRenderHelper.DrawQuad(_renderProcessProvider.Light, light.Position, light.Range * 2, Color.Yellow);
+                ShaderParameters.SetVector3(ShaderParameter.LightColor, light.Color.ToVector3());
+                ShaderParameters.SetSingle(ShaderParameter.LightIntensity, light.Intensity);
+                _primitiveRenderHelper.DrawQuad(_renderProcessProvider.Light, light.Position, light.Range * 2);
 
                 // Draw light source (for debugging purposes only).
-                _primitiveRenderHelper.DrawCircle(_renderProcessProvider.LightSource, light.Position, light.Radius, Color.Purple);
+                _primitiveRenderHelper.DrawCircle(_renderProcessProvider.LightSource, light.Position, light.Radius);
 
                 // Clear alpha.                
                 _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.ClearAlpha);
@@ -127,11 +129,9 @@ namespace Penumbra
             // Switch render target back to default.
             GraphicsDevice.SetRenderTarget(null);
 
-            ShaderParameters.SetTexture(ShaderParameter.Texture, _textureBuffer.LightMap);
-            ShaderParameters.SetSampler(ShaderParameter.TextureSampler, SamplerState.LinearClamp);            
-
             // Present lightmap.            
-            _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.Present);
+            _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.Present, _textureBuffer.Scene);
+            _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.PresentLightmap, _textureBuffer.LightMap);            
 
             // Clear hulls dirty flags.
             foreach (Hull hull in Hulls)

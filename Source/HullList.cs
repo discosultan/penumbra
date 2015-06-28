@@ -56,7 +56,9 @@ namespace Penumbra
         }
 
         private void PopulateList(IList values)
-        {            
+        {
+            if (values == null) return;
+
             foreach (var newItem in values)
             {
                 var hull = (Hull) newItem;

@@ -10,14 +10,12 @@ namespace Penumbra.Graphics
         public DepthStencilState DepthStencilState { get; }
         public BlendState BlendState { get; }
         public RasterizerState RasterizerState { get; }
-        public int StencilReference { get; }
 
-        public RenderState(DepthStencilState dsState, BlendState bState, RasterizerState rState, int stencilReference = 0)
+        public RenderState(DepthStencilState dsState, BlendState bState, RasterizerState rState)
         {
             DepthStencilState = dsState;
             BlendState = bState;
             RasterizerState = rState;
-            StencilReference = stencilReference;
         }
     }
 
@@ -28,7 +26,7 @@ namespace Penumbra.Graphics
             if (renderState.BlendState != null)
                 graphicsDevice.BlendState = renderState.BlendState;
             if (renderState.DepthStencilState != null)            
-                graphicsDevice.DepthStencilState = renderState.DepthStencilState;
+                graphicsDevice.DepthStencilState = renderState.DepthStencilState;                            
             if (renderState.RasterizerState != null)
                 graphicsDevice.RasterizerState = renderState.RasterizerState;
         }

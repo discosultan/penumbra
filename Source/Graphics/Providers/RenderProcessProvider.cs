@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -19,6 +21,7 @@ namespace Penumbra.Graphics.Providers
         private static RenderProcess _lightSource;
         private static RenderProcess _clearAlpha;
         private static RenderProcess _present;
+        private static RenderProcess _presentLightmap;
 
         public RenderProcessProvider(GraphicsDevice graphicsDevice, ContentManager content)
         {
@@ -36,6 +39,7 @@ namespace Penumbra.Graphics.Providers
         public RenderProcess LightSource => _lightSource;
         public RenderProcess ClearAlpha => _clearAlpha;
         public RenderProcess Present => _present;
+        public RenderProcess PresentLightmap => _presentLightmap;
 
         public RenderProcess Umbra(ShadowType shadowType)
         {            
@@ -85,14 +89,22 @@ namespace Penumbra.Graphics.Providers
         }
 
         private static RenderStep NewRenderStep(GraphicsDevice device, ContentManager content, DepthStencilState dss, BlendState bs,
-            RasterizerState rs, string effectName, params ShaderParameter[] parameters)
+            RasterizerState rs, string effectName, bool debug = false, Action<ShaderParameterCollection> addParams = null)
         {
+            var parameters = new List<ShaderParameter>();
+            var effect = content.Load<Effect>(effectName);
+            foreach (var param in effect.Parameters)
+            {
+                parameters.Add((ShaderParameter)Enum.Parse(typeof (ShaderParameter), param.Name));
+            }
+
             return new RenderStep(
-                device, 
-                new RenderState(dss, bs, rs), 
-                content.Load<Effect>(effectName), 
-                parameters, 
-                isDebug: effectName.IndexOf("Debug", StringComparison.Ordinal) >= 0);
+                device,
+                new RenderState(dss, bs, rs),
+                effect,
+                parameters.ToArray(),
+                debug,
+                addParams);
         }
 
         private static void Load(GraphicsDevice device, ContentManager content)
@@ -101,7 +113,8 @@ namespace Penumbra.Graphics.Providers
             {
                 CullMode = CullMode.None,
                 FillMode = FillMode.WireFrame,
-                ScissorTestEnable = true            
+                ScissorTestEnable = false
+                //ScissorTestEnable = true
             };
 
             //********************//
@@ -124,7 +137,8 @@ namespace Penumbra.Graphics.Providers
             
             var rs = new RasterizerState
             {
-                CullMode = CullMode.CullCounterClockwiseFace,
+                CullMode = CullMode.None,
+                //CullMode = CullMode.CullCounterClockwiseFace,
                 ScissorTestEnable = true
             };
             
@@ -137,16 +151,16 @@ namespace Penumbra.Graphics.Providers
             };
 
             _penumbraIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
-                NewRenderStep(device, content, dss, bs, rs, "Penumbra", ShaderParameter.ProjectionTransform),
-                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)                
+                NewRenderStep(device, content, dss, bs, rs, "ProjectionPenumbra"),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "ProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Red.ToVector4()))                
                 ), isThreadSafe: true);
             _umbraIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
-                NewRenderStep(device, content, dss, bs2, rs, "SolidDark"),
-                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)
+                NewRenderStep(device, content, dss, bs2, rs, "ProjectionColor", addParams: x => x.SetVector4(ShaderParameter.Color, Color.Transparent.ToVector4())),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "ProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Green.ToVector4()))
             ), isThreadSafe: true);
             _solidIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
-                NewRenderStep(device, content, dss, bs2, rs, "SolidLit"),
-                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)
+                NewRenderStep(device, content, dss, bs2, rs, "ProjectionColor", addParams: x => x.SetVector4(ShaderParameter.Color, Color.White.ToVector4())),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "ProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Blue.ToVector4()))
             ), isThreadSafe: true);           
 
             //**************//
@@ -154,8 +168,8 @@ namespace Penumbra.Graphics.Providers
             //**************//        
 
             _solidSolid = new Lazy<RenderProcess>(() => new RenderProcess(
-                NewRenderStep(device, content, dss, bs2, rs, "SolidDark"),
-                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug", ShaderParameter.ProjectionTransform, ShaderParameter.Color)
+                NewRenderStep(device, content, dss, bs2, rs, "ProjectionColor", addParams: x => x.SetVector4(ShaderParameter.Color, Color.Transparent.ToVector4())),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "ProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Blue.ToVector4()))
             ), isThreadSafe: true);
 
             //*****************//
@@ -181,12 +195,13 @@ namespace Penumbra.Graphics.Providers
                 StencilMask = 0xff,
                 StencilFunction = CompareFunction.Equal,
                 StencilPass = StencilOperation.Keep,
-                StencilFail = StencilOperation.Keep
+                StencilFail = StencilOperation.Keep,
+                ReferenceStencil = 1
             };
 
             _solidOccluded = new Lazy<RenderProcess>(() => new RenderProcess(
-                NewRenderStep(device, content, dss3, bs2, rs, 1, "SolidLit")
-                , NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "Debug")
+                NewRenderStep(device, content, dss3, bs2, rs, "ProjectionColor", addParams: x => x.SetVector4(ShaderParameter.Color, Color.White.ToVector4()))
+                , NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "ProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Blue.ToVector4()))
             ), isThreadSafe: true);
 
             //*******//
@@ -201,13 +216,12 @@ namespace Penumbra.Graphics.Providers
                 ColorWriteChannels = ColorWriteChannels.Red | ColorWriteChannels.Green | ColorWriteChannels.Blue
             };
 
-            _light = new RenderProcess(
-                //new RenderStep(new RenderState(dss, bs3, rs), ToDispose(effectSystem.LoadEffect("Light")))
-                NewRenderStep(device, content, dss, bs3, RasterizerState.CullCounterClockwise, "Light")                
-                , NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "DebugLight")
+            _light = new RenderProcess(                
+                NewRenderStep(device, content, dss, bs3, RasterizerState.CullCounterClockwise, "WorldProjectionLight")                
+                //, NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "WorldProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Yellow.ToVector4()))
             );
             _lightSource = new RenderProcess(
-                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "DebugLight")
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "WorldProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Purple.ToVector4()))
             );
 
             //*************//
@@ -223,7 +237,7 @@ namespace Penumbra.Graphics.Providers
             };
 
             _clearAlpha = new RenderProcess(
-                NewRenderStep(device, content, dss, bs4, rs, "ClearAlpha")
+                NewRenderStep(device, content, dss, bs4, rs, "Color", addParams: x => x.SetVector4(ShaderParameter.Color, Color.White.ToVector4()))
             );
 
             //*********//
@@ -241,8 +255,12 @@ namespace Penumbra.Graphics.Providers
                 ColorWriteChannels = ColorWriteChannels.All
             };
 
-            _present = new RenderProcess(
-                NewRenderStep(device, content, DepthStencilState.None, bs5, RasterizerState.CullCounterClockwise, "Present")
+            _present = new RenderProcess(                
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, RasterizerState.CullCounterClockwise, "Texture")
+            );
+
+            _presentLightmap = new RenderProcess(
+                NewRenderStep(device, content, DepthStencilState.None, bs5, RasterizerState.CullCounterClockwise, "Texture")
             );
         }
     }

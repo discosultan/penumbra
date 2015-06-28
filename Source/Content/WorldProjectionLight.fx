@@ -7,9 +7,6 @@ cbuffer cbPerLight
 {
 	float3 LightColor;
 	float LightIntensity;
-	float2 LightPosition;
-	float LightRadius;
-	float LightRange;
 };
 
 cbuffer cbPerFrame
@@ -33,11 +30,17 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 	
-	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldTransform);
+	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0, 1), WorldTransform);
 	vout.Position = mul(posW, ProjectionTransform);
 	vout.TexCoord = vin.TexCoord;
 
 	return vout;
+}
+
+float GetAlphaAtTexCoord(float2 texCoord)
+{
+	float len = length(texCoord - float2(0.5, 0.5));
+	return saturate(1 - len * 2);
 }
 
 float4 PS(VertexOut pin) : SV_TARGET
@@ -48,13 +51,7 @@ float4 PS(VertexOut pin) : SV_TARGET
 	return pow(abs(color) * lightColor, LightIntensity);
 }
 
-float GetAlphaAtTexCoord(float2 texCoord)
-{
-	float len = length(texCoord - float2(0.5, 0.5));
-	return saturate(1 - len * 2);
-}
-
-technique Light
+technique Main
 {
 	pass P0
 	{		

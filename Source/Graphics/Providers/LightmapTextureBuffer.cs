@@ -5,7 +5,8 @@ using Penumbra.Utilities;
 namespace Penumbra.Graphics.Providers
 {
     internal class LightmapTextureBuffer : RenderProvider
-    {                
+    {
+        public RenderTarget2D Scene { get; private set; }
         public RenderTarget2D LightMap { get; private set; }        
 
         public override void Load(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphicsDeviceManager)
@@ -32,8 +33,13 @@ namespace Penumbra.Graphics.Providers
         {
             DestroyLightmaps();
 
+            PresentationParameters pp = GraphicsDevice.PresentationParameters;
+
+            //LightMap = new RenderTarget2D(GraphicsDevice, BackBufferWidth, BackBufferHeight);
             LightMap = new RenderTarget2D(GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
-                SurfaceFormat.Vector4, DepthFormat.Depth24Stencil8);                
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+            Scene = new RenderTarget2D(GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
 
             Logger.Write("New lightmap textures created");
         }

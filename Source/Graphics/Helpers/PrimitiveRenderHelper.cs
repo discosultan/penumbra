@@ -33,7 +33,7 @@ namespace Penumbra.Graphics.Helpers
             }
         }
 
-        public void DrawCircle(RenderProcess process, Vector2 position, float radius, Color color)
+        public void DrawCircle(RenderProcess process, Vector2 position, float radius)
         {
             Matrix transform = Matrix.Identity;
             // Scaling.
@@ -43,8 +43,7 @@ namespace Penumbra.Graphics.Helpers
             transform.M41 = position.X;
             transform.M42 = position.Y;
 
-            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);
-            _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, color.ToVector4());
+            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);            
 
             _graphicsDevice.SetVertexArrayObject(_circleVao);
             foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
@@ -54,7 +53,7 @@ namespace Penumbra.Graphics.Helpers
             }
         }
 
-        public void DrawQuad(RenderProcess process, Vector2 position, float size, Color color)
+        public void DrawQuad(RenderProcess process, Vector2 position, float size)
         {            
             float halfSize = size / 2;
             Matrix transform = Matrix.Identity;
@@ -65,8 +64,7 @@ namespace Penumbra.Graphics.Helpers
             transform.M41 = position.X;
             transform.M42 = position.Y;
 
-            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);
-            _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, color.ToVector4());
+            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);            
 
             _graphicsDevice.SetVertexArrayObject(_quadVao);
             foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
@@ -76,16 +74,22 @@ namespace Penumbra.Graphics.Helpers
             }
         }
 
-        public void DrawFullscreenQuad(RenderProcess process, Texture2D texture = null)
-        {
+        public void DrawFullscreenQuad(RenderProcess process, Texture2D texture)
+        {            
             _lightRenderer.ShaderParameters.SetTexture(ShaderParameter.Texture, texture);
-            _graphicsDevice.SetVertexArrayObject(_fullscreenQuadVao);            
+            _lightRenderer.ShaderParameters.SetSampler(ShaderParameter.TextureSampler, SamplerState.LinearClamp);            
+            DrawFullscreenQuad(process);
+        }
+
+        public void DrawFullscreenQuad(RenderProcess process)
+        {
+            _graphicsDevice.SetVertexArrayObject(_fullscreenQuadVao);
             foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
-            {                
+            {
                 step.Apply(_lightRenderer.ShaderParameters);
                 _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
-            }                        
-        }        
+            }
+        }
          
         public void Dispose()
         {
@@ -111,11 +115,7 @@ namespace Penumbra.Graphics.Helpers
             };            
 
             VertexPosition2Texture[] quadVertices =
-            {
-                //new VertexPosition2Texture(new Vector2(-1, -1), new Vector2(0, 0)),
-                //new VertexPosition2Texture(new Vector2(+1, -1), new Vector2(1, 0)),
-                //new VertexPosition2Texture(new Vector2(-1, +1), new Vector2(0, 1)),
-                //new VertexPosition2Texture(new Vector2(+1, +1), new Vector2(1, 1))
+            {                
                 new VertexPosition2Texture(new Vector2(-1, +1), new Vector2(0, 0)),
                 new VertexPosition2Texture(new Vector2(+1, +1), new Vector2(1, 0)),
                 new VertexPosition2Texture(new Vector2(-1, -1), new Vector2(0, 1)),

@@ -1,4 +1,9 @@
-﻿struct VertexIn
+﻿cbuffer cbPerObject
+{
+	float4 Color;
+};
+
+struct VertexIn
 {
 	float2 Position : SV_POSITION0;
 };
@@ -19,10 +24,10 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	return float4(1, 1 , 1, 1);
+	return Color;
 }
 
-technique ClearAlpha
+technique Main
 {
 	pass P0
 	{		

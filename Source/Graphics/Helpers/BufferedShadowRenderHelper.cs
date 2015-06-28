@@ -44,8 +44,7 @@ namespace Penumbra.Graphics.Helpers
 
             // Draw penumbra.
             if (vaos.HasPenumbra)
-            {
-                _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, Color.Red.ToVector4());
+            {                
                 _graphicsDevice.SetVertexArrayObject(vaos.PenumbraVao);                
                 foreach (RenderStep step in penumbraProcess.Steps(_lightRenderer.DebugDraw))
                 {                                    
@@ -57,8 +56,7 @@ namespace Penumbra.Graphics.Helpers
             // TODO: potentially increase performance. Needs testing.
             // Draw umbra.
             if (vaos.HasUmbra)
-            {
-                _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, Color.Green.ToVector4());
+            {                
                 _graphicsDevice.SetVertexArrayObject(vaos.UmbraVao);                
                 foreach (RenderStep step in umbraProcess.Steps(_lightRenderer.DebugDraw))
                 {                                                            
@@ -68,8 +66,7 @@ namespace Penumbra.Graphics.Helpers
             }
             // Draw solid.
             if (vaos.HasSolid)
-            {
-                _lightRenderer.ShaderParameters.SetVector4(ShaderParameter.Color, Color.Blue.ToVector4());
+            {                
                 _graphicsDevice.SetVertexArrayObject(vaos.SolidVao);                
                 foreach (RenderStep step in solidProcess.Steps(_lightRenderer.DebugDraw))
                 {                    

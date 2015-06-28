@@ -1,5 +1,7 @@
-﻿Texture2D Texture;
-SamplerState TextureSampler;
+﻿cbuffer cbPerFrame
+{
+	float4x4 ProjectionTransform;
+};
 
 struct VertexIn
 {
@@ -16,8 +18,8 @@ struct VertexOut
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
-
-	vout.Position = float4(vin.Position.x, vin.Position.y, 0, 1);
+	
+	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0, 1), ProjectionTransform);
 	vout.TexCoord = vin.TexCoord;
 
 	return vout;
@@ -25,10 +27,12 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	return Texture.Sample(TextureSampler, pin.TexCoord);
+	// Ref: http://stackoverflow.com/a/28667361/1466456
+	float alpha = 1 - pow(pin.TexCoord.x / (1 - pin.TexCoord.y), 4);	
+	return float4(0,0,0,alpha);
 }
 
-technique Present
+technique Main
 {
 	pass P0
 	{		

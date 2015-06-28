@@ -1,38 +1,34 @@
-﻿cbuffer cbPerObject
-{
-	float4 Color;
-};
-
-cbuffer cbPerFrame
-{
-	float4x4 ProjectionTransform;
-};
+﻿Texture2D Texture;
+SamplerState TextureSampler;
 
 struct VertexIn
 {
 	float2 Position : SV_POSITION0;
+	float2 TexCoord : TEXCOORD0;
 };
 
 struct VertexOut
 {
 	float4 Position : SV_POSITION;
+	float2 TexCoord : TEXCOORD0;
 };
 
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), ProjectionTransform);
+	vout.Position = float4(vin.Position.x, vin.Position.y, 0, 1);
+	vout.TexCoord = vin.TexCoord;
 
 	return vout;
 }
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	return Color;
+	return Texture.Sample(TextureSampler, pin.TexCoord);
 }
 
-technique Debug
+technique Main
 {
 	pass P0
 	{		
