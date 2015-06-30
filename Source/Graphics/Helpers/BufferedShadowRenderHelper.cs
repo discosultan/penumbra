@@ -17,9 +17,9 @@ namespace Penumbra.Graphics.Helpers
         private readonly HullList<CPUHullPart> _hulls;
         private readonly Dictionary<Light, LightVaos> _shadowVaos = new Dictionary<Light, LightVaos>();
 
-        private readonly CPUPenumbraBuilder _penumbraBuilder;
-        private readonly CPUUmbraBuilder _umbraBuilder;
-        private readonly CPUSolidBuilder _solidBuilder;
+        private readonly PenumbraBuilder _penumbraBuilder;
+        private readonly UmbraBuilder _umbraBuilder;
+        private readonly SolidBuilder _solidBuilder;
 
         //private readonly PointProcessingContext _currentContext = new PointProcessingContext();
 
@@ -33,9 +33,9 @@ namespace Penumbra.Graphics.Helpers
             var vertexArrayPool = new ArrayPool<Vector2>();
             var indexArrayPool = new ArrayPool<int>();
 
-            _penumbraBuilder = new CPUPenumbraBuilder(indexArrayPool);
-            _umbraBuilder = new CPUUmbraBuilder(vertexArrayPool, indexArrayPool);
-            _solidBuilder = new CPUSolidBuilder(vertexArrayPool, indexArrayPool);
+            _penumbraBuilder = new PenumbraBuilder(indexArrayPool);
+            _umbraBuilder = new UmbraBuilder(vertexArrayPool, indexArrayPool);
+            _solidBuilder = new SolidBuilder(vertexArrayPool, indexArrayPool);
         }
 
         public void DrawShadows(Light light, RenderProcess umbraProcess, RenderProcess penumbraProcess, RenderProcess solidProcess)

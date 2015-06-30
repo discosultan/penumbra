@@ -5,7 +5,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
-    internal class CPUSolidBuilder
+    internal class SolidBuilder
     {
         private readonly ArrayPool<Vector2> _vertexArrayPool;
         private readonly ArrayPool<int> _indexArrayPool;
@@ -14,7 +14,7 @@ namespace Penumbra.Graphics.Builders
         private readonly List<int> _indices = new List<int>();
         private int _indexOffset;
 
-        public CPUSolidBuilder(ArrayPool<Vector2> vertexArrayPool, ArrayPool<int> indexArrayPool)
+        public SolidBuilder(ArrayPool<Vector2> vertexArrayPool, ArrayPool<int> indexArrayPool)
         {
             _vertexArrayPool = vertexArrayPool;
             _indexArrayPool = indexArrayPool;

@@ -7,7 +7,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
-    internal class CPUPenumbraBuilder
+    internal class PenumbraBuilder
     {
         private readonly List<VertexPosition2Texture> _vertices = new List<VertexPosition2Texture>();
         private readonly List<int> _indices = new List<int>();
@@ -18,7 +18,7 @@ namespace Penumbra.Graphics.Builders
 
         private int _indexOffset;
 
-        public CPUPenumbraBuilder(ArrayPool<int> indexArrayPool)
+        public PenumbraBuilder(ArrayPool<int> indexArrayPool)
         {
             _indexArrayPool = indexArrayPool;
         }

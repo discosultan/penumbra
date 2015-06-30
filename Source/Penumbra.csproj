@@ -46,9 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CPUHullPart.cs" />
-    <Compile Include="Graphics\Builders\CPUPenumbraBuilder.cs" />
-    <Compile Include="Graphics\Builders\CPUSolidBuilder.cs" />
-    <Compile Include="Graphics\Builders\CPUUmbraBuilder.cs" />
+    <Compile Include="Graphics\Builders\PenumbraBuilder.cs" />
+    <Compile Include="Graphics\Builders\SolidBuilder.cs" />
+    <Compile Include="Graphics\Builders\UmbraBuilder.cs" />
     <Compile Include="Graphics\Builders\PointProcessingContext.cs" />
     <Compile Include="Graphics\Helpers\BufferedShadowRenderHelper.cs" />
     <Compile Include="Graphics\Helpers\PrimitiveRenderHelper.cs" />

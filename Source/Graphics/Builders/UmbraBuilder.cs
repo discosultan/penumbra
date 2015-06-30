@@ -7,7 +7,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
-    internal class CPUUmbraBuilder
+    internal class UmbraBuilder
     {
         private readonly ArrayPool<Vector2> _vertexArrayPool;
         private readonly ArrayPool<int> _indexArrayPool;
@@ -20,7 +20,7 @@ namespace Penumbra.Graphics.Builders
         private readonly List<List<PointProcessingContext>> _segments = new List<List<PointProcessingContext>>();
         private List<PointProcessingContext> _activeSegment;
 
-        public CPUUmbraBuilder(ArrayPool<Vector2> vertexArrayPool, ArrayPool<int> indexArrayPool)
+        public UmbraBuilder(ArrayPool<Vector2> vertexArrayPool, ArrayPool<int> indexArrayPool)
         {
             _vertexArrayPool = vertexArrayPool;
             _indexArrayPool = indexArrayPool;

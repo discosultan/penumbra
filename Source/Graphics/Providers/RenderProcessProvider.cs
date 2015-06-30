@@ -136,9 +136,8 @@ namespace Penumbra.Graphics.Providers
             };
             
             var rs = new RasterizerState
-            {
-                CullMode = CullMode.None,
-                //CullMode = CullMode.CullCounterClockwiseFace,
+            {                
+                CullMode = CullMode.CullCounterClockwiseFace,
                 ScissorTestEnable = true
             };
             
