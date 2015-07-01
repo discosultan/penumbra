@@ -4,12 +4,12 @@ using static System.Math;
 
 namespace Sandbox.Scenarios
 {
-    class SimpleRotation : Scenario
+    class A_SimpleRotation : Scenario
     {
-        private readonly Light _light;
+        private Light _light;
         private const float RotationSpeed = MathHelper.TwoPi/6;
 
-        public SimpleRotation(PenumbraComponent penumbra)
+        public override void Activate(PenumbraComponent penumbra)
         {
             _light = new Light
             {
