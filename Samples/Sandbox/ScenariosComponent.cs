@@ -9,7 +9,7 @@ namespace Sandbox
 {
     class ScenariosComponent : GameComponent
     {               
-        private static readonly ShadowType[] ShadowTypes = {ShadowType.Illuminated, ShadowType.Solid/*, ShadowType.Occluded*/};
+        private static readonly ShadowType[] ShadowTypes = {ShadowType.Illuminated, ShadowType.Solid, ShadowType.Occluded};
 
         private readonly PenumbraComponent _penumbra;
 
