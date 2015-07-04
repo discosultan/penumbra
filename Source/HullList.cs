@@ -7,26 +7,23 @@ using Penumbra.Utilities;
 
 namespace Penumbra
 {
-    internal class HullList<T> : IEnumerable<T>
+    internal class HullList : IEnumerable<HullPart>
     {
         private readonly ObservableCollection<Hull> _hulls;
-        private readonly IHullFactory<T> _factory;
 
-        private readonly List<T> _wrappedHullParts;
+        private readonly List<HullPart> _wrappedHullParts;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public HullList(ObservableCollection<Hull> hulls, IHullFactory<T> factory)
+        public HullList(ObservableCollection<Hull> hulls)
         {
             _hulls = hulls;
-            _factory = factory;
             _hulls.CollectionChanged += HullsCollectionChanged;
 
-            _wrappedHullParts = new List<T>();            
+            _wrappedHullParts = new List<HullPart>();            
             foreach (Hull hull in _hulls)
-            {
-                foreach (HullPart hullPart in hull.Parts)
-                    _wrappedHullParts.Add(_factory.New(hullPart));                
+            {                
+                _wrappedHullParts.AddRange(hull.Parts);
             }
         }
 
@@ -63,14 +60,14 @@ namespace Penumbra
             {
                 var hull = (Hull) newItem;
                 foreach (HullPart hullPart in hull.Parts)
-                    _wrappedHullParts.Add(_factory.New(hullPart));
+                    _wrappedHullParts.Add(hullPart);
             }
             Logger.Write($"Added {values.Count} hulls to list");
         }
 
-        public T this[int index] => _wrappedHullParts[index];
+        public HullPart this[int index] => _wrappedHullParts[index];
 
-        public IEnumerator<T> GetEnumerator()
+        public IEnumerator<HullPart> GetEnumerator()
         {
             return _wrappedHullParts.GetEnumerator();
         }

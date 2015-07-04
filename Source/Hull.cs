@@ -33,7 +33,7 @@ namespace Penumbra
             Enabled = true;            
         }
 
-        public HullPart[] Parts => _parts;        
+        internal HullPart[] Parts => _parts;        
 
         public bool Enabled
         {

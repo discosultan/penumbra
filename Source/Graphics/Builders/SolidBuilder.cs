@@ -27,12 +27,12 @@ namespace Penumbra.Graphics.Builders
             _indexOffset = 0;
         }
 
-        public void ProcessHull(Light light, CPUHullPart hull)
+        public void ProcessHull(Light light, HullPart hull)
         {            
-            _vertices.AddRange(hull.Inner.TransformedHullVertices);
+            _vertices.AddRange(hull.TransformedHullVertices);
             int offset = _indexOffset;
             _indices.AddRange(hull.Indices.Select(index => index + offset));
-            _indexOffset += hull.Inner.TransformedHullVertices.Length;            
+            _indexOffset += hull.TransformedHullVertices.Length;            
         }
 
         public void Build(Light light, LightVaos vaos)

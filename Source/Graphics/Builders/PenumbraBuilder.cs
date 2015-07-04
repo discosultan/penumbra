@@ -35,7 +35,7 @@ namespace Penumbra.Graphics.Builders
         private PointProcessingContext _previousCtx;
         private PointProcessingContext _firstCtx;
         private bool _addLast;
-        public void ProcessHullPoint(Light light, CPUHullPart hull, ref PointProcessingContext context)
+        public void ProcessHullPoint(Light light, HullPart hull, ref PointProcessingContext context)
         {
             if (context.Index == 0)
             {
@@ -44,12 +44,12 @@ namespace Penumbra.Graphics.Builders
 
             if (_addNext)
             {                
-                _fins.Add(CreateFin(light, context, hull.Inner.TransformedHullVertices, Side.Left, false));
+                _fins.Add(CreateFin(light, context, hull.TransformedHullVertices, Side.Left, false));
                 _addNext = false;
             }
-            else if (_addLast && context.Index == hull.Inner.TransformedHullVertices.Length - 1)
+            else if (_addLast && context.Index == hull.TransformedHullVertices.Length - 1)
             {
-                _fins.Add(CreateFin(light, context, hull.Inner.TransformedHullVertices, Side.Right, false));
+                _fins.Add(CreateFin(light, context, hull.TransformedHullVertices, Side.Right, false));
                 _addLast = false;
             }
             else if ((context.Dot1 >= 0 && context.Dot2 < 0 ||
@@ -58,16 +58,16 @@ namespace Penumbra.Graphics.Builders
                 // Create penumbra fin.                        
                 Side side = context.Dot2 >= context.Dot1 ? Side.Left : Side.Right;
                 PenumbraFin fin = CreateFin(light, context,
-                    hull.Inner.TransformedHullVertices, side, testIntersection: true);
+                    hull.TransformedHullVertices, side, testIntersection: true);
                 _fins.Add(fin);
                 if (fin.Intersects)
                 {
                     switch (fin.Side)
                     {
                         case Side.Left:
-                            if (context.Index == hull.Inner.TransformedHullVertices.Length - 1)
+                            if (context.Index == hull.TransformedHullVertices.Length - 1)
                             {
-                                _fins.Add(CreateFin(light, _firstCtx, hull.Inner.TransformedHullVertices, Side.Left, false));
+                                _fins.Add(CreateFin(light, _firstCtx, hull.TransformedHullVertices, Side.Left, false));
                             }
                             else
                             {
@@ -81,7 +81,7 @@ namespace Penumbra.Graphics.Builders
                             }
                             else
                             {
-                                _fins.Add(CreateFin(light, _previousCtx, hull.Inner.TransformedHullVertices, Side.Right, false));
+                                _fins.Add(CreateFin(light, _previousCtx, hull.TransformedHullVertices, Side.Right, false));
                             }
                             break;
                     }
@@ -90,7 +90,7 @@ namespace Penumbra.Graphics.Builders
             _previousCtx = context;
         }
 
-        public void ProcessHull(Light light, CPUHullPart hull)
+        public void ProcessHull(Light light, HullPart hull)
         {            
             // 1. FIND WHICH PAIRS REQUIRE SPECIAL PROCESSING AND MARK FINS ACCORDINGLY.
             var intersectingPairs = new List<IntersectionResult>();            

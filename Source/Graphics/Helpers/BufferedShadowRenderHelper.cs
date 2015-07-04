@@ -14,7 +14,7 @@ namespace Penumbra.Graphics.Helpers
     {
         private readonly GraphicsDevice _graphicsDevice;
         private readonly PenumbraComponent _lightRenderer;
-        private readonly HullList<CPUHullPart> _hulls;
+        private readonly HullList _hulls;
         private readonly Dictionary<Light, LightVaos> _shadowVaos = new Dictionary<Light, LightVaos>();
 
         private readonly PenumbraBuilder _penumbraBuilder;
@@ -28,7 +28,7 @@ namespace Penumbra.Graphics.Helpers
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;
             _lightRenderer.ObservableLights.CollectionChanged += ObservableLightsChanged;
-            _hulls = new HullList<CPUHullPart>(lightRenderer.ObservableHulls, new CPUHullFactory());
+            _hulls = new HullList(lightRenderer.ObservableHulls);
 
             var vertexArrayPool = new ArrayPool<Vector2>();
             var indexArrayPool = new ArrayPool<int>();
@@ -107,11 +107,11 @@ namespace Penumbra.Graphics.Helpers
             _umbraBuilder.PreProcess();
             _solidBuilder.PreProcess();
 
-            foreach (CPUHullPart hull in _hulls)
+            foreach (HullPart hull in _hulls)
             {
-                if (!hull.Inner.Enabled || !light.Intersects(hull)) continue;
+                if (!hull.Enabled || !light.Intersects(hull)) continue;
 
-                for (int i = 0; i < hull.Inner.TransformedHullVertices.Length; i++)
+                for (int i = 0; i < hull.TransformedHullVertices.Length; i++)
                 {
                     PointProcessingContext context;
                     PopulateContextForPoint(light, hull, i, out context);
@@ -133,9 +133,9 @@ namespace Penumbra.Graphics.Helpers
             _solidBuilder.Build(light, vaos);
         }
 
-        public void PopulateContextForPoint(Light light, CPUHullPart hull, int i, out PointProcessingContext context)
+        public void PopulateContextForPoint(Light light, HullPart hull, int i, out PointProcessingContext context)
         {
-            Vector2 position = hull.Inner.TransformedHullVertices[i];
+            Vector2 position = hull.TransformedHullVertices[i];
             context = new PointProcessingContext
             {
                 Index = i,
@@ -143,7 +143,7 @@ namespace Penumbra.Graphics.Helpers
                 Normals = hull.TransformedNormals[i],
                 IsInAnotherHull = _hulls
                     .Where(x => x != hull)
-                    .SelectMany(x => x.Inner.TransformedHullVertices)
+                    .SelectMany(x => x.TransformedHullVertices)
                     .Any(x => x == position)
             };
             context.LightToPointDir = Vector2.Normalize(context.Position - light.Position);

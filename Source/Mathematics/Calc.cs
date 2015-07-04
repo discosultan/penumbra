@@ -1,4 +1,4 @@
-﻿using Math = System.Math;
+﻿using System;
 
 namespace Penumbra.Mathematics
 {
@@ -27,6 +27,16 @@ namespace Penumbra.Mathematics
         public static int Step(float y, float x)
         {
             return x >= y ? 1 : 0;
+        }
+
+        public static bool NearEqual(float lhv, float rhv)
+        {
+            return Math.Abs(lhv - rhv) < float.Epsilon;
+        }
+
+        public static bool NearZero(float val)
+        {
+            return Math.Abs(val) < float.Epsilon;
         }
     }
 }

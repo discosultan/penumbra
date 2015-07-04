@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONOGAME</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -45,7 +45,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CPUHullPart.cs" />
     <Compile Include="Graphics\Builders\PenumbraBuilder.cs" />
     <Compile Include="Graphics\Builders\SolidBuilder.cs" />
     <Compile Include="Graphics\Builders\UmbraBuilder.cs" />
@@ -59,10 +58,12 @@
     <Compile Include="Graphics\Providers\RenderProvider.cs" />
     <Compile Include="Graphics\ShaderParameterCollection.cs" />
     <Compile Include="Hull.cs" />
-    <Compile Include="HullFactory.cs" />
     <Compile Include="HullList.cs" />
     <Compile Include="HullPart.cs" />
     <Compile Include="Light.cs" />
+    <Compile Include="Mathematics\Clipping\AngusjClipper.cs" />
+    <Compile Include="Mathematics\Clipping\Clipper.cs" />
+    <Compile Include="Mathematics\RectangleF.cs" />
     <Compile Include="Mathematics\Triangulation\BayazitDecomposer.cs" />
     <Compile Include="Mathematics\Triangulation\CyclicalList.cs" />
     <Compile Include="Mathematics\Triangulation\IndexableCyclicalLinkedList.cs" />

@@ -35,7 +35,7 @@ namespace Penumbra.Graphics.Builders
             _segments.Clear();            
         }
         
-        public void ProcessHullPoint(Light light, CPUHullPart hull, ref PointProcessingContext context)
+        public void ProcessHullPoint(Light light, HullPart hull, ref PointProcessingContext context)
         {            
             PointType type = GetPointType(ref context);
             bool isLast = IsLastPoint(hull, ref context);
@@ -73,7 +73,7 @@ namespace Penumbra.Graphics.Builders
             //Logger.Write(type + " " + context.Position.ToString("0"));
         }
 
-        public void ProcessHull(Light light, CPUHullPart hull)
+        public void ProcessHull(Light light, HullPart hull)
         {
             _firstSegmentBuffer.Clear();
             _isFirstSegment = true;
@@ -255,9 +255,9 @@ namespace Penumbra.Graphics.Builders
             }            
         }
 
-        private bool IsLastPoint(CPUHullPart hull, ref PointProcessingContext context)
+        private bool IsLastPoint(HullPart hull, ref PointProcessingContext context)
         {
-            return context.Index >= hull.Inner.TransformedHullVertices.Length - 1;
+            return context.Index >= hull.TransformedHullVertices.Length - 1;
         }
 
         private PointType GetPointType(ref PointProcessingContext context)
