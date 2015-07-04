@@ -45,6 +45,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphics\Builders\PenumbraBuilder - Copy.cs" />
     <Compile Include="Graphics\Builders\PenumbraBuilder.cs" />
     <Compile Include="Graphics\Builders\SolidBuilder.cs" />
     <Compile Include="Graphics\Builders\UmbraBuilder.cs" />
