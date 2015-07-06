@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="Scenarios\C_Antumbra.cs" />
     <Compile Include="Scenarios\B_PassThrough.cs" />
+    <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Utilities\FPS.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Utilities\Garbage.cs" />

@@ -3,7 +3,7 @@ using Penumbra.Mathematics;
 
 namespace Penumbra.Graphics.Builders
 {
-    internal struct PointProcessingContext
+    internal struct HullPointContext
     {        
         public Vector2 Position;
         public Vector2 LightToPointDir;
@@ -32,5 +32,18 @@ namespace Penumbra.Graphics.Builders
         //    to.Dot1 = from.Dot1;
         //    to.Dot2 = from.Dot2;
         //}
+    }
+
+    internal struct HullContext
+    {
+        public IntersectionType UmbraIntersectionType;        
+        public Vector2 UmbraIntersectionPoint;
+    }
+
+    internal enum IntersectionType
+    {
+        None,
+        IntersectsOutsideLight,
+        IntersectsInsideLight
     }
 }

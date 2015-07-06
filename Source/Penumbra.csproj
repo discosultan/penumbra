@@ -49,7 +49,7 @@
     <Compile Include="Graphics\Builders\PenumbraBuilder.cs" />
     <Compile Include="Graphics\Builders\SolidBuilder.cs" />
     <Compile Include="Graphics\Builders\UmbraBuilder.cs" />
-    <Compile Include="Graphics\Builders\PointProcessingContext.cs" />
+    <Compile Include="Graphics\Builders\BuildingContexts.cs" />
     <Compile Include="Graphics\Helpers\BufferedShadowRenderHelper.cs" />
     <Compile Include="Graphics\Helpers\PrimitiveRenderHelper.cs" />
     <Compile Include="Graphics\LightVaos.cs" />

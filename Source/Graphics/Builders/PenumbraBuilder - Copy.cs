@@ -32,10 +32,10 @@ namespace Penumbra.Graphics.Builders
         }
 
         private bool _addNext;
-        private PointProcessingContext _previousCtx;
-        private PointProcessingContext _firstCtx;
+        private HullPointContext _previousCtx;
+        private HullPointContext _firstCtx;
         private bool _addLast;
-        public void ProcessHullPoint(Light light, HullPart hull, ref PointProcessingContext context)
+        public void ProcessHullPoint(Light light, HullPart hull, ref HullPointContext context)
         {
             if (context.Index == 0)
             {
@@ -243,7 +243,7 @@ namespace Penumbra.Graphics.Builders
             }
         }
 
-        private PenumbraFin CreateFin(Light light, PointProcessingContext context, Vector2[] positions, Side side, bool testIntersection = false)
+        private PenumbraFin CreateFin(Light light, HullPointContext context, Vector2[] positions, Side side, bool testIntersection = false)
         {
             PenumbraFin result = _finPool.Fetch();
             result.Reset();

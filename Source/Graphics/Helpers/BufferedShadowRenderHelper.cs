@@ -103,8 +103,8 @@ namespace Penumbra.Graphics.Helpers
         private void BuildVaosForLight(Light light, LightVaos vaos)
         {
             // 1. ANY NECESSARY CLEANING OR PREPROCESSING.
-            _penumbraBuilder.PreProcess();
             _umbraBuilder.PreProcess();
+            _penumbraBuilder.PreProcess();            
             _solidBuilder.PreProcess();
 
             foreach (HullPart hull in _hulls)
@@ -113,18 +113,19 @@ namespace Penumbra.Graphics.Helpers
 
                 for (int i = 0; i < hull.TransformedHullVertices.Length; i++)
                 {
-                    PointProcessingContext context;
+                    HullPointContext context;
                     PopulateContextForPoint(light, hull, i, out context);
 
                     // 2. PROCESS GEOMETRY DATA FOR HULL POINT.
-                    _penumbraBuilder.ProcessHullPoint(light, hull, ref context);
                     _umbraBuilder.ProcessHullPoint(light, hull, ref context);
+                    _penumbraBuilder.ProcessHullPoint(light, hull, ref context);                    
                 }
 
                 // 3. PROCESS GEOMETRY DATA FOR HULL.  
-                _penumbraBuilder.ProcessHull(light, hull);
+                var hullCtx = new HullContext();
+                _umbraBuilder.ProcessHull(light, hull, ref hullCtx);
+                _penumbraBuilder.ProcessHull(light, hull, ref hullCtx);
                 _solidBuilder.ProcessHull(light, hull);
-                _umbraBuilder.ProcessHull(light, hull);
             }
 
             // 4. BUILD BUFFERS FROM PROCESSED DATA.
@@ -133,10 +134,10 @@ namespace Penumbra.Graphics.Helpers
             _solidBuilder.Build(light, vaos);
         }
 
-        public void PopulateContextForPoint(Light light, HullPart hull, int i, out PointProcessingContext context)
+        public void PopulateContextForPoint(Light light, HullPart hull, int i, out HullPointContext context)
         {
             Vector2 position = hull.TransformedHullVertices[i];
-            context = new PointProcessingContext
+            context = new HullPointContext
             {
                 Index = i,
                 Position = position,

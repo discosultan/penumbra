@@ -20,6 +20,9 @@ namespace Sandbox.Scenarios
 
         public override void Activate(PenumbraComponent penumbra)
         {
+            _isMovingLeft = false;
+            _progress = 0;
+
             _penumbra = penumbra;
             var vertices = new[]
             {

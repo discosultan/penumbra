@@ -23,7 +23,7 @@ namespace Penumbra.Mathematics.Clipping
             _clipper.AddPath(subj, PolyType.ptSubject, true);
             _clipper.AddPath(clip, PolyType.ptClip, true);
             _clipper.Execute(ClipType.ctDifference, _sln, PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-            sln = _sln[0];
+            sln = _sln.Count > 0 ? _sln[0] : subj;
         }
     }
 }

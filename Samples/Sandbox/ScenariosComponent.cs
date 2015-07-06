@@ -12,8 +12,7 @@ namespace Sandbox
         private static readonly ShadowType[] ShadowTypes = {ShadowType.Illuminated, ShadowType.Solid, ShadowType.Occluded};
 
         private readonly PenumbraComponent _penumbra;
-
-        private const int NumScenarios = 3;
+        
         private Scenario[] _scenarios;
         private Scenario _activeScenario;
         private int _currentScenarioIndex;
@@ -24,15 +23,15 @@ namespace Sandbox
 
         public ScenariosComponent(Game game, PenumbraComponent penumbra) : base(game)
         {
-            _penumbra = penumbra;
-            LoadScenarios();
-            SwitchScenario();
+            _penumbra = penumbra;            
         }        
 
         public override void Initialize()
         {
             base.Initialize();
             SwitchShadowType();
+            LoadScenarios();
+            SwitchScenario();
         }
 
         public Scenario ActiveScenario => _activeScenario;
@@ -54,7 +53,7 @@ namespace Sandbox
 
         public void NextScenario()
         {
-            _currentScenarioIndex = (_currentScenarioIndex + 1) % NumScenarios;
+            _currentScenarioIndex = (_currentScenarioIndex + 1) % _scenarios.Length;
             SwitchScenario();
         }        
 
@@ -62,7 +61,7 @@ namespace Sandbox
         {
             _currentScenarioIndex--;
             if (_currentScenarioIndex == -1)
-                _currentScenarioIndex = NumScenarios - 1;
+                _currentScenarioIndex = _scenarios.Length - 1;
             SwitchScenario();
         }
 
@@ -79,6 +78,8 @@ namespace Sandbox
                 .OrderBy(t => t.Name)
                 .Select(t => (Scenario)Activator.CreateInstance(t))
                 .ToArray();
+            foreach (Scenario scenario in _scenarios)
+                scenario.Device = Game.GraphicsDevice;
             _currentScenarioIndex = _scenarios.Length - 1;
         }
 

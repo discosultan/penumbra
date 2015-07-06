@@ -81,6 +81,8 @@ namespace Penumbra
             }
         }
 
+        public float RangeSquared => Range*Range;
+
         public float Radius
         {
             get { return _radius; }
