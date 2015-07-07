@@ -46,7 +46,7 @@ namespace Penumbra.Graphics.Providers
 
         private void DestroyLightmaps()
         {
-            Util.Dispose(LightMap);            
+            LightMap?.Dispose();
         }
     }
 }

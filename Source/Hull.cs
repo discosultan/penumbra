@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
+//using Polygon = System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2>;
 
 namespace Penumbra
 {
-    public sealed class Hull
+    public class Hull
     {                
         private bool _worldTransformDirty = true;        
         private Matrix _worldTransform;
@@ -21,9 +24,9 @@ namespace Penumbra
 
         internal event EventHandler SetDirty;
 
-        public Hull(Vector2[] points, WindingOrder windingOrder = WindingOrder.Clockwise)
+        public Hull(IList<Vector2> points, WindingOrder windingOrder = WindingOrder.Clockwise)
         {
-            Check.ArgumentNotLessThan(points.Length, 3, "points", "Hull must consist minimum of 3 points.");
+            Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");
 
             CalculateParts(points, windingOrder);
 
@@ -151,25 +154,25 @@ namespace Penumbra
             SetDirty?.Invoke(this, EventArgs.Empty);
         }
 
-        private void CalculateParts(Vector2[] points, WindingOrder windingOrder)
+        private void CalculateParts(IList<Vector2> points, WindingOrder windingOrder)
         {
-            points = Triangulator.EnsureWindingOrder(points, windingOrder, WindingOrder.CounterClockwise);
+            Polygon polygon = new Polygon(points.ToList(), windingOrder);
 
-            if (Triangulator.IsConvex(points, WindingOrder.CounterClockwise))
+            // Ensure clockwise winding order.
+            polygon.EnsureWindingOrder(WindingOrder.CounterClockwise);
+
+            if (polygon.IsConvex())
             {
-                _parts = new[] { new HullPart(this, points) };
+                _parts = new[] { new HullPart(this, polygon) };
             }
             else
             {
-                Vector2[][] parts = Triangulator.DecomposeIntoConvex(
-                    points,
-                    WindingOrder.CounterClockwise,
-                    WindingOrder.CounterClockwise);
+                var polygons = Polygon.DecomposeIntoConvex(polygon);                
 
-                _parts = new HullPart[parts.Length];
-                for (int i = 0; i < parts.Length; i++)
+                _parts = new HullPart[polygons.Count];
+                for (int i = 0; i < polygons.Count; i++)
                 {
-                    _parts[i] = new HullPart(this, parts[i]);
+                    _parts[i] = new HullPart(this, polygons[i]);
                 }
             }
         }

@@ -44,7 +44,7 @@ namespace Penumbra.Graphics.Builders
             bool isLast = IsLastPoint(hull, ref context);
             switch (type)
             {
-                case PointType.LeftEdge:
+                case PointType.RightEdge:
                     _isFirstSegment = false;
                     _activeSegment = new List<HullPointContext>();
                     _segments.Add(_activeSegment);
@@ -60,7 +60,7 @@ namespace Penumbra.Graphics.Builders
                     if (isLast)
                         AppendFirstSegmentToActiveSegment();
                     break;
-                case PointType.RightEdge:
+                case PointType.LeftEdge:
                     if (_isFirstSegment)
                         _firstSegmentBuffer.Add(context);
                     else
@@ -86,7 +86,7 @@ namespace Penumbra.Graphics.Builders
                 Vector2 lightSide1, lightSideToCurrentDir1;
                 do
                 {
-                    GetUmbraVectors(light, segment[startIndex].Position, -1f, out lightSide1, out lightSideToCurrentDir1);
+                    GetUmbraVectors(light, segment[startIndex].Position, +1f, out lightSide1, out lightSideToCurrentDir1);
                     Vector2 lightToCurrentDir = Vector2.Normalize(segment[startIndex].Position - light.Position);
                     Vector2 currentToNextDir = Vector2.Normalize(segment[startIndex + 1].Position - segment[startIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDir1, currentToNextDir))
@@ -98,7 +98,7 @@ namespace Penumbra.Graphics.Builders
                 Vector2 lightSide2, lightSideToCurrentDir2;
                 do
                 {
-                    GetUmbraVectors(light, segment[endIndex].Position, +1f, out lightSide2, out lightSideToCurrentDir2);
+                    GetUmbraVectors(light, segment[endIndex].Position, -1f, out lightSide2, out lightSideToCurrentDir2);
                     Vector2 lightToCurrentDir = Vector2.Normalize(segment[endIndex].Position - light.Position);
                     Vector2 currentToPreviousDir = Vector2.Normalize(segment[endIndex - 1].Position - segment[endIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDir2, currentToPreviousDir))
@@ -109,18 +109,18 @@ namespace Penumbra.Graphics.Builders
 
                 float range = (light.Range + light.Radius) / Vector2.Dot(lightSideToCurrentDir1, Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2));
 
-                Vector2 leftProjectedPos = lightSide1 + lightSideToCurrentDir1 * range;
-                Vector2 rightProjectedPos = lightSide2 + lightSideToCurrentDir2 * range;
+                Vector2 rightProjectedPos = lightSide1 + lightSideToCurrentDir1 * range;
+                Vector2 leftProjectedPos = lightSide2 + lightSideToCurrentDir2 * range;
 
                 Vector2 intersectionPos;
                 bool lineIntersects = VectorUtil.LineIntersect(
                     ref lightSide1,
-                    ref leftProjectedPos,
-                    ref lightSide2,
                     ref rightProjectedPos,
+                    ref lightSide2,
+                    ref leftProjectedPos,
                     out intersectionPos);
 
-                List<Vector2> vertices = new List<Vector2>();
+                var vertices = new Polygon(WindingOrder.CounterClockwise);
 
                 if (lineIntersects)
                 {
@@ -135,25 +135,28 @@ namespace Penumbra.Graphics.Builders
                 else
                 {
                     vertices.Add(rightProjectedPos);
-                    vertices.Add(leftProjectedPos);
+                    vertices.Add(leftProjectedPos);                                 
                 }
                 // Add all the vertices that contain the segment on the hull.
                 int numSegmentVertices = endIndex - startIndex + 1;
-                for (int i = 0; i < numSegmentVertices; i++)
+                for (int i = numSegmentVertices - 1; i >= 0; i--)
+                //for (int i = 0; i > numSegmentVertices; i++)
                 {
                     Vector2 point = segment[startIndex + i].Position;
                     vertices.Add(point);
                 }
 
-                Vector2[] outVertices;
-                int[] outIndices;
-                Triangulator.Triangulate(vertices.ToArray(), WindingOrder.CounterClockwise,
-                    WindingOrder.CounterClockwise, WindingOrder.Clockwise, out outVertices,
-                    out outIndices);
+                //Vector2[] outVertices;
+                //int[] outIndices;
+                //Triangulator.Triangulate(vertices.ToArray(), WindingOrder.CounterClockwise,
+                //    WindingOrder.CounterClockwise, WindingOrder.Clockwise, out outVertices,
+                //    out outIndices);
+                var indices = new List<int>();
+                vertices.GetIndices(WindingOrder.Clockwise, indices);
 
-                _vertices.AddRange(outVertices);                
-                _indices.AddRange(outIndices.Select(x => _indexOffset + x));
-                _indexOffset += outVertices.Length;
+                _vertices.AddRange(vertices);                
+                _indices.AddRange(indices.Select(x => _indexOffset + x));
+                _indexOffset += vertices.Count;
             }
 
             _firstSegmentBuffer.Clear();
@@ -198,7 +201,7 @@ namespace Penumbra.Graphics.Builders
 
         private bool IsLastPoint(HullPart hull, ref HullPointContext context)
         {
-            return context.Index >= hull.TransformedHullVertices.Length - 1;
+            return context.Index >= hull.TransformedHullVertices.Count - 1;
         }
 
         private PointType GetPointType(ref HullPointContext context)
@@ -216,9 +219,9 @@ namespace Penumbra.Graphics.Builders
             //}
 
             if (dot1 < 0 && dot2 >= 0)
-                return PointType.LeftEdge;
-            if (dot1 >= 0 && dot2 < 0)
                 return PointType.RightEdge;
+            if (dot1 >= 0 && dot2 < 0)
+                return PointType.LeftEdge;
             if (dot1 >= 0 && dot2 >= 0)
                 return PointType.Backward;
             return PointType.Forward;

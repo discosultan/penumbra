@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 using Penumbra.Mathematics.Triangulation;
-using Penumbra.Utilities;
+//using Polygon = System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2>;
+using Indices = System.Collections.Generic.List<int>;
 
 namespace Penumbra
 {
@@ -16,7 +15,7 @@ namespace Penumbra
         private ApexNormals[] _transformedNormals;
 
         private bool _transformedHullVerticesDirty = true;
-        private Vector2[] _transformedHullVertices;
+        private Polygon _transformedHullVertices;
 
         private bool _radiusDirty = true;
         private bool _centroidDirty = true;
@@ -25,22 +24,22 @@ namespace Penumbra
         private Vector2 _centroid;
 
         // clockwise winding order
-        public HullPart(Hull hull, Vector2[] points)
+        public HullPart(Hull hull, Polygon polygon)
         {
             _hull = hull;
-            CalculatePointsAndIndices(points);
+            CalculatePointsAndIndices(polygon);
 
             Component.SetDirty += (s, e) => { _transformedNormalsDirty = true; };
-            OriginalNormals = new ApexNormals[Points.Length];
+            OriginalNormals = new ApexNormals[Points.Count];
 
-            for (int i = 0; i < Points.Length; i++)
+            for (int i = 0; i < Points.Count; i++)
             {
                 Vector2 currentPos = Points[i];
-                Vector2 prevPos = Points.GetPreviousFrom(i);
-                Vector2 nextPos = Points.GetNextFrom(i);
+                Vector2 prevPos = Points.PreviousElement(i);
+                Vector2 nextPos = Points.NextElement(i);
 
-                Vector2 n1 = VectorUtil.Rotate90CCW(currentPos - prevPos);
-                Vector2 n2 = VectorUtil.Rotate90CCW(nextPos - currentPos);
+                Vector2 n1 = VectorUtil.Rotate90CW(currentPos - prevPos);
+                Vector2 n2 = VectorUtil.Rotate90CW(nextPos - currentPos);
 
                 //// Ref: http://stackoverflow.com/a/25646126/1466456
                 //Vector2 currentToPrev = prevPos - currentPos;
@@ -87,28 +86,29 @@ namespace Penumbra
 
         public Hull Component => _hull;
 
-        public Vector2[] Points { get; private set; }
-        public int[] Indices { get; private set; }
+        public Polygon Points { get; private set; }
+        public Indices Indices { get; private set; }
         public bool Enabled { get; set; }
 
-        public IEnumerable<Vector2> TransformedPoints => TransformedHullVertices;
-
-        public Vector2[] TransformedHullVertices
+        public Polygon TransformedHullVertices
         {
             get
             {
                 if (_transformedHullVerticesDirty)
                 {
                     if (_transformedHullVertices == null)
-                        _transformedHullVertices = new Vector2[Points.Length];
+                        _transformedHullVertices = new Polygon(WindingOrder.Clockwise, Points.Count);
+                    else
+                        _transformedHullVertices.Clear();
 
                     Matrix transform = _hull.WorldTransform;
-                    for (int i = 0; i < Points.Length; i++)
+                    for (int i = 0; i < Points.Count; i++)
                     {
                         Vector2 originalPos = Points[i];
                         Vector2 transformedPos;
                         Vector2.Transform(ref originalPos, ref transform, out transformedPos);
-                        _transformedHullVertices[i] = transformedPos;
+                        //_transformedHullVertices[i] = transformedPos;
+                        _transformedHullVertices.Add(transformedPos);
                     }
                     _transformedHullVerticesDirty = false;
                 }
@@ -122,7 +122,7 @@ namespace Penumbra
             {
                 if (_centroidDirty)
                 {
-                    _centroid = TransformedHullVertices.CalculateCentroid();
+                    _centroid = TransformedHullVertices.GetCentroid();
                     _centroidDirty = false;
                 }
                 return _centroid;
@@ -135,7 +135,7 @@ namespace Penumbra
             {
                 if (_radiusDirty)
                 {
-                    _radius = TransformedHullVertices.Max(x => Vector2.Distance(x, Centroid));
+                    _radius = TransformedHullVertices.GetRadius();
                     _radiusDirty = false;
                 }
                 return _radius;
@@ -153,19 +153,12 @@ namespace Penumbra
             _centroidDirty = true;
         }
 
-        private void CalculatePointsAndIndices(Vector2[] points)
+        private void CalculatePointsAndIndices(Polygon points)
         {
-            Vector2[] outputPoints;
-            int[] outputIndices;
-            Triangulator.Triangulate(
-                points,
-                WindingOrder.CounterClockwise,
-                WindingOrder.Clockwise,
-                WindingOrder.Clockwise,
-                out outputPoints,
-                out outputIndices);
-            Points = outputPoints;
-            Indices = outputIndices;
+            Indices = new Indices();
+            Points = points;
+            Points.EnsureWindingOrder(WindingOrder.CounterClockwise);
+            Points.GetIndices(WindingOrder.Clockwise, Indices);                 
         }        
     }
 }

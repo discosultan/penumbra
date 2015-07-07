@@ -22,9 +22,9 @@ namespace Penumbra.Graphics
 
         public void Dispose()
         {
-            Util.Dispose(PenumbraVao);
-            Util.Dispose(UmbraVao);
-            Util.Dispose(SolidVao);            
+            PenumbraVao?.Dispose();
+            UmbraVao?.Dispose();
+            SolidVao?.Dispose();
         }
     }
 }

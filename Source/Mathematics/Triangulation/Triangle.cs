@@ -22,10 +22,7 @@ namespace Penumbra.Mathematics.Triangulation
 			if (point.Equals(A) || point.Equals(B) || point.Equals(C))
 				return true;
 
-			bool oddNodes = false;
-
-			if (checkPointToSegment(C, A, point))
-				oddNodes = !oddNodes;
+			bool oddNodes = checkPointToSegment(C, A, point);
 			if (checkPointToSegment(A, B, point))
 				oddNodes = !oddNodes;
 			if (checkPointToSegment(B, C, point))
@@ -59,12 +56,10 @@ namespace Penumbra.Mathematics.Triangulation
 
 		public override bool Equals(object obj)
 		{
-			if (obj.GetType() != typeof (Triangle)) 
-				return false;
-			return Equals((Triangle) obj);
+		    return obj is Triangle && Equals((Triangle) obj);
 		}
 
-		public bool Equals(Triangle obj)
+	    public bool Equals(Triangle obj)
 		{
 			return obj.A.Equals(A) && obj.B.Equals(B) && obj.C.Equals(C);
 		}

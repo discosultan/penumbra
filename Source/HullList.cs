@@ -67,11 +67,16 @@ namespace Penumbra
 
         public HullPart this[int index] => _wrappedHullParts[index];
 
-        public IEnumerator<HullPart> GetEnumerator()
+        public Enumerator<HullPart> GetEnumerator()
         {
-            return _wrappedHullParts.GetEnumerator();
+            return new Enumerator<HullPart>(_wrappedHullParts);
         }
-
+        
+        IEnumerator<HullPart> IEnumerable<HullPart>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Graphics.Builders;
@@ -89,7 +88,7 @@ namespace Penumbra.Graphics.Helpers
             }
 
             // TODO: We don't need to always recreate everything
-            bool lightDirty = light.AnyDirty(LightComponentDirtyFlags.Radius | LightComponentDirtyFlags.Position);
+            bool lightDirty = light.AnyDirty(LightComponentDirtyFlags.Radius | LightComponentDirtyFlags.Position | LightComponentDirtyFlags.CastsShadows);
             bool hullsDirty = _hulls.AnyDirty(HullComponentDirtyFlags.All);
 
             if (lightDirty || hullsDirty)
@@ -111,7 +110,7 @@ namespace Penumbra.Graphics.Helpers
             {
                 if (!hull.Enabled || !light.Intersects(hull)) continue;
 
-                for (int i = 0; i < hull.TransformedHullVertices.Length; i++)
+                for (int i = 0; i < hull.TransformedHullVertices.Count; i++)
                 {
                     HullPointContext context;
                     PopulateContextForPoint(light, hull, i, out context);
@@ -142,10 +141,10 @@ namespace Penumbra.Graphics.Helpers
                 Index = i,
                 Position = position,
                 Normals = hull.TransformedNormals[i],
-                IsInAnotherHull = _hulls
-                    .Where(x => x != hull)
-                    .SelectMany(x => x.TransformedHullVertices)
-                    .Any(x => x == position)
+                //IsInAnotherHull = _hulls
+                //    .Where(x => x != hull)
+                //    .SelectMany(x => x.TransformedHullVertices)
+                //    .Any(x => x == position)
             };
             context.LightToPointDir = Vector2.Normalize(context.Position - light.Position);
             GetDotsForNormals(context.LightToPointDir, context.Normals, out context.Dot1, out context.Dot2);

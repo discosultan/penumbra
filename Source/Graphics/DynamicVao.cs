@@ -62,8 +62,8 @@ namespace Penumbra.Graphics
 
         public void Dispose()
         {
-            Util.Dispose(VertexBuffer);
-            Util.Dispose(IndexBuffer);
+            VertexBuffer?.Dispose();
+            IndexBuffer?.Dispose();
         }
 
         private void CreateVertexBuffer()

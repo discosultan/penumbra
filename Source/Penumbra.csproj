@@ -45,7 +45,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\Builders\PenumbraBuilder - Copy.cs" />
     <Compile Include="Graphics\Builders\PenumbraBuilder.cs" />
     <Compile Include="Graphics\Builders\SolidBuilder.cs" />
     <Compile Include="Graphics\Builders\UmbraBuilder.cs" />
@@ -62,9 +61,13 @@
     <Compile Include="HullList.cs" />
     <Compile Include="HullPart.cs" />
     <Compile Include="Light.cs" />
-    <Compile Include="Mathematics\Clipping\AngusjClipper.cs" />
-    <Compile Include="Mathematics\Clipping\Clipper.cs" />
-    <Compile Include="Mathematics\RectangleF.cs" />
+    <Compile Include="Mathematics\Clipping\SimplifyTools.cs" />
+    <Compile Include="Mathematics\Clipping\YuPengClipper.cs" />
+    <Compile Include="Mathematics\AABB.cs" />
+    <Compile Include="Mathematics\IntersectionResult.cs" />
+    <Compile Include="Mathematics\LineTools.cs" />
+    <Compile Include="Mathematics\Polygon.cs" />
+    <Compile Include="Mathematics\PolygonExtensions.cs" />
     <Compile Include="Mathematics\Triangulation\BayazitDecomposer.cs" />
     <Compile Include="Mathematics\Triangulation\CyclicalList.cs" />
     <Compile Include="Mathematics\Triangulation\IndexableCyclicalLinkedList.cs" />
@@ -81,13 +84,13 @@
     <Compile Include="Mathematics\Calc.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
+    <Compile Include="Utilities\Enumerator.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Pool.cs" />
     <Compile Include="Graphics\RenderProcess.cs" />
     <Compile Include="Graphics\RenderState.cs" />
     <Compile Include="Graphics\RenderStep.cs" />
     <Compile Include="Mathematics\Side.cs" />
-    <Compile Include="Utilities\Util.cs" />
     <Compile Include="Graphics\Vao.cs" />
     <Compile Include="Mathematics\VectorUtil.cs" />
     <Compile Include="Graphics\VertexPosition2Texture.cs" />

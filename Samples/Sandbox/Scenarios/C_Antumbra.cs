@@ -23,7 +23,8 @@ namespace Sandbox.Scenarios
 
             _light = new Light
             {
-                Position = new Vector2(-100, 0),
+                Position = new Vector2(-100, 50),
+                //Position = new Vector2(-100, 0),
                 Color = Color.White,
                 Range = 500,
                 Radius = MinLightRadius,

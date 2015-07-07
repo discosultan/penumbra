@@ -98,9 +98,9 @@ namespace Penumbra.Graphics.Helpers
                 _refCounter--;
                 if (_refCounter <= 0)
                 {
-                    Util.Dispose(_quadVao);
-                    Util.Dispose(_fullscreenQuadVao);
-                    Util.Dispose(_circleVao);
+                    _quadVao?.Dispose();
+                    _fullscreenQuadVao?.Dispose();
+                    _circleVao?.Dispose();                    
                 }
             }            
         }      

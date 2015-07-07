@@ -7,7 +7,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra
 {
-    public sealed class Light
+    public class Light
     {
         private bool _castsShadows;
         private bool _enabled;
@@ -98,7 +98,19 @@ namespace Penumbra
         }
 
         public float Intensity { get; set; }
-        public ShadowType ShadowType { get; set; }
+        private ShadowType _shadowType;
+        public ShadowType ShadowType
+        {
+            get { return _shadowType; }
+            set
+            {
+                if (value != _shadowType)
+                {
+                    _shadowType = value;
+                    DirtyFlags |= LightComponentDirtyFlags.ShadowType;
+                }
+            }
+        }
         public Color Color { get; set; }
         public Texture Texture { get; set; }
 
@@ -134,7 +146,7 @@ namespace Penumbra
         internal bool IsInside(HullPart hullPart)
         {
             if (!hullPart.Enabled) return false;
-            return VectorUtil.PointIsInside(hullPart.TransformedHullVertices, Position);
+            return hullPart.TransformedHullVertices.PointInPolygon(ref _position) == IntersectionResult.FullyContained;
         }
     }
 
@@ -146,6 +158,7 @@ namespace Penumbra
         Radius = 1 << 2,
         Range = 1 << 3,
         Enabled = 1 << 4,
+        ShadowType = 1 << 5,
         All = int.MaxValue
     }
 }

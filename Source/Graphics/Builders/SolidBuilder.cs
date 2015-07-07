@@ -32,7 +32,7 @@ namespace Penumbra.Graphics.Builders
             _vertices.AddRange(hull.TransformedHullVertices);
             int offset = _indexOffset;
             _indices.AddRange(hull.Indices.Select(index => index + offset));
-            _indexOffset += hull.TransformedHullVertices.Length;            
+            _indexOffset += hull.TransformedHullVertices.Count;            
         }
 
         public void Build(Light light, LightVaos vaos)
