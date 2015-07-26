@@ -35,9 +35,11 @@ namespace Penumbra.Graphics
         }
     }
 
-    internal struct VertexPosition2
+    internal static class VertexPosition2
     {
         public static readonly VertexDeclaration Layout = new VertexDeclaration(
             new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0));
+
+        // Missing implementation. Use Vector2 instead!
     }
 }

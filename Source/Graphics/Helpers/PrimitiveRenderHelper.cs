@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Mathematics;
-using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Helpers
 {
@@ -12,13 +11,13 @@ namespace Penumbra.Graphics.Helpers
         private static int _refCounter;
 
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly PenumbraComponent _lightRenderer;
+        private readonly PenumbraEngine _lightRenderer;
 
         private static Vao _fullscreenQuadVao;
         private static Vao _quadVao;
         private static Vao _circleVao;
 
-        public PrimitiveRenderHelper(GraphicsDevice device, PenumbraComponent lightRenderer)
+        public PrimitiveRenderHelper(GraphicsDevice device, PenumbraEngine lightRenderer)
         {            
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;

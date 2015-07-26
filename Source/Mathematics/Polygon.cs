@@ -82,12 +82,14 @@ namespace Penumbra.Mathematics
 
         public static void Clip(Polygon subj, Polygon clip, out Polygon sln)
         {
+            subj.EnsureWindingOrder(WindingOrder.CounterClockwise);
+            clip.EnsureWindingOrder(WindingOrder.CounterClockwise);
+
             PolyClipError err;
             var newSln = YuPengClipper.Difference(subj, clip, out err);
             if (err == PolyClipError.None)
             {
-                sln = new Polygon(newSln[0], WindingOrder.CounterClockwise);
-                //sln.EnsureWindingOrder(WindingOrder.Clockwise);
+                sln = new Polygon(newSln[0], WindingOrder.CounterClockwise);                
             }
             else
             {

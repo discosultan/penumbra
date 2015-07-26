@@ -5,7 +5,7 @@ namespace Penumbra.Graphics.Providers
 {
     internal class Camera : RenderProvider
     {
-        public Matrix ViewProjection;
+        public Matrix ViewProjection = Matrix.Identity;
 
         private Matrix _ndcToScreen;
 

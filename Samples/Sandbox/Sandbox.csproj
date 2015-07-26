@@ -42,7 +42,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Scenarios\C_Antumbra.cs" />
+    <Compile Include="Scenarios\X_Antumbra.cs" />
     <Compile Include="Scenarios\B_PassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Utilities\FPS.cs" />

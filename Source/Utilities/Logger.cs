@@ -17,6 +17,7 @@ namespace Penumbra.Utilities
 
         public DelegateLogger(Action<string> log)
         {
+            Check.ArgumentNotNull(log, nameof(log));
             Delegate = log;
         }
 
@@ -37,7 +38,13 @@ namespace Penumbra.Utilities
 
     internal static class Logger
     {        
-        private static readonly List<ILogger> _loggers = new List<ILogger>();        
+        private static readonly List<ILogger> _loggers = new List<ILogger>();
+
+        [Conditional("DEBUG")]
+        public static void Write(object message, [CallerMemberName]string caller = "")
+        {
+            Write(message.ToString(), caller);
+        }
 
         [Conditional("DEBUG")]
         public static void Write(string message, [CallerMemberName]string caller = "")

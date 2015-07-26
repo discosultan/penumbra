@@ -97,7 +97,7 @@ namespace Penumbra
                 if (_transformedHullVerticesDirty)
                 {
                     if (_transformedHullVertices == null)
-                        _transformedHullVertices = new Polygon(WindingOrder.Clockwise, Points.Count);
+                        _transformedHullVertices = new Polygon(Points.WindingOrder, Points.Count);
                     else
                         _transformedHullVertices.Clear();
 

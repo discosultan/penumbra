@@ -12,17 +12,18 @@ namespace Penumbra.Graphics.Helpers
     internal class BufferedShadowRenderHelper : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly PenumbraComponent _lightRenderer;
+        private readonly PenumbraEngine _lightRenderer;
         private readonly HullList _hulls;
         private readonly Dictionary<Light, LightVaos> _shadowVaos = new Dictionary<Light, LightVaos>();
 
         private readonly PenumbraBuilder _penumbraBuilder;
         private readonly UmbraBuilder _umbraBuilder;
         private readonly SolidBuilder _solidBuilder;
+        private readonly AntumbraBuilder _antumbraBuilder;
 
         //private readonly PointProcessingContext _currentContext = new PointProcessingContext();
 
-        public BufferedShadowRenderHelper(GraphicsDevice device, PenumbraComponent lightRenderer)
+        public BufferedShadowRenderHelper(GraphicsDevice device, PenumbraEngine lightRenderer)
         {
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;
@@ -35,9 +36,15 @@ namespace Penumbra.Graphics.Helpers
             _penumbraBuilder = new PenumbraBuilder(indexArrayPool);
             _umbraBuilder = new UmbraBuilder(vertexArrayPool, indexArrayPool);
             _solidBuilder = new SolidBuilder(vertexArrayPool, indexArrayPool);
+            _antumbraBuilder = new AntumbraBuilder();
         }
 
-        public void DrawShadows(Light light, RenderProcess umbraProcess, RenderProcess penumbraProcess, RenderProcess solidProcess)
+        public void DrawShadows(
+            Light light, 
+            RenderProcess umbraProcess, 
+            RenderProcess penumbraProcess, 
+            RenderProcess antumbraProcess, 
+            RenderProcess solidProcess)
         {
             LightVaos vaos = GetVaosForLight(light);
 
@@ -49,6 +56,15 @@ namespace Penumbra.Graphics.Helpers
                 {                                    
                     step.Apply(_lightRenderer.ShaderParameters);
                     _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vaos.PenumbraVao.VertexBuffer.VertexCount, 0, vaos.PenumbraVao.IndexCount / 3);
+                }
+            }
+            if (vaos.HasAntumbra)
+            {
+                _graphicsDevice.SetVertexArrayObject(vaos.AntumbraVao);
+                foreach (RenderStep step in antumbraProcess.Steps(_lightRenderer.DebugDraw))
+                {
+                    step.Apply(_lightRenderer.ShaderParameters);
+                    _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, vaos.AntumbraVao.VertexCount / 3);
                 }
             }
             // TODO: Try enabling depth buffer for umbra. We might prevent a lot of overdraw and thus
@@ -81,14 +97,19 @@ namespace Penumbra.Graphics.Helpers
             if (!_shadowVaos.TryGetValue(light, out vaos))
             {
                 vaos = new LightVaos(
-                    DynamicVao.New(_graphicsDevice, VertexPosition2Texture.Layout, useIndices: true),
-                    DynamicVao.New(_graphicsDevice, VertexPosition2.Layout, useIndices: true),
-                    DynamicVao.New(_graphicsDevice, VertexPosition2.Layout, useIndices: true));
+                    umbra: DynamicVao.New(_graphicsDevice, VertexPosition2.Layout, useIndices: true),
+                    penumbra: DynamicVao.New(_graphicsDevice, VertexPosition2Texture.Layout, useIndices: true),
+                    antumbra: DynamicVao.New(_graphicsDevice, VertexPosition2Texture.Layout, useIndices: false),
+                    solid: DynamicVao.New(_graphicsDevice, VertexPosition2.Layout, useIndices: true));
                 _shadowVaos[light] = vaos;
             }
 
             // TODO: We don't need to always recreate everything
-            bool lightDirty = light.AnyDirty(LightComponentDirtyFlags.Radius | LightComponentDirtyFlags.Position | LightComponentDirtyFlags.CastsShadows);
+            bool lightDirty = light.AnyDirty(
+                LightComponentDirtyFlags.Radius | 
+                LightComponentDirtyFlags.Position | 
+                LightComponentDirtyFlags.CastsShadows | 
+                LightComponentDirtyFlags.ShadowType);
             bool hullsDirty = _hulls.AnyDirty(HullComponentDirtyFlags.All);
 
             if (lightDirty || hullsDirty)
@@ -103,17 +124,19 @@ namespace Penumbra.Graphics.Helpers
         {
             // 1. ANY NECESSARY CLEANING OR PREPROCESSING.
             _umbraBuilder.PreProcess();
-            _penumbraBuilder.PreProcess();            
+            _penumbraBuilder.PreProcess();
+            _antumbraBuilder.PreProcess();            
             _solidBuilder.PreProcess();
 
-            foreach (HullPart hull in _hulls)
+            for (int i = 0; i < _hulls.Count; i++)
             {
+                HullPart hull = _hulls[i];
                 if (!hull.Enabled || !light.Intersects(hull)) continue;
 
-                for (int i = 0; i < hull.TransformedHullVertices.Count; i++)
+                for (int j = 0; j < hull.TransformedHullVertices.Count; j++)
                 {
                     HullPointContext context;
-                    PopulateContextForPoint(light, hull, i, out context);
+                    PopulateContextForPoint(light, hull, j, out context);
 
                     // 2. PROCESS GEOMETRY DATA FOR HULL POINT.
                     _umbraBuilder.ProcessHullPoint(light, hull, ref context);
@@ -123,13 +146,15 @@ namespace Penumbra.Graphics.Helpers
                 // 3. PROCESS GEOMETRY DATA FOR HULL.  
                 var hullCtx = new HullContext();
                 _umbraBuilder.ProcessHull(light, hull, ref hullCtx);
-                _penumbraBuilder.ProcessHull(light, hull, ref hullCtx);
+                _penumbraBuilder.ProcessHull(light, hull, ref hullCtx);                
+                _antumbraBuilder.ProcessHull(light, hull, ref hullCtx);
                 _solidBuilder.ProcessHull(light, hull);
             }
 
             // 4. BUILD BUFFERS FROM PROCESSED DATA.
-            _penumbraBuilder.Build(light, vaos);
             _umbraBuilder.Build(light, vaos);
+            _penumbraBuilder.Build(light, vaos);                     
+            _antumbraBuilder.Build(light, vaos);            
             _solidBuilder.Build(light, vaos);
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using Penumbra.Utilities;
 
 namespace Penumbra.Graphics
 {
@@ -8,16 +7,19 @@ namespace Penumbra.Graphics
         public readonly DynamicVao PenumbraVao;
         public readonly DynamicVao UmbraVao;
         public readonly DynamicVao SolidVao;
+        public readonly DynamicVao AntumbraVao;
 
         public bool HasPenumbra { get; set; }
         public bool HasUmbra { get; set; }
         public bool HasSolid { get; set; }
+        public bool HasAntumbra { get; set; }
 
-        public LightVaos(DynamicVao penumbra, DynamicVao umbra, DynamicVao solid)
+        public LightVaos(DynamicVao umbra, DynamicVao penumbra, DynamicVao antumbra, DynamicVao solid)
         {
-            PenumbraVao = penumbra;
             UmbraVao = umbra;
-            SolidVao = solid;
+            PenumbraVao = penumbra;
+            AntumbraVao = antumbra;
+            SolidVao = solid;            
         }
 
         public void Dispose()
@@ -25,6 +27,7 @@ namespace Penumbra.Graphics
             PenumbraVao?.Dispose();
             UmbraVao?.Dispose();
             SolidVao?.Dispose();
+            AntumbraVao?.Dispose();
         }
     }
 }

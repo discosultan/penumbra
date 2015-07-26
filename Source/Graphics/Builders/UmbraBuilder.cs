@@ -107,7 +107,9 @@ namespace Penumbra.Graphics.Builders
                     }
                 } while (--endIndex >= 1);
 
-                float range = (light.Range + light.Radius) / Vector2.Dot(lightSideToCurrentDir1, Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2));
+                float range = (light.Range + light.Radius) 
+                    / Vector2.Dot(lightSideToCurrentDir1, Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2));
+                //Logger.Write(range);
 
                 Vector2 rightProjectedPos = lightSide1 + lightSideToCurrentDir1 * range;
                 Vector2 leftProjectedPos = lightSide2 + lightSideToCurrentDir2 * range;
@@ -124,13 +126,15 @@ namespace Penumbra.Graphics.Builders
 
                 if (lineIntersects)
                 {
-                    Logger.Write("Projected lines intersect");
+                    //Logger.Write("Projected lines intersect");
                     vertices.Add(intersectionPos);
                     hullCtx.UmbraIntersectionType = Vector2.DistanceSquared(intersectionPos, light.Position) < light.RangeSquared 
                         ? IntersectionType.IntersectsInsideLight 
                         : IntersectionType.IntersectsOutsideLight;
 
                     hullCtx.UmbraIntersectionPoint = intersectionPos;
+                    hullCtx.UmbraLeftProjectedPoint = leftProjectedPos;
+                    hullCtx.UmbraRightProjectedPoint = rightProjectedPos;
                 }
                 else
                 {

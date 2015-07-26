@@ -22,8 +22,8 @@ namespace Penumbra.Mathematics
         public static Vector2 CalculateCentroid(this Vector2[] points)
         {
             float area = 0.0f;
-            float Cx = 0.0f;
-            float Cy = 0.0f;
+            float cx = 0.0f;
+            float cy = 0.0f;
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -31,29 +31,29 @@ namespace Penumbra.Mathematics
                 var tmp = points[i].X * points[k].Y -
                             points[k].X * points[i].Y;
                 area += tmp;
-                Cx += (points[i].X + points[k].X) * tmp;
-                Cy += (points[i].Y + points[k].Y) * tmp;
+                cx += (points[i].X + points[k].X) * tmp;
+                cy += (points[i].Y + points[k].Y) * tmp;
             }
             area *= 0.5f;
-            Cx *= 1.0f / (6.0f * area);
-            Cy *= 1.0f / (6.0f * area);
+            cx *= 1.0f / (6.0f * area);
+            cy *= 1.0f / (6.0f * area);
 
-            return new Vector2(Cx, Cy);
+            return new Vector2(cx, cy);
         }
 
-        public static Vector2 Project(Vector2 v, Vector2 onto)
-        {
-            return onto * (Vector2.Dot(onto, v) / onto.LengthSquared());
-        }
+        //public static Vector2 Project(Vector2 v, Vector2 onto)
+        //{
+        //    return onto * (Vector2.Dot(onto, v) / onto.LengthSquared());
+        //}
 
-        public static float ProjectLength(Vector2 v, Vector2 onto)
-        {
-            return Vector2.Dot(onto, v) / onto.Length();
-        }
+        //public static float ProjectLength(Vector2 v, Vector2 onto)
+        //{
+        //    return Vector2.Dot(onto, v) / onto.Length();
+        //}
 
         public static Vector2 Rotate(Vector2 v, float angle)
         {
-            float num = Calc.Cos(angle);
+            float num = Calc.Cos(angle); 
             float num2 = Calc.Sin(angle);
             return new Vector2(v.X * num + v.Y * num2, -v.X * num2 + v.Y * num);
         }

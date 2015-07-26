@@ -27,6 +27,21 @@ namespace Penumbra.Mathematics
             return array[NextIndex(array, index)];
         }
 
+        public static void ShiftRight(this Polygon list, int numTimes = 1)
+        {
+            if (list.Count < 2) return;
+
+            for (int i = 0; i < numTimes; i++)
+            {
+                Vector2 last = list[list.Count - 1];
+                for (int j = list.Count - 1; j > 0; j--)
+                {
+                    list[j] = list[j - 1];
+                }
+                list[0] = last;
+            }
+        }
+
         /// <summary>
         /// Gets the signed area.
         /// </summary>

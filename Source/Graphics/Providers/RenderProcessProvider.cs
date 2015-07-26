@@ -12,7 +12,8 @@ namespace Penumbra.Graphics.Providers
         private static int _refCounter;        
                         
         private static Lazy<RenderProcess> _umbraIlluminated;        
-        private static Lazy<RenderProcess> _penumbraIlluminated;       
+        private static Lazy<RenderProcess> _penumbraIlluminated;
+        private static Lazy<RenderProcess> _antumbraIlluminated;
         private static Lazy<RenderProcess> _solidIlluminated;             
         private static Lazy<RenderProcess> _solidSolid;        
         private static Lazy<RenderProcess> _solidOccluded;        
@@ -60,6 +61,17 @@ namespace Penumbra.Graphics.Providers
                 case ShadowType.Occluded:                    
                 default: // illuminated
                     return _penumbraIlluminated.Value;
+            }
+        }
+
+        public RenderProcess Antumbra(ShadowType shadowType)
+        {
+            switch (shadowType)
+            {
+                case ShadowType.Solid:
+                case ShadowType.Occluded:
+                default: // illuminated
+                    return _antumbraIlluminated.Value;
             }
         }
 
@@ -152,6 +164,10 @@ namespace Penumbra.Graphics.Providers
             _penumbraIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
                 NewRenderStep(device, content, dss, bs, rs, "ProjectionPenumbra"),
                 NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "ProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Red.ToVector4()))                
+                ), isThreadSafe: true);
+            _antumbraIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
+                NewRenderStep(device, content, dss, bs, rs, "ProjectionPenumbra"),
+                NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "ProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Orange.ToVector4()))
                 ), isThreadSafe: true);
             _umbraIlluminated = new Lazy<RenderProcess>(() => new RenderProcess(
                 NewRenderStep(device, content, dss, bs2, rs, "ProjectionColor", addParams: x => x.SetVector4(ShaderParameter.Color, Color.Transparent.ToVector4())),

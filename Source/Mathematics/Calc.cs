@@ -5,7 +5,8 @@ namespace Penumbra.Mathematics
 {
     internal static class Calc
     {
-        public const float Epsilon = 1.192092896e-07f;
+        //public const float Epsilon = 1.192092896e-07f;
+        public const float Epsilon = 0.0001f;
 
         public static float Atan2(float y, float x)
         {
@@ -98,14 +99,19 @@ namespace Penumbra.Mathematics
             return (value >= min && value <= max);
         }
 
+        public static bool NearEqual(Vector2 lhv, Vector2 rhv)
+        {
+            return NearEqual(lhv.X, rhv.X) && NearEqual(lhv.Y, rhv.Y);
+        }
+
         public static bool NearEqual(float lhv, float rhv)
         {
-            return Math.Abs(lhv - rhv) < float.Epsilon;
+            return Math.Abs(lhv - rhv) < Epsilon;
         }
 
         public static bool NearZero(float val)
         {
-            return Math.Abs(val) < float.Epsilon;
+            return Math.Abs(val) < Epsilon;
         }
     }
 }

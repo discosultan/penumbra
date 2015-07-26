@@ -103,12 +103,17 @@ namespace Penumbra.Graphics.Builders
                 {
                     //if (fin.IsCreatedByIntersection) continue;
 
-                    // CLIP FROM MID
-                    ClipMid(fin, light, ref hullCtx);
+                    // CLIP FROM MID                    
+                    ClipMid(fin, light, ref hullCtx);                    
                 }
 
                 // ADD TEXCOORDS, INTERPOLATE
                 AddTexCoords(fin);
+
+                if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
+                {
+                    AttachInterpolatedVerticesToContext(fin, ref hullCtx);                    
+                }
 
                 // TRIANGULATE
                 TriangulateFin(fin);
@@ -122,6 +127,24 @@ namespace Penumbra.Graphics.Builders
             _addNext = false;
             _addLast = false;
             _fins.Clear();
+        }
+
+        private void AttachInterpolatedVerticesToContext(PenumbraFin fin, ref HullContext hullCtx)
+        {
+            foreach (var vertex in fin.FinalVertices)
+            {
+                // We can populate only 1 vertex from a single fin.
+                if (Calc.NearEqual(vertex.Position, hullCtx.UmbraLeftProjectedPoint))
+                {
+                    hullCtx.UmbraLeftProjectedVertex = vertex;
+                    return;
+                }
+                if (Calc.NearEqual(vertex.Position, hullCtx.UmbraRightProjectedPoint))
+                {
+                    hullCtx.UmbraRightProjectedVertex = vertex;
+                    return;
+                }
+            }
         }
 
         public void Build(Light light, LightVaos vaos)
@@ -159,19 +182,21 @@ namespace Penumbra.Graphics.Builders
             {
                 // TEST INTERSECTION
                 if (TestIntersection(result, hull, ref context, ref finContext))
-                {
+                {                    
                     result.Intersects = true;
 
                     if (light.ShadowType == ShadowType.Occluded)
                     {
                         // CLIP HULL VERTICES
-                        ClipHullFromFin(result, hull, ref context, ref finContext);                        
+                        ClipHullFromFin(result, hull, ref context, ref finContext);
+                        // REORDER VERTICES FIN ORIGIN FIRST
+                        OrderFinVerticesOriginFirst(result);
                     }
                 }
             }            
 
             return result;
-        }
+        }        
 
         private void PopulateMainVertices(PenumbraFin result, Light light, ref HullPointContext context, ref PenumbraFinContext finContext)
         {
@@ -226,19 +251,40 @@ namespace Penumbra.Graphics.Builders
             result.Vertices = sln;
         }
 
+        private void OrderFinVerticesOriginFirst(PenumbraFin fin)
+        {
+            int index = 0;
+            for (int i = 0; i < fin.Vertices.Count; i++)
+            {
+                Vector2 pos = fin.Vertices[i];
+                if (Calc.NearEqual(pos, fin.Vertex1.Position))
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index != 0)
+            {
+                int  vertexCount = fin.Vertices.Count;
+                int numToShift = vertexCount - index;                
+                fin.Vertices.ShiftRight(numToShift);                
+             }
+        }
+
         private void AddTexCoords(PenumbraFin result)
         {
             foreach (Vector2 p in result.Vertices)
             {
-                if (p == result.Vertex1.Position)
+                if (Calc.NearEqual(p, result.Vertex1.Position))
                 {
                     result.FinalVertices.Add(result.Vertex1);
                 }
-                else if (p == result.Vertex2.Position)
+                else if (Calc.NearEqual(p, result.Vertex2.Position))
                 {
                     result.FinalVertices.Add(result.Vertex2);
                 }
-                else if (p == result.Vertex3.Position)
+                else if (Calc.NearEqual(p, result.Vertex3.Position))
                 {
                     result.FinalVertices.Add(result.Vertex3);
                 }
@@ -286,37 +332,51 @@ namespace Penumbra.Graphics.Builders
         }
 
         private void ClipMid(PenumbraFin fin, Light light, ref HullContext hullCtx)
-        {            
-            Vector2 dirFromLight = hullCtx.UmbraIntersectionPoint - light.Position;
-            dirFromLight.Normalize();
-
-            float range = 16000; // TODO: replace with something meaninfgul
-
-            Vector2 outerPoint = light.Position + dirFromLight * range;
-            Vector2 lightPos = light.Position;
-            Vector2 intersectionPos;
-            VectorUtil.LineIntersect(ref fin.Vertex2.Position, ref fin.Vertex3.Position, ref lightPos,
-                ref outerPoint, out intersectionPos);
-
-            int vertexCount = fin.Vertices.Count;
+        {
             if (fin.Side == Side.Left)
             {
-                //______
-                //\  | /
-                // \ |/
-                //  \/
-                fin.Vertices.Insert(vertexCount - 2, hullCtx.UmbraIntersectionPoint);
-                fin.Vertices[vertexCount - 1] = intersectionPos;
+                fin.Vertices.Insert(fin.Vertices.Count - 2, hullCtx.UmbraIntersectionPoint);
+                fin.Vertices[fin.Vertices.Count - 2] = hullCtx.UmbraRightProjectedPoint;
             }
             else
             {
-                //______
-                //\ |  /
-                // \| /
-                //  \/
-                fin.Vertices.Insert(2, intersectionPos);
+                fin.Vertices.Insert(2, hullCtx.UmbraLeftProjectedPoint);
                 fin.Vertices[3] = hullCtx.UmbraIntersectionPoint;
             }
+
+            // --------------------------------------
+                
+            //Vector2 dirFromLight = hullCtx.UmbraIntersectionPoint - light.Position;
+            //dirFromLight.Normalize();
+
+            //float range = 16000; // TODO: replace with something meaningful
+
+            //Vector2 outerPoint = light.Position + dirFromLight * range;
+            //Vector2 lightPos = light.Position;
+            //Vector2 intersectionPos;
+            //VectorUtil.LineIntersect(ref fin.Vertex2.Position, ref fin.Vertex3.Position, ref lightPos,
+            //    ref outerPoint, out intersectionPos);
+            
+            //if (fin.Side == Side.Left)
+            //{
+            //    //______
+            //    //\  | /
+            //    // \ |/
+            //    //  \/
+            //    fin.Vertices.Insert(fin.Vertices.Count - 2, hullCtx.UmbraIntersectionPoint);
+            //    fin.Vertices[fin.Vertices.Count - 2] = intersectionPos;
+            //}
+            //else
+            //{
+            //    //______
+            //    //\ |  /
+            //    // \| /
+            //    //  \/
+            //    fin.Vertices.Insert(2, intersectionPos);
+            //    fin.Vertices[3] = hullCtx.UmbraIntersectionPoint;
+            //}
+
+            // ---------------------------------------
 
             //List<Vector2> clip = new List<Vector2>();
             //clip.Add(light.Position);

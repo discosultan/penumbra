@@ -7,7 +7,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra
 {
-    internal class HullList : IEnumerable<HullPart>
+    internal class HullList
     {
         private readonly ObservableCollection<Hull> _hulls;
 
@@ -70,16 +70,6 @@ namespace Penumbra
         public Enumerator<HullPart> GetEnumerator()
         {
             return new Enumerator<HullPart>(_wrappedHullParts);
-        }
-        
-        IEnumerator<HullPart> IEnumerable<HullPart>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

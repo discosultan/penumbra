@@ -38,6 +38,10 @@ namespace Penumbra.Graphics.Builders
     {
         public IntersectionType UmbraIntersectionType;        
         public Vector2 UmbraIntersectionPoint;
+        public Vector2 UmbraLeftProjectedPoint;
+        public Vector2 UmbraRightProjectedPoint;
+        public VertexPosition2Texture UmbraLeftProjectedVertex;
+        public VertexPosition2Texture UmbraRightProjectedVertex;
     }
 
     internal enum IntersectionType
