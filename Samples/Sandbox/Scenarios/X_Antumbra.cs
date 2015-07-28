@@ -12,9 +12,7 @@ namespace Sandbox.Scenarios
 
         private Light _light;
         private bool _isRadiusIncreasing;
-        private float _progress;
-
-        public override string Name { get; } = "Antumbra";
+        private float _progress;        
 
         public override void Activate(PenumbraComponent penumbra)
         {

@@ -42,8 +42,9 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Scenarios\C_LightBlending.cs" />
     <Compile Include="Scenarios\X_Antumbra.cs" />
-    <Compile Include="Scenarios\B_PassThrough.cs" />
+    <Compile Include="Scenarios\B_LightPassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Utilities\FPS.cs" />
     <Compile Include="Game1.cs" />
@@ -52,8 +53,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenario.cs" />
     <Compile Include="ScenariosComponent.cs" />
-    <Compile Include="Scenarios\A_SimpleRotation.cs" />
+    <Compile Include="Scenarios\A_PenumbraTransition.cs" />
     <Compile Include="UIComponent.cs" />
+    <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">

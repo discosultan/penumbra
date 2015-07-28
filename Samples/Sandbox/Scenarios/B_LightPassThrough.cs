@@ -4,14 +4,13 @@ using Penumbra;
 
 namespace Sandbox.Scenarios
 {
-    class B_PassThrough : Scenario
+    class B_LightPassThrough : Scenario
     {
         private const float HullRotationSpeed = MathHelper.TwoPi/2f;
         private const float LightSpeed = 4f;
         private const float Padding = 50f;
 
-        private PenumbraComponent _penumbra;
-        public override string Name { get; } = "Pass through";
+        private PenumbraComponent _penumbra;        
 
         private Light _light1;
         private Light _light2;

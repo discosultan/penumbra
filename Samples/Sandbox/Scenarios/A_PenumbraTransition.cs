@@ -4,7 +4,7 @@ using static System.Math;
 
 namespace Sandbox.Scenarios
 {
-    class A_SimpleRotation : Scenario
+    class A_PenumbraTransition : Scenario
     {
         private Light _light;
         private const float RotationSpeed = MathHelper.TwoPi/6;
@@ -26,8 +26,6 @@ namespace Sandbox.Scenarios
                 Scale = new Vector2(50f)
             });
         }
-
-        public override string Name { get; } = "Simple rotation";
 
         public override void Update(float deltaSeconds)
         {

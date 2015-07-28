@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
+using Sandbox.Utilities;
 
 namespace Sandbox
 {
@@ -7,7 +8,15 @@ namespace Sandbox
     {
         internal GraphicsDevice Device { get; set; }
 
-        public abstract string Name { get; }
+        protected Scenario()
+        {
+            string typeName = GetType().Name;
+            Name = typeName.Substring(typeName.IndexOf('_') + 1).SeparateTitleCases();
+            Name = Name.Replace(" Or ", " or ");
+            Name = Name.Replace(" And ", " and ");
+        }
+
+        public string Name { get; private set; }
 
         public abstract void Activate(PenumbraComponent penumbra);
 

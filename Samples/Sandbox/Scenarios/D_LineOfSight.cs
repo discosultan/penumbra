@@ -20,9 +20,7 @@ namespace Sandbox.Scenarios
 
         private Hull _hull1, _hull2;
         private State _state;
-        private float _progress;
-
-        public override string Name { get; } = "Line of sight";
+        private float _progress;        
 
         public override void Activate(PenumbraComponent penumbra)
         {
