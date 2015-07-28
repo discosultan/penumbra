@@ -58,6 +58,7 @@ namespace Penumbra.Mathematics
             return new Vector2(v.X * num + v.Y * num2, -v.X * num2 + v.Y * num);
         }
 
+        //TODO: rename
         public static bool Intersects(Vector2 dirMiddle, Vector2 dirTest, Vector2 dirTestAgainst)
         {
             float dot1 = Vector2.Dot(dirMiddle, dirTest);

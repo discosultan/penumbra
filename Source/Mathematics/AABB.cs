@@ -65,19 +65,13 @@ namespace Penumbra.Mathematics
         /// Get the center of the AABB.
         /// </summary>
         /// <value></value>
-        public Vector2 Center
-        {
-            get { return 0.5f*(LowerBound + UpperBound); }
-        }
+        public Vector2 Center => 0.5f*(LowerBound + UpperBound);
 
         /// <summary>
         /// Get the extents of the AABB (half-widths).
         /// </summary>
         /// <value></value>
-        public Vector2 Extents
-        {
-            get { return 0.5f*(UpperBound - LowerBound); }
-        }
+        public Vector2 Extents => 0.5f*(UpperBound - LowerBound);
 
         /// <summary>
         /// Get the perimeter length
@@ -101,11 +95,13 @@ namespace Penumbra.Mathematics
         {
             get
             {
-                var vertices = new Vertices(WindingOrder.CounterClockwise);
-                vertices.Add(LowerBound);
-                vertices.Add(new Vector2(LowerBound.X, UpperBound.Y));
-                vertices.Add(UpperBound);
-                vertices.Add(new Vector2(UpperBound.X, LowerBound.Y));
+                var vertices = new Vertices(WindingOrder.CounterClockwise)
+                {
+                    LowerBound,
+                    new Vector2(LowerBound.X, UpperBound.Y),
+                    UpperBound,
+                    new Vector2(UpperBound.X, LowerBound.Y)
+                };
                 return vertices;
             }
         }

@@ -149,7 +149,7 @@ namespace Penumbra.Graphics.Builders
 
         public void Build(Light light, LightVaos vaos)
         {
-            if (_vertices.Count > 0)
+            if (_vertices.Count > 0 && _indices.Count > 0)
             {
                 vaos.HasPenumbra = true;
                 VertexPosition2Texture[] penumbraVertices = _vertices.ToArrayFromPool(_vertexArrayPool);

@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
+using Penumbra.Mathematics.Collision;
 using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
 
@@ -107,24 +108,52 @@ namespace Penumbra.Graphics.Builders
                     }
                 } while (--endIndex >= 1);
 
-                float range = (light.Range + light.Radius) 
-                    / Vector2.Dot(lightSideToCurrentDir1, Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2));
-                //Logger.Write(range);
-
-                Vector2 rightProjectedPos = lightSide1 + lightSideToCurrentDir1 * range;
-                Vector2 leftProjectedPos = lightSide2 + lightSideToCurrentDir2 * range;
+                var line1 = new Line2D(lightSide1, lightSide1 + lightSideToCurrentDir1);
+                var line2 = new Line2D(lightSide2, lightSide2 + lightSideToCurrentDir2);
 
                 Vector2 intersectionPos;
-                bool lineIntersects = VectorUtil.LineIntersect(
-                    ref lightSide1,
-                    ref rightProjectedPos,
-                    ref lightSide2,
-                    ref leftProjectedPos,
-                    out intersectionPos);
+                bool linesIntersect = line1.Intersects(ref line2, out intersectionPos);
+
+                //bool lineIntersects = VectorUtil.LineIntersect(
+                //    ref lightSide1,
+                //    ref lightSide12,
+                //    ref lightSide2,
+                //    ref lightSide22,
+                //    out intersectionPos);
+
+                Vector2 midDir;
+                if (linesIntersect)
+                {
+                    // TODO: handle backward
+                    midDir = Vector2.Normalize(intersectionPos - light.Position);
+                }
+                else
+                {
+                    midDir = Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2);
+                }
+
+                Vector2 pointOnRange = light.Position + midDir * light.Range;
+                Vector2 tangentDir = VectorUtil.Rotate90CW(midDir);
+
+                Line2D tangentLine = new Line2D(pointOnRange, pointOnRange + tangentDir);
+
+                Vector2 projectedPoint1;
+                tangentLine.Intersects(ref line1, out projectedPoint1);
+                Vector2 projectedPoint2;
+                tangentLine.Intersects(ref line2, out projectedPoint2);
+
+                //float range = 
+                //    (light.Range + light.Radius)
+                //    / Vector2.Dot(lightSideToCurrentDir1, Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2));
+
+                //Vector2 rightProjectedPos = lightSide1 + lightSideToCurrentDir1 * range;
+                //Vector2 leftProjectedPos = lightSide2 + lightSideToCurrentDir2 * range;
+
+
 
                 var vertices = new Polygon(WindingOrder.CounterClockwise);
 
-                if (lineIntersects)
+                if (linesIntersect)
                 {
                     //Logger.Write("Projected lines intersect");
                     vertices.Add(intersectionPos);
@@ -133,14 +162,16 @@ namespace Penumbra.Graphics.Builders
                         : IntersectionType.IntersectsOutsideLight;
 
                     hullCtx.UmbraIntersectionPoint = intersectionPos;
-                    hullCtx.UmbraLeftProjectedPoint = leftProjectedPos;
-                    hullCtx.UmbraRightProjectedPoint = rightProjectedPos;
+                    hullCtx.UmbraRightProjectedPoint = projectedPoint1;
+                    hullCtx.UmbraLeftProjectedPoint = projectedPoint2;                    
                 }
                 else
                 {
-                    vertices.Add(rightProjectedPos);
-                    vertices.Add(leftProjectedPos);                                 
+                    vertices.Add(projectedPoint1);
+                    vertices.Add(projectedPoint2);                                 
                 }
+                
+
                 // Add all the vertices that contain the segment on the hull.
                 int numSegmentVertices = endIndex - startIndex + 1;
                 for (int i = numSegmentVertices - 1; i >= 0; i--)

@@ -65,6 +65,10 @@
     <Compile Include="Mathematics\Clipping\SimplifyTools.cs" />
     <Compile Include="Mathematics\Clipping\YuPengClipper.cs" />
     <Compile Include="Mathematics\AABB.cs" />
+    <Compile Include="Mathematics\Collision\Collision.cs" />
+    <Compile Include="Mathematics\Collision\Line2D.cs" />
+    <Compile Include="Mathematics\Collision\LineSegment2D.cs" />
+    <Compile Include="Mathematics\Collision\Ray2D.cs" />
     <Compile Include="Mathematics\IntersectionResult.cs" />
     <Compile Include="Mathematics\LineTools.cs" />
     <Compile Include="Mathematics\Polygon.cs" />
