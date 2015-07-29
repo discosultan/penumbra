@@ -100,7 +100,7 @@ namespace Penumbra
 
                 // Draw light.                
                 ShaderParameters.SetVector3(ShaderParameter.LightColor, light.Color.ToVector3());
-                ShaderParameters.SetSingle(ShaderParameter.LightIntensity, light.Intensity);
+                ShaderParameters.SetSingle(ShaderParameter.LightIntensity, light.IntensityFactor);
                 _primitiveRenderHelper.DrawQuad(_renderProcessProvider.Light, light.Position, light.Range * 2);
 
                 // Draw light source (for debugging purposes only).

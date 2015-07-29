@@ -22,8 +22,10 @@ namespace Penumbra.Graphics.Builders
 
         public PenumbraBuilder(ArrayPool<int> indexArrayPool)
         {
-            _indexArrayPool = indexArrayPool;
+            _indexArrayPool = indexArrayPool;            
         }
+
+        public bool AddAdditionalFins { get; set; } = true;
 
         public void PreProcess()
         {
@@ -65,7 +67,7 @@ namespace Penumbra.Graphics.Builders
                 PenumbraFin fin = CreateFin(light, ref context,
                     hull, side, testIntersection: true);
                 _fins.Add(fin);
-                if (fin.Intersects)
+                if (fin.Intersects && AddAdditionalFins)
                 {
                     switch (fin.Side)
                     {
@@ -110,19 +112,27 @@ namespace Penumbra.Graphics.Builders
                 // ADD TEXCOORDS, INTERPOLATE
                 AddTexCoords(fin);
 
-                if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
-                {
+                if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight && fin.IsCreatedByIntersection)
+                {                    
                     AttachInterpolatedVerticesToContext(fin, ref hullCtx);                    
                 }
 
                 // TRIANGULATE
                 TriangulateFin(fin);
 
-                _vertices.AddRange(fin.FinalVertices);
-                _indices.AddRange(fin.Indices.Select(index => index + _indexOffset));
-                _finPool.Release(fin);
-                _indexOffset += fin.FinalVertices.Count;
-            }
+                //// TODO: TEMP
+                //if (fin.IsCreatedByIntersection)
+                //{
+                    _vertices.AddRange(fin.FinalVertices);
+                    _indices.AddRange(fin.Indices.Select(index => index + _indexOffset));
+                    _indexOffset += fin.FinalVertices.Count;
+                //}
+
+                _finPool.Release(fin);                
+            }         
+            
+            // TODO: TEMP   
+            hullCtx.UmbraLeftProjectedVertex.TexCoord = hullCtx.UmbraRightProjectedVertex.TexCoord;
 
             _addNext = false;
             _addLast = false;
@@ -136,13 +146,17 @@ namespace Penumbra.Graphics.Builders
                 // We can populate only 1 vertex from a single fin.
                 if (Calc.NearEqual(vertex.Position, hullCtx.UmbraLeftProjectedPoint))
                 {
-                    hullCtx.UmbraLeftProjectedVertex = vertex;
+                    hullCtx.UmbraLeftProjectedVertex = vertex;                    
                     return;
                 }
                 if (Calc.NearEqual(vertex.Position, hullCtx.UmbraRightProjectedPoint))
                 {
                     hullCtx.UmbraRightProjectedVertex = vertex;
                     return;
+                }
+                if (Calc.NearEqual(vertex.Position, hullCtx.UmbraIntersectionPoint))
+                {
+                    hullCtx.UmbraIntersectionVertex = vertex;                    
                 }
             }
         }
@@ -289,41 +303,25 @@ namespace Penumbra.Graphics.Builders
                     result.FinalVertices.Add(result.Vertex3);
                 }
                 else
-                {
+                {                    
+                    Vector2 point = p;
+                    Vector3 barycentricCoords;
+                    Calc.Barycentric(
+                        ref point, 
+                        ref result.Vertex1.Position,                         
+                        ref result.Vertex2.Position,
+                        ref result.Vertex3.Position, 
+                        out barycentricCoords);
+                    Vector2 interpolatedTexCoord =
+                        result.Vertex1.TexCoord * barycentricCoords.X +
+                        result.Vertex2.TexCoord * barycentricCoords.Y +
+                        result.Vertex3.TexCoord * barycentricCoords.Z;
+
                     result.FinalVertices.Add(new VertexPosition2Texture(
                         p,
-                        InterpolateTexCoord(result, p)));
+                        interpolatedTexCoord));                        
                 }
             }
-        }
-
-        private Vector2 InterpolateTexCoord(PenumbraFin result, Vector2 pos)
-        {
-            var f = new Vector3(pos, 0);
-
-            // ref: http://answers.unity3d.com/questions/383804/calculate-uv-coordinates-of-3d-point-on-plane-of-m.html
-            var p1 = new Vector3(result.Vertex1.Position, 0);
-            var p2 = new Vector3(result.Vertex2.Position, 0);
-            var p3 = new Vector3(result.Vertex3.Position, 0);
-
-            // calculate vectors from point f to vertices p1, p2 and p3:
-            var f1 = p1 - f;
-            var f2 = p2 - f;
-            var f3 = p3 - f;
-            // calculate the areas (parameters order is essential in this case):
-            var va = Vector3.Cross(p1 - p2, p1 - p3); // main triangle cross product
-            var va1 = Vector3.Cross(f2, f3); // p1's triangle cross product
-            var va2 = Vector3.Cross(f3, f1); // p2's triangle cross product
-            var va3 = Vector3.Cross(f1, f2); // p3's triangle cross product
-            var a = va.Length(); // main triangle area
-            // calculate barycentric coordinates with sign:
-            var a1 = va1.Length() / a * Math.Sign(Vector3.Dot(va, va1));
-            var a2 = va2.Length() / a * Math.Sign(Vector3.Dot(va, va2));
-            var a3 = va3.Length() / a * Math.Sign(Vector3.Dot(va, va3));
-            // find the uv corresponding to point f (uv1/uv2/uv3 are associated to p1/p2/p3):
-            var uv = result.Vertex1.TexCoord * a1 + result.Vertex2.TexCoord * a2 + result.Vertex3.TexCoord * a3;
-
-            return uv;
         }
 
         private void TriangulateFin(PenumbraFin result)

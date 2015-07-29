@@ -16,8 +16,7 @@ namespace Sandbox.Scenarios
                 Position = new Vector2(-100, 0),
                 Color = Color.White,
                 Range = 300,
-                Radius = 20,
-                ShadowType = ShadowType.Illuminated
+                Radius = 20                
             };
             penumbra.Lights.Add(_light);
             penumbra.Hulls.Add(new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })

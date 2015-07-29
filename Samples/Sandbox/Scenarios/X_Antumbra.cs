@@ -7,7 +7,7 @@ namespace Sandbox.Scenarios
     class X_Antumbra : Scenario
     {
         private const float MinLightRadius = 5;
-        private const float MaxLightRadius = 160;
+        private const float MaxLightRadius = 180;
         private const float RadiusSpeed = 2f;
 
         private Light _light;
@@ -24,9 +24,9 @@ namespace Sandbox.Scenarios
                 //Position = new Vector2(-100, 50),
                 Position = new Vector2(-100, 0),
                 Color = Color.White,
+                Intensity = 1.5f,
                 Range = 400,
-                Radius = MinLightRadius,
-                ShadowType = ShadowType.Illuminated
+                Radius = MinLightRadius                
             };
             penumbra.Lights.Add(_light);
 

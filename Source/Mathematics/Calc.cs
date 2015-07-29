@@ -113,5 +113,18 @@ namespace Penumbra.Mathematics
         {
             return Math.Abs(val) < Epsilon;
         }
+
+        // ref: http://stackoverflow.com/a/6075960/1466456
+        public static void Barycentric(ref Vector2 p, ref Vector2 a, ref Vector2 b, ref Vector2 c, out Vector3 baryCoords)
+        {
+            float abcArea = Area(ref a, ref b, ref c);
+
+            float u = Area(ref p, ref b, ref c) / abcArea;
+            float v = Area(ref a, ref p, ref c) / abcArea;
+            //float w = Area(a, b, p) / abcArea;
+            float w = 1 - u - v;
+
+            baryCoords = new Vector3(u, v, w);
+        }
     }
 }

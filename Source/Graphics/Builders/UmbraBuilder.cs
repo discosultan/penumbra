@@ -3,7 +3,6 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 using Penumbra.Mathematics.Collision;
-using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
@@ -114,25 +113,17 @@ namespace Penumbra.Graphics.Builders
                 Vector2 intersectionPos;
                 bool linesIntersect = line1.Intersects(ref line2, out intersectionPos);
 
-                //bool lineIntersects = VectorUtil.LineIntersect(
-                //    ref lightSide1,
-                //    ref lightSide12,
-                //    ref lightSide2,
-                //    ref lightSide22,
-                //    out intersectionPos);
+                var midDir = linesIntersect 
+                    ? Vector2.Normalize(intersectionPos - light.Position) 
+                    : Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2);
 
-                Vector2 midDir;
-                if (linesIntersect)
-                {
-                    // TODO: handle backward
-                    midDir = Vector2.Normalize(intersectionPos - light.Position);
-                }
-                else
-                {
-                    midDir = Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2);
-                }
+                if (Vector2.Dot(midDir, lightSideToCurrentDir1) < 0)
+                    midDir *= -1;
 
                 Vector2 pointOnRange = light.Position + midDir * light.Range;
+
+                bool areIntersectingInFrontOfLight = Vector2.DistanceSquared(intersectionPos, pointOnRange) < light.RangeSquared;
+
                 Vector2 tangentDir = VectorUtil.Rotate90CW(midDir);
 
                 Line2D tangentLine = new Line2D(pointOnRange, pointOnRange + tangentDir);
@@ -142,24 +133,24 @@ namespace Penumbra.Graphics.Builders
                 Vector2 projectedPoint2;
                 tangentLine.Intersects(ref line2, out projectedPoint2);
 
-                //float range = 
-                //    (light.Range + light.Radius)
-                //    / Vector2.Dot(lightSideToCurrentDir1, Vector2.Normalize(lightSideToCurrentDir1 + lightSideToCurrentDir2));
-
-                //Vector2 rightProjectedPos = lightSide1 + lightSideToCurrentDir1 * range;
-                //Vector2 leftProjectedPos = lightSide2 + lightSideToCurrentDir2 * range;
-
-
-
                 var vertices = new Polygon(WindingOrder.CounterClockwise);
 
-                if (linesIntersect)
+                if (linesIntersect && areIntersectingInFrontOfLight)
                 {
-                    //Logger.Write("Projected lines intersect");
-                    vertices.Add(intersectionPos);
-                    hullCtx.UmbraIntersectionType = Vector2.DistanceSquared(intersectionPos, light.Position) < light.RangeSquared 
-                        ? IntersectionType.IntersectsInsideLight 
-                        : IntersectionType.IntersectsOutsideLight;
+                    bool areIntersectingInsideLightRange = Vector2.DistanceSquared(intersectionPos, light.Position) <
+                                                          light.RangeSquared;
+                                        
+                    if (areIntersectingInsideLightRange)
+                    {
+                        hullCtx.UmbraIntersectionType = IntersectionType.IntersectsInsideLight;
+                        vertices.Add(intersectionPos);
+                    }
+                    else
+                    {
+                        hullCtx.UmbraIntersectionType = IntersectionType.IntersectsOutsideLight;
+                        vertices.Add(projectedPoint1);
+                        vertices.Add(projectedPoint2);
+                    }                    
 
                     hullCtx.UmbraIntersectionPoint = intersectionPos;
                     hullCtx.UmbraRightProjectedPoint = projectedPoint1;

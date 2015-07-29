@@ -32,8 +32,7 @@ namespace Sandbox.Scenarios
                 Position = new Vector2(0, -100),
                 Color = Color.White,
                 Range = 300,
-                Radius = 20,
-                ShadowType = ShadowType.Illuminated
+                Radius = 20                
             });
 
             Vector2[] hullVertices =

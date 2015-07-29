@@ -16,9 +16,10 @@ namespace Penumbra.Graphics.Builders
         {
             if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
             {
-                _vertices.Add(new VertexPosition2Texture(hullCtx.UmbraIntersectionPoint, new Vector2(0, 1)));
+                //_vertices.Add(new VertexPosition2Texture(hullCtx.UmbraIntersectionPoint, new Vector2(0, 1)));
+                _vertices.Add(hullCtx.UmbraIntersectionVertex);
                 _vertices.Add(hullCtx.UmbraRightProjectedVertex);
-                _vertices.Add(hullCtx.UmbraLeftProjectedVertex);                
+                _vertices.Add(hullCtx.UmbraLeftProjectedVertex);
             }            
         }
 

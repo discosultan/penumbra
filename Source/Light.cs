@@ -114,7 +114,8 @@ namespace Penumbra
         public Color Color { get; set; }
         public Texture Texture { get; set; }
 
-        internal float IntensityFactor => 1 / (Intensity * Intensity);
+        //internal float IntensityFactor => 1 / (Intensity * Intensity);
+        internal float IntensityFactor => 1 / Intensity;
         internal LightComponentDirtyFlags DirtyFlags { get; set; }
 
         internal bool AnyDirty(LightComponentDirtyFlags flags)

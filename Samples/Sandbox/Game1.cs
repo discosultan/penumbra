@@ -29,7 +29,7 @@ namespace Sandbox
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            _penumbra = new PenumbraComponent(this);            
+            _penumbra = new PenumbraComponent(this) { AmbientColor = Color.Black };
             Components.Add(_penumbra);
             _scenarios = new ScenariosComponent(this, _penumbra);
             Components.Add(_scenarios);
