@@ -8,6 +8,11 @@ namespace Penumbra.Mathematics.Collision
         public Vector2 Direction;
 
         public Ray2D(Vector2 origin, Vector2 direction)
+            : this(ref origin, ref direction)
+        {            
+        }
+
+        public Ray2D(ref Vector2 origin, ref Vector2 direction)
         {
             Origin = origin;
             Direction = direction;
@@ -18,8 +23,9 @@ namespace Penumbra.Mathematics.Collision
             return Origin + Direction * distance;
         }
 
-        public bool Intersects(Ray2D ray, out Vector2 intersectionPoint)
+        public bool Intersects(ref Ray2D ray)
         {
+            Vector2 intersectionPoint;
             return Intersects(ref ray, out intersectionPoint);
         }
 
@@ -28,8 +34,9 @@ namespace Penumbra.Mathematics.Collision
             return Collision.RayIntersectsRay(ref Origin, ref Direction, ref ray.Origin, ref ray.Direction, out intersectionPoint);
         }
 
-        public bool Intersects(Line2D line, out Vector2 intersectionPoint)
+        public bool Intersects(ref Line2D line)
         {
+            Vector2 intersectionPoint;
             return Intersects(ref line, out intersectionPoint);
         }
 

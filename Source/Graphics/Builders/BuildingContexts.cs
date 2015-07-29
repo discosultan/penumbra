@@ -7,7 +7,7 @@ namespace Penumbra.Graphics.Builders
     {        
         public Vector2 Position;
         public Vector2 LightToPointDir;
-        public ApexNormals Normals;
+        public PointNormals Normals;
         public int Index;
         public float Dot1;
         public float Dot2;

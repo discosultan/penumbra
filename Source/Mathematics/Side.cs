@@ -3,7 +3,6 @@
     internal enum Side
     {
         Left,
-        Right,
-        Unknown
+        Right
     }
 }

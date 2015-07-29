@@ -24,15 +24,13 @@
 */
 
 using Microsoft.Xna.Framework;
-//using Vertices = System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2>;
-using Vertices = Penumbra.Mathematics.Polygon;
 
-namespace Penumbra.Mathematics
+namespace Penumbra.Mathematics.Collision
 {
     /// <summary>
     /// An axis aligned bounding box.
     /// </summary>
-    internal struct AABB
+    internal struct BoundingRectangle
     {       
         /// <summary>
         /// The lower vertex
@@ -44,21 +42,15 @@ namespace Penumbra.Mathematics
         /// </summary>
         public Vector2 UpperBound;
 
-        public AABB(Vector2 min, Vector2 max)
+        public BoundingRectangle(Vector2 min, Vector2 max)
             : this(ref min, ref max)
         {
         }
 
-        public AABB(ref Vector2 min, ref Vector2 max)
+        public BoundingRectangle(ref Vector2 min, ref Vector2 max)
         {
             LowerBound = min;
             UpperBound = max;
-        }
-
-        public AABB(Vector2 center, float width, float height)
-        {
-            LowerBound = center - new Vector2(width/2, height/2);
-            UpperBound = center + new Vector2(width/2, height/2);
         }
 
         /// <summary>
@@ -88,63 +80,24 @@ namespace Penumbra.Mathematics
         }
 
         /// <summary>
-        /// Gets the vertices of the AABB.
-        /// </summary>
-        /// <value>The corners of the AABB</value>
-        public Vertices Vertices
-        {
-            get
-            {
-                var vertices = new Vertices(WindingOrder.CounterClockwise)
-                {
-                    LowerBound,
-                    new Vector2(LowerBound.X, UpperBound.Y),
-                    UpperBound,
-                    new Vector2(UpperBound.X, LowerBound.Y)
-                };
-                return vertices;
-            }
-        }
-
-        /// <summary>
         /// first quadrant
         /// </summary>
-        public AABB Q1 => new AABB(Center, UpperBound);
+        public BoundingRectangle Q1 => new BoundingRectangle(Center, UpperBound);
 
-        public AABB Q2 => new AABB(new Vector2(LowerBound.X, Center.Y), new Vector2(Center.X, UpperBound.Y));
+        public BoundingRectangle Q2 => new BoundingRectangle(new Vector2(LowerBound.X, Center.Y), new Vector2(Center.X, UpperBound.Y));
 
-        public AABB Q3 => new AABB(LowerBound, Center);
+        public BoundingRectangle Q3 => new BoundingRectangle(LowerBound, Center);
 
-        public AABB Q4 => new AABB(new Vector2(Center.X, LowerBound.Y), new Vector2(UpperBound.X, Center.Y));
-
-        public Vector2[] GetVertices()
-        {
-            Vector2 p1 = UpperBound;
-            Vector2 p2 = new Vector2(UpperBound.X, LowerBound.Y);
-            Vector2 p3 = LowerBound;
-            Vector2 p4 = new Vector2(LowerBound.X, UpperBound.Y);
-            return new[] {p1, p2, p3, p4};
-        }
+        public BoundingRectangle Q4 => new BoundingRectangle(new Vector2(Center.X, LowerBound.Y), new Vector2(UpperBound.X, Center.Y));
 
         /// <summary>
         /// Combine an AABB into this one.
         /// </summary>
         /// <param name="aabb">The aabb.</param>
-        public void Combine(ref AABB aabb)
+        public void Combine(ref BoundingRectangle aabb)
         {
             LowerBound = Vector2.Min(LowerBound, aabb.LowerBound);
             UpperBound = Vector2.Max(UpperBound, aabb.UpperBound);
-        }
-
-        /// <summary>
-        /// Combine two AABBs into this one.
-        /// </summary>
-        /// <param name="aabb1">The aabb1.</param>
-        /// <param name="aabb2">The aabb2.</param>
-        public void Combine(ref AABB aabb1, ref AABB aabb2)
-        {
-            LowerBound = Vector2.Min(aabb1.LowerBound, aabb2.LowerBound);
-            UpperBound = Vector2.Max(aabb1.UpperBound, aabb2.UpperBound);
         }
 
         /// <summary>
@@ -154,7 +107,7 @@ namespace Penumbra.Mathematics
         /// <returns>
         /// 	<c>true</c> if it contains the specified aabb; otherwise, <c>false</c>.
         /// </returns>
-        public bool Contains(ref AABB aabb)
+        public bool Contains(ref BoundingRectangle aabb)
         {
             bool result = true;
             result = result && LowerBound.X <= aabb.LowerBound.X;
@@ -182,12 +135,12 @@ namespace Penumbra.Mathematics
             return false;
         }
 
-        public static bool TestOverlap(AABB a, AABB b)
+        public static bool TestOverlap(BoundingRectangle a, BoundingRectangle b)
         {
             return TestOverlap(ref a, ref b);
         }
 
-        public static bool TestOverlap(ref AABB a, ref AABB b)
+        public static bool TestOverlap(ref BoundingRectangle a, ref BoundingRectangle b)
         {
             Vector2 d1 = b.LowerBound - a.UpperBound;
             Vector2 d2 = a.LowerBound - b.UpperBound;

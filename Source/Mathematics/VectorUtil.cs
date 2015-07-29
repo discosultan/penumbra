@@ -86,26 +86,6 @@ namespace Penumbra.Mathematics
             }
             result = a0 + (a1 - a0) * num2;
             return true;
-        }
-
-        public static bool PointIsInside(Vector2[] points, Vector2 point)
-        {
-            // Ref: http://stackoverflow.com/a/8721483/1466456
-            int i, j;
-            bool contains = false;
-            for (i = 0, j = points.Length - 1; i < points.Length; j = i++)
-            {
-                if ((points[i].Y > point.Y) != (points[j].Y > point.Y) &&
-                    (point.X <
-                        (points[j].X - points[i].X) *
-                        (point.Y - points[i].Y) /
-                        (points[j].Y - points[i].Y) +
-                        points[i].X))
-                {
-                    contains = !contains;
-                }
-            }
-            return contains;
-        }
+        }        
     }
 }

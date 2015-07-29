@@ -181,7 +181,7 @@ namespace Penumbra.Graphics.Helpers
             //GetDotsForNormals(_currentContext.LightToPointDir, _currentContext.Normals, out _currentContext.Dot1, out _currentContext.Dot2);            
         }
 
-        private static void GetDotsForNormals(Vector2 lightToPointDir, ApexNormals normals, out float dot1, out float dot2)
+        private static void GetDotsForNormals(Vector2 lightToPointDir, PointNormals normals, out float dot1, out float dot2)
         {
             Vector2 normal1 = normals.Normal1;
             Vector2 normal2 = normals.Normal2;

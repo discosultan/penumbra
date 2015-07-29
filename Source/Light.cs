@@ -147,7 +147,8 @@ namespace Penumbra
         internal bool IsInside(HullPart hullPart)
         {
             if (!hullPart.Enabled) return false;
-            return hullPart.TransformedHullVertices.PointInPolygon(ref _position) == IntersectionResult.FullyContained;
+            //return hullPart.TransformedHullVertices.PointInPolygon(ref _position) == IntersectionResult.FullyContained;
+            return hullPart.TransformedHullVertices.PointInPolygon(ref _position);
         }
     }
 

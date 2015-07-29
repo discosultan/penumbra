@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Penumbra.Utilities;
 using Vertices = Penumbra.Mathematics.Polygon;
 
 namespace Penumbra.Mathematics.Clipping
@@ -27,8 +27,8 @@ namespace Penumbra.Mathematics.Clipping
 
             for (int i = 0; i < vertices.Count; i++)
             {
-                int prevId = vertices.PreviousIndex(i);
-                int nextId = vertices.NextIndex(i);
+                int prevId = vertices.PreviousIndex<Vertices, Vector2>(i);
+                int nextId = vertices.NextIndex<Vertices, Vector2>(i);
 
                 Vector2 prev = vertices[prevId];
                 Vector2 current = vertices[i];
@@ -269,8 +269,6 @@ namespace Penumbra.Mathematics.Clipping
                 if (mergeMe[i] || newNVertices == 0 || currIndex == newNVertices)
                     continue;
 
-                Debug.Assert(currIndex < newNVertices);
-
                 vertices.Add(oldVertices[i]);
                 ++currIndex;
             }
@@ -319,7 +317,7 @@ namespace Penumbra.Mathematics.Clipping
             for (int i = 0; i < vertices.Count; i++)
             {
                 Vector2 current = vertices[i];
-                Vector2 next = vertices.NextElement(i);
+                Vector2 next = vertices.NextElement<Vertices, Vector2>(i);
 
                 //If they are closer than the distance, continue
                 if ((next - current).LengthSquared() <= distance)

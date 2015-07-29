@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Penumbra.Utilities;
 using Vertices = Penumbra.Mathematics.Polygon;
+using Penumbra.Mathematics.Collision;
 
 namespace Penumbra.Mathematics.Clipping
 {
@@ -60,8 +61,6 @@ namespace Penumbra.Mathematics.Clipping
         private static List<Vertices> Execute(Vertices subject, Vertices clip,
                                               PolyClipType clipType, out PolyClipError error)
         {
-            Debug.Assert(subject.IsSimple() && clip.IsSimple(), "Non simple input!", "Input polygons must be simple (cannot intersect themselves).");
-
             // Copy polygons
             Vertices slicedSubject;
             Vertices slicedClip;
@@ -136,17 +135,19 @@ namespace Penumbra.Mathematics.Clipping
             {
                 // Get edge vertices
                 Vector2 a = polygon1[i];
-                Vector2 b = polygon1[polygon1.NextIndex(i)];
+                Vector2 b = polygon1[polygon1.NextIndex<Vertices, Vector2>(i)];
 
                 // Get intersections between this edge and polygon2
                 for (int j = 0; j < polygon2.Count; j++)
                 {
                     Vector2 c = polygon2[j];
-                    Vector2 d = polygon2[polygon2.NextIndex(j)];
+                    Vector2 d = polygon2[polygon2.NextIndex<Vertices, Vector2>(j)];
 
                     Vector2 intersectionPoint;
                     // Check if the edges intersect
-                    if (LineTools.LineIntersect(a, b, c, d, out intersectionPoint))
+                    var seg1 = new LineSegment2D(ref a, ref b);
+                    var seg2 = new LineSegment2D(ref c, ref d);
+                    if (seg1.Intersects(ref seg2, out intersectionPoint))
                     {
                         // calculate alpha values for sorting multiple intersections points on a edge
                         // Insert intersection point into first polygon
@@ -179,7 +180,7 @@ namespace Penumbra.Mathematics.Clipping
             // Check for very small edges
             for (int i = 0; i < slicedPoly1.Count; ++i)
             {
-                int iNext = slicedPoly1.NextIndex(i);
+                int iNext = slicedPoly1.NextIndex<Vertices, Vector2>(i);
                 //If they are closer than the distance remove vertex
                 if ((slicedPoly1[iNext] - slicedPoly1[i]).LengthSquared() <= ClipperEpsilonSquared)
                 {
@@ -189,7 +190,7 @@ namespace Penumbra.Mathematics.Clipping
             }
             for (int i = 0; i < slicedPoly2.Count; ++i)
             {
-                int iNext = slicedPoly2.NextIndex(i);
+                int iNext = slicedPoly2.NextIndex<Vertices, Vector2>(i);
                 //If they are closer than the distance remove vertex
                 if ((slicedPoly2[iNext] - slicedPoly2[i]).LengthSquared() <= ClipperEpsilonSquared)
                 {
@@ -210,8 +211,8 @@ namespace Penumbra.Mathematics.Clipping
             coeff = new List<float>();
             for (int i = 0; i < poly.Count; ++i)
             {
-                simplicies.Add(new Edge(poly[i], poly[poly.NextIndex(i)]));
-                coeff.Add(CalculateSimplexCoefficient(Vector2.Zero, poly[i], poly[poly.NextIndex(i)]));
+                simplicies.Add(new Edge(poly[i], poly[poly.NextIndex<Vertices, Vector2>(i)]));
+                coeff.Add(CalculateSimplexCoefficient(Vector2.Zero, poly[i], poly[poly.NextIndex<Vertices, Vector2>(i)]));
             }
         }
 
@@ -352,8 +353,7 @@ namespace Penumbra.Mathematics.Clipping
                         {
                             if (count == simplicies.Count)
                             {
-                                result = new List<Vertices>();
-                                Debug.WriteLine("Undefined error while building result polygon(s).");
+                                result = new List<Vertices>();                                
                                 return PolyClipError.BrokenResult;
                             }
                             index = 0;
@@ -363,8 +363,7 @@ namespace Penumbra.Mathematics.Clipping
                 }
                 if (output.Count < 3)
                 {
-                    errVal = PolyClipError.DegeneratedOutput;
-                    Debug.WriteLine("Degenerated output polygon produced (vertices < 3).");
+                    errVal = PolyClipError.DegeneratedOutput;                    
                 }
                 result.Add(output);
             }
@@ -432,7 +431,8 @@ namespace Penumbra.Mathematics.Clipping
             {
                 Vector2.Zero, edge.EdgeStart, edge.EdgeEnd
             };
-            return (polygon.PointInPolygon(ref point) == IntersectionResult.FullyContained);
+            //return (polygon.PointInPolygon(ref point) == IntersectionResult.FullyContained);
+            return polygon.PointInPolygon(ref point);
         }
 
         /// <summary>

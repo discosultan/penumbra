@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
-using Penumbra.Mathematics.Triangulation;
-//using Polygon = System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2>;
+using Penumbra.Utilities;
 using Indices = System.Collections.Generic.List<int>;
 
 namespace Penumbra
@@ -12,7 +11,7 @@ namespace Penumbra
 
         private bool _transformedNormalsDirty = true;
 
-        private ApexNormals[] _transformedNormals;
+        private PointNormals[] _transformedNormals;
 
         private bool _transformedHullVerticesDirty = true;
         private Polygon _transformedHullVertices;
@@ -30,13 +29,13 @@ namespace Penumbra
             CalculatePointsAndIndices(polygon);
 
             Component.SetDirty += (s, e) => { _transformedNormalsDirty = true; };
-            OriginalNormals = new ApexNormals[Points.Count];
+            OriginalNormals = new PointNormals[Points.Count];
 
             for (int i = 0; i < Points.Count; i++)
             {
                 Vector2 currentPos = Points[i];
-                Vector2 prevPos = Points.PreviousElement(i);
-                Vector2 nextPos = Points.NextElement(i);
+                Vector2 prevPos = Points.PreviousElement<Polygon, Vector2>(i);
+                Vector2 nextPos = Points.NextElement<Polygon, Vector2>(i);
 
                 Vector2 n1 = VectorUtil.Rotate90CW(currentPos - prevPos);
                 Vector2 n2 = VectorUtil.Rotate90CW(nextPos - currentPos);
@@ -47,20 +46,20 @@ namespace Penumbra
                 //float angle = Calc.Atan2(currentToNext.Y, currentToNext.X) - Calc.Atan2(currentToPrev.Y, currentToPrev.X);
                 //bool isConvex = angle < MathUtil.Pi;
 
-                OriginalNormals[i] = new ApexNormals(n1, n2);
+                OriginalNormals[i] = new PointNormals(ref n1, ref n2);
             }
         }
 
-        public ApexNormals[] OriginalNormals { get; }
+        public PointNormals[] OriginalNormals { get; }
 
-        public ApexNormals[] TransformedNormals
+        public PointNormals[] TransformedNormals
         {
             get
             {
                 if (_transformedNormalsDirty)
                 {
                     if (_transformedNormals == null)
-                        _transformedNormals = new ApexNormals[OriginalNormals.Length];
+                        _transformedNormals = new PointNormals[OriginalNormals.Length];
 
                     Matrix normalMatrix = Matrix.Identity;
 
@@ -75,7 +74,7 @@ namespace Penumbra
 
                     for (var i = 0; i < OriginalNormals.Length; i++)
                     {
-                        _transformedNormals[i] = ApexNormals.Transform(OriginalNormals[i], ref normalMatrix);
+                        _transformedNormals[i] = PointNormals.Transform(ref OriginalNormals[i], ref normalMatrix);
                     }
 
                     _transformedNormalsDirty = false;
