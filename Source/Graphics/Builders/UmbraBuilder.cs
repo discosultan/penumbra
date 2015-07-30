@@ -18,7 +18,7 @@ namespace Penumbra.Graphics.Builders
         private bool _isFirstSegment = true;
         private readonly List<HullPointContext> _firstSegmentBuffer = new List<HullPointContext>();
         private readonly List<List<HullPointContext>> _segments = new List<List<HullPointContext>>();
-        private List<HullPointContext> _activeSegment;
+        private readonly List<HullPointContext> _activeSegment = new List<HullPointContext>();
 
         private int _indexOffset;
 
@@ -46,7 +46,7 @@ namespace Penumbra.Graphics.Builders
             {
                 case PointType.RightEdge:
                     _isFirstSegment = false;
-                    _activeSegment = new List<HullPointContext>();
+                    _activeSegment.Clear();
                     _segments.Add(_activeSegment);
                     _activeSegment.Add(context);
                     if (isLast)
@@ -86,8 +86,8 @@ namespace Penumbra.Graphics.Builders
                 Vector2 lightSide1, lightSideToCurrentDir1;
                 do
                 {
-                    GetUmbraVectors(light, segment[startIndex].Position, +1f, out lightSide1, out lightSideToCurrentDir1);
-                    Vector2 lightToCurrentDir = Vector2.Normalize(segment[startIndex].Position - light.Position);
+                    Vector2 lightToCurrentDir;
+                    GetUmbraVectors(light, segment[startIndex].Position, +1f, out lightSide1, out lightSideToCurrentDir1, out lightToCurrentDir);
                     Vector2 currentToNextDir = Vector2.Normalize(segment[startIndex + 1].Position - segment[startIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDir1, currentToNextDir))
                     {
@@ -98,8 +98,8 @@ namespace Penumbra.Graphics.Builders
                 Vector2 lightSide2, lightSideToCurrentDir2;
                 do
                 {
-                    GetUmbraVectors(light, segment[endIndex].Position, -1f, out lightSide2, out lightSideToCurrentDir2);
-                    Vector2 lightToCurrentDir = Vector2.Normalize(segment[endIndex].Position - light.Position);
+                    Vector2 lightToCurrentDir;
+                    GetUmbraVectors(light, segment[endIndex].Position, -1f, out lightSide2, out lightSideToCurrentDir2, out lightToCurrentDir);                    
                     Vector2 currentToPreviousDir = Vector2.Normalize(segment[endIndex - 1].Position - segment[endIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDir2, currentToPreviousDir))
                     {
@@ -208,9 +208,9 @@ namespace Penumbra.Graphics.Builders
             }
         }
 
-        private static void GetUmbraVectors(Light light, Vector2 position, float project, out Vector2 lightSide, out Vector2 lightSideToCurrentDir)
+        private static void GetUmbraVectors(Light light, Vector2 position, float project, out Vector2 lightSide, out Vector2 lightSideToCurrentDir, out Vector2 lightToCurrentDir)
         {
-            Vector2 lightToCurrentDir = Vector2.Normalize(position - light.Position);
+            lightToCurrentDir = Vector2.Normalize(position - light.Position);
             Vector2 lightToCurrent90CWDir = VectorUtil.Rotate90CW(lightToCurrentDir);
 
             lightSide = light.Position + lightToCurrent90CWDir * light.Radius * project;
