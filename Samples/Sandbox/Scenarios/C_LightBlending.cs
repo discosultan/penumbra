@@ -8,7 +8,7 @@ namespace Sandbox.Scenarios
     {
         private const float HullRotationSpeed = MathHelper.TwoPi / 2f;
         private const float Light1MovementSpeed = MathHelper.TwoPi / 7f;
-        private const float Light2MovementSpeed = MathHelper.TwoPi / 3f;
+        private const float Light2MovementSpeed = -MathHelper.TwoPi / 3f;
         private const float Light3MovementSpeed = MathHelper.TwoPi / 5f;
 
         private static readonly Color[] LightColors =

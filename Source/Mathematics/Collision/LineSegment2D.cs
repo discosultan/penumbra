@@ -39,5 +39,16 @@ namespace Penumbra.Mathematics.Collision
         {
             return Collision.LineIntersect(ref P1, ref P2, ref lineSegment.P1, ref lineSegment.P2, true, true, out intersectionPoint);
         }
+
+        public bool Intersects(ref Ray2D ray)
+        {
+            float distance;
+            return Intersects(ref ray, out distance);
+        }
+
+        public bool Intersects(ref Ray2D ray, out float distance)
+        {
+            return Collision.RayIntersectsLineSegment(ref ray.Origin, ref ray.Direction, ref P1, ref P2, out distance);
+        }
     }
 }

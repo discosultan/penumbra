@@ -9,6 +9,8 @@ namespace Penumbra.Graphics.Builders
 {
     internal class UmbraBuilder
     {
+        private readonly HullList _hulls;
+
         private readonly ArrayPool<Vector2> _vertexArrayPool;
         private readonly ArrayPool<int> _indexArrayPool;
 
@@ -22,8 +24,9 @@ namespace Penumbra.Graphics.Builders
 
         private int _indexOffset;
 
-        public UmbraBuilder(ArrayPool<Vector2> vertexArrayPool, ArrayPool<int> indexArrayPool)
+        public UmbraBuilder(HullList hulls, ArrayPool<Vector2> vertexArrayPool, ArrayPool<int> indexArrayPool)
         {
+            _hulls = hulls;            
             _vertexArrayPool = vertexArrayPool;
             _indexArrayPool = indexArrayPool;
         }
@@ -91,6 +94,8 @@ namespace Penumbra.Graphics.Builders
                     Vector2 currentToNextDir = Vector2.Normalize(segment[startIndex + 1].Position - segment[startIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDir1, currentToNextDir))
                     {
+                        // TEST LINE OF SIGHT
+                        TestLineOfSight(light, hull, segment, startIndex, ref lightSide1, ref lightSideToCurrentDir1, lightToCurrentDir);
                         break;
                     }
                 } while (++startIndex < segment.Count - 1);
@@ -103,6 +108,8 @@ namespace Penumbra.Graphics.Builders
                     Vector2 currentToPreviousDir = Vector2.Normalize(segment[endIndex - 1].Position - segment[endIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDir2, currentToPreviousDir))
                     {
+                        // TEST LINE OF SIGHT
+                        TestLineOfSight(light, hull, segment, endIndex, ref lightSide2, ref lightSideToCurrentDir2, lightToCurrentDir);
                         break;
                     }
                 } while (--endIndex >= 1);
@@ -190,6 +197,26 @@ namespace Penumbra.Graphics.Builders
             _segments.Clear();
         }
 
+        private void TestLineOfSight(Light light, HullPart hull, List<HullPointContext> segment, int startIndex, ref Vector2 lightSide1, ref Vector2 lightSideToCurrentDir1, Vector2 lightToCurrentDir)
+        {
+            foreach (HullPart otherHull in _hulls)
+            {
+                if (otherHull == hull) continue;
+
+                var ray = new Ray2D(light.Position, lightToCurrentDir);
+                float distance;
+                if (ray.Intersects(otherHull.TransformedHullVertices, out distance))
+                {
+                    if (distance * distance <= Vector2.DistanceSquared(segment[startIndex].Position, light.Position))
+                    {
+                        lightSide1 = light.Position;
+                        lightSideToCurrentDir1 = lightToCurrentDir;
+                        break;
+                    }
+                }
+            }
+        }
+
         public void Build(Light light, LightVaos vaos)
         {
             if (_vertices.Count > 0 && _indices.Count > 0)
@@ -208,13 +235,13 @@ namespace Penumbra.Graphics.Builders
             }
         }
 
-        private static void GetUmbraVectors(Light light, Vector2 position, float project, out Vector2 lightSide, out Vector2 lightSideToCurrentDir, out Vector2 lightToCurrentDir)
+        private void GetUmbraVectors(Light light, Vector2 position, float project, out Vector2 lightSide, out Vector2 lightSideToCurrentDir, out Vector2 lightToCurrentDir)
         {
             lightToCurrentDir = Vector2.Normalize(position - light.Position);
             Vector2 lightToCurrent90CWDir = VectorUtil.Rotate90CW(lightToCurrentDir);
 
             lightSide = light.Position + lightToCurrent90CWDir * light.Radius * project;
-            lightSideToCurrentDir = Vector2.Normalize(position - lightSide);
+            lightSideToCurrentDir = Vector2.Normalize(position - lightSide);            
         }
 
         private void AppendFirstSegmentToActiveSegment()

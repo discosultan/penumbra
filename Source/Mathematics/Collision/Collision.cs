@@ -112,7 +112,7 @@ namespace Penumbra.Mathematics.Collision
         }
 
         // ref: http://www.moonlight3d.eu/svn/Moonlight/trunk/mlframework/src/eu/moonlight3d/math/Ray2D.java
-        public static bool RayIntersectsLine(ref Vector2 origin, ref Vector2 direction, ref Vector2 p1, ref Vector2 p2, out Vector2 intersectionPoint)
+        public static bool RayIntersectsLineSegment(ref Vector2 origin, ref Vector2 direction, ref Vector2 p1, ref Vector2 p2, out float distance)
         {
             Vector2 otherDirection = p2 - p1;
 
@@ -120,7 +120,7 @@ namespace Penumbra.Mathematics.Collision
 
             if (denominator == 0)
             {
-                intersectionPoint = Vector2.Zero;
+                distance = 0f;
                 return false; // lines are parallel - no intersection possible
             }
 
@@ -130,11 +130,11 @@ namespace Penumbra.Mathematics.Collision
             if (!(0 <= tau && tau <= 1) || !(0 <= lambda))
             {
                 // calculated intersection point is outside of at least one line - so no intersection
-                intersectionPoint = Vector2.Zero;
+                distance = 0f;
                 return false;
             }
 
-            intersectionPoint = origin + direction * lambda;
+            distance = lambda;
             return true;
         }
     }

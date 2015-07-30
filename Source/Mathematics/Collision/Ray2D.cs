@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Penumbra.Mathematics.Collision
 {
@@ -34,15 +35,39 @@ namespace Penumbra.Mathematics.Collision
             return Collision.RayIntersectsRay(ref Origin, ref Direction, ref ray.Origin, ref ray.Direction, out intersectionPoint);
         }
 
-        public bool Intersects(ref Line2D line)
-        {
-            Vector2 intersectionPoint;
-            return Intersects(ref line, out intersectionPoint);
+        public bool Intersects(ref LineSegment2D line)
+        {            
+            float distance;
+            return Intersects(ref line, out distance);
         }
 
-        public bool Intersects(ref Line2D line, out Vector2 intersectionPoint)
+        public bool Intersects(ref LineSegment2D line, out float distance)
         {
-            return Collision.RayIntersectsLine(ref Origin, ref Direction, ref line.P1, ref line.P2, out intersectionPoint);
+            return Collision.RayIntersectsLineSegment(ref Origin, ref Direction, ref line.P1, ref line.P2, out distance);
+        }
+
+        // ref: http://rosettacode.org/wiki/Ray-casting_algorithm
+        public bool Intersects(Polygon polygon, out float distance)
+        {            
+            // TODO: Test against AABB first to increase performance?
+
+            distance = float.MaxValue;
+            Vector2 pt = Origin;
+
+            // temp holder for segment distance
+            float tempDistance;
+            int crossings = 0;
+
+            for (int j = polygon.Count - 1, i = 0; i < polygon.Count; j = i, i++)
+            {
+                var segment = new LineSegment2D(polygon[i], polygon[j]);                
+                if (Intersects(ref segment, out tempDistance))
+                {
+                    crossings++;
+                    distance = Math.Min(distance, tempDistance);
+                }
+            }
+            return crossings > 0 && crossings % 2 == 0;
         }
     }
 }

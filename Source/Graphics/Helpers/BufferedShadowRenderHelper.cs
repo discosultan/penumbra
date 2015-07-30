@@ -34,7 +34,7 @@ namespace Penumbra.Graphics.Helpers
             var indexArrayPool = new ArrayPool<int>();
 
             _penumbraBuilder = new PenumbraBuilder(indexArrayPool);
-            _umbraBuilder = new UmbraBuilder(vertexArrayPool, indexArrayPool);
+            _umbraBuilder = new UmbraBuilder(_hulls, vertexArrayPool, indexArrayPool);
             _solidBuilder = new SolidBuilder(vertexArrayPool, indexArrayPool);
             _antumbraBuilder = new AntumbraBuilder();
         }

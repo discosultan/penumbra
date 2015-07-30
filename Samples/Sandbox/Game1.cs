@@ -15,6 +15,8 @@ namespace Sandbox
         public const Keys DebugKey = Keys.D;
         public const Keys ShadowTypeKey = Keys.S;
 
+        private static readonly Color BackgroundColor = Color.White;
+
         private readonly GraphicsDeviceManager _graphics;        
 
         private readonly PenumbraComponent _penumbra;
@@ -50,8 +52,7 @@ namespace Sandbox
                 GraphicsDevice.PresentationParameters.BackBufferWidth/2f,
                 -GraphicsDevice.PresentationParameters.BackBufferHeight/2f,
                 GraphicsDevice.PresentationParameters.BackBufferHeight/2f,
-                0f, 1f);
-            // TODO: use this.Content to load your game content here
+                0f, 1f);            
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Sandbox
         {
             _penumbra.BeginDraw();
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);            
+            GraphicsDevice.Clear(BackgroundColor);
 
             base.Draw(gameTime);
         }
