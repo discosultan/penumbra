@@ -112,6 +112,7 @@ namespace Penumbra.Mathematics.Collision
         }
 
         // ref: http://www.moonlight3d.eu/svn/Moonlight/trunk/mlframework/src/eu/moonlight3d/math/Ray2D.java
+        // ref: https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
         public static bool RayIntersectsLineSegment(ref Vector2 origin, ref Vector2 direction, ref Vector2 p1, ref Vector2 p2, out float distance)
         {
             Vector2 otherDirection = p2 - p1;
@@ -127,15 +128,15 @@ namespace Penumbra.Mathematics.Collision
             float tau = (-direction.X * origin.Y + direction.X * p1.Y + direction.Y * origin.X - direction.Y * p1.X) / denominator;
             float lambda = -(-origin.X * otherDirection.Y + p1.X * otherDirection.Y + otherDirection.X * origin.Y - otherDirection.X * p1.Y) / denominator;
 
-            if (!(0 <= tau && tau <= 1) || !(0 <= lambda))
+            if (tau >= 0 && tau <= 1 && lambda >= 0)
             {
-                // calculated intersection point is outside of at least one line - so no intersection
-                distance = 0f;
-                return false;
+                distance = lambda;
+                return true;                
             }
 
-            distance = lambda;
-            return true;
+            // calculated intersection point is outside of at least one line - so no intersection
+            distance = 0f;
+            return false;
         }
     }
 }

@@ -202,7 +202,7 @@ namespace Penumbra.Graphics.Builders
             foreach (HullPart otherHull in _hulls)
             {
                 if (otherHull == hull) continue;
-
+                
                 var ray = new Ray2D(light.Position, lightToCurrentDir);
                 float distance;
                 if (ray.Intersects(otherHull.TransformedHullVertices, out distance))
@@ -210,7 +210,7 @@ namespace Penumbra.Graphics.Builders
                     if (distance * distance <= Vector2.DistanceSquared(segment[startIndex].Position, light.Position))
                     {
                         lightSide1 = light.Position;
-                        lightSideToCurrentDir1 = lightToCurrentDir;
+                        lightSideToCurrentDir1 = lightToCurrentDir;                        
                         break;
                     }
                 }
