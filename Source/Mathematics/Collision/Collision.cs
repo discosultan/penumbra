@@ -4,6 +4,9 @@ namespace Penumbra.Mathematics.Collision
 {
     internal static class Collision
     {
+        private const float Epsilon = Calc.Epsilon;
+        //private const float Epsilon = 0f;
+
         // ref: farseer physics engine
         /// <summary>
         /// This method detects if two line segments (or lines) intersect,
@@ -85,7 +88,7 @@ namespace Penumbra.Mathematics.Collision
         }
 
         // ref: http://www.moonlight3d.eu/svn/Moonlight/trunk/mlframework/src/eu/moonlight3d/math/Ray2D.java
-        public static bool RayIntersectsRay(ref Vector2 origin1, ref Vector2 direction1, ref Vector2 origin2, ref Vector2 direction2, out Vector2 intersectionPoint)
+        public static bool RayIntersectsRay(ref Vector2 origin1, ref Vector2 direction1, ref Vector2 origin2, ref Vector2 direction2, out float distance)
         {
             Vector2 otherDirection = direction2;
 
@@ -93,49 +96,72 @@ namespace Penumbra.Mathematics.Collision
 
             if (denominator == 0)
             {
-                intersectionPoint = Vector2.Zero;
+                distance = 0f;
                 return false; // lines are parallel - no intersection possible
             }
 
             float tau = (-direction1.X * origin1.Y + direction1.X * origin2.Y + direction1.Y * origin1.X - direction1.Y * origin2.X) / denominator;
             float lambda = -(-origin1.X * otherDirection.Y + origin2.X * otherDirection.Y + otherDirection.X * origin1.Y - otherDirection.X * origin2.Y) / denominator;
-
-            if (!(0 <= tau) || !(0 <= lambda))
-            {
-                // calculated intersection point is outside of at least one ray - so no intersection
-                intersectionPoint = Vector2.Zero;
-                return false;
+            
+            if (tau + Epsilon >= 0 && lambda + Epsilon >= 0)
+            {               
+                distance = lambda;
+                return true;
             }
 
-            intersectionPoint = origin1 + direction1 * lambda;
-            return true;
+            // calculated intersection point is outside of at least one ray - so no intersection
+            distance = 0f;
+            return false;            
         }
 
-        // ref: http://www.moonlight3d.eu/svn/Moonlight/trunk/mlframework/src/eu/moonlight3d/math/Ray2D.java
-        // ref: https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
+        //// ref: http://www.moonlight3d.eu/svn/Moonlight/trunk/mlframework/src/eu/moonlight3d/math/Ray2D.java
+        //// ref: https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
+        //public static bool RayIntersectsLineSegment(ref Vector2 origin, ref Vector2 direction, ref Vector2 p1, ref Vector2 p2, out float distance)
+        //{
+        //    Vector2 otherDirection = p2 - p1;
+
+        //    float denominator = (-direction.X * otherDirection.Y + direction.Y * otherDirection.X);
+
+        //    if (denominator == 0)
+        //    {
+        //        distance = 0f;
+        //        return false; // lines are parallel - no intersection possible
+        //    }
+
+        //    float tau = (-direction.X * origin.Y + direction.X * p1.Y + direction.Y * origin.X - direction.Y * p1.X) / denominator;
+        //    float lambda = -(-origin.X * otherDirection.Y + p1.X * otherDirection.Y + otherDirection.X * origin.Y - otherDirection.X * p1.Y) / denominator;
+
+        //    if (tau + Calc.Epsilon >= 0 && tau - Calc.Epsilon <= 1 && lambda + Calc.Epsilon >= 0)
+        //    {
+        //        distance = lambda;
+        //        return true;                
+        //    }
+
+        //    // calculated intersection point is outside of at least one line - so no intersection
+        //    distance = 0f;
+        //    return false;
+        //}
+
+        //ref : https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
+        // ref: http://stackoverflow.com/a/29020182/1466456
         public static bool RayIntersectsLineSegment(ref Vector2 origin, ref Vector2 direction, ref Vector2 p1, ref Vector2 p2, out float distance)
         {
-            Vector2 otherDirection = p2 - p1;
+            var v1 = origin - p1;
+            var v2 = p2 - p1;
+            var v3 = new Vector2(-direction.Y, direction.X);
 
-            float denominator = (-direction.X * otherDirection.Y + direction.Y * otherDirection.X);
+            var denom = Vector2.Dot(v2, v3);
 
-            if (denominator == 0)
+            var t1 = VectorUtil.Cross(v2, v1) / denom;
+            var t2 = Vector2.Dot(v1, v3) / denom;
+
+            if (t1 + Epsilon >= 0 && t2 + Epsilon >= 0 && t2 - Epsilon <= 1)
             {
-                distance = 0f;
-                return false; // lines are parallel - no intersection possible
+                distance = t1;
+                return true;
             }
 
-            float tau = (-direction.X * origin.Y + direction.X * p1.Y + direction.Y * origin.X - direction.Y * p1.X) / denominator;
-            float lambda = -(-origin.X * otherDirection.Y + p1.X * otherDirection.Y + otherDirection.X * origin.Y - otherDirection.X * p1.Y) / denominator;
-
-            if (tau >= 0 && tau <= 1 && lambda >= 0)
-            {
-                distance = lambda;
-                return true;                
-            }
-
-            // calculated intersection point is outside of at least one line - so no intersection
-            distance = 0f;
+            distance = 0;
             return false;
         }
     }

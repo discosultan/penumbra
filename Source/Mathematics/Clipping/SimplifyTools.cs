@@ -35,7 +35,7 @@ namespace Penumbra.Mathematics.Clipping
                 Vector2 next = vertices[nextId];
 
                 //If they collinear, continue
-                if (Calc.Collinear(ref prev, ref current, ref next, collinearityTolerance))
+                if (VectorUtil.Collinear(ref prev, ref current, ref next, collinearityTolerance))
                     continue;
 
                 simplified.Add(current);
@@ -189,11 +189,11 @@ namespace Penumbra.Mathematics.Clipping
                     v3 = vertices[index];
                 }
                 float old1;
-                Calc.Cross(ref v1, ref v2, out old1);
+                VectorUtil.Cross(ref v1, ref v2, out old1);
                 float old2;
-                Calc.Cross(ref v2, ref v3, out old2);
+                VectorUtil.Cross(ref v2, ref v3, out old2);
                 float new1;
-                Calc.Cross(ref v1, ref v3, out new1);
+                VectorUtil.Cross(ref v1, ref v3, out new1);
                 if (Math.Abs(new1 - (old1 + old2)) > areaTolerance)
                 {
                     result.Add(v2);

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Globalization;
+using Microsoft.Xna.Framework;
 
 namespace Penumbra.Mathematics.Collision
 {
@@ -37,6 +38,11 @@ namespace Penumbra.Mathematics.Collision
         public bool Intersects(ref LineSegment2D lineSegment, out Vector2 intersectionPoint)
         {
             return Collision.LineIntersect(ref P1, ref P2, ref lineSegment.P1, ref lineSegment.P2, false, true, out intersectionPoint);
+        }
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "P1:{0} P2:{1}", P1, P2);
         }
     }
 }

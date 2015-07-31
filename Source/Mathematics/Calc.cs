@@ -1,12 +1,11 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
 
 namespace Penumbra.Mathematics
 {
     internal static class Calc
     {
         //public const float Epsilon = 1.192092896e-07f;
-        public const float Epsilon = 0.0001f;
+        public const float Epsilon = 0.0001f;        
 
         public static float Atan2(float y, float x)
         {
@@ -38,53 +37,6 @@ namespace Penumbra.Mathematics
             return x >= y ? 1 : 0;
         }
 
-        public static float Cross(Vector2 a, Vector2 b)
-        {
-            return a.X * b.Y - a.Y * b.X;
-        }
-
-        public static void Cross(ref Vector2 a, ref Vector2 b, out float c)
-        {
-            c = a.X * b.Y - a.Y * b.X;
-        }
-
-        /// <summary>
-        /// Returns a positive number if c is to the left of the line going from a to b.
-        /// </summary>
-        /// <returns>Positive number if point is left, negative if point is right, 
-        /// and 0 if points are collinear.</returns>
-        public static float Area(Vector2 a, Vector2 b, Vector2 c)
-        {
-            return Area(ref a, ref b, ref c);
-        }
-
-        /// <summary>
-        /// Returns a positive number if c is to the left of the line going from a to b.
-        /// </summary>
-        /// <returns>Positive number if point is left, negative if point is right, 
-        /// and 0 if points are collinear.</returns>
-        public static float Area(ref Vector2 a, ref Vector2 b, ref Vector2 c)
-        {
-            return a.X * (b.Y - c.Y) + b.X * (c.Y - a.Y) + c.X * (a.Y - b.Y);
-        }
-
-        /// <summary>
-        /// Determines if three vertices are collinear (ie. on a straight line)
-        /// </summary>
-        /// <param name="a">First vertex</param>
-        /// <param name="b">Second vertex</param>
-        /// <param name="c">Third vertex</param>
-        /// <returns></returns>
-        public static bool Collinear(ref Vector2 a, ref Vector2 b, ref Vector2 c)
-        {
-            return Collinear(ref a, ref b, ref c, 0);
-        }
-
-        public static bool Collinear(ref Vector2 a, ref Vector2 b, ref Vector2 c, float tolerance)
-        {
-            return FloatInRange(Area(ref a, ref b, ref c), -tolerance, tolerance);
-        }
-
         /// <summary>
         /// Checks if a floating point Value is within a specified
         /// range of values (inclusive).
@@ -97,12 +49,7 @@ namespace Penumbra.Mathematics
         public static bool FloatInRange(float value, float min, float max)
         {
             return (value >= min && value <= max);
-        }
-
-        public static bool NearEqual(Vector2 lhv, Vector2 rhv)
-        {
-            return NearEqual(lhv.X, rhv.X) && NearEqual(lhv.Y, rhv.Y);
-        }
+        }        
 
         public static bool NearEqual(float lhv, float rhv)
         {
@@ -112,19 +59,6 @@ namespace Penumbra.Mathematics
         public static bool NearZero(float val)
         {
             return Math.Abs(val) < Epsilon;
-        }
-
-        // ref: http://stackoverflow.com/a/6075960/1466456
-        public static void Barycentric(ref Vector2 p, ref Vector2 a, ref Vector2 b, ref Vector2 c, out Vector3 baryCoords)
-        {
-            float abcArea = Area(ref a, ref b, ref c);
-
-            float u = Area(ref p, ref b, ref c) / abcArea;
-            float v = Area(ref a, ref p, ref c) / abcArea;
-            //float w = Area(a, b, p) / abcArea;
-            float w = 1 - u - v;
-
-            baryCoords = new Vector3(u, v, w);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Penumbra
         private float _radius;
         private Vector2 _centroid;
 
-        // clockwise winding order
+        // CCW winding order
         public HullPart(Hull hull, Polygon polygon)
         {
             _hull = hull;
@@ -30,6 +30,7 @@ namespace Penumbra
 
             Component.SetDirty += (s, e) => { _transformedNormalsDirty = true; };
             OriginalNormals = new PointNormals[Points.Count];
+            _transformedNormals = new PointNormals[Points.Count];
 
             for (int i = 0; i < Points.Count; i++)
             {
@@ -58,9 +59,6 @@ namespace Penumbra
             {
                 if (_transformedNormalsDirty)
                 {
-                    if (_transformedNormals == null)
-                        _transformedNormals = new PointNormals[OriginalNormals.Length];
-
                     Matrix normalMatrix = Matrix.Identity;
 
                     float cos = Calc.Cos(Component.Rotation);

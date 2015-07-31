@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
-using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
 //using Polygon = System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2>;
 

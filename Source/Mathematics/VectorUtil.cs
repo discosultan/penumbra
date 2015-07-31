@@ -66,26 +66,69 @@ namespace Penumbra.Mathematics
             return dot1 < dot2;
         }
 
-        public static bool LineIntersect(ref Vector2 a0, ref Vector2 a1, ref Vector2 b0, ref Vector2 b1, out Vector2 result)
+        // ref: http://stackoverflow.com/a/6075960/1466456
+        public static void Barycentric(ref Vector2 p, ref Vector2 a, ref Vector2 b, ref Vector2 c, out Vector3 baryCoords)
         {
-            result = Vector2.Zero;
-            float num = (a1.X - a0.X) * (b1.Y - b0.Y) - (a1.Y - a0.Y) * (b1.X - b0.X);
-            if (num == 0f)
-            {
-                return false;
-            }
-            float num2 = ((a0.Y - b0.Y) * (b1.X - b0.X) - (a0.X - b0.X) * (b1.Y - b0.Y)) / num;
-            if (num2 < 0f || num2 > 1f)
-            {
-                return false;
-            }
-            float num3 = ((a0.Y - b0.Y) * (a1.X - a0.X) - (a0.X - b0.X) * (a1.Y - a0.Y)) / num;
-            if (num3 < 0f || num3 > 1f)
-            {
-                return false;
-            }
-            result = a0 + (a1 - a0) * num2;
-            return true;
-        }        
+            float abcArea = Area(ref a, ref b, ref c);
+
+            float u = Area(ref p, ref b, ref c) / abcArea;
+            float v = Area(ref a, ref p, ref c) / abcArea;
+            //float w = Area(a, b, p) / abcArea;
+            float w = 1 - u - v;
+
+            baryCoords = new Vector3(u, v, w);
+        }
+
+        public static float Cross(Vector2 a, Vector2 b)
+        {
+            return a.X * b.Y - a.Y * b.X;
+        }
+
+        public static void Cross(ref Vector2 a, ref Vector2 b, out float c)
+        {
+            c = a.X * b.Y - a.Y * b.X;
+        }
+
+        /// <summary>
+        /// Returns a positive number if c is to the left of the line going from a to b.
+        /// </summary>
+        /// <returns>Positive number if point is left, negative if point is right, 
+        /// and 0 if points are collinear.</returns>
+        public static float Area(Vector2 a, Vector2 b, Vector2 c)
+        {
+            return Area(ref a, ref b, ref c);
+        }
+
+        /// <summary>
+        /// Returns a positive number if c is to the left of the line going from a to b.
+        /// </summary>
+        /// <returns>Positive number if point is left, negative if point is right, 
+        /// and 0 if points are collinear.</returns>
+        public static float Area(ref Vector2 a, ref Vector2 b, ref Vector2 c)
+        {
+            return a.X * (b.Y - c.Y) + b.X * (c.Y - a.Y) + c.X * (a.Y - b.Y);
+        }
+
+        /// <summary>
+        /// Determines if three vertices are collinear (ie. on a straight line)
+        /// </summary>
+        /// <param name="a">First vertex</param>
+        /// <param name="b">Second vertex</param>
+        /// <param name="c">Third vertex</param>
+        /// <returns></returns>
+        public static bool Collinear(ref Vector2 a, ref Vector2 b, ref Vector2 c)
+        {
+            return Collinear(ref a, ref b, ref c, 0);
+        }
+
+        public static bool Collinear(ref Vector2 a, ref Vector2 b, ref Vector2 c, float tolerance)
+        {
+            return Calc.FloatInRange(Area(ref a, ref b, ref c), -tolerance, tolerance);
+        }
+
+        public static bool NearEqual(Vector2 lhv, Vector2 rhv)
+        {
+            return Calc.NearEqual(lhv.X, rhv.X) && Calc.NearEqual(lhv.Y, rhv.Y);
+        }
     }
 }

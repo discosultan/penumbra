@@ -11,6 +11,7 @@ namespace Penumbra.Graphics.Builders
         public int Index;
         public float Dot1;
         public float Dot2;
+        public Side Side;
         //public bool IsInAnotherHull;
 
         //public bool Concave

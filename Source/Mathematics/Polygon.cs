@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics.Clipping;
 using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
 using Penumbra.Mathematics.Collision;
+using System.Collections;
 
 namespace Penumbra.Mathematics
 {
@@ -13,7 +13,7 @@ namespace Penumbra.Mathematics
     {
         private readonly List<Vector2> _list;
 
-        public Polygon(WindingOrder windingOrder, int capacity = 4)
+        public Polygon(WindingOrder windingOrder = WindingOrder.CounterClockwise, int capacity = 4)
         {
             _list = new List<Vector2>(capacity);            
             WindingOrder = windingOrder;
@@ -35,13 +35,7 @@ namespace Penumbra.Mathematics
 
         public int Count => _list.Count;
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return ((IList<Vector2>)_list).IsReadOnly;
-            }
-        }
+        public bool IsReadOnly => ((IList<Vector2>)_list).IsReadOnly;
 
         public void Reverse() => _list.Reverse();
 
@@ -52,6 +46,9 @@ namespace Penumbra.Mathematics
         }
 
         public void Add(Vector2 element) => _list.Add(element);
+        //public void AddRange(IEnumerable<Vector2> range) => _list.AddRange(range);
+        public void AddRange(Polygon polygon) => _list.AddRange(polygon._list);
+
         public void Insert(int index, Vector2 item) => _list.Insert(index, item);
         public void Clear() => _list.Clear();
         public int IndexOf(Vector2 item) => _list.IndexOf(item);
@@ -90,22 +87,25 @@ namespace Penumbra.Mathematics
             //            Indices = outputIndices;
         }
 
-        public static void Clip(Polygon subj, Polygon clip, out Polygon sln)
+        //private List<>
+
+        private static readonly List<Polygon> ClippingSolutions = new List<Polygon>();
+        public static void Clip(Polygon subj, Polygon clip)
         {
             subj.EnsureWindingOrder(WindingOrder.CounterClockwise);
-            clip.EnsureWindingOrder(WindingOrder.CounterClockwise);
+            clip.EnsureWindingOrder(WindingOrder.CounterClockwise);            
 
-            PolyClipError err;
-            var newSln = YuPengClipper.Difference(subj, clip, out err);
+            int numSln;
+            PolyClipError err = YuPengClipper.Difference(subj, clip, ClippingSolutions, out numSln);
+            
             if (err == PolyClipError.None)
             {
-                sln = new Polygon(newSln[0], WindingOrder.CounterClockwise);                
-            }
-            else
-            {
-                Logger.Write($"Error clipping: {err}");
-                sln = subj;
-            }
+                subj.Clear();
+                subj.AddRange(ClippingSolutions[0]);
+                return;
+            }            
+
+            Logger.Write($"Error clipping: {err}");
         }
 
         public static List<Polygon> DecomposeIntoConvex(Polygon polygon)
@@ -212,9 +212,9 @@ namespace Penumbra.Mathematics
                 Vector2 e1 = p2 - p1;
                 Vector2 e2 = p3 - p1;
 
-                float D = Calc.Cross(e1, e2);
+                float d = VectorUtil.Cross(e1, e2);
 
-                float triangleArea = 0.5f * D;
+                float triangleArea = 0.5f * d;
                 area += triangleArea;
 
                 // Area weighted centroid
@@ -360,7 +360,7 @@ namespace Penumbra.Mathematics
 
                 // Test if a point is directly on the edge
                 Vector2 edge = p2 - p1;
-                float area = Calc.Area(ref p1, ref p2, ref point);
+                float area = VectorUtil.Area(ref p1, ref p2, ref point);
                 if (area == 0f && Vector2.Dot(point - p1, edge) >= 0f && Vector2.Dot(point - p2, edge) <= 0f)
                 {
                     //return IntersectionResult.PartiallyContained;
@@ -437,6 +437,6 @@ namespace Penumbra.Mathematics
             }
 
             return new BoundingRectangle(ref lowerBound, ref upperBound);
-        }
+        }        
     }
 }

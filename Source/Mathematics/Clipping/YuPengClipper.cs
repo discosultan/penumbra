@@ -27,20 +27,29 @@ namespace Penumbra.Mathematics.Clipping
     {
         private const float ClipperEpsilonSquared = 1.192092896e-07f;
 
-        public static List<Vertices> Union(Vertices polygon1, Vertices polygon2, out PolyClipError error)
+        public static PolyClipError Union(Vertices polygon1, Vertices polygon2, List<Vertices> result, out int numSolutions)
         {
-            return Execute(polygon1, polygon2, PolyClipType.Union, out error);
+            return Execute(polygon1, polygon2, PolyClipType.Union, result, out numSolutions);
         }
 
-        public static List<Vertices> Difference(Vertices polygon1, Vertices polygon2, out PolyClipError error)
+        public static PolyClipError Difference(Vertices polygon1, Vertices polygon2, List<Vertices> result, out int numSolutions)
         {
-            return Execute(polygon1, polygon2, PolyClipType.Difference, out error);
+            return Execute(polygon1, polygon2, PolyClipType.Difference, result, out numSolutions);
         }
 
-        public static List<Vertices> Intersect(Vertices polygon1, Vertices polygon2, out PolyClipError error)
+        public static PolyClipError Intersect(Vertices polygon1, Vertices polygon2, List<Vertices> result, out int numSolutions)
         {
-            return Execute(polygon1, polygon2, PolyClipType.Intersect, out error);
+            return Execute(polygon1, polygon2, PolyClipType.Intersect, result, out numSolutions);
         }
+
+        // NOT THREAD SAFE!
+        private static readonly Vertices SlicedSubject = new Vertices();
+        private static readonly Vertices SlicedClip = new Vertices();
+        private static readonly List<float> SubjectCoeff = new List<float>();
+        private static readonly List<Edge> SubjectSimplices = new List<Edge>();
+        private static readonly List<float> ClipCoeff = new List<float>();
+        private static readonly List<Edge> ClipSimplices = new List<Edge>();
+        private static readonly List<Edge> ResultSimplices = new List<Edge>();
 
         /// <summary>
         /// Implements "A new algorithm for Boolean operations on general polygons" 
@@ -55,18 +64,19 @@ namespace Penumbra.Mathematics.Clipping
         /// substracted or intersected with the subject</param>
         /// <param name="clipType">The operation to be performed. Either
         /// Union, Difference or Intersection.</param>
-        /// <param name="error">The error generated (if any)</param>
-        /// <returns>A list of closed polygons, which make up the result of the clipping operation.
-        /// Outer contours are ordered counter clockwise, holes are ordered clockwise.</returns>
-        private static List<Vertices> Execute(Vertices subject, Vertices clip,
-                                              PolyClipType clipType, out PolyClipError error)
+        /// <param name="result">A list of closed polygons, which make up the result of the clipping operation.
+        /// Outer contours are ordered counter clockwise, holes are ordered clockwise.</param>
+        /// <param name="numSolutions">Number of solutions generated.</param>
+        /// <returns>The error generated (if any)</returns>
+        private static PolyClipError Execute(Vertices subject, Vertices clip,
+                                              PolyClipType clipType, List<Vertices> result, out int numSolutions)
         {
             // Copy polygons
-            Vertices slicedSubject;
-            Vertices slicedClip;
+            Vertices slicedSubject = SlicedSubject;
+            Vertices slicedClip = SlicedClip;
             // Calculate the intersection and touch points between
             // subject and clip and add them to both
-            CalculateIntersections(subject, clip, out slicedSubject, out slicedClip);
+            CalculateIntersections(subject, clip, slicedSubject, slicedClip);
 
             // Translate polygons into upper right quadrant
             // as the algorithm depends on it
@@ -85,26 +95,24 @@ namespace Penumbra.Mathematics.Clipping
             slicedSubject.EnsureWindingOrder(WindingOrder.CounterClockwise);
             slicedClip.EnsureWindingOrder(WindingOrder.CounterClockwise);            
 
-            List<Edge> subjectSimplices;
-            List<float> subjectCoeff;
-            List<Edge> clipSimplices;
-            List<float> clipCoeff;
+            List<Edge> subjectSimplices = SubjectSimplices;
+            List<float> subjectCoeff = SubjectCoeff;
+            List<Edge> clipSimplices = ClipSimplices;
+            List<float> clipCoeff = ClipCoeff;
             // Build simplical chains from the polygons and calculate the
             // the corresponding coefficients
-            CalculateSimplicalChain(slicedSubject, out subjectCoeff, out subjectSimplices);
-            CalculateSimplicalChain(slicedClip, out clipCoeff, out clipSimplices);
+            CalculateSimplicalChain(slicedSubject, subjectCoeff, subjectSimplices);
+            CalculateSimplicalChain(slicedClip, clipCoeff, clipSimplices);
 
-            List<Edge> resultSimplices;
+            List<Edge> resultSimplices = ResultSimplices;
 
             // Determine the characteristics function for all non-original edges
             // in subject and clip simplical chain and combine the edges contributing
             // to the result, depending on the clipType
-            CalculateResultChain(subjectCoeff, subjectSimplices, clipCoeff, clipSimplices, clipType,
-                                 out resultSimplices);
-
-            List<Vertices> result;
-            // Convert result chain back to polygon(s)
-            error = BuildPolygonsFromChain(resultSimplices, out result);
+            CalculateResultChain(subjectCoeff, subjectSimplices, clipCoeff, clipSimplices, clipType, resultSimplices);
+            
+            // Convert result chain back to polygon(s)            
+            PolyClipError error = BuildPolygonsFromChain(resultSimplices, result, out numSolutions);
 
             // Reverse the polygon translation from the beginning
             // and remove collinear points from output
@@ -114,7 +122,7 @@ namespace Penumbra.Mathematics.Clipping
                 result[i].Translate(ref translate);
                 SimplifyTools.CollinearSimplify(result[i]);
             }
-            return result;
+            return error;
         }
 
         /// <summary>
@@ -125,10 +133,14 @@ namespace Penumbra.Mathematics.Clipping
         /// <param name="slicedPoly1">Returns the first polygon with added intersection points.</param>
         /// <param name="slicedPoly2">Returns the second polygon with added intersection points.</param>
         private static void CalculateIntersections(Vertices polygon1, Vertices polygon2,
-                                                   out Vertices slicedPoly1, out Vertices slicedPoly2)
+                                                   Vertices slicedPoly1, Vertices slicedPoly2)
         {
-            slicedPoly1 = new Vertices(polygon1);
-            slicedPoly2 = new Vertices(polygon2);
+            //slicedPoly1 = new Vertices(polygon1);
+            //slicedPoly2 = new Vertices(polygon2);
+            slicedPoly1.Clear();
+            slicedPoly2.Clear();
+            slicedPoly1.AddRange(polygon1);
+            slicedPoly2.AddRange(polygon2);
 
             // Iterate through polygon1's edges
             for (int i = 0; i < polygon1.Count; i++)
@@ -204,11 +216,11 @@ namespace Penumbra.Mathematics.Clipping
         /// Calculates the simplical chain corresponding to the input polygon.
         /// </summary>
         /// <remarks>Used by method <c>Execute()</c>.</remarks>
-        private static void CalculateSimplicalChain(Vertices poly, out List<float> coeff,
-                                                    out List<Edge> simplicies)
+        private static void CalculateSimplicalChain(Vertices poly, List<float> coeff,
+                                                    List<Edge> simplicies)
         {
-            simplicies = new List<Edge>();
-            coeff = new List<float>();
+            simplicies.Clear();
+            coeff.Clear();
             for (int i = 0; i < poly.Count; ++i)
             {
                 simplicies.Add(new Edge(poly[i], poly[poly.NextIndex<Vertices, Vector2>(i)]));
@@ -223,9 +235,10 @@ namespace Penumbra.Mathematics.Clipping
         /// <remarks>Used by method <c>Execute()</c>.</remarks>
         private static void CalculateResultChain(List<float> poly1Coeff, List<Edge> poly1Simplicies,
                                                    List<float> poly2Coeff, List<Edge> poly2Simplicies,
-                                                   PolyClipType clipType, out List<Edge> resultSimplices)
+                                                   PolyClipType clipType, List<Edge> resultSimplices)
         {
-            resultSimplices = new List<Edge>();
+            resultSimplices.Clear();
+            //resultSimplices = new List<Edge>();
 
             for (int i = 0; i < poly1Simplicies.Count; ++i)
             {
@@ -305,14 +318,20 @@ namespace Penumbra.Mathematics.Clipping
         /// Calculates the polygon(s) from the result simplical chain.
         /// </summary>
         /// <remarks>Used by method <c>Execute()</c>.</remarks>
-        private static PolyClipError BuildPolygonsFromChain(List<Edge> simplicies, out List<Vertices> result)
+        private static PolyClipError BuildPolygonsFromChain(List<Edge> simplicies, List<Vertices> result, out int numSolutions)
         {
-            result = new List<Vertices>();
+            //result = new List<Vertices>();
+            
             PolyClipError errVal = PolyClipError.None;
+            int slnCount = 0;
 
             while (simplicies.Count > 0)
             {
-                var output = new Vertices(WindingOrder.CounterClockwise);
+                EnsureSolutionsCapacity(result, slnCount + 1);                
+                //var output = new Vertices(WindingOrder.CounterClockwise);
+                var output = result[slnCount];
+                output.Clear();
+
                 output.Add(simplicies[0].EdgeStart);
                 output.Add(simplicies[0].EdgeEnd);
                 simplicies.RemoveAt(0);
@@ -353,7 +372,8 @@ namespace Penumbra.Mathematics.Clipping
                         {
                             if (count == simplicies.Count)
                             {
-                                result = new List<Vertices>();                                
+                                numSolutions = 0;
+                                //result = new List<Vertices>();                                
                                 return PolyClipError.BrokenResult;
                             }
                             index = 0;
@@ -365,9 +385,20 @@ namespace Penumbra.Mathematics.Clipping
                 {
                     errVal = PolyClipError.DegeneratedOutput;                    
                 }
-                result.Add(output);
+                //result.Add(output);
+                slnCount++;
             }
+
+            numSolutions = slnCount;
             return errVal;
+        }
+
+        private static void EnsureSolutionsCapacity(List<Polygon> result, int slnCount)
+        {
+            while (result.Count < slnCount)
+            {
+                result.Add(new Vertices());
+            }
         }
 
         /// <summary>
@@ -404,7 +435,7 @@ namespace Penumbra.Mathematics.Clipping
         /// <remarks>Used by method <c>CalculateSimplicalChain()</c>.</remarks>
         private static float CalculateSimplexCoefficient(Vector2 a, Vector2 b, Vector2 c)
         {
-            float isLeft = Calc.Area(ref a, ref b, ref c);
+            float isLeft = VectorUtil.Area(ref a, ref b, ref c);
             if (isLeft < 0f)
             {
                 return -1f;
@@ -418,19 +449,25 @@ namespace Penumbra.Mathematics.Clipping
             return 0f;
         }
 
+        private static readonly Vertices Polygon = new Vertices(capacity: 3);
         /// <summary>
         /// Winding number test for a point in a simplex.
         /// </summary>
         /// <param name="point">The point to be tested.</param>
         /// <param name="edge">The edge that the point is tested against.</param>
         /// <returns>False if the winding number is even and the point is outside
-        /// the simplex and True otherwise.</returns>
+        /// the simplex and True otherwise.</returns>        
         private static bool PointInSimplex(Vector2 point, Edge edge)
         {
-            var polygon = new Vertices(WindingOrder.CounterClockwise)
-            {
-                Vector2.Zero, edge.EdgeStart, edge.EdgeEnd
-            };
+            var polygon = Polygon;
+            polygon.Clear();
+            //var polygon = new Vertices()
+            //{
+            //    Vector2.Zero, edge.EdgeStart, edge.EdgeEnd
+            //};
+            polygon.Add(Vector2.Zero);
+            polygon.Add(edge.EdgeStart);
+            polygon.Add(edge.EdgeEnd);
             //return (polygon.PointInPolygon(ref point) == IntersectionResult.FullyContained);
             return polygon.PointInPolygon(ref point);
         }
@@ -442,7 +479,7 @@ namespace Penumbra.Mathematics.Clipping
         private static bool PointOnLineSegment(Vector2 start, Vector2 end, Vector2 point)
         {
             Vector2 segment = end - start;
-            return Calc.Area(ref start, ref end, ref point) == 0f &&
+            return VectorUtil.Area(ref start, ref end, ref point) == 0f &&
                    Vector2.Dot(point - start, segment) >= 0f &&
                    Vector2.Dot(point - end, segment) <= 0f;
         }
@@ -455,7 +492,7 @@ namespace Penumbra.Mathematics.Clipping
         #region Nested type: Edge
 
         /// <summary>Specifies an Edge. Edges are used to represent simplicies in simplical chains</summary>
-        private sealed class Edge
+        private struct Edge
         {
             public Edge(Vector2 edgeStart, Vector2 edgeEnd)
             {
@@ -480,17 +517,11 @@ namespace Penumbra.Mathematics.Clipping
             {
                 // If parameter is null return false.
                 // If parameter cannot be cast to Point return false.
-                return obj != null && Equals(obj as Edge);                
+                return obj != null && Equals((Edge)obj);                
             }
 
             private bool Equals(Edge e)
             {
-                // If parameter is null return false:
-                if (e == null)
-                {
-                    return false;
-                }
-
                 // Return true if the fields match
                 return VectorEqual(EdgeStart, e.EdgeStart) && VectorEqual(EdgeEnd, e.EdgeEnd);
             }

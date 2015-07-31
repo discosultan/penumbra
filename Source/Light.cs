@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Penumbra.Mathematics;
 using Penumbra.Utilities;
 
 namespace Penumbra
@@ -141,7 +139,11 @@ namespace Penumbra
 
         internal bool IsInside(Hull hull)
         {
-            return hull.Parts.Any(IsInside);
+            for (int i = 0; i < hull.Parts.Length; i++)
+            {
+                if (IsInside(hull.Parts[i])) return true;
+            }
+            return false;            
         }
 
         internal bool IsInside(HullPart hullPart)

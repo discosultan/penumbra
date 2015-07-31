@@ -28,14 +28,11 @@ namespace Penumbra.Graphics.Helpers
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;
             _lightRenderer.ObservableLights.CollectionChanged += ObservableLightsChanged;
-            _hulls = new HullList(lightRenderer.ObservableHulls);
+            _hulls = new HullList(lightRenderer.ObservableHulls);            
 
-            var vertexArrayPool = new ArrayPool<Vector2>();
-            var indexArrayPool = new ArrayPool<int>();
-
-            _penumbraBuilder = new PenumbraBuilder(indexArrayPool);
-            _umbraBuilder = new UmbraBuilder(_hulls, vertexArrayPool, indexArrayPool);
-            _solidBuilder = new SolidBuilder(vertexArrayPool, indexArrayPool);
+            _penumbraBuilder = new PenumbraBuilder();
+            _umbraBuilder = new UmbraBuilder(_hulls);
+            _solidBuilder = new SolidBuilder();
             _antumbraBuilder = new AntumbraBuilder();
         }
 
@@ -173,6 +170,15 @@ namespace Penumbra.Graphics.Helpers
             };
             context.LightToPointDir = Vector2.Normalize(context.Position - light.Position);
             GetDotsForNormals(context.LightToPointDir, context.Normals, out context.Dot1, out context.Dot2);
+
+            // A hull has only 1 left and 1 right side point if it is guaranteed to be CONVEX.
+            context.Side = context.Dot1 >= 0 && context.Dot2 < 0
+                ? Side.Left
+                : context.Dot2 >= 0 && context.Dot1 < 0
+                    ? Side.Right
+                    : context.Dot1 >= 0 && context.Dot2 >= 0 
+                        ? Side.Backward 
+                        : Side.Forward;
 
             //_currentContext.Index = i;
             //_currentContext.Position = hull.Inner.TransformedHullVertices[i];

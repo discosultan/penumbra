@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -71,12 +70,22 @@ namespace Penumbra
             ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref _camera.ViewProjection);
 
             // Generate lightmap.
-            foreach (Light light in ObservableLights)
+            for (int i = 0; i < ObservableLights.Count; i++)
             {
+                Light light = ObservableLights[i];
                 if (!light.Enabled) continue;
 
-                // TODO: Cache and/or spatial tree?
-                if (ObservableHulls.Any(hull => light.IsInside(hull))) continue;
+                // TODO: Cache and/or spatial tree?                
+                bool skip = false;
+                for (int j = 0; j < ObservableHulls.Count; j++)
+                {
+                    if (light.IsInside(ObservableHulls[j]))
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (skip) continue;
 
                 // Clear stencil.
                 // TODO: use incremental stencil values to avoid clearing every light?
@@ -121,8 +130,9 @@ namespace Penumbra
             _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.PresentLightmap, _textureBuffer.LightMap);
 
             // Clear hulls dirty flags.
-            foreach (Hull hull in ObservableHulls)
+            for (int j = 0; j < ObservableHulls.Count; j++)
             {
+                Hull hull = ObservableHulls[j];
                 hull.DirtyFlags &= 0;
             }
         }

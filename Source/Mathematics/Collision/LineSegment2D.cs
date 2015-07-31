@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Globalization;
+using Microsoft.Xna.Framework;
 
 namespace Penumbra.Mathematics.Collision
 {
@@ -42,13 +43,26 @@ namespace Penumbra.Mathematics.Collision
 
         public bool Intersects(ref Ray2D ray)
         {
-            float distance;
-            return Intersects(ref ray, out distance);
+            Vector2 intersectionPoint;
+            return Intersects(ref ray, out intersectionPoint);
         }
 
-        public bool Intersects(ref Ray2D ray, out float distance)
+        public bool Intersects(ref Ray2D ray, out Vector2 intersectionPoint)
         {
-            return Collision.RayIntersectsLineSegment(ref ray.Origin, ref ray.Direction, ref P1, ref P2, out distance);
+            float distance;
+            bool intersects = Collision.RayIntersectsLineSegment(ref ray.Origin, ref ray.Direction, ref P1, ref P2, out distance);
+            intersectionPoint = ray.GetPoint(distance);
+            return intersects;
+        }
+
+        //public bool Intersects(Polygon polygon, out Vector2 intersectionPoint)
+        //{
+            
+        //}
+
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "P1:{0} P2:{1}", P1, P2);
         }
     }
 }

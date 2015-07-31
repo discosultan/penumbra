@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
     internal class AntumbraBuilder
     {
-        private readonly List<VertexPosition2Texture> _vertices = new List<VertexPosition2Texture>();
+        private readonly DynamicArray<VertexPosition2Texture> _vertices = new DynamicArray<VertexPosition2Texture>();
 
         public void PreProcess()
         {
@@ -27,9 +26,8 @@ namespace Penumbra.Graphics.Builders
         {
             if (_vertices.Count > 0)
             {
-                vaos.HasAntumbra = true;
-                VertexPosition2Texture[] antumbraVertices = _vertices.ToArray();                
-                vaos.AntumbraVao.SetVertices(antumbraVertices);                
+                vaos.HasAntumbra = true;                
+                vaos.AntumbraVao.SetVertices(_vertices);                
             }
             else
             {

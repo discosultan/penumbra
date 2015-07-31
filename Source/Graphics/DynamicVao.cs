@@ -11,8 +11,6 @@ namespace Penumbra.Graphics
         private readonly GraphicsDevice _graphicsDevice;
         private readonly VertexDeclaration _vertexDeclaration;
         private readonly bool _useIndices;
-        private readonly int _initialVertexCount;
-        private readonly int _initialIndexCount;        
 
         public DynamicVertexBuffer VertexBuffer { get; set; }
         public DynamicIndexBuffer IndexBuffer { get; set; }
@@ -30,10 +28,8 @@ namespace Penumbra.Graphics
             _vertexDeclaration = vertexDecl;
             _useIndices = useIndices;
 
-            _initialVertexCount = initialVertexCount;
-            _initialIndexCount = initialIndexCount;
-            _currentVertexCount = _initialVertexCount;
-            _currentIndexCount = _initialIndexCount;            
+            _currentVertexCount = initialVertexCount;
+            _currentIndexCount = initialIndexCount;            
 
             CreateVertexBuffer();
             if (_useIndices)
@@ -43,21 +39,21 @@ namespace Penumbra.Graphics
         public int VertexCount { get; private set; }
         public int IndexCount { get; private set; }
 
-        public void SetVertices<T>(T[] fromData) where T : struct
+        public void SetVertices<T>(DynamicArray<T> fromData) where T : struct
         {
-            VertexCount = fromData.Length;
-            if (NeedToIncreaseBufferSize(ref _currentVertexCount, fromData.Length))
+            VertexCount = fromData.Count;
+            if (NeedToIncreaseBufferSize(ref _currentVertexCount, fromData.Count))
                 CreateVertexBuffer();
-            VertexBuffer.SetData(fromData);
+            VertexBuffer.SetData<T>(fromData, 0, fromData.Count);
         }
 
-        public void SetIndices(int[] fromData)
+        public void SetIndices(DynamicArray<int> fromData)
         {
             if (!_useIndices) return;
-            IndexCount = fromData.Length;
-            if (NeedToIncreaseBufferSize(ref _currentIndexCount, fromData.Length))
+            IndexCount = fromData.Count;
+            if (NeedToIncreaseBufferSize(ref _currentIndexCount, fromData.Count))
                 CreateIndexBuffer();
-            IndexBuffer.SetData(fromData);
+            IndexBuffer.SetData<int>(fromData, 0, fromData.Count);
         }
 
         public void Dispose()

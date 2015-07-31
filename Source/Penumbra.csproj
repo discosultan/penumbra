@@ -83,10 +83,10 @@
     <Compile Include="Graphics\ShaderParameter.cs" />
     <Compile Include="ShadowType.cs" />
     <Compile Include="Mathematics\PointNormals.cs" />
-    <Compile Include="Utilities\ArrayPool.cs" />
     <Compile Include="Mathematics\Calc.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
+    <Compile Include="Utilities\DynamicArray.cs" />
     <Compile Include="Utilities\Enumerator.cs" />
     <Compile Include="Utilities\ListExtensions.cs" />
     <Compile Include="Utilities\Logger.cs" />

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
 using Penumbra.Utilities;
 
 namespace Penumbra
@@ -31,7 +30,11 @@ namespace Penumbra
 
         public bool AnyDirty(HullComponentDirtyFlags flags)
         {
-            return _hulls.Any(hull => (hull.DirtyFlags & flags) != 0);
+            for (int i = 0; i < _hulls.Count; i++)
+            {                
+                if (_hulls[i].AnyDirty(flags)) return true;
+            }
+            return false;
         }
 
         private void HullsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -56,7 +59,7 @@ namespace Penumbra
         {
             if (values == null) return;
 
-            foreach (var newItem in values)
+            foreach (object newItem in values)
             {
                 var hull = (Hull) newItem;
                 foreach (HullPart hullPart in hull.Parts)

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 using Penumbra.Utilities;
@@ -11,19 +9,12 @@ namespace Penumbra.Graphics.Builders
     {
         private const float DegreesToRotatePenumbraTowardUmbra = 0.1f;
 
-        private readonly List<VertexPosition2Texture> _vertices = new List<VertexPosition2Texture>();
-        private readonly List<int> _indices = new List<int>();
-        private readonly ArrayPool<VertexPosition2Texture> _vertexArrayPool = new ArrayPool<VertexPosition2Texture>();
-        private readonly ArrayPool<int> _indexArrayPool;
+        private readonly DynamicArray<VertexPosition2Texture> _vertices = new DynamicArray<VertexPosition2Texture>();
+        private readonly DynamicArray<int> _indices = new DynamicArray<int>();        
         private readonly Pool<PenumbraFin> _finPool = new Pool<PenumbraFin>();
         private readonly List<PenumbraFin> _fins = new List<PenumbraFin>();
 
         private int _indexOffset;
-
-        public PenumbraBuilder(ArrayPool<int> indexArrayPool)
-        {
-            _indexArrayPool = indexArrayPool;            
-        }
 
         public bool AddAdditionalFins { get; set; } = true;
 
@@ -124,7 +115,11 @@ namespace Penumbra.Graphics.Builders
                 //if (fin.IsCreatedByIntersection)
                 //{
                     _vertices.AddRange(fin.FinalVertices);
-                    _indices.AddRange(fin.Indices.Select(index => index + _indexOffset));
+                    for (int i = 0; i < fin.Indices.Count; i++)
+                    {
+                        fin.Indices[i] = fin.Indices[i] + _indexOffset;
+                    }
+                    _indices.AddRange(fin.Indices);
                     _indexOffset += fin.FinalVertices.Count;
                 //}
 
@@ -144,17 +139,17 @@ namespace Penumbra.Graphics.Builders
             foreach (var vertex in fin.FinalVertices)
             {
                 // We can populate only 1 vertex from a single fin.
-                if (Calc.NearEqual(vertex.Position, hullCtx.UmbraLeftProjectedPoint))
+                if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraLeftProjectedPoint))
                 {
                     hullCtx.UmbraLeftProjectedVertex = vertex;                    
                     return;
                 }
-                if (Calc.NearEqual(vertex.Position, hullCtx.UmbraRightProjectedPoint))
+                if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraRightProjectedPoint))
                 {
                     hullCtx.UmbraRightProjectedVertex = vertex;
                     return;
                 }
-                if (Calc.NearEqual(vertex.Position, hullCtx.UmbraIntersectionPoint))
+                if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraIntersectionPoint))
                 {
                     hullCtx.UmbraIntersectionVertex = vertex;                    
                 }
@@ -165,13 +160,9 @@ namespace Penumbra.Graphics.Builders
         {
             if (_vertices.Count > 0 && _indices.Count > 0)
             {
-                vaos.HasPenumbra = true;
-                VertexPosition2Texture[] penumbraVertices = _vertices.ToArrayFromPool(_vertexArrayPool);
-                int[] penumbraIndices = _indices.ToArrayFromPool(_indexArrayPool);
-                vaos.PenumbraVao.SetVertices(penumbraVertices);
-                vaos.PenumbraVao.SetIndices(penumbraIndices);
-                _vertexArrayPool.Release(penumbraVertices);
-                _indexArrayPool.Release(penumbraIndices);
+                vaos.HasPenumbra = true;                
+                vaos.PenumbraVao.SetVertices(_vertices);
+                vaos.PenumbraVao.SetIndices(_indices);                
             } 
             else
             {
@@ -258,11 +249,9 @@ namespace Penumbra.Graphics.Builders
                 currentToInnerDir);
         }
 
-        private void ClipHullFromFin(PenumbraFin result, HullPart hull, ref HullPointContext context, ref PenumbraFinContext finContext)
-        {
-            Polygon sln;
-            Polygon.Clip(result.Vertices, hull.TransformedHullVertices, out sln);
-            result.Vertices = sln;
+        private static void ClipHullFromFin(PenumbraFin result, HullPart hull, ref HullPointContext context, ref PenumbraFinContext finContext)
+        {            
+            Polygon.Clip(result.Vertices, hull.TransformedHullVertices);
         }
 
         private void OrderFinVerticesOriginFirst(PenumbraFin fin)
@@ -271,7 +260,7 @@ namespace Penumbra.Graphics.Builders
             for (int i = 0; i < fin.Vertices.Count; i++)
             {
                 Vector2 pos = fin.Vertices[i];
-                if (Calc.NearEqual(pos, fin.Vertex1.Position))
+                if (VectorUtil.NearEqual(pos, fin.Vertex1.Position))
                 {
                     index = i;
                     break;
@@ -290,15 +279,15 @@ namespace Penumbra.Graphics.Builders
         {
             foreach (Vector2 p in result.Vertices)
             {
-                if (Calc.NearEqual(p, result.Vertex1.Position))
+                if (VectorUtil.NearEqual(p, result.Vertex1.Position))
                 {
                     result.FinalVertices.Add(result.Vertex1);
                 }
-                else if (Calc.NearEqual(p, result.Vertex2.Position))
+                else if (VectorUtil.NearEqual(p, result.Vertex2.Position))
                 {
                     result.FinalVertices.Add(result.Vertex2);
                 }
-                else if (Calc.NearEqual(p, result.Vertex3.Position))
+                else if (VectorUtil.NearEqual(p, result.Vertex3.Position))
                 {
                     result.FinalVertices.Add(result.Vertex3);
                 }
@@ -306,7 +295,7 @@ namespace Penumbra.Graphics.Builders
                 {                    
                     Vector2 point = p;
                     Vector3 barycentricCoords;
-                    Calc.Barycentric(
+                    VectorUtil.Barycentric(
                         ref point, 
                         ref result.Vertex1.Position,                         
                         ref result.Vertex2.Position,
@@ -329,7 +318,7 @@ namespace Penumbra.Graphics.Builders
             result.Vertices.GetIndices(WindingOrder.Clockwise, result.Indices);            
         }
 
-        private void ClipMid(PenumbraFin fin, Light light, ref HullContext hullCtx)
+        private static void ClipMid(PenumbraFin fin, Light light, ref HullContext hullCtx)
         {
             if (fin.Side == Side.Left)
             {
@@ -400,7 +389,7 @@ namespace Penumbra.Graphics.Builders
         private class PenumbraFin
         {
             public readonly List<VertexPosition2Texture> FinalVertices = new List<VertexPosition2Texture>();
-            public Polygon Vertices = new Polygon(WindingOrder.CounterClockwise); // piu piu piu TODO: readonly
+            public readonly Polygon Vertices = new Polygon();
             public readonly List<int> Indices = new List<int>();
 
             public VertexPosition2Texture Vertex1; // hull point

@@ -44,9 +44,10 @@
   <ItemGroup>
     <Compile Include="Scenarios\F_ConcaveHull.cs" />
     <Compile Include="Scenarios\C_LightBlending.cs" />
-    <Compile Include="Scenarios\X_Antumbra.cs" />
+    <Compile Include="Scenarios\E_Antumbra.cs" />
     <Compile Include="Scenarios\B_LightPassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
+    <Compile Include="Scenarios\G_OverlappingHulls.cs" />
     <Compile Include="Utilities\FPS.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Utilities\Garbage.cs" />
