@@ -9,9 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Samples\Sandbox\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{86F61E1C-736A-48A1-9C97-C2E3A2DFADA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Penumbra.Tests.csproj", "{9A2E5685-8D25-46B1-B3E1-05603DA618E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Penumbra.Tests", "Tests\Penumbra.Tests.csproj", "{9A2E5685-8D25-46B1-B3E1-05603DA618E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagePolygonExtraction", "Samples\ImagePolygonExtraction\ImagePolygonExtraction.csproj", "{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -43,11 +48,20 @@ Global
 		{9A2E5685-8D25-46B1-B3E1-05603DA618E9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A2E5685-8D25-46B1-B3E1-05603DA618E9}.Release|x86.ActiveCfg = Release|Any CPU
 		{9A2E5685-8D25-46B1-B3E1-05603DA618E9}.Release|x86.Build.0 = Release|Any CPU
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Debug|Any CPU.Build.0 = Debug|x86
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Debug|x86.ActiveCfg = Debug|x86
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Debug|x86.Build.0 = Debug|x86
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Release|Any CPU.ActiveCfg = Release|x86
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Release|Any CPU.Build.0 = Release|x86
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Release|x86.ActiveCfg = Release|x86
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{42F21905-2DA7-44A3-AA3A-B80C74F49D1A} = {86F61E1C-736A-48A1-9C97-C2E3A2DFADA4}
+		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D} = {86F61E1C-736A-48A1-9C97-C2E3A2DFADA4}
 	EndGlobalSection
 EndGlobal

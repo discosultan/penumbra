@@ -27,8 +27,8 @@ namespace Penumbra.Graphics.Helpers
         {
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;
-            _lightRenderer.ObservableLights.CollectionChanged += ObservableLightsChanged;
-            _hulls = new HullList(lightRenderer.ObservableHulls);            
+            _lightRenderer.Lights.CollectionChanged += ObservableLightsChanged;
+            _hulls = new HullList(lightRenderer.Hulls);            
 
             _penumbraBuilder = new PenumbraBuilder();
             _umbraBuilder = new UmbraBuilder(_hulls);

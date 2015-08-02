@@ -71,14 +71,11 @@
     <Compile Include="Mathematics\Collision\Ray2D.cs" />
     <Compile Include="Mathematics\IntersectionResult.cs" />
     <Compile Include="Mathematics\Polygon.cs" />
-    <Compile Include="Mathematics\Triangulation\BayazitDecomposer.cs" />
-    <Compile Include="Mathematics\Triangulation\CyclicalList.cs" />
-    <Compile Include="Mathematics\Triangulation\IndexableCyclicalLinkedList.cs" />
-    <Compile Include="Mathematics\Triangulation\Triangle.cs" />
     <Compile Include="Mathematics\Triangulation\Triangulator.cs" />
-    <Compile Include="Mathematics\Triangulation\Vertex.cs" />
+    <Compile Include="Mathematics\Triangulation\BayazitDecomposer.cs" />
     <Compile Include="PenumbraComponent.cs" />
     <Compile Include="PenumbraEngine.cs" />
+    <Compile Include="Projection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\ShaderParameter.cs" />
     <Compile Include="ShadowType.cs" />
@@ -86,8 +83,7 @@
     <Compile Include="Mathematics\Calc.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
-    <Compile Include="Utilities\DynamicArray.cs" />
-    <Compile Include="Utilities\Enumerator.cs" />
+    <Compile Include="Utilities\FastList.cs" />
     <Compile Include="Utilities\ListExtensions.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Pool.cs" />

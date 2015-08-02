@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
 using Penumbra;
-using Sandbox.Scenarios;
 
 namespace Sandbox
 {

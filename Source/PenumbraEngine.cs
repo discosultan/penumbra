@@ -12,14 +12,27 @@ namespace Penumbra
 {
     internal class PenumbraEngine
     {
-        private BufferedShadowRenderHelper _bufferedCPUShadowRenderHelper;
+        private BufferedShadowRenderHelper _bufferedShadowRenderHelper;
 
-        private readonly Camera _camera = new Camera();
         private readonly LightmapTextureBuffer _textureBuffer = new LightmapTextureBuffer();
         private RenderProcessProvider _renderProcessProvider;
         private PrimitiveRenderHelper _primitiveRenderHelper;
 
         private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+
+        public PenumbraEngine(Projections projections)
+        {
+            Camera = new Camera(projections);
+            Camera.YInverted += (s, e) => { Hulls.ForEach(h => h.Load(Camera.InvertedY)); };
+            Hulls.CollectionChanged += (s, e) =>
+            {
+                e.NewItems?.ForEach<Hull>(i =>
+                {
+                    Check.ArgumentNotNull(i, "hull");
+                    i.Load(Camera.InvertedY);
+                });
+            };
+        }
 
         public bool DebugDraw { get; set; } = true;
 
@@ -31,26 +44,25 @@ namespace Penumbra
 
         public Matrix ViewProjection
         {
-            get { return _camera.ViewProjection; }
-            set { _camera.ViewProjection = value; }
+            get { return Camera.CustomWorld; }
+            set { Camera.CustomWorld = value; }
         }
 
         internal ShaderParameterCollection ShaderParameters { get; } = new ShaderParameterCollection();
-        internal ObservableCollection<Light> ObservableLights { get; } = new ObservableCollection<Light>();
-        internal ObservableCollection<Hull> ObservableHulls { get; } = new ObservableCollection<Hull>();
-        internal Camera Camera => _camera;
-
+        internal ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
+        internal ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
+        internal Camera Camera { get; }
         internal GraphicsDevice GraphicsDevice { get; private set; }
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, ContentManager content)
         {
             GraphicsDevice = device;
-
-            _camera.Load(GraphicsDevice, deviceManager);
+            
+            Camera.Load(GraphicsDevice, deviceManager);
             _textureBuffer.Load(GraphicsDevice, deviceManager);
-            _renderProcessProvider = new RenderProcessProvider(GraphicsDevice, content);
+            _renderProcessProvider = new RenderProcessProvider(GraphicsDevice, content, Camera);
             _primitiveRenderHelper = new PrimitiveRenderHelper(GraphicsDevice, this);
-            _bufferedCPUShadowRenderHelper = new BufferedShadowRenderHelper(GraphicsDevice, this);
+            _bufferedShadowRenderHelper = new BufferedShadowRenderHelper(GraphicsDevice, this);
 
             // Setup logging for debug purposes.
             Logger.Add(new DelegateLogger(x => Debug.WriteLine(x)));
@@ -67,25 +79,26 @@ namespace Penumbra
             GraphicsDevice.SetRenderTarget(_textureBuffer.LightMap);
             GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, AmbientColor, 1f, 0);
 
-            ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref _camera.ViewProjection);
+            ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref Camera.WorldViewProjection);
 
             // Generate lightmap.
-            for (int i = 0; i < ObservableLights.Count; i++)
+            for (int i = 0; i < Lights.Count; i++)
             {
-                Light light = ObservableLights[i];
+                Light light = Lights[i];
                 if (!light.Enabled) continue;
-
-                // TODO: Cache and/or spatial tree?                
+                             
                 bool skip = false;
-                for (int j = 0; j < ObservableHulls.Count; j++)
+                for (int j = 0; j < Hulls.Count; j++)
                 {
-                    if (light.IsInside(ObservableHulls[j]))
+                    if (light.IsInside(Hulls[j]))
                     {
                         skip = true;
                         break;
                     }
                 }
                 if (skip) continue;
+
+                // TODO: Cache and/or spatial tree?
 
                 // Clear stencil.
                 // TODO: use incremental stencil values to avoid clearing every light?
@@ -94,12 +107,12 @@ namespace Penumbra
 
                 // Set scissor rectangle.
                 // DO NOT USE params overload. Causes unnecessary garbage.                
-                GraphicsDevice.ScissorRectangle = _camera.GetScissorRectangle(light);
+                GraphicsDevice.ScissorRectangle = Camera.GetScissorRectangle(light);
 
                 // Draw shadows for light.
                 if (light.CastsShadows)
                 {
-                    _bufferedCPUShadowRenderHelper.DrawShadows(
+                    _bufferedShadowRenderHelper.DrawShadows(
                         light,
                         _renderProcessProvider.Umbra(light.ShadowType),
                         _renderProcessProvider.Penumbra(light.ShadowType),
@@ -130,9 +143,9 @@ namespace Penumbra
             _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.PresentLightmap, _textureBuffer.LightMap);
 
             // Clear hulls dirty flags.
-            for (int j = 0; j < ObservableHulls.Count; j++)
+            for (int j = 0; j < Hulls.Count; j++)
             {
-                Hull hull = ObservableHulls[j];
+                Hull hull = Hulls[j];
                 hull.DirtyFlags &= 0;
             }
         }

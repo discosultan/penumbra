@@ -5,10 +5,12 @@ namespace Penumbra
 {
     public class PenumbraComponent : DrawableGameComponent
     {        
-        private readonly PenumbraEngine _engine = new PenumbraEngine();
+        private readonly PenumbraEngine _engine;
 
-        public PenumbraComponent(Game game) : base(game)
+        public PenumbraComponent(Game game, Projections projections = Projections.SpriteBatch | Projections.Custom) 
+            : base(game)
         {
+            _engine = new PenumbraEngine(projections);
             Enabled = false;
             Visible = true;
         }        
@@ -31,8 +33,8 @@ namespace Penumbra
             set { _engine.ViewProjection = value; }
         }
 
-        public IList<Light> Lights => _engine.ObservableLights;
-        public IList<Hull> Hulls => _engine.ObservableHulls;
+        public IList<Light> Lights => _engine.Lights;
+        public IList<Hull> Hulls => _engine.Hulls;
 
         protected override void LoadContent()
         {            

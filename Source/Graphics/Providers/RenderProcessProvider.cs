@@ -8,32 +8,34 @@ namespace Penumbra.Graphics.Providers
 {
     internal sealed class RenderProcessProvider : IDisposable
     {
-        private static readonly object _lock = new object();
-        private static int _refCounter;        
-                        
-        private static Lazy<RenderProcess> _umbraIlluminated;        
-        private static Lazy<RenderProcess> _penumbraIlluminated;
-        private static Lazy<RenderProcess> _antumbraIlluminated;
-        private static Lazy<RenderProcess> _solidIlluminated;             
-        private static Lazy<RenderProcess> _solidSolid;        
-        private static Lazy<RenderProcess> _solidOccluded;        
+        private readonly ContentManager _content;
+        private readonly GraphicsDevice _graphics;
+        private readonly Camera _camera;
 
-        private static RenderProcess _light;
-        private static RenderProcess _lightSource;
-        private static RenderProcess _clearAlpha;
-        private static RenderProcess _present;
-        private static RenderProcess _presentLightmap;
+        private Lazy<RenderProcess> _umbraIlluminated;        
+        private Lazy<RenderProcess> _penumbraIlluminated;
+        private Lazy<RenderProcess> _antumbraIlluminated;
+        private Lazy<RenderProcess> _solidIlluminated;             
+        private Lazy<RenderProcess> _solidSolid;        
+        private Lazy<RenderProcess> _solidOccluded;        
 
-        public RenderProcessProvider(GraphicsDevice graphicsDevice, ContentManager content)
+        private RenderProcess _light;
+        private RenderProcess _lightSource;
+        private RenderProcess _clearAlpha;
+        private RenderProcess _present;
+        private RenderProcess _presentLightmap;        
+
+        public RenderProcessProvider(GraphicsDevice graphicsDevice, ContentManager content, Camera camera)
         {
-            lock (_lock)
+            _graphics = graphicsDevice;
+            _content = content;
+            _camera = camera;
+            _camera.YInverted += (s, e) => 
             {
-                if (_refCounter <= 0)
-                {
-                    Load(graphicsDevice, content);
-                }
-                _refCounter++;
-            }
+                Dispose();
+                Load();
+            };
+            Load();
         }
 
         public RenderProcess Light => _light;
@@ -90,14 +92,6 @@ namespace Penumbra.Graphics.Providers
 
         public void Dispose()
         {
-            lock (_lock)
-            {
-                _refCounter--;
-                if (_refCounter <= 0)
-                {
-                    //Unload();
-                }
-            }
         }
 
         private static RenderStep NewRenderStep(GraphicsDevice device, ContentManager content, DepthStencilState dss, BlendState bs,
@@ -119,8 +113,11 @@ namespace Penumbra.Graphics.Providers
                 addParams);
         }
 
-        private static void Load(GraphicsDevice device, ContentManager content)
-        {            
+        private void Load()
+        {
+            GraphicsDevice device = _graphics;
+            ContentManager content = _content;
+
             var rsDebug = new RasterizerState
             {
                 CullMode = CullMode.None,
@@ -148,9 +145,10 @@ namespace Penumbra.Graphics.Providers
             };
             
             var rs = new RasterizerState
-            {                
-                CullMode = CullMode.CullCounterClockwiseFace,
-                ScissorTestEnable = true
+            {
+                CullMode = GetCCWCullMode(),
+                //ScissorTestEnable = true                
+                ScissorTestEnable = false
             };
             
             var bs2 = new BlendState
@@ -232,7 +230,7 @@ namespace Penumbra.Graphics.Providers
             };
 
             _light = new RenderProcess(                
-                NewRenderStep(device, content, dss, bs3, RasterizerState.CullCounterClockwise, "WorldProjectionLight")                
+                NewRenderStep(device, content, dss, bs3, GetCCWRasterizerState(), "WorldProjectionLight")                
                 //, NewRenderStep(device, content, DepthStencilState.None, BlendState.Opaque, rsDebug, "WorldProjectionColor", true, x => x.SetVector4(ShaderParameter.Color, Color.Yellow.ToVector4()))
             );
             _lightSource = new RenderProcess(
@@ -277,6 +275,16 @@ namespace Penumbra.Graphics.Providers
             _presentLightmap = new RenderProcess(
                 NewRenderStep(device, content, DepthStencilState.None, bs5, RasterizerState.CullCounterClockwise, "Texture")
             );
+        }
+
+        private CullMode GetCCWCullMode()
+        {
+            return _camera.InvertedY ? CullMode.CullClockwiseFace : CullMode.CullCounterClockwiseFace;
+        }
+
+        private RasterizerState GetCCWRasterizerState()
+        {
+            return _camera.InvertedY ? RasterizerState.CullClockwise : RasterizerState.CullCounterClockwise;
         }
     }
 }

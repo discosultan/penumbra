@@ -57,18 +57,20 @@ namespace Penumbra.Mathematics.Collision
 
             // temp holder for segment distance
             float tempDistance;
-            int crossings = 0;
+            //int crossings = 0;
 
             for (int j = polygon.Count - 1, i = 0; i < polygon.Count; j = i, i++)
             {
                 var segment = new LineSegment2D(polygon[i], polygon[j]);                
                 if (Intersects(ref segment, out tempDistance))
                 {
-                    crossings++;
                     distance = Math.Min(distance, tempDistance);
+                    return true;
+                    //crossings++;                    
                 }
             }
-            return crossings > 0;// && crossings % 2 == 0;
+            //return crossings > 0 && crossings % 2 == 0;
+            return false;
         }
 
         public override string ToString()

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 using Penumbra.Utilities;
-//using Polygon = System.Collections.Generic.List<Microsoft.Xna.Framework.Vector2>;
 
 namespace Penumbra
 {
@@ -13,29 +11,28 @@ namespace Penumbra
         private bool _worldTransformDirty = true;        
         private Matrix _worldTransform;
 
-        private bool _enabled;
+        private bool _enabled = true;
         private Vector2 _position;
         private Vector2 _origin;
         private float _rotation;
-        private Vector2 _scale;
+        private Vector2 _scale = Vector2.One;
 
-        private HullPart[] _parts;
+        internal event EventHandler SetDirty;               
 
-        internal event EventHandler SetDirty;
-
-        public Hull(IList<Vector2> points, WindingOrder windingOrder = WindingOrder.Clockwise)
+        public Hull(ICollection<Vector2> points)
         {
-            Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");
-
-            CalculateParts(points, windingOrder);
-
-            // Set default values.
-            Scale = Vector2.One;
-            DirtyFlags = HullComponentDirtyFlags.All;
-            Enabled = true;            
+            Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");                        
+            CalculateParts(points);
         }
 
-        internal HullPart[] Parts => _parts;        
+        internal HullPart[] Parts { get; private set; }
+
+        internal void Load(bool invertedY)
+        {
+            //CalculateParts(invertedY);
+            //DirtyFlags |= HullComponentDirtyFlags.All;
+        }
+
 
         public bool Enabled
         {
@@ -45,9 +42,7 @@ namespace Penumbra
                 if (_enabled != value)
                 {
                     DirtyFlags |= HullComponentDirtyFlags.Enabled;                    
-                    _enabled = value;
-                    foreach (HullPart part in _parts)                    
-                        part.Enabled = value;                    
+                    _enabled = value;                                 
                 }
             }
         }
@@ -103,7 +98,7 @@ namespace Penumbra
                 {
                     DirtyFlags |= HullComponentDirtyFlags.Scale;
                     SetAndRaiseDirty();
-                    foreach (HullPart part in _parts)
+                    foreach (HullPart part in Parts)
                         part.SetRadiusDirty();                    
                     _scale = value;
                 }
@@ -141,37 +136,36 @@ namespace Penumbra
             }
         }
 
-        internal HullComponentDirtyFlags DirtyFlags { get; set; }        
+        internal HullComponentDirtyFlags DirtyFlags { get; set; } = HullComponentDirtyFlags.All;     
 
         private void SetAndRaiseDirty()
         {
             _worldTransformDirty = true;            
-            foreach (HullPart part in _parts)
+            foreach (HullPart part in Parts)
             {
                 part.SetDirty();
             }
             SetDirty?.Invoke(this, EventArgs.Empty);
         }
 
-        private void CalculateParts(IList<Vector2> points, WindingOrder windingOrder)
+        private void CalculateParts(ICollection<Vector2> points)
         {
-            Polygon polygon = new Polygon(points.ToList(), windingOrder);
-
-            // Ensure clockwise winding order.
+            //var windingOrder = GetWindingOrder(_windingOrder, invertedY);
+            var polygon = new Polygon(points);            
             polygon.EnsureWindingOrder(WindingOrder.CounterClockwise);
 
             if (polygon.IsConvex())
             {
-                _parts = new[] { new HullPart(this, polygon) };
+                Parts = new[] { new HullPart(this, polygon) };
             }
             else
             {
                 var polygons = Polygon.DecomposeIntoConvex(polygon);                
 
-                _parts = new HullPart[polygons.Count];
+                Parts = new HullPart[polygons.Count];
                 for (int i = 0; i < polygons.Count; i++)
                 {
-                    _parts[i] = new HullPart(this, polygons[i]);
+                    Parts[i] = new HullPart(this, polygons[i]);
                 }
             }
         }

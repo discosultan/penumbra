@@ -31,7 +31,7 @@ namespace Sandbox
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            _penumbra = new PenumbraComponent(this) { AmbientColor = Color.Black };
+            _penumbra = new PenumbraComponent(this, Projections.OriginCenter_XRight_YUp) { AmbientColor = Color.Black };
             Components.Add(_penumbra);
             _scenarios = new ScenariosComponent(this, _penumbra);
             Components.Add(_scenarios);
@@ -39,20 +39,6 @@ namespace Sandbox
             Components.Add(ui);
             
             IsMouseVisible = true;
-        }
-
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
-        protected override void LoadContent()
-        {            
-            _penumbra.ViewProjection = Matrix.CreateOrthographicOffCenter(
-                -GraphicsDevice.PresentationParameters.BackBufferWidth/2f,
-                GraphicsDevice.PresentationParameters.BackBufferWidth/2f,
-                -GraphicsDevice.PresentationParameters.BackBufferHeight/2f,
-                GraphicsDevice.PresentationParameters.BackBufferHeight/2f,
-                0f, 1f);            
         }
 
         /// <summary>
@@ -104,7 +90,7 @@ namespace Sandbox
         {
             _penumbra.BeginDraw();
 
-            GraphicsDevice.Clear(BackgroundColor);
+            GraphicsDevice.Clear(BackgroundColor);            
 
             base.Draw(gameTime);
         }

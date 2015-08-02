@@ -5,8 +5,8 @@ namespace Penumbra.Graphics.Builders
 {
     internal class SolidBuilder
     {        
-        private readonly DynamicArray<Vector2> _vertices = new DynamicArray<Vector2>();
-        private readonly DynamicArray<int> _indices = new DynamicArray<int>();
+        private readonly FastList<Vector2> _vertices = new FastList<Vector2>();
+        private readonly FastList<int> _indices = new FastList<int>();
         private int _indexOffset;        
 
         public void PreProcess()

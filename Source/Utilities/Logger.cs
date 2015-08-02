@@ -38,7 +38,7 @@ namespace Penumbra.Utilities
 
     internal static class Logger
     {        
-        private static readonly List<ILogger> _loggers = new List<ILogger>();
+        private static readonly List<ILogger> Loggers = new List<ILogger>();
 
         [Conditional("DEBUG")]
         public static void Write(object message, [CallerMemberName]string caller = "")
@@ -49,7 +49,7 @@ namespace Penumbra.Utilities
         [Conditional("DEBUG")]
         public static void Write(string message, [CallerMemberName]string caller = "")
         {
-            foreach (ILogger logger in _loggers)
+            foreach (ILogger logger in Loggers)
             {
                 logger.Write(message, caller);
             }
@@ -58,13 +58,13 @@ namespace Penumbra.Utilities
         [Conditional("DEBUG")]
         public static void Add(ILogger logger)
         {
-            _loggers.Add(logger);
+            Loggers.Add(logger);
         }
 
         [Conditional("DEBUG")]
         public static void Remove(ILogger logger)
         {
-            _loggers.Remove(logger);
+            Loggers.Remove(logger);
         }
     }
 }

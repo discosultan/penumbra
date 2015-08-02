@@ -55,24 +55,14 @@ namespace Penumbra
             CollectionChanged?.Invoke(sender, e);
         }
 
-        private void PopulateList(IList values)
+        private void PopulateList(ICollection values)
         {
             if (values == null) return;
 
-            foreach (object newItem in values)
-            {
-                var hull = (Hull) newItem;
-                foreach (HullPart hullPart in hull.Parts)
-                    _wrappedHullParts.Add(hullPart);
-            }
+            values.ForEach<Hull>(hull => hull.Parts.ForEach(_wrappedHullParts.Add));            
             Logger.Write($"Added {values.Count} hulls to list");
         }
 
         public HullPart this[int index] => _wrappedHullParts[index];
-
-        public Enumerator<HullPart> GetEnumerator()
-        {
-            return new Enumerator<HullPart>(_wrappedHullParts);
-        }
     }
 }

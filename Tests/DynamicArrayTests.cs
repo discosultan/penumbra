@@ -10,7 +10,7 @@ namespace Penumbra.Tests
         [Test]
         public void Add_ItemAdded()
         {
-            var subject = new DynamicArray<int>();
+            var subject = new FastList<int>();
 
             subject.Add(5);
 
@@ -21,7 +21,7 @@ namespace Penumbra.Tests
         [Test]
         public void Add_CapacityIncreased()
         {
-            var subject = new DynamicArray<int>(1);
+            var subject = new FastList<int>(1);
 
             subject.Add(5);
             int capacity = subject.Capacity;
@@ -36,7 +36,7 @@ namespace Penumbra.Tests
         [Test]
         public void CapacityZero_Add_DoesNotThrow()
         {
-            var subject = new DynamicArray<int>(0);
+            var subject = new FastList<int>(0);
 
             subject.Add(5);
 
@@ -46,7 +46,7 @@ namespace Penumbra.Tests
         [Test]
         public void AddRange_ItemsAdded()
         {
-            var subject = new DynamicArray<int>();
+            var subject = new FastList<int>();
             var range = Enumerable.Range(1, 10).ToList();
 
             subject.AddRange(range);
@@ -59,7 +59,7 @@ namespace Penumbra.Tests
         [Test]
         public void Clear_ItemsCleared()
         {
-            var subject = new DynamicArray<int>();
+            var subject = new FastList<int>();
             var range = Enumerable.Range(1, 10).ToList();
 
             subject.AddRange(range);

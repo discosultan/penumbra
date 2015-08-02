@@ -4,7 +4,7 @@ using static System.Math;
 
 namespace Sandbox.Scenarios
 {
-    class A_PenumbraTransition : Scenario
+    class X_PenumbraTransition : Scenario
     {
         private Light _light;
         private const float RotationSpeed = MathHelper.TwoPi/6;

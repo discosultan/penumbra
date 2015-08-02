@@ -11,7 +11,7 @@ namespace Penumbra
 
         private bool _transformedNormalsDirty = true;
 
-        private PointNormals[] _transformedNormals;
+        private readonly PointNormals[] _transformedNormals;
 
         private bool _transformedHullVerticesDirty = true;
         private Polygon _transformedHullVertices;
@@ -85,7 +85,7 @@ namespace Penumbra
 
         public Polygon Points { get; private set; }
         public Indices Indices { get; private set; }
-        public bool Enabled { get; set; }
+        public bool Enabled => Component.Enabled;
 
         public Polygon TransformedHullVertices
         {
@@ -94,7 +94,7 @@ namespace Penumbra
                 if (_transformedHullVerticesDirty)
                 {
                     if (_transformedHullVertices == null)
-                        _transformedHullVertices = new Polygon(Points.WindingOrder, Points.Count);
+                        _transformedHullVertices = new Polygon(Points.Count);
                     else
                         _transformedHullVertices.Clear();
 
@@ -154,7 +154,7 @@ namespace Penumbra
         {
             Indices = new Indices();
             Points = points;
-            Points.EnsureWindingOrder(WindingOrder.CounterClockwise);
+            //Points.EnsureWindingOrder(WindingOrder.CounterClockwise);
             Points.GetIndices(WindingOrder.Clockwise, Indices);                 
         }        
     }

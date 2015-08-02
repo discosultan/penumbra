@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Penumbra.Utilities;
 using Vertices = Penumbra.Mathematics.Polygon;
 using Penumbra.Mathematics.Collision;
+using System;
+using System.Diagnostics;
 
 namespace Penumbra.Mathematics.Clipping
 {
@@ -92,8 +94,8 @@ namespace Penumbra.Mathematics.Clipping
             }
 
             // Enforce counterclockwise contours            
-            slicedSubject.EnsureWindingOrder(WindingOrder.CounterClockwise);
-            slicedClip.EnsureWindingOrder(WindingOrder.CounterClockwise);            
+            //slicedSubject.EnsureWindingOrder(WindingOrder.CounterClockwise);
+            //slicedClip.EnsureWindingOrder(WindingOrder.CounterClockwise);            
 
             List<Edge> subjectSimplices = SubjectSimplices;
             List<float> subjectCoeff = SubjectCoeff;
@@ -492,7 +494,7 @@ namespace Penumbra.Mathematics.Clipping
         #region Nested type: Edge
 
         /// <summary>Specifies an Edge. Edges are used to represent simplicies in simplical chains</summary>
-        private struct Edge
+        private struct Edge : IEquatable<Edge>
         {
             public Edge(Vector2 edgeStart, Vector2 edgeEnd)
             {
@@ -515,12 +517,13 @@ namespace Penumbra.Mathematics.Clipping
 
             public override bool Equals(object obj)
             {
+                Debug.Fail("Edge was boxed.");
                 // If parameter is null return false.
                 // If parameter cannot be cast to Point return false.
                 return obj != null && Equals((Edge)obj);                
             }
 
-            private bool Equals(Edge e)
+            public bool Equals(Edge e)
             {
                 // Return true if the fields match
                 return VectorEqual(EdgeStart, e.EdgeStart) && VectorEqual(EdgeEnd, e.EdgeEnd);

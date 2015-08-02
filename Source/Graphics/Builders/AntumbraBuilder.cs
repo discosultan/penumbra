@@ -4,7 +4,7 @@ namespace Penumbra.Graphics.Builders
 {
     internal class AntumbraBuilder
     {
-        private readonly DynamicArray<VertexPosition2Texture> _vertices = new DynamicArray<VertexPosition2Texture>();
+        private readonly FastList<VertexPosition2Texture> _vertices = new FastList<VertexPosition2Texture>();
 
         public void PreProcess()
         {

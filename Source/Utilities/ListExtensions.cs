@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Penumbra.Utilities
 {
@@ -38,6 +41,31 @@ namespace Penumbra.Utilities
                 }
                 list[0] = last;
             }
+        }
+
+        /// <summary>
+        /// Executes an action for each (casted) item of the given enumerable.
+        /// </summary>
+        /// <typeparam name="T">Type of the item value in the enumerable.</typeparam>
+        /// <param name="source">Input enumerable to work on.</param>
+        /// <param name="action">Action performed for each item in the enumerable.</param>
+        /// <remarks>This extension method do not yield. It acts just like a foreach statement, and performs a cast to a typed enumerable in the middle.</remarks>
+        public static void ForEach<T>(this IEnumerable source, Action<T> action)
+        {
+            source.Cast<T>().ForEach(action);
+        }
+
+        /// <summary>
+        /// Executes an action for each item of the given enumerable.
+        /// </summary>
+        /// <typeparam name="T">Type of the item value in the enumerable.</typeparam>
+        /// <param name="source">Input enumerable to work on.</param>
+        /// <param name="action">Action performed for each item in the enumerable.</param>
+        /// <remarks>This extension method do not yield. It acts just like a foreach statement.</remarks>
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        {
+            foreach (T item in source)
+                action(item);
         }
     }
 }

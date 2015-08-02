@@ -1,252 +1,127 @@
-// Ref: Nick Gravelyn's Triangulator port from XNA. http://triangulator.codeplex.com/. Modified to avoid allocations.
-// NOT thread safe.
-
+﻿using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Vertices = Penumbra.Mathematics.Polygon;
-using Indices = System.Collections.Generic.List<int>;
 
 namespace Penumbra.Mathematics.Triangulation
 {
-    /// <summary>
-    ///     A static class exposing methods for triangulating 2D polygons. This is the sole public
-    ///     class in the entire library; all other classes/structures are intended as internal-only
-    ///     objects used only to assist in triangulation.
-    ///     This class makes use of the DEBUG conditional and produces quite verbose output when built
-    ///     in Debug mode. This is quite useful for debugging purposes, but can slow the process down
-    ///     quite a bit. For optimal performance, build the library in Release mode.
-    ///     The triangulation is also not optimized for garbage sensitive processing. The point of the
-    ///     library is a robust, yet simple, system for triangulating 2D shapes. It is intended to be
-    ///     used as part of your content pipeline or at load-time. It is not something you want to be
-    ///     using each and every frame unless you really don't care about garbage.
-    /// </summary>
+    // ref: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
     internal static class Triangulator
     {
-        #region Fields
+        const float Epsilon = Calc.Epsilon;
 
-        private static readonly IndexableCyclicalLinkedList<Vertex> PolygonVertices =
-            new IndexableCyclicalLinkedList<Vertex>();
-
-        private static readonly IndexableCyclicalLinkedList<Vertex> EarVertices =
-            new IndexableCyclicalLinkedList<Vertex>();
-
-        private static readonly CyclicalList<Vertex> ConvexVertices = new CyclicalList<Vertex>();
-        private static readonly CyclicalList<Vertex> ReflexVertices = new CyclicalList<Vertex>();
-
-        private static readonly List<Triangle> Triangles = new List<Triangle>();
-
-        #endregion
-
-        #region Public Methods
-
-        #region Triangulate
-
-        /// <summary>
-        ///     Triangulates a 2D polygon produced the indexes required to render the points as a triangle list.
-        /// </summary>
-        public static void Triangulate(
-            Vertices vertices,
-            Indices indices,
-            WindingOrder indicesWindingOrder)
+        private static readonly List<int> V = new List<int>();
+        public static bool Process(Polygon contour, List<int> resultIndices, WindingOrder windingOrder)
         {
-            vertices.EnsureWindingOrder(WindingOrder.CounterClockwise);
-            TriangulateInner(indicesWindingOrder, vertices, indices);
-        }
+            /* allocate and initialize list of Vertices in polygon */
 
-        //output vertices will be in counter clockwise order in this stage
-        private static void TriangulateInner(
-            WindingOrder outputIndicesWindingOrder,
-            Vertices outputVertices,
-            Indices outputIndices)
-        {            
-            Triangles.Clear();
+            int n = contour.Count;
+            if (n < 3) return false;
 
-            //clear all of the lists
-            PolygonVertices.Clear();
-            EarVertices.Clear();
-            ConvexVertices.Clear();
-            ReflexVertices.Clear();
+            //var V = new int[n];
+            V.Clear();
 
-            //generate the cyclical list of vertices in the polygon
-            for (var i = 0; i < outputVertices.Count; i++)
-                PolygonVertices.AddLast(new Vertex(outputVertices[i], i));
+            /* we want a counter-clockwise polygon in V */
+            //contour.EnsureWindingOrder(WindingOrder.CounterClockwise);
+            //if (0.0f < contour.GetSignedArea())            
+                for (int v = 0; v < n; v++) V.Add(v); //V[v] = v;
+            //else
+            //    for (int v = 0; v < n; v++) V.Add((n - 1) - v); //V[v] = (n - 1) - v;
 
-            //categorize all of the vertices as convex, reflex, and ear
-            FindConvexAndReflexVertices();
-            FindEarVertices();
+            int nv = n;
 
-            //clip all the ear vertices
-            while (PolygonVertices.Count > 3 && EarVertices.Count > 0)
-                ClipNextEar(Triangles);
+            /*  remove nv-2 Vertices, creating 1 triangle every time */
+            int count = 2 * nv;   /* error detection */
 
-            //if there are still three points, use that for the last triangle
-            if (PolygonVertices.Count == 3)
-                Triangles.Add(new Triangle(
-                    PolygonVertices[0].Value,
-                    PolygonVertices[1].Value,
-                    PolygonVertices[2].Value));
-
-            //add all of the triangle indices to the output array
-            outputIndices.Clear();
-
-            //move the if statement out of the loop to prevent all the
-            //redundant comparisons
-            if (outputIndicesWindingOrder == WindingOrder.CounterClockwise)
+            for (int m = 0, v = nv - 1; nv > 2;)
             {
-                for (var i = 0; i < Triangles.Count; i++)
+                /* if we loop, it is probably a non-simple polygon */
+                if (0 >= (count--))
                 {
-                    outputIndices.Add(Triangles[i].A.Index);
-                    outputIndices.Add(Triangles[i].B.Index);
-                    outputIndices.Add(Triangles[i].C.Index);
-                }
-            }
-            else
-            {
-                for (var i = 0; i < Triangles.Count; i++)
-                {
-                    outputIndices.Add(Triangles[i].C.Index);
-                    outputIndices.Add(Triangles[i].B.Index);
-                    outputIndices.Add(Triangles[i].A.Index);
-                }
-            }
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Private Methods
-
-        #region ClipNextEar
-
-        private static void ClipNextEar(ICollection<Triangle> triangles)
-        {
-            //find the triangle
-            var ear = EarVertices[0].Value;
-            var prev = PolygonVertices[PolygonVertices.IndexOf(ear) - 1].Value;
-            var next = PolygonVertices[PolygonVertices.IndexOf(ear) + 1].Value;
-            triangles.Add(new Triangle(ear, next, prev));
-
-            //remove the ear from the shape
-            EarVertices.RemoveAt(0);
-            PolygonVertices.RemoveAt(PolygonVertices.IndexOf(ear));
-
-
-            //validate the neighboring vertices
-            ValidateAdjacentVertex(prev);
-            ValidateAdjacentVertex(next);
-        }
-
-        #endregion
-
-        #region ValidateAdjacentVertex
-
-        private static void ValidateAdjacentVertex(Vertex vertex)
-        {
-            if (ReflexVertices.Contains(vertex))
-            {
-                if (IsConvex(vertex))
-                {
-                    ReflexVertices.Remove(vertex);
-                    ConvexVertices.Add(vertex);
-                }
-            }
-
-            if (ConvexVertices.Contains(vertex))
-            {
-                var wasEar = EarVertices.Contains(vertex);
-                var isEar = IsEar(vertex);
-
-                if (wasEar && !isEar)
-                {
-                    EarVertices.Remove(vertex);
-                }
-                else if (!wasEar && isEar)
-                {
-                    EarVertices.AddFirst(vertex);
-                }
-            }
-        }
-
-        #endregion
-
-        #region FindConvexAndReflexVertices
-
-        private static void FindConvexAndReflexVertices()
-        {
-            for (var i = 0; i < PolygonVertices.Count; i++)
-            {
-                var v = PolygonVertices[i].Value;
-
-                if (IsConvex(v))
-                {
-                    ConvexVertices.Add(v);
-                }
-                else
-                {
-                    ReflexVertices.Add(v);
-                }
-            }
-        }
-
-        #endregion
-
-        #region FindEarVertices
-
-        private static void FindEarVertices()
-        {
-            for (var i = 0; i < ConvexVertices.Count; i++)
-            {
-                var c = ConvexVertices[i];
-
-                if (IsEar(c))
-                {
-                    EarVertices.AddLast(c);
-                }
-            }
-        }
-
-        #endregion
-
-        #region IsEar
-
-        private static bool IsEar(Vertex c)
-        {
-            var p = PolygonVertices[PolygonVertices.IndexOf(c) - 1].Value;
-            var n = PolygonVertices[PolygonVertices.IndexOf(c) + 1].Value;
-
-            foreach (var t in ReflexVertices)
-            {
-                if (t.Equals(p) || t.Equals(c) || t.Equals(n))
-                    continue;
-
-                if (Triangle.ContainsPoint(p, c, n, t))
-                {
+                    //** Triangulate: ERROR - probably bad polygon!
                     return false;
+                }
+
+                /* three consecutive vertices in current polygon, <u,v,w> */
+                int u = v; if (nv <= u) u = 0;     /* previous */
+                v = u + 1; if (nv <= v) v = 0;     /* new v    */
+                int w = v + 1; if (nv <= w) w = 0;     /* next     */
+
+                if (Snip(contour, u, v, w, nv, V))
+                {
+                    int a, b, c, s, t;
+
+                    /* true names of the vertices */
+                    a = V[u]; b = V[v]; c = V[w];
+
+                    /* output Triangle */
+                    if (windingOrder == WindingOrder.CounterClockwise)
+                    {
+                        resultIndices.Add(a);
+                        resultIndices.Add(b);
+                        resultIndices.Add(c);
+                    }
+                    else
+                    {
+                        resultIndices.Add(a);
+                        resultIndices.Add(c);
+                        resultIndices.Add(b);
+                    }
+                    //resultIndices.Add(u);
+                    //resultIndices.Add(v);
+                    //resultIndices.Add(w);
+
+                    m++;
+
+                    /* remove v from remaining polygon */
+                    for (s = v, t = v + 1; t < nv; s++, t++) V[s] = V[t]; nv--;
+
+                    /* resest error detection counter */
+                    count = 2 * nv;
                 }
             }
 
             return true;
         }
 
-        #endregion
-
-        #region IsConvex
-
-        private static bool IsConvex(Vertex c)
+        private static bool InsideTriangle(Vector2 a, Vector2 b, Vector2 c, Vector2 p)
         {
-            var p = PolygonVertices[PolygonVertices.IndexOf(c) - 1].Value;
-            var n = PolygonVertices[PolygonVertices.IndexOf(c) + 1].Value;
+            float ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
+            float cCROSSap, bCROSScp, aCROSSbp;
 
-            var d1 = Vector2.Normalize(c.Position - p.Position);
-            var d2 = Vector2.Normalize(n.Position - c.Position);
-            var n2 = new Vector2(-d2.Y, d2.X);
+            ax = c.X - b.X; ay = c.Y - b.Y;
+            bx = a.X - c.X; by = a.Y - c.Y;
+            cx = b.X - a.X; cy = b.Y - a.Y;
+            apx = p.X - a.X; apy = p.Y - a.Y;
+            bpx = p.X - b.X; bpy = p.Y - b.Y;
+            cpx = p.X - c.X; cpy = p.Y - c.Y;
 
-            return (Vector2.Dot(d1, n2) <= 0f);
+            aCROSSbp = ax * bpy - ay * bpx;
+            cCROSSap = cx * apy - cy * apx;
+            bCROSScp = bx * cpy - by * cpx;
+
+            return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
         }
 
-        #endregion
+        private static bool Snip(Polygon contour, int u, int v, int w, int n, List<int> V)
+        {
+            int p;
 
-        #endregion
+            Vector2 A = contour[V[u]];
+            Vector2 B = contour[V[v]];
+            Vector2 C = contour[V[w]];
+            //Vector2 A = contour[u];
+            //Vector2 B = contour[v];
+            //Vector2 C = contour[w];
+
+            if (Epsilon > (((B.X - A.X) * (C.Y - A.Y)) - ((B.Y - A.Y) * (C.X - A.X)))) return false;
+
+            for (p = 0; p < n; p++)
+            {
+                if ((p == u) || (p == v) || (p == w)) continue;
+                Vector2 P = contour[V[p]];                
+                if (InsideTriangle(A,B,C,P)) return false;
+            }
+
+            return true;
+        }
     }
 }

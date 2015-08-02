@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics.Clipping;
 using Penumbra.Mathematics.Triangulation;
@@ -10,32 +9,24 @@ using System.Collections;
 namespace Penumbra.Mathematics
 {
     internal class Polygon : IList<Vector2>
-    {
-        private readonly List<Vector2> _list;
+    {        
+        private readonly FastList<Vector2> _list;
 
-        public Polygon(WindingOrder windingOrder = WindingOrder.CounterClockwise, int capacity = 4)
+        public Polygon(int capacity = 4)
         {
-            _list = new List<Vector2>(capacity);            
-            WindingOrder = windingOrder;
+            _list = new FastList<Vector2>(capacity);            
+            WindingOrder = IsCounterClockWise() ? WindingOrder.CounterClockwise : WindingOrder.Clockwise;
         }
 
-        public Polygon(Polygon polygon)
+        public Polygon(IEnumerable<Vector2> list)
         {
-            _list = new List<Vector2>(polygon._list);
-            WindingOrder = polygon.WindingOrder;
-        }
-
-        public Polygon(List<Vector2> list, WindingOrder windingOrder)
-        {
-            _list = new List<Vector2>(list);
-            WindingOrder = windingOrder;
+            _list = new FastList<Vector2>(list);
+            WindingOrder = IsCounterClockWise() ? WindingOrder.CounterClockwise : WindingOrder.Clockwise;
         }
 
         public WindingOrder WindingOrder { get; private set; }
 
-        public int Count => _list.Count;
-
-        public bool IsReadOnly => ((IList<Vector2>)_list).IsReadOnly;
+        public int Count => _list.Count;        
 
         public void Reverse() => _list.Reverse();
 
@@ -45,14 +36,29 @@ namespace Penumbra.Mathematics
             set { _list[indexer] = value; }
         }
 
-        public void Add(Vector2 element) => _list.Add(element);
+        public void Add(Vector2 element)
+        {
+            _list.Add(element);            
+        }
         //public void AddRange(IEnumerable<Vector2> range) => _list.AddRange(range);
-        public void AddRange(Polygon polygon) => _list.AddRange(polygon._list);
+        public void AddRange(Polygon polygon)
+        {
+            _list.AddRange(polygon._list);                              
+        }
 
-        public void Insert(int index, Vector2 item) => _list.Insert(index, item);
-        public void Clear() => _list.Clear();
+        public void Insert(int index, Vector2 item)
+        {
+            _list.Insert(index, item);            
+        }
+        public void Clear()
+        {
+            _list.Clear();            
+        }
         public int IndexOf(Vector2 item) => _list.IndexOf(item);
-        public void RemoveAt(int index) => _list.RemoveAt(index);
+        public void RemoveAt(int index)
+        {
+            _list.RemoveAt(index);            
+        }
 
         public void EnsureWindingOrder(WindingOrder desired)
         {
@@ -67,33 +73,49 @@ namespace Penumbra.Mathematics
         {
             return new List<Polygon> {polygon};
         }
-
-        public static List<Polygon> FromList(List<List<Vector2>> lists, WindingOrder windingOrder)
-        {
-            return lists.Select(x => new Polygon(x, windingOrder)).ToList();
-        }
-
+        
         public void GetIndices(WindingOrder windingOrder, List<int> indices)
         {
-            Triangulator.Triangulate(this, indices, WindingOrder.Clockwise);
-            //Triangulator.Triangulate(
-            //    points,
-            //    WindingOrder.CounterClockwise,
-            //    WindingOrder.Clockwise,
-            //    WindingOrder.Clockwise,
-            //    out outputPoints,
-            //    out outputIndices);
-            //            Points = outputPoints;
-            //            Indices = outputIndices;
-        }
+            if (IsConvex())
+            {
+                int numTriangles = Count - 2;
+                if (windingOrder == WindingOrder.Clockwise)
+                {
+                    for (int i = numTriangles - 1; i >= 0; i--)
+                    {
+                        indices.Add(0);
+                        indices.Add(i + 2);
+                        indices.Add(i + 1);
+                    }
+                }
+                else
+                {                    
+                    for (int i = 0; i < numTriangles; i++)
+                    {
+                        indices.Add(0);
+                        indices.Add(i + 1);
+                        indices.Add(i + 2);
+                    }
+                }
+            }
+            else
+            {
+                //_triangles.Clear();
+                Triangulator.Process(this, indices, windingOrder);
+                //for (int i = 0; i < _triangles.Count; i+=3)
+                //{
+                //    indices.Add()
+                //}
 
-        //private List<>
+                //Triangulator.Triangulate(this, indices, windingOrder);
+            }
+        }        
 
         private static readonly List<Polygon> ClippingSolutions = new List<Polygon>();
         public static void Clip(Polygon subj, Polygon clip)
         {
-            subj.EnsureWindingOrder(WindingOrder.CounterClockwise);
-            clip.EnsureWindingOrder(WindingOrder.CounterClockwise);            
+            //subj.EnsureWindingOrder(WindingOrder.CounterClockwise);
+            //clip.EnsureWindingOrder(WindingOrder.CounterClockwise);
 
             int numSln;
             PolyClipError err = YuPengClipper.Difference(subj, clip, ClippingSolutions, out numSln);
@@ -110,31 +132,15 @@ namespace Penumbra.Mathematics
 
         public static List<Polygon> DecomposeIntoConvex(Polygon polygon)
         {
-            if (polygon.IsConvex())            
+            if (polygon.IsConvex())
                 return Wrap(polygon);            
 
-            return FromList(BayazitDecomposer.ConvexPartition(polygon), WindingOrder.CounterClockwise);
+            return BayazitDecomposer.ConvexPartition(polygon);
         }
 
-        public static implicit operator List<Vector2>(Polygon polygon)
-        {
-            return polygon._list;
-        }
-
-        public Enumerator<Vector2> GetEnumerator()
-        {
-            return new Enumerator<Vector2>(_list);
-        }
-
-        IEnumerator<Vector2> IEnumerable<Vector2>.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        public FastList<Vector2>.Enumerator GetEnumerator() => new FastList<Vector2>.Enumerator(_list);
+        IEnumerator<Vector2> IEnumerable<Vector2>.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();        
 
         public bool Contains(Vector2 item)
         {
@@ -147,8 +153,8 @@ namespace Penumbra.Mathematics
         }
 
         public bool Remove(Vector2 item)
-        {
-            return _list.Remove(item);
+        {            
+            return _list.Remove(item);            
         }
 
         /// <summary>
@@ -166,7 +172,7 @@ namespace Penumbra.Mathematics
                 area += this[i].X * this[j].Y;
                 area -= this[i].Y * this[j].X;
             }
-            area /= 2.0f;
+            area *= 0.5f;
             return area;
         }
 
@@ -174,18 +180,9 @@ namespace Penumbra.Mathematics
         /// Gets the area.
         /// </summary>
         /// <returns></returns>
-        public float GetArea(Polygon polygon)
+        public float GetArea()
         {
-            int i;
-            float area = 0;
-
-            for (i = 0; i < Count; i++)
-            {
-                int j = (i + 1) % Count;
-                area += this[i].X * this[j].Y;
-                area -= this[i].Y * this[j].X;
-            }
-            area /= 2.0f;
+            float area = GetSignedArea();
             return (area < 0 ? -area : area);
         }
 
@@ -284,7 +281,7 @@ namespace Penumbra.Mathematics
         /// 	<c>true</c> if it is convex; otherwise, <c>false</c>.
         /// </returns>
         public bool IsConvex()
-        {
+        {              
             // Ensure the polygon is convex and the interior
             // is to the left of each edge.
             for (int i = 0; i < Count; ++i)
@@ -306,14 +303,25 @@ namespace Penumbra.Mathematics
                     float s = edge.X * r.Y - edge.Y * r.X;
 
                     if (s <= 0.0f)
+                    {
                         return false;
+                    }
                 }
             }
-            return true;
+            return true;                      
+        }
+
+        public bool IsCounterClockWise()
+        {
+            //We just return true for lines
+            if (Count < 3)
+                return true;
+
+            return (GetSignedArea() > 0.0f);
         }
 
         /// <summary>
-        /// Check for edge crossings
+        /// Check for edge crossings.
         /// </summary>
         /// <returns></returns>
         public bool IsSimple()
@@ -383,8 +391,8 @@ namespace Penumbra.Mathematics
                 }
             }
             //return (wn == 0 ? IntersectionResult.None : IntersectionResult.FullyContained);
-            return (wn == 0 ? false : true);
-        }
+            return wn != 0;
+        }        
 
         //public static bool PointIsInside(Vector2[] points, Vector2 point)
         //{
@@ -437,6 +445,8 @@ namespace Penumbra.Mathematics
             }
 
             return new BoundingRectangle(ref lowerBound, ref upperBound);
-        }        
+        }
+
+        bool ICollection<Vector2>.IsReadOnly => ((IList<Vector2>)_list).IsReadOnly;
     }
 }

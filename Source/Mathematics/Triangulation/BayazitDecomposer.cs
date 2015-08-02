@@ -27,7 +27,7 @@ namespace Penumbra.Mathematics.Triangulation
         /// Decompose the polygon into several smaller non-concave polygon.
         /// If the polygon is already convex, it will return the original polygon, unless it is over Settings.MaxPolygonVertices.
         /// </summary>
-        public static List<List<Vector2>> ConvexPartition(List<Vector2> vertices)
+        public static List<Polygon> ConvexPartition(Polygon vertices)
         {
             Debug.Assert(vertices.Count > 3);
             //Debug.Assert(vertices.IsCounterClockWise());
@@ -35,13 +35,13 @@ namespace Penumbra.Mathematics.Triangulation
             return TriangulatePolygon(vertices);
         }
 
-        private static List<List<Vector2>> TriangulatePolygon(List<Vector2> vertices)
+        private static List<Polygon> TriangulatePolygon(Polygon vertices)
         {
-            List<List<Vector2>> list = new List<List<Vector2>>();
+            var list = new List<Polygon>();
             Vector2 lowerInt = new Vector2();
             Vector2 upperInt = new Vector2(); // intersection points
             int lowerIndex = 0, upperIndex = 0;
-            List<Vector2> lowerPoly, upperPoly;
+            Polygon lowerPoly, upperPoly;
 
             for (int i = 0; i < vertices.Count; ++i)
             {
@@ -152,18 +152,18 @@ namespace Penumbra.Mathematics.Triangulation
             return list;
         }
 
-        private static Vector2 At(int i, List<Vector2> vertices)
+        private static Vector2 At(int i, Polygon vertices)
         {
             int s = vertices.Count;
             return vertices[i < 0 ? s - 1 - ((-i - 1) % s) : i % s];
         }
 
-        private static List<Vector2> Copy(int i, int j, List<Vector2> vertices)
+        private static Polygon Copy(int i, int j, Polygon vertices)
         {
             while (j < i)
                 j += vertices.Count;
 
-            List<Vector2> p = new List<Vector2>(j);
+            var p = new Polygon(j);
 
             for (; i <= j; ++i)
             {
@@ -172,7 +172,7 @@ namespace Penumbra.Mathematics.Triangulation
             return p;
         }
 
-        private static bool CanSee(int i, int j, List<Vector2> vertices)
+        private static bool CanSee(int i, int j, Polygon vertices)
         {
             if (Reflex(i, vertices))
             {
@@ -207,12 +207,12 @@ namespace Penumbra.Mathematics.Triangulation
             return true;
         }
 
-        private static bool Reflex(int i, List<Vector2> vertices)
+        private static bool Reflex(int i, Polygon vertices)
         {
             return Right(i, vertices);
         }
 
-        private static bool Right(int i, List<Vector2> vertices)
+        private static bool Right(int i, Polygon vertices)
         {
             return Right(At(i - 1, vertices), At(i, vertices), At(i + 1, vertices));
         }

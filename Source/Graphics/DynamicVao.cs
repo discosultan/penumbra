@@ -39,7 +39,7 @@ namespace Penumbra.Graphics
         public int VertexCount { get; private set; }
         public int IndexCount { get; private set; }
 
-        public void SetVertices<T>(DynamicArray<T> fromData) where T : struct
+        public void SetVertices<T>(FastList<T> fromData) where T : struct
         {
             VertexCount = fromData.Count;
             if (NeedToIncreaseBufferSize(ref _currentVertexCount, fromData.Count))
@@ -47,7 +47,7 @@ namespace Penumbra.Graphics
             VertexBuffer.SetData<T>(fromData, 0, fromData.Count);
         }
 
-        public void SetIndices(DynamicArray<int> fromData)
+        public void SetIndices(FastList<int> fromData)
         {
             if (!_useIndices) return;
             IndexCount = fromData.Count;

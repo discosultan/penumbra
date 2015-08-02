@@ -9,8 +9,8 @@ namespace Penumbra.Graphics.Builders
     {
         private const float DegreesToRotatePenumbraTowardUmbra = 0.1f;
 
-        private readonly DynamicArray<VertexPosition2Texture> _vertices = new DynamicArray<VertexPosition2Texture>();
-        private readonly DynamicArray<int> _indices = new DynamicArray<int>();        
+        private readonly FastList<VertexPosition2Texture> _vertices = new FastList<VertexPosition2Texture>();
+        private readonly FastList<int> _indices = new FastList<int>();        
         private readonly Pool<PenumbraFin> _finPool = new Pool<PenumbraFin>();
         private readonly List<PenumbraFin> _fins = new List<PenumbraFin>();
 

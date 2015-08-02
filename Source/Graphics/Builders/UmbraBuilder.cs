@@ -11,9 +11,10 @@ namespace Penumbra.Graphics.Builders
         private readonly HullList _hulls;
 
         private readonly List<int> _hullIndices = new List<int>();
-
-        private readonly DynamicArray<Vector2> _vertices = new DynamicArray<Vector2>();
-        private readonly DynamicArray<int> _indices = new DynamicArray<int>();        
+        private readonly Polygon _hullVertices = new Polygon();
+        
+        private readonly FastList<Vector2> _vertices = new FastList<Vector2>();
+        private readonly FastList<int> _indices = new FastList<int>();        
 
         private bool _isFirstSegment = true;
         private readonly List<HullPointContext> _firstSegmentBuffer = new List<HullPointContext>();
@@ -96,11 +97,11 @@ namespace Penumbra.Graphics.Builders
             {
                 Vector2 lightToCurrentDir;
                 GetUmbraVectors(light, segment[startIndex].Position, +1f, out lightSideRight, out lightSideToCurrentDirRight, out lightToCurrentDir);
-                Vector2 currentToNextDir = Vector2.Normalize(segment[startIndex + 1].Position - segment[startIndex].Position);
-                // TEST LINE OF SIGHT
-                TestLineOfSight(light, hull, segment, startIndex, ref lightSideRight, ref lightSideToCurrentDirRight, lightToCurrentDir);
+                Vector2 currentToNextDir = Vector2.Normalize(segment[startIndex + 1].Position - segment[startIndex].Position);                
                 if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDirRight, currentToNextDir))
-                {                    
+                {
+                    // TEST LINE OF SIGHT
+                    TestLineOfSight(light, hull, segment, startIndex, ref lightSideRight, ref lightSideToCurrentDirRight, lightToCurrentDir);
                     break;
                 }
             } while (++startIndex < segment.Count - 1);
@@ -111,8 +112,7 @@ namespace Penumbra.Graphics.Builders
             {
                 Vector2 lightToCurrentDir;
                 GetUmbraVectors(light, segment[endIndex].Position, -1f, out lightSideLeft, out lightSideToCurrentDirLeft, out lightToCurrentDir);                    
-                Vector2 currentToPreviousDir = Vector2.Normalize(segment[endIndex - 1].Position - segment[endIndex].Position);
-                
+                Vector2 currentToPreviousDir = Vector2.Normalize(segment[endIndex - 1].Position - segment[endIndex].Position);                
                 if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDirLeft, currentToPreviousDir))
                 {
                     // TEST LINE OF SIGHT
@@ -145,9 +145,7 @@ namespace Penumbra.Graphics.Builders
             Vector2 projectedPoint1;
             tangentLine.Intersects(ref line1, out projectedPoint1);
             Vector2 projectedPoint2;
-            tangentLine.Intersects(ref line2, out projectedPoint2);
-
-            var vertices = new Polygon(WindingOrder.CounterClockwise);
+            tangentLine.Intersects(ref line2, out projectedPoint2);            
 
             if (linesIntersect && areIntersectingInFrontOfLight)
             {
@@ -157,13 +155,13 @@ namespace Penumbra.Graphics.Builders
                 if (areIntersectingInsideLightRange)
                 {
                     hullCtx.UmbraIntersectionType = IntersectionType.IntersectsInsideLight;
-                    vertices.Add(intersectionPos);
+                    _hullVertices.Add(intersectionPos);
                 }
                 else
                 {
                     hullCtx.UmbraIntersectionType = IntersectionType.IntersectsOutsideLight;
-                    vertices.Add(projectedPoint1);
-                    vertices.Add(projectedPoint2);
+                    _hullVertices.Add(projectedPoint1);
+                    _hullVertices.Add(projectedPoint2);
                 }                    
 
                 hullCtx.UmbraIntersectionPoint = intersectionPos;
@@ -172,8 +170,8 @@ namespace Penumbra.Graphics.Builders
             }
             else
             {
-                vertices.Add(projectedPoint1);
-                vertices.Add(projectedPoint2);                                 
+                _hullVertices.Add(projectedPoint1);
+                _hullVertices.Add(projectedPoint2);                                 
             }
                 
 
@@ -183,7 +181,7 @@ namespace Penumbra.Graphics.Builders
             //for (int i = 0; i > numSegmentVertices; i++)
             {
                 Vector2 point = segment[startIndex + i].Position;
-                vertices.Add(point);
+                _hullVertices.Add(point);
             }
 
             //Vector2[] outVertices;
@@ -192,36 +190,39 @@ namespace Penumbra.Graphics.Builders
             //    WindingOrder.CounterClockwise, WindingOrder.Clockwise, out outVertices,
             //    out outIndices);            
             _hullIndices.Clear();
-            vertices.GetIndices(WindingOrder.Clockwise, _hullIndices);
+            _hullVertices.GetIndices(WindingOrder.Clockwise, _hullIndices);
 
-            _vertices.AddRange(vertices);
+            _vertices.AddRange(_hullVertices);            
             for (int i = 0; i < _hullIndices.Count; i++)
             {
                 _hullIndices[i] = _hullIndices[i] + _indexOffset;
             }
             _indices.AddRange(_hullIndices);
-            _indexOffset += vertices.Count;
+            _indexOffset += _hullVertices.Count;
             //}
 
             _firstSegmentBuffer.Clear();
-            _isFirstSegment = true;
+            _hullVertices.Clear();
+            _isFirstSegment = true;            
             //_segments.Clear();
         }
 
-        private void TestLineOfSight(Light light, HullPart hull, List<HullPointContext> segment, int startIndex, ref Vector2 lightSide1, ref Vector2 lightSideToCurrentDir1, Vector2 lightToCurrentDir)
+        private void TestLineOfSight(Light light, HullPart hull, List<HullPointContext> segment, int startIndex, ref Vector2 lightSide, ref Vector2 lightSideToCurrentDir, Vector2 lightToCurrentDir)
         {
-            foreach (HullPart otherHull in _hulls)
+            for (int i = 0; i < _hulls.Count; i++)
             {
+                HullPart otherHull = _hulls[i];
                 if (otherHull == hull) continue;
                 
-                var ray = new Ray2D(light.Position, lightToCurrentDir);
+                //var ray = new Ray2D(light.Position, lightToCurrentDir);
+                var ray = new Ray2D(ref lightSide, ref lightSideToCurrentDir);
                 float distance;
                 if (ray.Intersects(otherHull.TransformedHullVertices, out distance))
                 {
                     if (distance * distance - 0.1f <= Vector2.DistanceSquared(segment[startIndex].Position, light.Position))
                     {
-                        lightSide1 = light.Position;
-                        lightSideToCurrentDir1 = lightToCurrentDir;                        
+                        lightSide = light.Position;
+                        lightSideToCurrentDir = lightToCurrentDir;                        
                         break;
                     }
                 }

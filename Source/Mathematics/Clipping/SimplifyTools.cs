@@ -17,15 +17,15 @@ namespace Penumbra.Mathematics.Clipping
         /// <param name="vertices">The polygon that needs simplification.</param>
         /// <param name="collinearityTolerance">The collinearity tolerance.</param>
         /// <returns>A simplified polygon.</returns>
-        public static Vertices CollinearSimplify(Vertices vertices, float collinearityTolerance)
+        public static void CollinearSimplify(Vertices vertices, float collinearityTolerance)
         {
             //We can't simplify polygons under 3 vertices
             if (vertices.Count < 3)
-                return vertices;
+                return;
 
-            Vertices simplified = new Vertices(vertices.WindingOrder);
+            //Vertices simplified = new Vertices(vertices.WindingOrder);
 
-            for (int i = 0; i < vertices.Count; i++)
+            for (int i = vertices.Count; i >= 0; i--)
             {
                 int prevId = vertices.PreviousIndex<Vertices, Vector2>(i);
                 int nextId = vertices.NextIndex<Vertices, Vector2>(i);
@@ -36,23 +36,22 @@ namespace Penumbra.Mathematics.Clipping
 
                 //If they collinear, continue
                 if (VectorUtil.Collinear(ref prev, ref current, ref next, collinearityTolerance))
-                    continue;
+                    vertices.RemoveAt(i);
 
-                simplified.Add(current);
+                //simplified.Add(current);
             }
 
-            return simplified;
+            //return simplified;
         }
 
         /// <summary>
         /// Removes all collinear points on the polygon.
         /// Has a default bias of 0
         /// </summary>
-        /// <param name="vertices">The polygon that needs simplification.</param>
-        /// <returns>A simplified polygon.</returns>
-        public static Vertices CollinearSimplify(Vertices vertices)
+        /// <param name="vertices">The polygon that needs simplification.</param>        
+        public static void CollinearSimplify(Vertices vertices)
         {
-            return CollinearSimplify(vertices, 0);
+            CollinearSimplify(vertices, 0);
         }
 
         /// <summary>
@@ -71,7 +70,7 @@ namespace Penumbra.Mathematics.Clipping
                 _usePt[i] = true;
 
             SimplifySection(vertices, 0, vertices.Count - 1);
-            Vertices result = new Vertices(vertices.WindingOrder);
+            var result = new Vertices();
 
             for (int i = 0; i < vertices.Count; i++)
                 if (_usePt[i])
@@ -169,7 +168,7 @@ namespace Penumbra.Mathematics.Clipping
                 throw new ArgumentOutOfRangeException(nameof(areaTolerance), "must be equal to or greater then zero.");
             }
 
-            Vertices result = new Vertices(vertices.WindingOrder);
+            var result = new Vertices();
             Vector2 v3;
             Vector2 v1 = vertices[vertices.Count - 2];
             Vector2 v2 = vertices[vertices.Count - 1];
@@ -203,8 +202,8 @@ namespace Penumbra.Mathematics.Clipping
             return result;
         }
 
-        //From Eric Jordan's convex decomposition library
-
+        private static readonly Vertices OldVertices = new Vertices();
+        //From Eric Jordan's convex decomposition library                    
         /// <summary>
         /// Merges all parallel edges in the list of vertices
         /// </summary>
@@ -261,7 +260,10 @@ namespace Penumbra.Mathematics.Clipping
             int currIndex = 0;
 
             //Copy the vertices to a new list and clear the old
-            var oldVertices = new Vertices(vertices, vertices.WindingOrder);
+            //var oldVertices = new Vertices(vertices, vertices.WindingOrder);
+            var oldVertices = OldVertices;
+            oldVertices.Clear();
+            OldVertices.AddRange(vertices);
             vertices.Clear();
 
             for (int i = 0; i < oldVertices.Count; ++i)
@@ -291,7 +293,7 @@ namespace Penumbra.Mathematics.Clipping
                 results.Add(vertices[i]);
             }
 
-            Vertices returnResults = new Vertices(vertices.WindingOrder);
+            var returnResults = new Vertices();
             foreach (Vector2 v in results)
             {
                 returnResults.Add(v);
@@ -312,7 +314,7 @@ namespace Penumbra.Mathematics.Clipping
             if (vertices.Count < 3)
                 return vertices;
 
-            Vertices simplified = new Vertices(vertices.WindingOrder);
+            var simplified = new Vertices();
 
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -344,7 +346,7 @@ namespace Penumbra.Mathematics.Clipping
             if (nth == 0)
                 return vertices;
 
-            Vertices result = new Vertices(vertices.WindingOrder, vertices.Count);
+            var result = new Vertices(vertices.Count);
 
             for (int i = 0; i < vertices.Count; i++)
             {
