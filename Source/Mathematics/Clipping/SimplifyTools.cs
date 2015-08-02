@@ -25,7 +25,7 @@ namespace Penumbra.Mathematics.Clipping
 
             //Vertices simplified = new Vertices(vertices.WindingOrder);
 
-            for (int i = vertices.Count; i >= 0; i--)
+            for (int i = vertices.Count - 1; i >= 0; i--)
             {
                 int prevId = vertices.PreviousIndex<Vertices, Vector2>(i);
                 int nextId = vertices.NextIndex<Vertices, Vector2>(i);
