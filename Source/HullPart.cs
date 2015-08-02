@@ -42,12 +42,12 @@ namespace Penumbra
                 Vector2 n2 = VectorUtil.Rotate90CW(nextPos - currentPos);
 
                 //// Ref: http://stackoverflow.com/a/25646126/1466456
-                //Vector2 currentToPrev = prevPos - currentPos;
-                //Vector2 currentToNext = nextPos - currentPos;                
-                //float angle = Calc.Atan2(currentToNext.Y, currentToNext.X) - Calc.Atan2(currentToPrev.Y, currentToPrev.X);
-                //bool isConvex = angle < MathUtil.Pi;
+                Vector2 currentToPrev = prevPos - currentPos;
+                Vector2 currentToNext = nextPos - currentPos;
+                float angle = Calc.Atan2(currentToNext.Y, currentToNext.X) - Calc.Atan2(currentToPrev.Y, currentToPrev.X);
+                bool isConvex = angle < Calc.Pi;
 
-                OriginalNormals[i] = new PointNormals(ref n1, ref n2);
+                OriginalNormals[i] = new PointNormals(ref n1, ref n2, isConvex);
             }
         }
 

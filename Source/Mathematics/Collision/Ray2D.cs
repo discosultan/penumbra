@@ -75,7 +75,7 @@ namespace Penumbra.Mathematics.Collision
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "Origin:{0} Dir:{1}", Origin, Direction);
+            return $"Origin:{Origin} Dir:{Direction}";
         }
     }
 }

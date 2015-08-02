@@ -154,20 +154,20 @@ namespace Penumbra
             var polygon = new Polygon(points);            
             polygon.EnsureWindingOrder(WindingOrder.CounterClockwise);
 
-            if (polygon.IsConvex())
-            {
+            //if (polygon.IsConvex())
+            //{
                 Parts = new[] { new HullPart(this, polygon) };
-            }
-            else
-            {
-                var polygons = Polygon.DecomposeIntoConvex(polygon);                
+            //}
+            //else
+            //{
+            //    var polygons = Polygon.DecomposeIntoConvex(polygon);                
 
-                Parts = new HullPart[polygons.Count];
-                for (int i = 0; i < polygons.Count; i++)
-                {
-                    Parts[i] = new HullPart(this, polygons[i]);
-                }
-            }
+            //    Parts = new HullPart[polygons.Count];
+            //    for (int i = 0; i < polygons.Count; i++)
+            //    {
+            //        Parts[i] = new HullPart(this, polygons[i]);
+            //    }
+            //}
         }
     }
 

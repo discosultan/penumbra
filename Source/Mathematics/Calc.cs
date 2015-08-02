@@ -5,7 +5,8 @@ namespace Penumbra.Mathematics
     internal static class Calc
     {
         //public const float Epsilon = 1.192092896e-07f;
-        public const float Epsilon = 0.0001f;        
+        public const float Epsilon = 0.0001f;
+        public const float Pi = (float) Math.PI;
 
         public static float Atan2(float y, float x)
         {

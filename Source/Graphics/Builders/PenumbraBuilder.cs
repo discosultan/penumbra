@@ -168,6 +168,8 @@ namespace Penumbra.Graphics.Builders
             {
                 vaos.HasPenumbra = false;
             }
+            // TODO: TEMP
+            vaos.HasPenumbra = false;
         }
         
         private PenumbraFin CreateFin(Light light, ref HullPointContext context, HullPart hull, Side side, bool testIntersection = false)

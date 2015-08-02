@@ -42,7 +42,7 @@ namespace Penumbra.Mathematics.Collision
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "P1:{0} P2:{1}", P1, P2);
+            return $"P1:{P1} P2:{P2}";
         }
     }
 }
