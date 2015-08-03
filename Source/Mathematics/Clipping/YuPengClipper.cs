@@ -149,13 +149,13 @@ namespace Penumbra.Mathematics.Clipping
             {
                 // Get edge vertices
                 Vector2 a = polygon1[i];
-                Vector2 b = polygon1[polygon1.NextIndex<Vertices, Vector2>(i)];
+                Vector2 b = polygon1[polygon1.NextIndex(i)];
 
                 // Get intersections between this edge and polygon2
                 for (int j = 0; j < polygon2.Count; j++)
                 {
                     Vector2 c = polygon2[j];
-                    Vector2 d = polygon2[polygon2.NextIndex<Vertices, Vector2>(j)];
+                    Vector2 d = polygon2[polygon2.NextIndex(j)];
 
                     Vector2 intersectionPoint;
                     // Check if the edges intersect
@@ -194,7 +194,7 @@ namespace Penumbra.Mathematics.Clipping
             // Check for very small edges
             for (int i = 0; i < slicedPoly1.Count; ++i)
             {
-                int iNext = slicedPoly1.NextIndex<Vertices, Vector2>(i);
+                int iNext = slicedPoly1.NextIndex(i);
                 //If they are closer than the distance remove vertex
                 if ((slicedPoly1[iNext] - slicedPoly1[i]).LengthSquared() <= ClipperEpsilonSquared)
                 {
@@ -204,7 +204,7 @@ namespace Penumbra.Mathematics.Clipping
             }
             for (int i = 0; i < slicedPoly2.Count; ++i)
             {
-                int iNext = slicedPoly2.NextIndex<Vertices, Vector2>(i);
+                int iNext = slicedPoly2.NextIndex(i);
                 //If they are closer than the distance remove vertex
                 if ((slicedPoly2[iNext] - slicedPoly2[i]).LengthSquared() <= ClipperEpsilonSquared)
                 {
@@ -225,8 +225,8 @@ namespace Penumbra.Mathematics.Clipping
             coeff.Clear();
             for (int i = 0; i < poly.Count; ++i)
             {
-                simplicies.Add(new Edge(poly[i], poly[poly.NextIndex<Vertices, Vector2>(i)]));
-                coeff.Add(CalculateSimplexCoefficient(Vector2.Zero, poly[i], poly[poly.NextIndex<Vertices, Vector2>(i)]));
+                simplicies.Add(new Edge(poly[i], poly[poly.NextIndex(i)]));
+                coeff.Add(CalculateSimplexCoefficient(Vector2.Zero, poly[i], poly[poly.NextIndex(i)]));
             }
         }
 

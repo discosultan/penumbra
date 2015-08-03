@@ -8,7 +8,7 @@ namespace Penumbra.Utilities
 {
     // Differs from List{T} by allowing direct access to the underlying array.
     // ref: https://github.com/SiliconStudio/paradox/blob/master/sources/common/core/SiliconStudio.Core/Collections/FastList.cs
-    public class FastList<T> : IList<T>, IReadOnlyList<T>, ICollection<T>, IEnumerable<T>, IEnumerable
+    public class FastList<T> : IList<T>, IReadOnlyList<T>
     {
         // Fields
         private const int DefaultCapacity = 4;
@@ -427,11 +427,6 @@ namespace Penumbra.Utilities
                     }
                 }
             }
-        }
-
-        private static bool IsCompatibleObject(object value)
-        {
-            return ((value is T) || ((value == null) && (default(T) == null)));
         }
 
         public int LastIndexOf(T item)

@@ -27,8 +27,8 @@ namespace Penumbra.Mathematics.Clipping
 
             for (int i = vertices.Count - 1; i >= 0; i--)
             {
-                int prevId = vertices.PreviousIndex<Vertices, Vector2>(i);
-                int nextId = vertices.NextIndex<Vertices, Vector2>(i);
+                int prevId = vertices.PreviousIndex(i);
+                int nextId = vertices.NextIndex(i);
 
                 Vector2 prev = vertices[prevId];
                 Vector2 current = vertices[i];
@@ -319,7 +319,7 @@ namespace Penumbra.Mathematics.Clipping
             for (int i = 0; i < vertices.Count; i++)
             {
                 Vector2 current = vertices[i];
-                Vector2 next = vertices.NextElement<Vertices, Vector2>(i);
+                Vector2 next = vertices.NextElement(i);
 
                 //If they are closer than the distance, continue
                 if ((next - current).LengthSquared() <= distance)

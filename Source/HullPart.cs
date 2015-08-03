@@ -35,8 +35,8 @@ namespace Penumbra
             for (int i = 0; i < Points.Count; i++)
             {
                 Vector2 currentPos = Points[i];
-                Vector2 prevPos = Points.PreviousElement<Polygon, Vector2>(i);
-                Vector2 nextPos = Points.NextElement<Polygon, Vector2>(i);
+                Vector2 prevPos = Points.PreviousElement(i);
+                Vector2 nextPos = Points.NextElement(i);
 
                 Vector2 n1 = VectorUtil.Rotate90CW(currentPos - prevPos);
                 Vector2 n2 = VectorUtil.Rotate90CW(nextPos - currentPos);

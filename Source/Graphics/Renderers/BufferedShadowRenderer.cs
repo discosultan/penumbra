@@ -7,9 +7,9 @@ using Penumbra.Graphics.Builders;
 using Penumbra.Mathematics;
 using Penumbra.Utilities;
 
-namespace Penumbra.Graphics.Helpers
+namespace Penumbra.Graphics.Renderers
 {
-    internal class BufferedShadowRenderHelper : IDisposable
+    internal class BufferedShadowRenderer : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
         private readonly PenumbraEngine _lightRenderer;
@@ -23,7 +23,7 @@ namespace Penumbra.Graphics.Helpers
 
         //private readonly PointProcessingContext _currentContext = new PointProcessingContext();
 
-        public BufferedShadowRenderHelper(GraphicsDevice device, PenumbraEngine lightRenderer)
+        public BufferedShadowRenderer(GraphicsDevice device, PenumbraEngine lightRenderer)
         {
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;

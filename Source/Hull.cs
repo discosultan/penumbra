@@ -7,8 +7,8 @@ using Penumbra.Utilities;
 namespace Penumbra
 {
     public class Hull
-    {                
-        private bool _worldTransformDirty = true;        
+    {
+        private bool _worldTransformDirty = true;
         private Matrix _worldTransform;
 
         private bool _enabled = true;
@@ -17,22 +17,18 @@ namespace Penumbra
         private float _rotation;
         private Vector2 _scale = Vector2.One;
 
-        internal event EventHandler SetDirty;               
+        internal event EventHandler SetDirty;
 
         public Hull(ICollection<Vector2> points)
         {
-            Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");                        
+            Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");
             CalculateParts(points);
         }
 
         internal HullPart[] Parts { get; private set; }
 
-        internal void Load(bool invertedY)
-        {
-            //CalculateParts(invertedY);
-            //DirtyFlags |= HullComponentDirtyFlags.All;
-        }
-
+        // TODO: Do we want this?
+        public int Layer { get; set; }
 
         public bool Enabled
         {
@@ -41,8 +37,8 @@ namespace Penumbra
             {
                 if (_enabled != value)
                 {
-                    DirtyFlags |= HullComponentDirtyFlags.Enabled;                    
-                    _enabled = value;                                 
+                    DirtyFlags |= HullComponentDirtyFlags.Enabled;
+                    _enabled = value;
                 }
             }
         }
@@ -57,7 +53,7 @@ namespace Penumbra
                     DirtyFlags |= HullComponentDirtyFlags.Position;
                     SetAndRaiseDirty();
                     _position = value;
-                }            
+                }
             }
         }
 
@@ -99,16 +95,16 @@ namespace Penumbra
                     DirtyFlags |= HullComponentDirtyFlags.Scale;
                     SetAndRaiseDirty();
                     foreach (HullPart part in Parts)
-                        part.SetRadiusDirty();                    
+                        part.SetRadiusDirty();
                     _scale = value;
                 }
             }
-        }        
+        }
 
         internal bool AnyDirty(HullComponentDirtyFlags flags)
         {
             return (DirtyFlags & flags) != 0;
-        }                
+        }
 
         internal Matrix WorldTransform
         {
@@ -136,11 +132,11 @@ namespace Penumbra
             }
         }
 
-        internal HullComponentDirtyFlags DirtyFlags { get; set; } = HullComponentDirtyFlags.All;     
+        internal HullComponentDirtyFlags DirtyFlags { get; set; } = HullComponentDirtyFlags.All;
 
         private void SetAndRaiseDirty()
         {
-            _worldTransformDirty = true;            
+            _worldTransformDirty = true;
             foreach (HullPart part in Parts)
             {
                 part.SetDirty();
@@ -151,12 +147,12 @@ namespace Penumbra
         private void CalculateParts(ICollection<Vector2> points)
         {
             //var windingOrder = GetWindingOrder(_windingOrder, invertedY);
-            var polygon = new Polygon(points);            
+            var polygon = new Polygon(points);
             polygon.EnsureWindingOrder(WindingOrder.CounterClockwise);
 
             //if (polygon.IsConvex())
             //{
-                Parts = new[] { new HullPart(this, polygon) };
+            Parts = new[] { new HullPart(this, polygon) };
             //}
             //else
             //{
@@ -169,7 +165,7 @@ namespace Penumbra
             //    }
             //}
         }
-    }
+    }    
 
     [Flags]
     internal enum HullComponentDirtyFlags

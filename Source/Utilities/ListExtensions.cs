@@ -7,28 +7,28 @@ namespace Penumbra.Utilities
 {
     internal static class ListExtensions
     {
-        public static int PreviousIndex<TCollection, TElement>(this TCollection array, int index) where TCollection : IList<TElement>
+        public static int PreviousIndex<TElement>(this IList<TElement> array, int index)
         {
             if (--index < 0) index = array.Count - 1;
             return index;
         }
 
-        public static TElement PreviousElement<TCollection, TElement>(this TCollection array, int index) where TCollection : IList<TElement>
-        {
-            return array[PreviousIndex<TCollection, TElement>(array, index)];
+        public static TElement PreviousElement<TElement>(this IList<TElement> array, int index)
+        {            
+            return array[PreviousIndex(array, index)];
         }
 
-        public static int NextIndex<TCollection, TElement>(this TCollection array, int index) where TCollection : IList<TElement>
+        public static int NextIndex<TElement>(this IList<TElement> array, int index)
         {
             return ++index % array.Count;
         }
 
-        public static TElement NextElement<TCollection, TElement>(this TCollection array, int index) where TCollection : IList<TElement>
+        public static TElement NextElement<TElement>(this IList<TElement> array, int index)
         {
-            return array[NextIndex<TCollection, TElement>(array, index)];
+            return array[NextIndex(array, index)];
         }
 
-        public static void ShiftRight<TCollection, TElement>(this TCollection list, int numTimes = 1) where TCollection : IList<TElement>
+        public static void ShiftRight<TElement>(this IList<TElement> list, int numTimes = 1)
         {
             if (list.Count < 2) return;
 

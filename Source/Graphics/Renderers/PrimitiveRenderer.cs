@@ -3,9 +3,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Mathematics;
 
-namespace Penumbra.Graphics.Helpers
+namespace Penumbra.Graphics.Renderers
 {
-    internal sealed class PrimitiveRenderHelper : IDisposable
+    internal sealed class PrimitiveRenderer : IDisposable
     {
         private static readonly object Lock = new object();
         private static int _refCounter;
@@ -17,7 +17,7 @@ namespace Penumbra.Graphics.Helpers
         private static Vao _quadVao;
         private static Vao _circleVao;
 
-        public PrimitiveRenderHelper(GraphicsDevice device, PenumbraEngine lightRenderer)
+        public PrimitiveRenderer(GraphicsDevice device, PenumbraEngine lightRenderer)
         {            
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;

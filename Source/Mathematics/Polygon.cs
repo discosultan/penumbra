@@ -112,21 +112,29 @@ namespace Penumbra.Mathematics
         }        
 
         private static readonly List<Polygon> ClippingSolutions = new List<Polygon>();
-        public static void Clip(Polygon subj, Polygon clip)
+        public static void Clip(Polygon subj, Polygon clip, Polygon result)
         {
-            //subj.EnsureWindingOrder(WindingOrder.CounterClockwise);
-            //clip.EnsureWindingOrder(WindingOrder.CounterClockwise);
-
             int numSln;
-            PolyClipError err = YuPengClipper.Difference(subj, clip, ClippingSolutions, out numSln);
-            
+            PolyClipError err = YuPengClipper.Difference(subj, clip, ClippingSolutions, out numSln);            
             if (err == PolyClipError.None)
             {
-                subj.Clear();
-                subj.AddRange(ClippingSolutions[0]);
+                result.Clear();
+                result.AddRange(ClippingSolutions[0]);
                 return;
             }            
+            Logger.Write($"Error clipping: {err}");
+        }
 
+        public static void Union(Polygon subj, Polygon clip, Polygon result)
+        {
+            int numSln;
+            PolyClipError err = YuPengClipper.Union(subj, clip, ClippingSolutions, out numSln);
+            if (err == PolyClipError.None)
+            {
+                result.Clear();
+                result.AddRange(ClippingSolutions[0]);
+                return;
+            }
             Logger.Write($"Error clipping: {err}");
         }
 
@@ -364,7 +372,7 @@ namespace Penumbra.Mathematics
             {
                 // Get points
                 Vector2 p1 = this[i];
-                Vector2 p2 = this.NextElement<Polygon, Vector2>(i);
+                Vector2 p2 = this.NextElement(i);
 
                 // Test if a point is directly on the edge
                 Vector2 edge = p2 - p1;

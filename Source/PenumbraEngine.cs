@@ -4,34 +4,25 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Graphics;
-using Penumbra.Graphics.Helpers;
 using Penumbra.Graphics.Providers;
+using Penumbra.Graphics.Renderers;
 using Penumbra.Utilities;
 
 namespace Penumbra
 {
     internal class PenumbraEngine
     {
-        private BufferedShadowRenderHelper _bufferedShadowRenderHelper;
+        private BufferedShadowRenderer _bufferedShadowRenderer;
 
         private readonly LightmapTextureBuffer _textureBuffer = new LightmapTextureBuffer();
         private RenderProcessProvider _renderProcessProvider;
-        private PrimitiveRenderHelper _primitiveRenderHelper;
+        private PrimitiveRenderer _primitivesRenderer;
 
         private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
 
         public PenumbraEngine(Projections projections)
         {
             Camera = new Camera(projections);
-            Camera.YInverted += (s, e) => { Hulls.ForEach(h => h.Load(Camera.InvertedY)); };
-            Hulls.CollectionChanged += (s, e) =>
-            {
-                e.NewItems?.ForEach<Hull>(i =>
-                {
-                    Check.ArgumentNotNull(i, "hull");
-                    i.Load(Camera.InvertedY);
-                });
-            };
         }
 
         public bool DebugDraw { get; set; } = true;
@@ -61,8 +52,8 @@ namespace Penumbra
             Camera.Load(GraphicsDevice, deviceManager);
             _textureBuffer.Load(GraphicsDevice, deviceManager);
             _renderProcessProvider = new RenderProcessProvider(GraphicsDevice, content, Camera);
-            _primitiveRenderHelper = new PrimitiveRenderHelper(GraphicsDevice, this);
-            _bufferedShadowRenderHelper = new BufferedShadowRenderHelper(GraphicsDevice, this);
+            _primitivesRenderer = new PrimitiveRenderer(GraphicsDevice, this);
+            _bufferedShadowRenderer = new BufferedShadowRenderer(GraphicsDevice, this);
 
             // Setup logging for debug purposes.
             Logger.Add(new DelegateLogger(x => Debug.WriteLine(x)));
@@ -80,6 +71,8 @@ namespace Penumbra
             GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, AmbientColor, 1f, 0);
 
             ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref Camera.WorldViewProjection);
+
+            // Resolve hulls.
 
             // Generate lightmap.
             for (int i = 0; i < Lights.Count; i++)
@@ -105,14 +98,13 @@ namespace Penumbra
                 if (light.ShadowType == ShadowType.Occluded)
                     GraphicsDevice.Clear(ClearOptions.Stencil, AmbientColor, 1f, 0);
 
-                // Set scissor rectangle.
-                // DO NOT USE params overload. Causes unnecessary garbage.                
-                GraphicsDevice.ScissorRectangle = Camera.GetScissorRectangle(light);
+                // Set scissor rectangle.                
+                GraphicsDevice.ScissorRectangle = Camera.GetScissorRectangle(light);                
 
                 // Draw shadows for light.
                 if (light.CastsShadows)
                 {
-                    _bufferedShadowRenderHelper.DrawShadows(
+                    _bufferedShadowRenderer.DrawShadows(
                         light,
                         _renderProcessProvider.Umbra(light.ShadowType),
                         _renderProcessProvider.Penumbra(light.ShadowType),
@@ -123,13 +115,13 @@ namespace Penumbra
                 // Draw light.                
                 ShaderParameters.SetVector3(ShaderParameter.LightColor, light.Color.ToVector3());
                 ShaderParameters.SetSingle(ShaderParameter.LightIntensity, light.IntensityFactor);
-                _primitiveRenderHelper.DrawQuad(_renderProcessProvider.Light, light.Position, light.Range * 2);
+                _primitivesRenderer.DrawQuad(_renderProcessProvider.Light, light.Position, light.Range * 2);
 
                 // Draw light source (for debugging purposes only).
-                _primitiveRenderHelper.DrawCircle(_renderProcessProvider.LightSource, light.Position, light.Radius);
+                _primitivesRenderer.DrawCircle(_renderProcessProvider.LightSource, light.Position, light.Radius);
 
                 // Clear alpha.                
-                _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.ClearAlpha);
+                _primitivesRenderer.DrawFullscreenQuad(_renderProcessProvider.ClearAlpha);
 
                 // Clear light's dirty flags.
                 light.DirtyFlags &= 0;
@@ -139,8 +131,8 @@ namespace Penumbra
             GraphicsDevice.SetRenderTarget(null);
 
             // Present lightmap.            
-            _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.Present, _textureBuffer.Scene);
-            _primitiveRenderHelper.DrawFullscreenQuad(_renderProcessProvider.PresentLightmap, _textureBuffer.LightMap);
+            _primitivesRenderer.DrawFullscreenQuad(_renderProcessProvider.Present, _textureBuffer.Scene);
+            _primitivesRenderer.DrawFullscreenQuad(_renderProcessProvider.PresentLightmap, _textureBuffer.LightMap);
 
             // Clear hulls dirty flags.
             for (int j = 0; j < Hulls.Count; j++)

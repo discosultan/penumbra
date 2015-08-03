@@ -239,9 +239,9 @@ namespace Penumbra.Graphics.Builders
         {
             var positions = hull.TransformedHullVertices;
 
-            Vector2 next = positions.NextElement<Polygon, Vector2>(context.Index);
+            Vector2 next = positions.NextElement(context.Index);
             Vector2 currentToNextDir = Vector2.Normalize(next - context.Position);
-            Vector2 previous = positions.PreviousElement<Polygon, Vector2>(context.Index);
+            Vector2 previous = positions.PreviousElement(context.Index);
             Vector2 currentToPreviousDir = Vector2.Normalize(previous - context.Position);
             
             Vector2 currentToInnerDir = result.Side == Side.Right ? currentToNextDir : currentToPreviousDir;
@@ -253,7 +253,7 @@ namespace Penumbra.Graphics.Builders
 
         private static void ClipHullFromFin(PenumbraFin result, HullPart hull, ref HullPointContext context, ref PenumbraFinContext finContext)
         {            
-            Polygon.Clip(result.Vertices, hull.TransformedHullVertices);
+            Polygon.Clip(result.Vertices, hull.TransformedHullVertices, result.Vertices);
         }
 
         private void OrderFinVerticesOriginFirst(PenumbraFin fin)
@@ -273,7 +273,7 @@ namespace Penumbra.Graphics.Builders
             {
                 int  vertexCount = fin.Vertices.Count;
                 int numToShift = vertexCount - index;                
-                fin.Vertices.ShiftRight<Polygon, Vector2>(numToShift);                
+                fin.Vertices.ShiftRight<Vector2>(numToShift);                
              }
         }
 
