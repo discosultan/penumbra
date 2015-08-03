@@ -38,7 +38,7 @@ namespace Penumbra.Graphics.Builders
             //_segments.Clear();
         }
 
-        public void ProcessHullPoint(Light light, HullPart hull, ref HullPointContext context)
+        public void ProcessHullPoint(Light light, Hull hull, ref HullPointContext context)
         {
             var isLast = IsLastPoint(hull, ref context);
             //switch (type)
@@ -77,7 +77,7 @@ namespace Penumbra.Graphics.Builders
             //Logger.Write(type + " " + context.Position.ToString("0"));
         }
 
-        public void ProcessHull(Light light, HullPart hull, ref HullContext hullCtx)
+        public void ProcessHull(Light light, Hull hull, ref HullContext hullCtx)
         {
             // EACH CONVEX HULL HAS ONLY 1 SEGMENT. CONCAVE HULLS CAN HAVE MORE, BUT CURRENTLY NOT SUPPORTED.
             //var segment = _activeSegment;
@@ -208,7 +208,7 @@ namespace Penumbra.Graphics.Builders
             _segments.Clear();
         }
 
-        private void TestLineOfSight(Light light, HullPart hull, List<HullPointContext> segment, int startIndex,
+        private void TestLineOfSight(Light light, Hull hull, List<HullPointContext> segment, int startIndex,
             ref Vector2 lightSide, ref Vector2 lightSideToCurrentDir, Vector2 lightToCurrentDir)
         {
             for (var i = 0; i < _hulls.Count; i++)
@@ -219,7 +219,7 @@ namespace Penumbra.Graphics.Builders
                 //var ray = new Ray2D(light.Position, lightToCurrentDir);
                 var ray = new Ray2D(ref lightSide, ref lightSideToCurrentDir);
                 float distance;
-                if (ray.Intersects(otherHull.TransformedHullVertices, out distance))
+                if (ray.Intersects(otherHull.TransformedPoints, out distance))
                 {
                     if (distance*distance - 0.1f <=
                         Vector2.DistanceSquared(segment[startIndex].Position, light.Position))
@@ -264,9 +264,9 @@ namespace Penumbra.Graphics.Builders
             }
         }
 
-        private static bool IsLastPoint(HullPart hull, ref HullPointContext context)
+        private static bool IsLastPoint(Hull hull, ref HullPointContext context)
         {
-            return context.Index >= hull.TransformedHullVertices.Count - 1;
+            return context.Index >= hull.TransformedPoints.Count - 1;
         }
     }
 }

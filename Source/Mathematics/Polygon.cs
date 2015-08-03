@@ -455,6 +455,25 @@ namespace Penumbra.Mathematics
             return new BoundingRectangle(ref lowerBound, ref upperBound);
         }
 
+        // TODO: impr perf
+        public bool Intersects(Polygon other)
+        {
+            for (int j = Count - 1, i = 0; i < Count; j = i, i++)
+            {
+                var segment = new LineSegment2D(this[i], this[j]);
+                for (int l = Count - 1, k = 0; k < Count; l = k, k++)
+                {
+                    var otherSegment = new LineSegment2D(other[k], other[l]);
+                    if (segment.Intersects(ref otherSegment))
+                    {
+                        return true;
+                    }
+                }                 
+            }
+
+            return false;
+        }
+
         bool ICollection<Vector2>.IsReadOnly => ((IList<Vector2>)_list).IsReadOnly;
     }
 }

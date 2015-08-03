@@ -23,6 +23,7 @@ namespace Penumbra
         public PenumbraEngine(Projections projections)
         {
             Camera = new Camera(projections);
+            ResolvedHulls = new HullList(Hulls);
         }
 
         public bool DebugDraw { get; set; } = true;
@@ -44,6 +45,7 @@ namespace Penumbra
         internal ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
         internal Camera Camera { get; }
         internal GraphicsDevice GraphicsDevice { get; private set; }
+        internal HullList ResolvedHulls { get; }
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, ContentManager content)
         {
@@ -73,23 +75,14 @@ namespace Penumbra
             ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref Camera.WorldViewProjection);
 
             // Resolve hulls.
+            ResolvedHulls.Resolve();
 
             // Generate lightmap.
             for (int i = 0; i < Lights.Count; i++)
             {
                 Light light = Lights[i];
                 if (!light.Enabled) continue;
-                             
-                bool skip = false;
-                for (int j = 0; j < Hulls.Count; j++)
-                {
-                    if (light.IsInside(Hulls[j]))
-                    {
-                        skip = true;
-                        break;
-                    }
-                }
-                if (skip) continue;
+                if (ResolvedHulls.LightIsInside(light)) continue;
 
                 // TODO: Cache and/or spatial tree?
 

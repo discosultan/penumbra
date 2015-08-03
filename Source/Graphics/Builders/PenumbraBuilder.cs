@@ -30,7 +30,7 @@ namespace Penumbra.Graphics.Builders
         private HullPointContext _previousCtx;
         private HullPointContext _firstCtx;
         private bool _addLast;
-        public void ProcessHullPoint(Light light, HullPart hull, ref HullPointContext context)
+        public void ProcessHullPoint(Light light, Hull hull, ref HullPointContext context)
         {
             if (context.Index == 0)
             {
@@ -43,7 +43,7 @@ namespace Penumbra.Graphics.Builders
                 _fins.Add(CreateFin(light, ref context, hull, Side.Right, false));
                 _addNext = false;
             }
-            else if (_addLast && context.Index == hull.TransformedHullVertices.Count - 1)
+            else if (_addLast && context.Index == hull.TransformedPoints.Count - 1)
             {
                 //_fins.Add(CreateFin(light, ref context, hull, Side.Right, false));
                 _fins.Add(CreateFin(light, ref context, hull, Side.Left, false));
@@ -63,7 +63,7 @@ namespace Penumbra.Graphics.Builders
                     switch (fin.Side)
                     {
                         case Side.Right:                        
-                            if (context.Index == hull.TransformedHullVertices.Count - 1)
+                            if (context.Index == hull.TransformedPoints.Count - 1)
                             {                                
                                 _fins.Add(CreateFin(light, ref _firstCtx, hull, Side.Right, false));
                             }
@@ -88,7 +88,7 @@ namespace Penumbra.Graphics.Builders
             _previousCtx = context;
         }
 
-        public void ProcessHull(Light light, HullPart hull, ref HullContext hullCtx)
+        public void ProcessHull(Light light, Hull hull, ref HullContext hullCtx)
         {            
             foreach (PenumbraFin fin in _fins)
             {
@@ -172,7 +172,7 @@ namespace Penumbra.Graphics.Builders
             vaos.HasPenumbra = false;
         }
         
-        private PenumbraFin CreateFin(Light light, ref HullPointContext context, HullPart hull, Side side, bool testIntersection = false)
+        private PenumbraFin CreateFin(Light light, ref HullPointContext context, Hull hull, Side side, bool testIntersection = false)
         {
             PenumbraFin result = _finPool.Fetch();
             result.Reset();
@@ -235,9 +235,9 @@ namespace Penumbra.Graphics.Builders
             result.Vertices.Add(result.Vertex3.Position);
         }
 
-        private bool TestIntersection(PenumbraFin result, HullPart hull, ref HullPointContext context, ref PenumbraFinContext finContext)
+        private bool TestIntersection(PenumbraFin result, Hull hull, ref HullPointContext context, ref PenumbraFinContext finContext)
         {
-            var positions = hull.TransformedHullVertices;
+            var positions = hull.TransformedPoints;
 
             Vector2 next = positions.NextElement(context.Index);
             Vector2 currentToNextDir = Vector2.Normalize(next - context.Position);
@@ -251,9 +251,9 @@ namespace Penumbra.Graphics.Builders
                 currentToInnerDir);
         }
 
-        private static void ClipHullFromFin(PenumbraFin result, HullPart hull, ref HullPointContext context, ref PenumbraFinContext finContext)
+        private static void ClipHullFromFin(PenumbraFin result, Hull hull, ref HullPointContext context, ref PenumbraFinContext finContext)
         {            
-            Polygon.Clip(result.Vertices, hull.TransformedHullVertices, result.Vertices);
+            Polygon.Clip(result.Vertices, hull.TransformedPoints, result.Vertices);
         }
 
         private void OrderFinVerticesOriginFirst(PenumbraFin fin)

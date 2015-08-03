@@ -12,8 +12,7 @@ namespace Penumbra.Graphics.Renderers
     internal class BufferedShadowRenderer : IDisposable
     {
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly PenumbraEngine _lightRenderer;
-        private readonly HullList _hulls;
+        private readonly PenumbraEngine _lightRenderer;        
         private readonly Dictionary<Light, LightVaos> _shadowVaos = new Dictionary<Light, LightVaos>();
 
         private readonly PenumbraBuilder _penumbraBuilder;
@@ -27,11 +26,10 @@ namespace Penumbra.Graphics.Renderers
         {
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;
-            _lightRenderer.Lights.CollectionChanged += ObservableLightsChanged;
-            _hulls = new HullList(lightRenderer.Hulls);            
+            _lightRenderer.Lights.CollectionChanged += ObservableLightsChanged;            
 
             _penumbraBuilder = new PenumbraBuilder();
-            _umbraBuilder = new UmbraBuilder(_hulls);
+            _umbraBuilder = new UmbraBuilder(_lightRenderer.ResolvedHulls);
             _solidBuilder = new SolidBuilder();
             _antumbraBuilder = new AntumbraBuilder();
         }
@@ -107,7 +105,7 @@ namespace Penumbra.Graphics.Renderers
                 LightComponentDirtyFlags.Position | 
                 LightComponentDirtyFlags.CastsShadows | 
                 LightComponentDirtyFlags.ShadowType);
-            bool hullsDirty = _hulls.AnyDirty(HullComponentDirtyFlags.All);
+            bool hullsDirty = _lightRenderer.ResolvedHulls.AnyDirty(HullComponentDirtyFlags.All);
 
             if (lightDirty || hullsDirty)
             {
@@ -125,12 +123,12 @@ namespace Penumbra.Graphics.Renderers
             _antumbraBuilder.PreProcess();            
             _solidBuilder.PreProcess();
 
-            for (int i = 0; i < _hulls.Count; i++)
+            for (int i = 0; i < _lightRenderer.ResolvedHulls.Count; i++)
             {
-                HullPart hull = _hulls[i];
+                Hull hull = _lightRenderer.ResolvedHulls[i];
                 if (!hull.Enabled || !light.Intersects(hull)) continue;
 
-                for (int j = 0; j < hull.TransformedHullVertices.Count; j++)
+                for (int j = 0; j < hull.TransformedPoints.Count; j++)
                 {
                     HullPointContext context;
                     PopulateContextForPoint(light, hull, j, out context);
@@ -155,14 +153,15 @@ namespace Penumbra.Graphics.Renderers
             _solidBuilder.Build(light, vaos);
         }
 
-        public void PopulateContextForPoint(Light light, HullPart hull, int i, out HullPointContext context)
+        public void PopulateContextForPoint(Light light, Hull hull, int i, out HullPointContext context)
         {
-            Vector2 position = hull.TransformedHullVertices[i];
+            Vector2 position = hull.TransformedPoints[i];
             context = new HullPointContext
             {
                 Index = i,
                 Position = position,
-                Normals = hull.TransformedNormals[i],
+                Normals = hull.TransformedNormals[i],                
+                IsConvex = hull.TransformedNormals[i].IsConvex
                 //IsInAnotherHull = _hulls
                 //    .Where(x => x != hull)
                 //    .SelectMany(x => x.TransformedHullVertices)

@@ -1,32 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Penumbra.Utilities;
+using Penumbra.Mathematics;
+using Penumbra.Mathematics.Clipping;
 
 namespace Penumbra
 {
     internal class HullList
     {
-        private readonly ObservableCollection<Hull> _hulls;
-
-        private readonly List<HullPart> _wrappedHullParts;
-
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        private readonly ObservableCollection<Hull> _hulls;        
 
         public HullList(ObservableCollection<Hull> hulls)
         {
             _hulls = hulls;
-            _hulls.CollectionChanged += HullsCollectionChanged;
-
-            _wrappedHullParts = new List<HullPart>();            
-            foreach (Hull hull in _hulls)
-            {                
-                _wrappedHullParts.AddRange(hull.Parts);
-            }
+            //_hulls.CollectionChanged += HullsCollectionChanged;
         }
 
-        public int Count => _wrappedHullParts.Count;
+        public List<Hull> ResolvedHulls { get; } = new List<Hull>();
 
         public bool AnyDirty(HullComponentDirtyFlags flags)
         {
@@ -37,32 +29,75 @@ namespace Penumbra
             return false;
         }
 
-        private void HullsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public bool LightIsInside(Light light)
         {
-            switch (e.Action)
-            {                
-                // TODO: Not wise to recreate entire list always. Even if it is recreated, we should
-                // TODO: pool hull wrappers and reuse em to prevent unnecessary heap allocation.
-                case NotifyCollectionChangedAction.Remove:
-                case NotifyCollectionChangedAction.Replace:
-                case NotifyCollectionChangedAction.Reset:
-                    _wrappedHullParts.Clear();
-                    goto case NotifyCollectionChangedAction.Add;
-                case NotifyCollectionChangedAction.Add:
-                    PopulateList(e.NewItems);                    
-                    break;       
+            for (int j = 0; j < ResolvedHulls.Count; j++)
+            {
+                if (light.IsInside(ResolvedHulls[j]))
+                {
+                    return true;
+                }
             }
-            CollectionChanged?.Invoke(sender, e);
+            return false;
         }
 
-        private void PopulateList(ICollection values)
+        private bool _flag;
+
+        public void Resolve()
         {
-            if (values == null) return;
+            ResolvedHulls.Clear();
+            for (int i = 0; i < _hulls.Count - 1; i++)
+            {
+                Hull hull = _hulls[i];
 
-            values.ForEach<Hull>(hull => hull.Parts.ForEach(_wrappedHullParts.Add));            
-            Logger.Write($"Added {values.Count} hulls to list");
+                //if (hull.Flag == _flag) continue;
+
+                for (int j = i + 1; j < _hulls.Count; j++)
+                {
+                    Hull otherHull = _hulls[j];
+                    if (hull.TransformedPoints.Intersects(otherHull.TransformedPoints))
+                    {
+                        var result = new Polygon();
+                        Polygon.Union(hull.TransformedPoints, otherHull.TransformedPoints, result);
+                        ResolvedHulls.Add(result);
+                    }
+                    else
+                    {
+                        ResolvedHulls.Add(hull);
+                    }
+                }                
+            }
+            _flag = !_flag;
         }
 
-        public HullPart this[int index] => _wrappedHullParts[index];
+        public int Count => ResolvedHulls.Count;
+
+        //private void HullsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        //{
+        //    switch (e.Action)
+        //    {                
+        //        // TODO: Not wise to recreate entire list always. Even if it is recreated, we should
+        //        // TODO: pool hull wrappers and reuse em to prevent unnecessary heap allocation.
+        //        case NotifyCollectionChangedAction.Remove:
+        //        case NotifyCollectionChangedAction.Replace:
+        //        case NotifyCollectionChangedAction.Reset:
+        //            _wrappedHulls.Clear();
+        //            goto case NotifyCollectionChangedAction.Add;
+        //        case NotifyCollectionChangedAction.Add:
+        //            PopulateList(e.NewItems);                    
+        //            break;       
+        //    }
+        //    CollectionChanged?.Invoke(sender, e);
+        //}
+
+        //private void PopulateList(ICollection values)
+        //{
+        //    if (values == null) return;
+
+        //    values.ForEach<Hull>(hull => hull.Parts.ForEach(_wrappedHulls.Add));            
+        //    Logger.Write($"Added {values.Count} hulls to list");
+        //}
+
+        public Hull this[int index] => ResolvedHulls[index];
     }
 }

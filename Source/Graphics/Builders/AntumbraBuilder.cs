@@ -11,7 +11,7 @@ namespace Penumbra.Graphics.Builders
             _vertices.Clear();
         }
 
-        public void ProcessHull(Light light, HullPart hull, ref HullContext hullCtx)
+        public void ProcessHull(Light light, Hull hull, ref HullContext hullCtx)
         {
             if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
             {

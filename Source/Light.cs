@@ -130,27 +130,18 @@ namespace Penumbra
                 (int)(Range * 2));
         }
 
-        internal bool Intersects(HullPart hullPart)
+        internal bool Intersects(Hull Hull)
         {
             // Ref: Jason Gregory Game Engine Architecture 2nd p.172
-            float sumOfRadiuses = Range + hullPart.Radius;
-            return Vector2.DistanceSquared(Position, hullPart.Centroid) < sumOfRadiuses * sumOfRadiuses;
-        }
+            float sumOfRadiuses = Range + Hull.Radius;
+            return Vector2.DistanceSquared(Position, Hull.Centroid) < sumOfRadiuses * sumOfRadiuses;
+        }        
 
-        internal bool IsInside(Hull hull)
+        internal bool IsInside(Hull Hull)
         {
-            for (int i = 0; i < hull.Parts.Length; i++)
-            {
-                if (IsInside(hull.Parts[i])) return true;
-            }
-            return false;            
-        }
-
-        internal bool IsInside(HullPart hullPart)
-        {
-            if (!hullPart.Enabled) return false;
-            //return hullPart.TransformedHullVertices.PointInPolygon(ref _position) == IntersectionResult.FullyContained;
-            return hullPart.TransformedHullVertices.PointInPolygon(ref _position);
+            //if (!Hull.Enabled) return false;
+            //return Hull.TransformedHullVertices.PointInPolygon(ref _position) == IntersectionResult.FullyContained;
+            return Hull.TransformedPoints.PointInPolygon(ref _position);
         }
     }
 
