@@ -61,5 +61,50 @@ namespace Penumbra.Mathematics
         {
             return Math.Abs(val) < Epsilon;
         }
+
+        public static void Sort(float value1, float value2, out float max, out float min)
+        {
+            if (value1 > value2)
+            {
+                max = value1;
+                min = value2;
+            }
+            else
+            {
+                max = value2;
+                min = value1;
+            }
+        }
+
+        /// <summary>
+        /// Trys to Solve for x in the equation: (a * (x * x) + b * x + c == 0)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <param name="plus">The result of (b + Math.Sqrt((b * b) - (4 * a * c))) / (2 * a)</param>
+        /// <param name="minus">The result of (b - Math.Sqrt((b * b) - (4 * a * c))) / (2 * a)</param>
+        /// <returns><see langword="false" /> if an error would have been thrown; otherwise <see langword="true" />.</returns>
+        public static bool TrySolveQuadratic(float a, float b, float c, out float plus, out float minus)
+        {
+            if (0 == a)
+            {
+                plus = -c / b;
+                minus = plus;
+                return true;
+            }
+            c = (b * b) - (4 * a * c);
+            if (0 <= c)
+            {
+                c = Sqrt(c);
+                a = .5f / a;
+                plus = ((c - b) * a);
+                minus = ((-c - b) * a);
+                return true;
+            }
+            plus = 0;
+            minus = 0;
+            return false;
+        }
     }
 }

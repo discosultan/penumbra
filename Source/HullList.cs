@@ -40,34 +40,47 @@ namespace Penumbra
             }
             return false;
         }
-
-        private bool _flag;
-
+        
+        private readonly Dictionary<int, Polygon> _mergedPolygonsMapping = new Dictionary<int, Polygon>();
         public void Resolve()
         {
             ResolvedHulls.Clear();
-            for (int i = 0; i < _hulls.Count - 1; i++)
+            _mergedPolygonsMapping.Clear();
+            for (int i = 0; i < _hulls.Count; i++)
             {
-                Hull hull = _hulls[i];
-
-                //if (hull.Flag == _flag) continue;
+                bool polygonMerged;
+                bool didNotIntersect = true;
+                Polygon polygon = GetPolygon(_hulls, i, out polygonMerged);
 
                 for (int j = i + 1; j < _hulls.Count; j++)
                 {
-                    Hull otherHull = _hulls[j];
-                    if (hull.TransformedPoints.Intersects(otherHull.TransformedPoints))
+                    bool nextPolygonMerged;
+                    Polygon nextPolygon = GetPolygon(_hulls, j, out nextPolygonMerged);
+                    if (polygon.Intersects(nextPolygon))
                     {
                         var result = new Polygon();
-                        Polygon.Union(hull.TransformedPoints, otherHull.TransformedPoints, result);
-                        ResolvedHulls.Add(result);
-                    }
-                    else
-                    {
-                        ResolvedHulls.Add(hull);
-                    }
-                }                
+                        Polygon.Union(polygon, nextPolygon, result);
+                        _mergedPolygonsMapping.Add(j, result);
+                        didNotIntersect = false;
+                    }                    
+                }
+                if (didNotIntersect)
+                {
+                    ResolvedHulls.Add(polygonMerged ? new Hull(polygon) : _hulls[i]);
+                }
+            }            
+        }
+
+        private Polygon GetPolygon(ObservableCollection<Hull> hulls, int index, out bool merged)
+        {
+            Polygon result;
+            merged = true;
+            if (!_mergedPolygonsMapping.TryGetValue(index, out result))
+            {
+                result = hulls[index].TransformedPoints;
+                merged = false;
             }
-            _flag = !_flag;
+            return result;
         }
 
         public int Count => ResolvedHulls.Count;

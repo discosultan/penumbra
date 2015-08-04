@@ -4,18 +4,36 @@ namespace Penumbra.Mathematics
 {
     internal static class VectorUtil
     {
+        public const int Size = 8;
+
         // NB! We are using inverted y axis (y runs from top to bottom).
 
         public static Vector2 Rotate90CW(Vector2 v)
         {
-            //return new Vector2(-v.Y, v.X); // inverted y
-            return new Vector2(v.Y, -v.X);
+            Vector2 result;
+            Rotate90CW(ref v, out result);
+            return result;
+        }
+
+        public static void Rotate90CW(ref Vector2 v, out Vector2 result)
+        {
+            float sourceX = v.X;
+            result.X = v.Y;
+            result.Y = -sourceX;
         }
 
         public static Vector2 Rotate90CCW(Vector2 v)
+        {                        
+            Vector2 result;
+            Rotate90CCW(ref v, out result);
+            return result;
+        }
+
+        public static void Rotate90CCW(ref Vector2 v, out Vector2 result)
         {
-            //return new Vector2(v.Y, -v.X); // inverted y
-            return new Vector2(-v.Y, v.X);
+            float sourceX = v.X;
+            result.X = -v.Y;
+            result.Y = sourceX;
         }
 
         // Assumes a polygon where no two edges intersect.
@@ -129,6 +147,21 @@ namespace Penumbra.Mathematics
         public static bool NearEqual(Vector2 lhv, Vector2 rhv)
         {
             return Calc.NearEqual(lhv.X, rhv.X) && Calc.NearEqual(lhv.Y, rhv.Y);
+        }
+
+        public static void Normalize(ref Vector2 source, out float magnitude, out Vector2 result)
+        {
+            magnitude = source.Length();            
+            if (magnitude > 0)
+            {
+                float magnitudeInv = (1 / magnitude);
+                result.X = source.X * magnitudeInv;
+                result.Y = source.Y * magnitudeInv;
+            }
+            else
+            {
+                result = Vector2.Zero;
+            }
         }
     }
 }

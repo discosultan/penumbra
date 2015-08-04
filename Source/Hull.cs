@@ -128,9 +128,7 @@ namespace Penumbra
             }
         }
 
-        #endregion
-
-        public bool Flag { get; set; }
+        #endregion       
 
         internal bool AnyDirty(HullComponentDirtyFlags flags)
         {

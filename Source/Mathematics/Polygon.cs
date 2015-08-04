@@ -461,7 +461,7 @@ namespace Penumbra.Mathematics
             for (int j = Count - 1, i = 0; i < Count; j = i, i++)
             {
                 var segment = new LineSegment2D(this[i], this[j]);
-                for (int l = Count - 1, k = 0; k < Count; l = k, k++)
+                for (int l = other.Count - 1, k = 0; k < other.Count; l = k, k++)
                 {
                     var otherSegment = new LineSegment2D(other[k], other[l]);
                     if (segment.Intersects(ref otherSegment))
@@ -472,6 +472,11 @@ namespace Penumbra.Mathematics
             }
 
             return false;
+        }
+
+        public override string ToString()
+        {
+            return string.Join(" ", _list);
         }
 
         bool ICollection<Vector2>.IsReadOnly => ((IList<Vector2>)_list).IsReadOnly;
