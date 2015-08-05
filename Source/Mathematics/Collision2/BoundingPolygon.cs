@@ -121,7 +121,7 @@ namespace Penumbra.Mathematics.Collision2
                 for (int index2 = 0; index2 < vertexes2.Length; ++index2, v3 = v4)
                 {
                     v4 = vertexes2[index2];
-                    LineSegment.Intersects(ref v1, ref v2, ref v3, ref v4, out result);
+                    result = LineSegment.Intersects(ref v1, ref v2, ref v3, ref v4);
                     if (result) { return; }
                 }
             }

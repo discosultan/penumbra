@@ -41,12 +41,40 @@ namespace Penumbra.Mathematics.Collision2
         public const Scalar Tolerance = 0.000000001f;
         public const int Size = VectorUtil.Size * 2;
 
-        public static void Intersects(ref Vector2 v1, ref Vector2 v2, ref Vector2 v3, ref Vector2 v4, out bool result)
+        public static bool Intersects2(Vector2 A, Vector2 B, Vector2 C, Vector2 D)
+        {
+            var CmP = new Vector2(C.X - A.X, C.Y - A.Y);
+            var r = new Vector2(B.X - A.X, B.Y - A.Y);
+            var s = new Vector2(D.X - C.X, D.Y - C.Y);
+
+            float CmPxr = CmP.X * r.Y - CmP.Y * r.X;
+            float CmPxs = CmP.X * s.Y - CmP.Y * s.X;
+            float rxs = r.X * s.Y - r.Y * s.X;
+
+            if (CmPxr == 0f)
+            {
+                // Lines are collinear, and so intersect if they have any overlap
+
+                return ((C.X - A.X < 0f) != (C.X - B.X < 0f))
+                    || ((C.Y - A.Y < 0f) != (C.Y - B.Y < 0f));
+            }
+
+            if (rxs == 0f)
+                return false; // Lines are parallel.
+
+            float rxsr = 1f / rxs;
+            float t = CmPxs * rxsr;
+            float u = CmPxr * rxsr;
+
+            return (t >= 0f) && (t <= 1f) && (u >= 0f) && (u <= 1f);
+        }
+
+        public static bool Intersects(ref Vector2 v1, ref Vector2 v2, ref Vector2 v3, ref Vector2 v4)
         {
             var div = 1 / ((v4.Y - v3.Y) * (v2.X - v1.X) - (v4.X - v3.X) * (v2.Y - v1.Y));
             var ua = ((v4.X - v3.X) * (v1.Y - v3.Y) - (v4.Y - v3.Y) * (v1.X - v3.X)) * div;
             var ub = ((v2.X - v1.X) * (v1.Y - v3.Y) - (v2.Y - v1.Y) * (v1.X - v3.X)) * div;
-            result = ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
+            return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
         }
         public static bool Intersects(ref Vector2 v1, ref Vector2 v2, ref Vector2 v3, ref Vector2 v4, out Vector2 result)
         {

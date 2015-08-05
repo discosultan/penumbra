@@ -5,6 +5,7 @@ using Vertices = Penumbra.Mathematics.Polygon;
 using Penumbra.Mathematics.Collision;
 using System;
 using System.Diagnostics;
+using Penumbra.Mathematics.Collision2;
 
 namespace Penumbra.Mathematics.Clipping
 {
@@ -159,9 +160,12 @@ namespace Penumbra.Mathematics.Clipping
 
                     Vector2 intersectionPoint;
                     // Check if the edges intersect
-                    var seg1 = new LineSegment2D(ref a, ref b);
-                    var seg2 = new LineSegment2D(ref c, ref d);
-                    if (seg1.Intersects(ref seg2, out intersectionPoint))
+                    //var seg1 = new LineSegment2D(ref a, ref b);
+                    //var seg2 = new LineSegment2D(ref c, ref d);
+                    //var seg1 = new LineSegment(a, b);
+                    //var seg2 = new LineSegment(c, d);
+                    //if (seg1.Intersects(ref seg2, out intersectionPoint))                    
+                    if (LineSegment.Intersects2(ref a, ref b, ref c, ref d, out intersectionPoint))
                     {
                         // calculate alpha values for sorting multiple intersections points on a edge
                         // Insert intersection point into first polygon
