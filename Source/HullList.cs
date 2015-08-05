@@ -40,48 +40,46 @@ namespace Penumbra
             }
             return false;
         }
-        
-        private readonly Dictionary<int, Polygon> _mergedPolygonsMapping = new Dictionary<int, Polygon>();
+
+        private readonly List<int> _resolvedIndices = new List<int>();    
         public void Resolve()
         {
             ResolvedHulls.Clear();
-            _mergedPolygonsMapping.Clear();
+            _resolvedIndices.Clear();
             for (int i = 0; i < _hulls.Count; i++)
             {
-                bool polygonMerged;
-                bool didNotIntersect = true;
-                Polygon polygon = GetPolygon(_hulls, i, out polygonMerged);
+                if (_resolvedIndices.Contains(i)) continue;
 
-                for (int j = i + 1; j < _hulls.Count; j++)
-                {
-                    bool nextPolygonMerged;
-                    Polygon nextPolygon = GetPolygon(_hulls, j, out nextPolygonMerged);
-                    if (polygon.Intersects(nextPolygon))
-                    {
-                        var result = new Polygon();
-                        Polygon.Union(polygon, nextPolygon, result);
-                        _mergedPolygonsMapping.Add(j, result);
-                        didNotIntersect = false;
-                    }                    
-                }
-                if (didNotIntersect)
-                {
-                    ResolvedHulls.Add(polygonMerged ? new Hull(polygon) : _hulls[i]);
-                }
-            }            
+                _resolvedIndices.Add(i);
+                Polygon poly = _hulls[i].TransformedPoints;
+                Polygon result;
+                bool mergedPolygons = ResolvePolygon(poly, out result);
+
+                ResolvedHulls.Add(mergedPolygons ? new Hull(result) : _hulls[i]);
+            }          
         }
 
-        private Polygon GetPolygon(ObservableCollection<Hull> hulls, int index, out bool merged)
+        private bool ResolvePolygon(Polygon polygon, out Polygon result)
         {
-            Polygon result;
-            merged = true;
-            if (!_mergedPolygonsMapping.TryGetValue(index, out result))
+            result = polygon;
+            bool mergedPolygons = false;
+            for (int i = 1; i < _hulls.Count; i++)
             {
-                result = hulls[index].TransformedPoints;
-                merged = false;
+                if (_resolvedIndices.Contains(i)) continue;
+                
+                Polygon otherPolygon = _hulls[i].TransformedPoints;
+                if (polygon.Intersects(otherPolygon))
+                {
+                    _resolvedIndices.Add(i);
+
+                    result = new Polygon();
+                    Polygon.Union(polygon, otherPolygon, result);
+                    mergedPolygons = true;
+                    ResolvePolygon(result, out result);
+                }
             }
-            return result;
-        }
+            return mergedPolygons;
+        }        
 
         public int Count => ResolvedHulls.Count;
 

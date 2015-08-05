@@ -38,15 +38,15 @@ namespace Penumbra.Graphics.Builders
             //_segments.Clear();
         }
 
+        private bool _segmentActive;
         public void ProcessHullPoint(Light light, Hull hull, ref HullPointContext context)
         {
-            var isLast = IsLastPoint(hull, ref context);
-            //switch (type)
+            var isLast = IsLastPoint(hull, ref context);            
             switch (context.Side)
             {
                 case Side.Right:
-                    _isFirstSegment = false;
-                    //_activeSegment.Clear();
+                    _segmentActive = true;
+                    _isFirstSegment = false;                    
                     _activeSegment = new List<HullPointContext>();
                     _segments.Add(_activeSegment);
                     _activeSegment.Add(context);
@@ -62,6 +62,7 @@ namespace Penumbra.Graphics.Builders
                         AppendFirstSegmentToActiveSegment();
                     break;
                 case Side.Left:
+                    _segmentActive = false;
                     if (_isFirstSegment)
                         _firstSegmentBuffer.Add(context);
                     else
@@ -71,20 +72,20 @@ namespace Penumbra.Graphics.Builders
                     break;
                 case Side.Forward:
                     _isFirstSegment = false;
+                    if (_segmentActive)
+                    {
+                        _activeSegment.Add(context);
+                    }
                     // First segment is already handled.
                     break;
-            }
-            //Logger.Write(type + " " + context.Position.ToString("0"));
+            }            
         }
 
         public void ProcessHull(Light light, Hull hull, ref HullContext hullCtx)
-        {
-            // EACH CONVEX HULL HAS ONLY 1 SEGMENT. CONCAVE HULLS CAN HAVE MORE, BUT CURRENTLY NOT SUPPORTED.
-            //var segment = _activeSegment;
+        {                        
             foreach (var segment in _segments)
             {
-                if (segment.Count <= 1) continue;
-                //if (segment.Count <= 1) return;
+                if (segment.Count <= 1) continue;                
 
                 var startIndex = 0;
                 Vector2 lightSideRight, lightSideToCurrentDirRight;
@@ -96,10 +97,7 @@ namespace Penumbra.Graphics.Builders
                     var currentToNextDir =
                         Vector2.Normalize(segment[startIndex + 1].Position - segment[startIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDirRight, currentToNextDir))
-                    {
-                        // TEST LINE OF SIGHT
-                        //TestLineOfSight(light, hull, segment, startIndex, ref lightSideRight,
-                        //    ref lightSideToCurrentDirRight, lightToCurrentDir);
+                    {                        
                         break;
                     }
                 } while (++startIndex < segment.Count - 1);
@@ -114,10 +112,7 @@ namespace Penumbra.Graphics.Builders
                     var currentToPreviousDir =
                         Vector2.Normalize(segment[endIndex - 1].Position - segment[endIndex].Position);
                     if (!VectorUtil.Intersects(lightToCurrentDir, lightSideToCurrentDirLeft, currentToPreviousDir))
-                    {
-                        // TEST LINE OF SIGHT
-                        //TestLineOfSight(light, hull, segment, endIndex, ref lightSideLeft, ref lightSideToCurrentDirLeft,
-                        //    lightToCurrentDir);
+                    {                        
                         break;
                     }
                 } while (--endIndex >= 1);
@@ -206,30 +201,6 @@ namespace Penumbra.Graphics.Builders
             _hullVertices.Clear();
             _isFirstSegment = true;
             _segments.Clear();
-        }
-
-        private void TestLineOfSight(Light light, Hull hull, List<HullPointContext> segment, int startIndex,
-            ref Vector2 lightSide, ref Vector2 lightSideToCurrentDir, Vector2 lightToCurrentDir)
-        {
-            for (var i = 0; i < _hulls.Count; i++)
-            {
-                var otherHull = _hulls[i];
-                if (otherHull == hull) continue;
-
-                //var ray = new Ray2D(light.Position, lightToCurrentDir);
-                var ray = new Ray2D(ref lightSide, ref lightSideToCurrentDir);
-                float distance;
-                if (ray.Intersects(otherHull.TransformedPoints, out distance))
-                {
-                    if (distance*distance - 0.1f <=
-                        Vector2.DistanceSquared(segment[startIndex].Position, light.Position))
-                    {
-                        lightSide = light.Position;
-                        lightSideToCurrentDir = lightToCurrentDir;
-                        break;
-                    }
-                }
-            }
         }
 
         public void Build(Light light, LightVaos vaos)

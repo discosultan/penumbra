@@ -145,12 +145,12 @@ namespace Penumbra.Mathematics.Collision2
             if (vectors.Length == 0) { throw new ArgumentOutOfRangeException(nameof(vectors)); }
 
             Vector2 current;
-            Vector2.Transform(ref matrix, ref vectors[0], out current);
+            VectorUtil.Transform(ref matrix, ref vectors[0], out current);
             result.Max = current;
             result.Min = current;
             for (int index = 1; index < vectors.Length; ++index)
             {
-                Vector2.Transform(ref matrix, ref vectors[index], out current);
+                VectorUtil.Transform(ref matrix, ref vectors[index], out current);
                 if (current.X > result.Max.X)
                 {
                     result.Max.X = current.X;
@@ -175,12 +175,12 @@ namespace Penumbra.Mathematics.Collision2
             if (vectors.Length == 0) { throw new ArgumentOutOfRangeException(nameof(vectors)); }
 
             Vector2 current;
-            Vector2.TransformNormal(ref matrix, ref vectors[0], out current);
+            VectorUtil.TransformNormal(ref matrix, ref vectors[0], out current);
             result.Max = current;
             result.Min = current;
             for (int index = 1; index < vectors.Length; ++index)
             {
-                Vector2.TransformNormal(ref matrix, ref vectors[index], out current);
+                VectorUtil.TransformNormal(ref matrix, ref vectors[index], out current);
                 if (current.X > result.Max.X)
                 {
                     result.Max.X = current.X;
@@ -263,9 +263,9 @@ namespace Penumbra.Mathematics.Collision2
         public static void FromCircle(ref Matrix2x3 matrix, ref Scalar radius, out BoundingRectangle result)
         {
             Scalar xRadius = matrix.m01 * matrix.m01 + matrix.m00 * matrix.m00;
-            xRadius = ((xRadius == 1) ? (radius) : (radius * MathHelper.Sqrt(xRadius)));
+            xRadius = ((xRadius == 1) ? (radius) : (radius * Calc.Sqrt(xRadius)));
             Scalar yRadius = matrix.m10 * matrix.m10 + matrix.m11 * matrix.m11;
-            yRadius = ((yRadius == 1) ? (radius) : (radius * MathHelper.Sqrt(yRadius)));
+            yRadius = ((yRadius == 1) ? (radius) : (radius * Calc.Sqrt(yRadius)));
 
             result.Max.X = matrix.m02 + xRadius;
             result.Min.X = matrix.m02 - xRadius;

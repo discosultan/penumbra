@@ -44,9 +44,9 @@ namespace Penumbra.Mathematics.Collision2
         {
             Vector2 point;
             Vector2 origin = Vector2.Zero;
-            Vector2.Multiply(ref line.Normal, ref line.D, out  point);
-            Vector2.Transform(ref matrix, ref point, out point);
-            Vector2.Transform(ref matrix, ref origin, out origin);
+            VectorUtil.Multiply(ref line.Normal, ref line.D, out  point);
+            VectorUtil.Transform(ref matrix, ref point, out point);
+            VectorUtil.Transform(ref matrix, ref origin, out origin);
             Vector2.Subtract(ref point, ref origin, out result.Normal);
             Vector2.Normalize(ref result.Normal, out result.Normal);
             Vector2.Dot(ref point, ref result.Normal, out result.D);
@@ -61,9 +61,9 @@ namespace Penumbra.Mathematics.Collision2
         {
             Vector2 point;
             Vector2 origin = Vector2.Zero;
-            Vector2.Multiply(ref line.Normal, ref line.D, out  point);
-            Vector2.Transform(ref matrix, ref point, out point);
-            Vector2.Transform(ref matrix, ref origin, out origin);
+            VectorUtil.Multiply(ref line.Normal, ref line.D, out  point);
+            VectorUtil.Transform(ref matrix, ref point, out point);
+            VectorUtil.Transform(ref matrix, ref origin, out origin);
             Vector2.Subtract(ref point, ref origin, out result.Normal);
             Vector2.Normalize(ref result.Normal, out result.Normal);
             Vector2.Dot(ref point, ref result.Normal, out result.D);

@@ -44,7 +44,7 @@
   <ItemGroup>
     <Compile Include="Scenarios\F_ConcaveHull.cs" />
     <Compile Include="Scenarios\C_LightBlending.cs" />
-    <Compile Include="Scenarios\Y_Antumbra.cs" />
+    <Compile Include="Scenarios\E_Antumbra.cs" />
     <Compile Include="Scenarios\B_LightPassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Scenarios\G_OverlappingHulls.cs" />
@@ -55,7 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenario.cs" />
     <Compile Include="ScenariosComponent.cs" />
-    <Compile Include="Scenarios\X_PenumbraTransition.cs" />
+    <Compile Include="Scenarios\A_PenumbraTransition.cs" />
     <Compile Include="UIComponent.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>

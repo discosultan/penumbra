@@ -163,5 +163,114 @@ namespace Penumbra.Mathematics
                 result = Vector2.Zero;
             }
         }
+
+        /// <summary>
+        /// Uses a matrix multiplication to Transform the vector.
+        /// </summary>
+        /// <param name="matrix">The Transformation matrix</param>
+        /// <param name="source">The Vector to be transformed</param>
+        /// <returns>The transformed vector.</returns>
+        /// <remarks><seealso href="http://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations"/></remarks>
+        public static Vector2 Transform(Matrix3x3 matrix, Vector2 source)
+        {
+            float inverseZ = 1 / (source.X * matrix.m20 + source.Y * matrix.m21 + matrix.m22);
+            Vector2 result;
+            result.X = (source.X * matrix.m00 + source.Y * matrix.m01 + matrix.m02) * inverseZ;
+            result.Y = (source.X * matrix.m10 + source.Y * matrix.m11 + matrix.m12) * inverseZ;
+            return result;
+        }
+        public static void Transform(ref Matrix3x3 matrix, ref Vector2 source, out Vector2 result)
+        {
+            float X = source.X;
+            float inverseZ = 1 / (X * matrix.m20 + source.Y * matrix.m21 + matrix.m22);
+            result.X = (X * matrix.m00 + source.Y * matrix.m01 + matrix.m02) * inverseZ;
+            result.Y = (X * matrix.m10 + source.Y * matrix.m11 + matrix.m12) * inverseZ;
+        }
+        public static Vector2 TransformNormal(Matrix3x3 matrix, Vector2 source)
+        {
+            Vector2 result;
+            result.X = (source.X * matrix.m00 + source.Y * matrix.m01);
+            result.Y = (source.X * matrix.m10 + source.Y * matrix.m11);
+            return result;
+        }
+        public static void TransformNormal(ref Matrix3x3 matrix, ref Vector2 source, out Vector2 result)
+        {
+            float X = source.X;
+            result.X = (X * matrix.m00 + source.Y * matrix.m01);
+            result.Y = (X * matrix.m10 + source.Y * matrix.m11);
+        }
+        /// <summary>
+        /// Uses a matrix multiplication to Transform the vector.
+        /// </summary>
+        /// <param name="matrix">The Transformation matrix</param>
+        /// <param name="source">The Vector to be transformed</param>
+        /// <returns>The transformed vector.</returns>
+        /// <remarks><seealso href="http://en.wikipedia.org/wiki/Transformation_matrix#Affine_transformations"/></remarks>
+        public static Vector2 Transform(Matrix2x3 matrix, Vector2 source)
+        {
+            Vector2 result;
+            result.X = (source.X * matrix.m00 + source.Y * matrix.m01 + matrix.m02);
+            result.Y = (source.X * matrix.m10 + source.Y * matrix.m11 + matrix.m12);
+            return result;
+        }
+        public static void Transform(ref Matrix2x3 matrix, ref Vector2 source, out Vector2 result)
+        {
+            float X = source.X;
+            result.X = (X * matrix.m00 + source.Y * matrix.m01 + matrix.m02);
+            result.Y = (X * matrix.m10 + source.Y * matrix.m11 + matrix.m12);
+        }
+        public static Vector2 TransformNormal(Matrix2x3 matrix, Vector2 source)
+        {
+            Vector2 result;
+            result.X = (source.X * matrix.m00 + source.Y * matrix.m01);
+            result.Y = (source.X * matrix.m10 + source.Y * matrix.m11);
+            return result;
+        }
+        public static void TransformNormal(ref Matrix2x3 matrix, ref Vector2 source, out Vector2 result)
+        {
+            float X = source.X;
+            result.X = (X * matrix.m00 + source.Y * matrix.m01);
+            result.Y = (X * matrix.m10 + source.Y * matrix.m11);
+        }
+        /// <summary>
+        /// Uses a matrix multiplication to Transform the vector.
+        /// </summary>
+        /// <param name="matrix">The rotation matrix</param>
+        /// <param name="source">The Vector to be transformed</param>
+        /// <returns>The transformed vector.</returns>
+        /// <remarks><seealso href="http://en.wikipedia.org/wiki/Transformation_matrix#Rotation"/></remarks>
+        public static Vector2 Transform(Matrix2x2 matrix, Vector2 source)
+        {
+            Vector2 result;
+            result.X = (source.X * matrix.m00 + source.Y * matrix.m01);
+            result.Y = (source.X * matrix.m10 + source.Y * matrix.m11);
+            return result;
+        }
+        public static void Transform(ref Matrix2x2 matrix, ref Vector2 source, out Vector2 result)
+        {
+            float X = source.X;
+            result.X = (X * matrix.m00 + source.Y * matrix.m01);
+            result.Y = (X * matrix.m10 + source.Y * matrix.m11);
+        }
+
+        /// <summary>
+        /// Does Scaler Multiplication on a Vector2.
+        /// </summary>
+        /// <param name="scalar">The scalar value that will multiply the Vector2.</param>
+        /// <param name="source">The Vector2 to be multiplied.</param>
+        /// <returns>The Product of the Scaler Multiplication.</returns>
+        /// <remarks><seealso href="http://en.wikipedia.org/wiki/Vector_%28spatial%29#Scalar_multiplication"/></remarks>
+        public static Vector2 Multiply(Vector2 source, float scalar)
+        {
+            Vector2 result;
+            result.X = source.X * scalar;
+            result.Y = source.Y * scalar;
+            return result;
+        }
+        public static void Multiply(ref Vector2 source, ref float scalar, out Vector2 result)
+        {
+            result.X = source.X * scalar;
+            result.Y = source.Y * scalar;
+        }
     }
 }

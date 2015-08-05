@@ -169,15 +169,21 @@ namespace Penumbra.Graphics.Renderers
             };
             context.LightToPointDir = Vector2.Normalize(context.Position - light.Position);
             GetDotsForNormals(context.LightToPointDir, context.Normals, out context.Dot1, out context.Dot2);
-
-            // A hull has only 1 left and 1 right side point if it is guaranteed to be CONVEX.
-            context.Side = context.Dot1 >= 0 && context.Dot2 < 0
-                ? Side.Left
-                : context.Dot2 >= 0 && context.Dot1 < 0
-                    ? Side.Right
-                    : context.Dot1 >= 0 && context.Dot2 >= 0 
-                        ? Side.Backward 
-                        : Side.Forward;
+            
+            //if (context.Normals.IsConvex)
+            //{
+                context.Side = context.Dot1 >= 0 && context.Dot2 < 0
+                    ? Side.Left
+                    : context.Dot2 >= 0 && context.Dot1 < 0
+                        ? Side.Right
+                        : context.Dot1 >= 0 && context.Dot2 >= 0
+                            ? Side.Backward
+                            : Side.Forward;
+            //}
+            //else
+            //{
+            //    context.Side = Side.Concave;
+            //}
 
             //_currentContext.Index = i;
             //_currentContext.Position = hull.Inner.TransformedHullVertices[i];

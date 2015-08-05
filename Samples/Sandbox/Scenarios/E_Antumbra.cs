@@ -4,7 +4,7 @@ using Penumbra;
 
 namespace Sandbox.Scenarios
 {
-    class Y_Antumbra : Scenario
+    class E_Antumbra : Scenario
     {
         private const float MinLightRadius = 5;
         private const float MaxLightRadius = 180;

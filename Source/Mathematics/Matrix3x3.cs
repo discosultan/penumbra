@@ -949,19 +949,19 @@ namespace Penumbra.Mathematics
             FromRotationZ(zAngle);
         }
 
-        public static Matrix3x3 FromRotationAxis(Scalar radianAngle, Vector3 axis)
-        {
-            Matrix3x3 first = FromLookAt(Vector3.Zero, axis, new Vector3(axis.Z, axis.X, axis.Y));
-            return first.Inverted * FromRotationZ(radianAngle) * first;
-        }
-        internal static Matrix3x3 FromLookAt(Vector3 origin, Vector3 positiveZAxis, Vector3 onPositiveY)
-        {
-            Matrix3x3 rv = Identity;
-            rv.Rz = Vector3.Normalize(positiveZAxis - origin);
-            rv.Rx = Vector3.Normalize((onPositiveY - origin) ^ rv.Rz);
-            rv.Ry = Vector3.Normalize(rv.Rz ^ rv.Rx);
-            return rv;
-        }
+        //public static Matrix3x3 FromRotationAxis(Scalar radianAngle, Vector3 axis)
+        //{
+        //    Matrix3x3 first = FromLookAt(Vector3.Zero, axis, new Vector3(axis.Z, axis.X, axis.Y));
+        //    return first.Inverted * FromRotationZ(radianAngle) * first;
+        //}
+        //internal static Matrix3x3 FromLookAt(Vector3 origin, Vector3 positiveZAxis, Vector3 onPositiveY)
+        //{
+        //    Matrix3x3 rv = Identity;
+        //    rv.Rz = Vector3.Normalize(positiveZAxis - origin);
+        //    rv.Rx = Vector3.Normalize((onPositiveY - origin) ^ rv.Rz);
+        //    rv.Ry = Vector3.Normalize(rv.Rz ^ rv.Rx);
+        //    return rv;
+        //}
 
 
         public static Matrix3x3 FromScale(Vector3 scale)

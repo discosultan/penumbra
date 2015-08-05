@@ -5,6 +5,8 @@ using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
 using Penumbra.Mathematics.Collision;
 using System.Collections;
+using Penumbra.Mathematics.Collision2;
+using BoundingRectangle = Penumbra.Mathematics.Collision.BoundingRectangle;
 
 namespace Penumbra.Mathematics
 {
@@ -458,20 +460,25 @@ namespace Penumbra.Mathematics
         // TODO: impr perf
         public bool Intersects(Polygon other)
         {
-            for (int j = Count - 1, i = 0; i < Count; j = i, i++)
-            {
-                var segment = new LineSegment2D(this[i], this[j]);
-                for (int l = other.Count - 1, k = 0; k < other.Count; l = k, k++)
-                {
-                    var otherSegment = new LineSegment2D(other[k], other[l]);
-                    if (segment.Intersects(ref otherSegment))
-                    {
-                        return true;
-                    }
-                }                 
-            }
+            var p1 = new BoundingPolygon(_list.ToArray());
+            var p2 = new BoundingPolygon(other._list.ToArray());
 
-            return false;
+            return p1.Intersects(p2);
+
+            //for (int j = Count - 1, i = 0; i < Count; j = i, i++)
+            //{
+            //    var segment = new LineSegment2D(this[i], this[j]);
+            //    for (int l = other.Count - 1, k = 0; k < other.Count; l = k, k++)
+            //    {
+            //        var otherSegment = new LineSegment2D(other[k], other[l]);
+            //        if (segment.Intersects(ref otherSegment))
+            //        {
+            //            return true;
+            //        }
+            //    }                 
+            //}
+
+            //return false;
         }
 
         public override string ToString()

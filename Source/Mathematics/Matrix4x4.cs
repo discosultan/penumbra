@@ -336,10 +336,10 @@ namespace Penumbra.Mathematics
             result.m32 = 0;
             result.m33 = 1;
         }
-        public static Matrix4x4 FromLookAt(Vector3 origin, Vector3 positiveZAxis, Vector3 onPositiveY)
-        {
-            return Matrix3x3.FromLookAt(origin, positiveZAxis, onPositiveY) * FromTranslation(-origin);
-        }
+        //public static Matrix4x4 FromLookAt(Vector3 origin, Vector3 positiveZAxis, Vector3 onPositiveY)
+        //{
+        //    return Matrix3x3.FromLookAt(origin, positiveZAxis, onPositiveY) * FromTranslation(-origin);
+        //}
 
         public static Matrix4x4 FromOrthographic(
                 Scalar left, Scalar right,
