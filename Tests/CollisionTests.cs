@@ -50,43 +50,43 @@ namespace Penumbra.Tests
         #endregion
         #region LineSegment
 
-        [Test]
-        public void LineSegmentLineSegment_Intersect()
-        {
-            var ls1 = new LineSegment2D(new Vector2(-1, -1), new Vector2(+1, +1));
-            var ls2 = new LineSegment2D(new Vector2(+1, -1), new Vector2(-1, +1));
+        //[Test]
+        //public void LineSegmentLineSegment_Intersect()
+        //{
+        //    var ls1 = new LineSegment2D(new Vector2(-1, -1), new Vector2(+1, +1));
+        //    var ls2 = new LineSegment2D(new Vector2(+1, -1), new Vector2(-1, +1));
 
-            Vector2 intersectionPoint;
-            bool result = ls1.Intersects(ref ls2, out intersectionPoint);
+        //    Vector2 intersectionPoint;
+        //    bool result = ls1.Intersects(ref ls2, out intersectionPoint);
 
-            Assert.IsTrue(result);
-            Assert.AreEqual(Vector2.Zero, intersectionPoint);
-        }
+        //    Assert.IsTrue(result);
+        //    Assert.AreEqual(Vector2.Zero, intersectionPoint);
+        //}
 
-        [Test]
-        public void LineSegmentLineSegment_DoNotIntersect()
-        {
-            var ls1 = new LineSegment2D(new Vector2(-2, -2), new Vector2(-1, -1));
-            var ls2 = new LineSegment2D(new Vector2(+2, -2), new Vector2(-1, +1));
+        //[Test]
+        //public void LineSegmentLineSegment_DoNotIntersect()
+        //{
+        //    var ls1 = new LineSegment2D(new Vector2(-2, -2), new Vector2(-1, -1));
+        //    var ls2 = new LineSegment2D(new Vector2(+2, -2), new Vector2(-1, +1));
 
-            Vector2 intersectionPoint;
-            bool result = ls1.Intersects(ref ls2, out intersectionPoint);
+        //    Vector2 intersectionPoint;
+        //    bool result = ls1.Intersects(ref ls2, out intersectionPoint);
 
-            Assert.IsFalse(result);
-        }
+        //    Assert.IsFalse(result);
+        //}
 
-        [Test]
-        [Ignore("Currently no two exact same line segments can ever intersect.")]
-        public void LineSegmentLineSegment_Intersect_Equal()
-        {
-            var ls1 = new LineSegment2D(new Vector2(-1, -1), new Vector2(+1, +1));
-            var ls2 = new LineSegment2D(new Vector2(-1, -1), new Vector2(+1, +1));
+        //[Test]
+        //[Ignore("Currently no two exact same line segments can ever intersect.")]
+        //public void LineSegmentLineSegment_Intersect_Equal()
+        //{
+        //    var ls1 = new LineSegment2D(new Vector2(-1, -1), new Vector2(+1, +1));
+        //    var ls2 = new LineSegment2D(new Vector2(-1, -1), new Vector2(+1, +1));
 
-            Vector2 intersectionPoint;
-            bool result = ls1.Intersects(ref ls2, out intersectionPoint);
+        //    Vector2 intersectionPoint;
+        //    bool result = ls1.Intersects(ref ls2, out intersectionPoint);
 
-            Assert.IsTrue(result);
-        }
+        //    Assert.IsTrue(result);
+        //}
 
         #endregion
         #region Ray

@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CollisionTests.cs" />
-    <Compile Include="DynamicArrayTests.cs" />
+    <Compile Include="FastListTests.cs" />
     <Compile Include="HullListTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />

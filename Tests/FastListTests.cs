@@ -5,7 +5,7 @@ using Penumbra.Utilities;
 namespace Penumbra.Tests
 {
     [TestFixture]
-    internal class DynamicArrayTests
+    internal class FastListTests
     {
         [Test]
         public void Add_ItemAdded()
@@ -66,6 +66,19 @@ namespace Penumbra.Tests
             subject.Clear();
 
             Assert.AreEqual(0, subject.Count);
+        }
+
+        [Test]
+        public void RemoveAt()
+        {
+            var subject = new FastList<int>(Enumerable.Range(1, 10));
+
+            subject.RemoveAt(1);
+
+            Assert.AreEqual(9, subject.Count);
+            Assert.AreEqual(1, subject[0]);
+            Assert.AreEqual(3, subject[1]);
+            Assert.AreEqual(4, subject[2]);
         }
     }
 }

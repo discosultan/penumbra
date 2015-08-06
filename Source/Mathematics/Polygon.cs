@@ -3,10 +3,12 @@ using Microsoft.Xna.Framework;
 using Penumbra.Mathematics.Clipping;
 using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
-using Penumbra.Mathematics.Collision;
 using System.Collections;
+using FarseerPhysics.Common;
 using Penumbra.Mathematics.Collision2;
+using Penumbra.Mathematics.Geometry;
 using BoundingRectangle = Penumbra.Mathematics.Collision.BoundingRectangle;
+using LineSegment2D = Penumbra.Mathematics.Geometry.LineSegment2D;
 
 namespace Penumbra.Mathematics
 {
@@ -129,15 +131,25 @@ namespace Penumbra.Mathematics
 
         public static void Union(Polygon subj, Polygon clip, Polygon result)
         {
-            int numSln;
-            PolyClipError err = YuPengClipper.Union(subj, clip, ClippingSolutions, out numSln);
-            if (err == PolyClipError.None)
-            {
-                result.Clear();
-                result.AddRange(ClippingSolutions[0]);
-                return;
-            }
-            Logger.Write($"Error clipping: {err}");
+            //int numSln;
+            //PolyClipError err = YuPengClipper.Union(subj, clip, ClippingSolutions, out numSln);
+            //if (err == PolyClipError.None)
+            //{
+            //    result.Clear();
+            //    result.AddRange(ClippingSolutions[0]);
+            //    return;
+            //}
+
+            //Logger.Write($"Error clipping: {err}");
+
+            var vertices1 = new Vertices(subj);
+            var vertices2 = new Vertices(clip);
+            FarseerPhysics.Common.PolygonManipulation.PolyClipError err2;
+            var resultVertices = FarseerPhysics.Common.PolygonManipulation.YuPengClipper.Union(vertices1, vertices2,
+                out err2);
+            Logger.Write($"Error clipping: {err2}");
+
+            result = new Polygon(resultVertices[0]);
         }
 
         public static List<Polygon> DecomposeIntoConvex(Polygon polygon)
@@ -337,19 +349,21 @@ namespace Penumbra.Mathematics
         public bool IsSimple()
         {
             for (int i = 0; i < Count; ++i)
-            {
-                int iplus = (i + 1 > Count - 1) ? 0 : i + 1;
-                Vector2 a1 = new Vector2(this[i].X, this[i].Y);
-                Vector2 a2 = new Vector2(this[iplus].X, this[iplus].Y);
-                for (int j = i + 1; j < Count; ++j)
-                {
-                    int jplus = (j + 1 > Count - 1) ? 0 : j + 1;
-                    Vector2 b1 = new Vector2(this[j].X, this[j].Y);
-                    Vector2 b2 = new Vector2(this[jplus].X, this[jplus].Y);
+            {                
+                //int iplus = (i + 1) % Count;
+                Vector2 a1 = this[i];
+                Vector2 a2 = this[(i + 1) % Count];
+                var seg1 = new LineSegment2D(a1, a2);
 
-                    var seg1 = new LineSegment2D(ref a1, ref a2);
-                    var seg2 = new LineSegment2D(ref b1, ref b2);
-                    if (seg1.Intersects(ref seg2))
+                for (int j = 0; j < Count - 3; ++j)
+                {                    
+                    //int jplus = j + 1 % Count;
+                    Vector2 b1 = this[(i + 2 + j) % Count];
+                    Vector2 b2 = this[(i + 3 + j) % Count];
+                    
+                    var seg2 = new LineSegment2D(b1, b2);                    
+
+                    if (seg1.Intersects(seg2))
                         return false;
                 }
             }
