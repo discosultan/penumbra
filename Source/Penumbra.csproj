@@ -64,6 +64,8 @@
     <Compile Include="Hull.cs" />
     <Compile Include="HullList.cs" />
     <Compile Include="Light.cs" />
+    <Compile Include="Mathematics\Clipping\AngusClipper.cs" />
+    <Compile Include="Mathematics\Clipping\clipper.cs" />
     <Compile Include="Mathematics\Clipping\SimplifyTools.cs" />
     <Compile Include="Mathematics\Clipping\YuPengClipper.cs" />
     <Compile Include="Mathematics\Collision2\BoundingCircle.cs" />

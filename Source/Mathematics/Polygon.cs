@@ -131,6 +131,8 @@ namespace Penumbra.Mathematics
 
         public static void Union(Polygon subj, Polygon clip, Polygon result)
         {
+            AngusClipper.Union(subj, clip, result);
+
             //int numSln;
             //PolyClipError err = YuPengClipper.Union(subj, clip, ClippingSolutions, out numSln);
             //if (err == PolyClipError.None)
@@ -142,14 +144,14 @@ namespace Penumbra.Mathematics
 
             //Logger.Write($"Error clipping: {err}");
 
-            var vertices1 = new Vertices(subj);
-            var vertices2 = new Vertices(clip);
-            FarseerPhysics.Common.PolygonManipulation.PolyClipError err2;
-            var resultVertices = FarseerPhysics.Common.PolygonManipulation.YuPengClipper.Union(vertices1, vertices2,
-                out err2);
-            Logger.Write($"Error clipping: {err2}");
+            //var vertices1 = new Vertices(subj);
+            //var vertices2 = new Vertices(clip);
+            //FarseerPhysics.Common.PolygonManipulation.PolyClipError err2;
+            //var resultVertices = FarseerPhysics.Common.PolygonManipulation.YuPengClipper.Union(vertices1, vertices2,
+            //    out err2);
+            //Logger.Write($"Error clipping: {err2}");
 
-            result = new Polygon(resultVertices[0]);
+            //result = new Polygon(resultVertices[0]);
         }
 
         public static List<Polygon> DecomposeIntoConvex(Polygon polygon)
