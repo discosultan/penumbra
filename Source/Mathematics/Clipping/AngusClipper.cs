@@ -40,7 +40,7 @@ namespace Penumbra.Mathematics.Clipping
             clip.ToClipperPolygon(Clip);
             Clipper.AddPath(Subject, PolyType.ptSubject, true);
             Clipper.AddPath(Clip, PolyType.ptClip, true);
-            Clipper.Execute(clipType, Solution);
+            Clipper.Execute(clipType, Solution, PolyFillType.pftPositive, PolyFillType.pftPositive);
             Solution[0].ToPenumbraPolygon(result);
         }
     }

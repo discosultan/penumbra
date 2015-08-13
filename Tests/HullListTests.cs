@@ -38,6 +38,21 @@ namespace Penumbra.Tests
             Assert.AreNotEqual(hull1, list.ResolvedHulls[0]);
         }
 
+        [Test]
+        public void TwoHullsCornersIntersect_Merged()
+        {
+            var hull1 = NewSquare();
+            var hull2 = NewSquare();
+            hull1.Position = new Vector2(-0.5f, 0.5f);
+            hull2.Position = new Vector2(0.5f, -0.5f);
+            var list = new HullList(new ObservableCollection<Hull> { hull1, hull2 });
+
+            list.Resolve();
+
+            Assert.AreEqual(1, list.ResolvedHulls.Count);
+            Assert.AreNotEqual(hull1, list.ResolvedHulls[0]);
+        }
+
         private static Hull NewSquare()
         {
             return new Hull(new[]
