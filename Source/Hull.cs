@@ -228,6 +228,8 @@ namespace Penumbra
 
                         Vector2 n1 = VectorUtil.Rotate90CW(currentPos - prevPos);
                         Vector2 n2 = VectorUtil.Rotate90CW(nextPos - currentPos);
+                        n1.Normalize();
+                        n2.Normalize();
 
                         //// Ref: http://stackoverflow.com/a/25646126/1466456
                         Vector2 currentToPrev = prevPos - currentPos;

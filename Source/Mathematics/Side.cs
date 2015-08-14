@@ -3,7 +3,7 @@
     // Side relative to hull looked from light source.
     internal enum Side
     {
-        Concave,
+        //Concave,
         Forward,
         Backward,
         Left,

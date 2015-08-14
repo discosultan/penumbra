@@ -5,13 +5,26 @@ namespace Penumbra.Graphics.Builders
 {
     internal struct HullPointContext
     {        
-        public Vector2 Position;
+        public Vector2 Point;
         public Vector2 LightToPointDir;
-        public PointNormals Normals;
-        public int Index;
+        public Side Side;
         public float Dot1;
         public float Dot2;
-        public Side Side;
+
+        public Vector2 LightRight;
+        public Vector2 LightRightToPointDir;
+        public Side RightSide;
+        public float RightDot1;
+        public float RightDot2;
+
+        public Vector2 LightLeft;
+        public Vector2 LightLeftToPointDir;
+        public Side LeftSide;
+        public float LeftDot1;
+        public float LeftDot2;
+
+        public PointNormals Normals;
+        public int Index;        
         public bool IsConvex;
         //public bool IsInAnotherHull;
 

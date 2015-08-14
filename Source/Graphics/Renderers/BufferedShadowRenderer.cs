@@ -159,7 +159,7 @@ namespace Penumbra.Graphics.Renderers
             context = new HullPointContext
             {
                 Index = i,
-                Position = position,
+                Point = position,
                 Normals = hull.TransformedNormals[i],                
                 IsConvex = hull.TransformedNormals[i].IsConvex
                 //IsInAnotherHull = _hulls
@@ -167,18 +167,22 @@ namespace Penumbra.Graphics.Renderers
                 //    .SelectMany(x => x.TransformedHullVertices)
                 //    .Any(x => x == position)
             };
-            context.LightToPointDir = Vector2.Normalize(context.Position - light.Position);
+            context.LightToPointDir = Vector2.Normalize(context.Point - light.Position);
             GetDotsForNormals(context.LightToPointDir, context.Normals, out context.Dot1, out context.Dot2);
-            
+
+            GetUmbraVectors(light, position, context.LightToPointDir, +1f, out context.LightRight, out context.LightRightToPointDir);
+            GetUmbraVectors(light, position, context.LightToPointDir, -1f, out context.LightLeft, out context.LightLeftToPointDir);
+
+            GetDotsForNormals(context.LightRightToPointDir, context.Normals, out context.RightDot1, out context.RightDot2);
+            GetDotsForNormals(context.LightLeftToPointDir, context.Normals, out context.LeftDot1, out context.LeftDot2);
+
+
+
             //if (context.Normals.IsConvex)
             //{
-                context.Side = context.Dot1 >= 0 && context.Dot2 < 0
-                    ? Side.Left
-                    : context.Dot2 >= 0 && context.Dot1 < 0
-                        ? Side.Right
-                        : context.Dot1 >= 0 && context.Dot2 >= 0
-                            ? Side.Backward
-                            : Side.Forward;
+            context.Side = GetSide(context.Dot1, context.Dot2);
+            context.LeftSide = GetSide(context.LeftDot1, context.LeftDot2);
+            context.RightSide = GetSide(context.RightDot1, context.RightDot2);
             //}
             //else
             //{
@@ -192,12 +196,32 @@ namespace Penumbra.Graphics.Renderers
             //GetDotsForNormals(_currentContext.LightToPointDir, _currentContext.Normals, out _currentContext.Dot1, out _currentContext.Dot2);            
         }
 
+        private static Side GetSide(float dot1, float dot2)
+        {
+            return dot1 >= 0 && dot2 < 0
+                    ? Side.Left
+                    : dot2 >= 0 && dot1 < 0
+                        ? Side.Right
+                        : dot1 >= 0 && dot2 >= 0
+                            ? Side.Backward
+                            : Side.Forward;
+        }
+
         private static void GetDotsForNormals(Vector2 lightToPointDir, PointNormals normals, out float dot1, out float dot2)
         {
             Vector2 normal1 = normals.Normal1;
             Vector2 normal2 = normals.Normal2;
             dot1 = Vector2.Dot(lightToPointDir, normal1);
             dot2 = Vector2.Dot(lightToPointDir, normal2);
+        }
+
+        private void GetUmbraVectors(Light light, Vector2 position, Vector2 lightToPointDir, float project, out Vector2 lightSide,
+            out Vector2 lightSideToCurrentDir)
+        {
+            var lightToCurrent90CWDir = VectorUtil.Rotate90CW(lightToPointDir);
+
+            lightSide = light.Position + lightToCurrent90CWDir * light.Radius * project;
+            lightSideToCurrentDir = Vector2.Normalize(position - lightSide);
         }
 
         private void ObservableLightsChanged(object sender, NotifyCollectionChangedEventArgs e)

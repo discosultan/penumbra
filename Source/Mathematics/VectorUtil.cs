@@ -127,6 +127,12 @@ namespace Penumbra.Mathematics
             return a.X * (b.Y - c.Y) + b.X * (c.Y - a.Y) + c.X * (a.Y - b.Y);
         }
 
+        public static bool IsADirectingRightFromB(ref Vector2 a, ref Vector2 b)
+        {
+            float delta = a.X * b.Y - a.Y * b.X;
+            return delta >= 0;
+        }
+
         /// <summary>
         /// Determines if three vertices are collinear (ie. on a straight line)
         /// </summary>

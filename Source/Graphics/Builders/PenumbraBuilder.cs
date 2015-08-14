@@ -211,8 +211,8 @@ namespace Penumbra.Graphics.Builders
             Vector2 toLightSide = lightToCurrent90CWDir * light.Radius;
             Vector2 lightSide1 = light.Position + toLightSide;
             Vector2 lightSide2 = light.Position - toLightSide;
-            finContext.LightRightSideToCurrentDir = Vector2.Normalize(context.Position - lightSide1);            
-            finContext.LightLeftSideToCurrentDir = Vector2.Normalize(context.Position - lightSide2);
+            finContext.LightRightSideToCurrentDir = Vector2.Normalize(context.Point - lightSide1);            
+            finContext.LightLeftSideToCurrentDir = Vector2.Normalize(context.Point - lightSide2);
             // ROTATE A LITTLE BIT TOWARD UMBRA TO REMOVE 1 PX INACCURACIES/FLICKERINGS.
             finContext.LightRightSideToCurrentDir = VectorUtil.Rotate(finContext.LightRightSideToCurrentDir, -MathHelper.ToRadians(DegreesToRotatePenumbraTowardUmbra));
             finContext.LightLeftSideToCurrentDir = VectorUtil.Rotate(finContext.LightLeftSideToCurrentDir, MathHelper.ToRadians(DegreesToRotatePenumbraTowardUmbra));
@@ -222,7 +222,7 @@ namespace Penumbra.Graphics.Builders
             //int outerTexCoord = context.IsInAnotherHull ? 1 : 0;
             int outerTexCoord = 0;
 
-            result.Vertex1 = new VertexPosition2Texture(context.Position, new Vector2(0, 1));
+            result.Vertex1 = new VertexPosition2Texture(context.Point, new Vector2(0, 1));
             result.Vertex3 = new VertexPosition2Texture(
                 lightSide1 + finContext.LightRightSideToCurrentDir * range,
                 new Vector2(result.Side == Side.Left ? outerTexCoord : 1, 0));
@@ -240,9 +240,9 @@ namespace Penumbra.Graphics.Builders
             var positions = hull.TransformedPoints;
 
             Vector2 next = positions.NextElement(context.Index);
-            Vector2 currentToNextDir = Vector2.Normalize(next - context.Position);
+            Vector2 currentToNextDir = Vector2.Normalize(next - context.Point);
             Vector2 previous = positions.PreviousElement(context.Index);
-            Vector2 currentToPreviousDir = Vector2.Normalize(previous - context.Position);
+            Vector2 currentToPreviousDir = Vector2.Normalize(previous - context.Point);
             
             Vector2 currentToInnerDir = result.Side == Side.Right ? currentToNextDir : currentToPreviousDir;
             return VectorUtil.Intersects(
