@@ -22,9 +22,7 @@ namespace Penumbra.Utilities
         public static implicit operator T[](FastList<T> collection)
         {
             return collection.Items;
-        } 
-
-        private int _size;
+        }
 
         // Methods
         static FastList()
@@ -45,11 +43,11 @@ namespace Penumbra.Utilities
                 int count = is2.Count;
                 Items = new T[count];
                 is2.CopyTo(Items, 0);
-                _size = count;
+                Count = count;
             }
             else
             {
-                _size = 0;
+                Count = 0;
                 Items = new T[DefaultCapacity];
                 using (IEnumerator<T> enumerator = collection.GetEnumerator())
                 {
@@ -76,9 +74,9 @@ namespace Penumbra.Utilities
                     if (value > 0)
                     {
                         var destinationArray = new T[value];
-                        if (_size > 0)
+                        if (Count > 0)
                         {
-                            Array.Copy(Items, 0, destinationArray, 0, _size);
+                            Array.Copy(Items, 0, destinationArray, 0, Count);
                         }
                         Items = destinationArray;
                     }
@@ -94,17 +92,17 @@ namespace Penumbra.Utilities
 
         public void Add(T item)
         {
-            if (_size == Items.Length)
+            if (Count == Items.Length)
             {
-                EnsureCapacity(_size + 1);
+                EnsureCapacity(Count + 1);
             }
-            Items[_size++] = item;
+            Items[Count++] = item;
         }
 
         public void IncreaseCapacity(int index)
         {
-            EnsureCapacity(_size + index);
-            _size += index;
+            EnsureCapacity(Count + index);
+            Count += index;
         }
 
         public void Clear()
@@ -116,7 +114,7 @@ namespace Penumbra.Utilities
         {
             if (item == null)
             {
-                for (int j = 0; j < _size; j++)
+                for (int j = 0; j < Count; j++)
                 {
                     if (Items[j] == null)
                     {
@@ -126,7 +124,7 @@ namespace Penumbra.Utilities
                 return false;
             }
             EqualityComparer<T> comparer = EqualityComparer<T>.Default;
-            for (int i = 0; i < _size; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (comparer.Equals(Items[i], item))
                 {
@@ -138,26 +136,26 @@ namespace Penumbra.Utilities
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Array.Copy(Items, 0, array, arrayIndex, _size);
+            Array.Copy(Items, 0, array, arrayIndex, Count);
         }
 
         public int IndexOf(T item)
         {
-            return Array.IndexOf(Items, item, 0, _size);
+            return Array.IndexOf(Items, item, 0, Count);
         }
 
         public void Insert(int index, T item)
         {
-            if (_size == Items.Length)
+            if (Count == Items.Length)
             {
-                EnsureCapacity(_size + 1);
+                EnsureCapacity(Count + 1);
             }
-            if (index < _size)
+            if (index < Count)
             {
-                Array.Copy(Items, index, Items, index + 1, _size - index);
+                Array.Copy(Items, index, Items, index + 1, Count - index);
             }
             Items[index] = item;
-            _size++;
+            Count++;
         }
 
         public bool Remove(T item)
@@ -173,12 +171,12 @@ namespace Penumbra.Utilities
 
         public void RemoveAt(int index)
         {
-            _size--;
-            if (index < _size)
+            Count--;
+            if (index < Count)
             {
-                Array.Copy(Items, index + 1, Items, index, _size - index);
+                Array.Copy(Items, index + 1, Items, index, Count - index);
             }
-            Items[_size] = default(T);
+            Items[Count] = default(T);
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
@@ -191,10 +189,7 @@ namespace Penumbra.Utilities
             return new Enumerator(this);
         }
 
-        public int Count
-        {
-            get { return _size; }
-        }
+        public int Count { get; private set; }
 
         public T this[int index]
         {
@@ -205,10 +200,7 @@ namespace Penumbra.Utilities
             }
         }
 
-        bool ICollection<T>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<T>.IsReadOnly => false;
 
         #endregion
 
@@ -218,16 +210,16 @@ namespace Penumbra.Utilities
         /// <param name="fastClear">if set to <c>true</c> this method only resets the count elements but doesn't clear items referenced already stored in the list.</param>
         public void Clear(bool fastClear)
         {
-            if (!fastClear && _size > 0)
+            if (!fastClear && Count > 0)
             {
-                Array.Clear(Items, 0, _size);
+                Array.Clear(Items, 0, Count);
             }
-            _size = 0;
+            Count = 0;
         }
 
         public void AddRange(IEnumerable<T> collection)
         {
-            InsertRange(_size, collection);
+            InsertRange(Count, collection);
         }
 
         public ReadOnlyCollection<T> AsReadOnly()
@@ -280,7 +272,7 @@ namespace Penumbra.Utilities
 
         public T Find(Predicate<T> match)
         {
-            for (int i = 0; i < _size; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (match(Items[i]))
                 {
@@ -293,7 +285,7 @@ namespace Penumbra.Utilities
         public FastList<T> FindAll(Predicate<T> match)
         {
             var list = new FastList<T>();
-            for (int i = 0; i < _size; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (match(Items[i]))
                 {
@@ -305,12 +297,12 @@ namespace Penumbra.Utilities
 
         public int FindIndex(Predicate<T> match)
         {
-            return FindIndex(0, _size, match);
+            return FindIndex(0, Count, match);
         }
 
         public int FindIndex(int startIndex, Predicate<T> match)
         {
-            return FindIndex(startIndex, _size - startIndex, match);
+            return FindIndex(startIndex, Count - startIndex, match);
         }
 
         public int FindIndex(int startIndex, int count, Predicate<T> match)
@@ -328,7 +320,7 @@ namespace Penumbra.Utilities
 
         public T FindLast(Predicate<T> match)
         {
-            for (int i = _size - 1; i >= 0; i--)
+            for (int i = Count - 1; i >= 0; i--)
             {
                 if (match(Items[i]))
                 {
@@ -340,7 +332,7 @@ namespace Penumbra.Utilities
 
         public int FindLastIndex(Predicate<T> match)
         {
-            return FindLastIndex(_size - 1, _size, match);
+            return FindLastIndex(Count - 1, Count, match);
         }
 
         public int FindLastIndex(int startIndex, Predicate<T> match)
@@ -363,7 +355,7 @@ namespace Penumbra.Utilities
 
         public void ForEach(Action<T> action)
         {
-            for (int i = 0; i < _size; i++)
+            for (int i = 0; i < Count; i++)
             {
                 action(Items[i]);
             }
@@ -378,13 +370,13 @@ namespace Penumbra.Utilities
         {
             var list = new FastList<T>(count);
             Array.Copy(Items, index, list.Items, 0, count);
-            list._size = count;
+            list.Count = count;
             return list;
         }
 
         public int IndexOf(T item, int index)
         {
-            return Array.IndexOf(Items, item, index, _size - index);
+            return Array.IndexOf(Items, item, index, Count - index);
         }
 
         public int IndexOf(T item, int index, int count)
@@ -400,21 +392,21 @@ namespace Penumbra.Utilities
                 int count = is2.Count;
                 if (count > 0)
                 {
-                    EnsureCapacity(_size + count);
-                    if (index < _size)
+                    EnsureCapacity(Count + count);
+                    if (index < Count)
                     {
-                        Array.Copy(Items, index, Items, index + count, _size - index);
+                        Array.Copy(Items, index, Items, index + count, Count - index);
                     }
                     if (this == is2)
                     {
                         Array.Copy(Items, 0, Items, index, index);
-                        Array.Copy(Items, (index + count), Items, (index * 2), (_size - index));
+                        Array.Copy(Items, (index + count), Items, (index * 2), (Count - index));
                     }
                     else
                     {
                         is2.CopyTo(Items, index);
                     }
-                    _size += count;
+                    Count += count;
                 }
             }
             else
@@ -431,11 +423,11 @@ namespace Penumbra.Utilities
 
         public int LastIndexOf(T item)
         {
-            if (_size == 0)
+            if (Count == 0)
             {
                 return -1;
             }
-            return LastIndexOf(item, _size - 1, _size);
+            return LastIndexOf(item, Count - 1, Count);
         }
 
         public int LastIndexOf(T item, int index)
@@ -445,7 +437,7 @@ namespace Penumbra.Utilities
 
         public int LastIndexOf(T item, int index, int count)
         {
-            if (_size == 0)
+            if (Count == 0)
             {
                 return -1;
             }
@@ -455,29 +447,29 @@ namespace Penumbra.Utilities
         public int RemoveAll(Predicate<T> match)
         {
             int index = 0;
-            while ((index < _size) && !match(Items[index]))
+            while ((index < Count) && !match(Items[index]))
             {
                 index++;
             }
-            if (index >= _size)
+            if (index >= Count)
             {
                 return 0;
             }
             int num2 = index + 1;
-            while (num2 < _size)
+            while (num2 < Count)
             {
-                while ((num2 < _size) && match(Items[num2]))
+                while ((num2 < Count) && match(Items[num2]))
                 {
                     num2++;
                 }
-                if (num2 < _size)
+                if (num2 < Count)
                 {
                     Items[index++] = Items[num2++];
                 }
             }
-            Array.Clear(Items, index, _size - index);
-            int num3 = _size - index;
-            _size = index;
+            Array.Clear(Items, index, Count - index);
+            int num3 = Count - index;
+            Count = index;
             return num3;
         }
 
@@ -485,12 +477,12 @@ namespace Penumbra.Utilities
         {
             if (count > 0)
             {
-                _size -= count;
-                if (index < _size)
+                Count -= count;
+                if (index < Count)
                 {
-                    Array.Copy(Items, index + count, Items, index, _size - index);
+                    Array.Copy(Items, index + count, Items, index, Count - index);
                 }
-                Array.Clear(Items, _size, count);
+                Array.Clear(Items, Count, count);
             }
         }
 
@@ -530,23 +522,23 @@ namespace Penumbra.Utilities
 
         public T[] ToArray()
         {
-            var destinationArray = new T[_size];
-            Array.Copy(Items, 0, destinationArray, 0, _size);
+            var destinationArray = new T[Count];
+            Array.Copy(Items, 0, destinationArray, 0, Count);
             return destinationArray;
         }
 
         public void TrimExcess()
         {
             var num = (int)(Items.Length * 0.9);
-            if (_size < num)
+            if (Count < num)
             {
-                Capacity = _size;
+                Capacity = Count;
             }
         }
 
         public bool TrueForAll(Predicate<T> match)
         {
-            for (int i = 0; i < _size; i++)
+            for (int i = 0; i < Count; i++)
             {
                 if (!match(Items[i]))
                 {
@@ -563,7 +555,7 @@ namespace Penumbra.Utilities
         #region Nested type: Enumerator
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct Enumerator : IEnumerator<T>, IDisposable, IEnumerator
+        public struct Enumerator : IEnumerator<T>
         {
             private readonly FastList<T> list;
             private int index;
@@ -582,10 +574,10 @@ namespace Penumbra.Utilities
 
             public bool MoveNext()
             {
-                FastList<T> list = this.list;
-                if (index < list._size)
+                FastList<T> fastList = list;
+                if (index < fastList.Count)
                 {
-                    current = list.Items[index];
+                    current = fastList.Items[index];
                     index++;
                     return true;
                 }
@@ -594,20 +586,14 @@ namespace Penumbra.Utilities
 
             private bool MoveNextRare()
             {
-                index = list._size + 1;
+                index = list.Count + 1;
                 current = default(T);
                 return false;
             }
 
-            public T Current
-            {
-                get { return current; }
-            }
+            public T Current => current;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             void IEnumerator.Reset()
             {

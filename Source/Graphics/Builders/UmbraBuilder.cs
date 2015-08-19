@@ -224,7 +224,7 @@ namespace Penumbra.Graphics.Builders
                         valid = true;
                         break;
                     }
-                } while (--endIndex >= 1) ;
+                } while (--endIndex >= 1);
 
                 if (!valid) continue;
 

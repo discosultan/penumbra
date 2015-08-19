@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 
 namespace Penumbra.Graphics.Builders
@@ -47,6 +48,11 @@ namespace Penumbra.Graphics.Builders
         //    to.Dot1 = from.Dot1;
         //    to.Dot2 = from.Dot2;
         //}
+
+        public override string ToString()
+        {
+            return Point.ToString();
+        }
     }
 
     internal struct HullContext
@@ -58,6 +64,8 @@ namespace Penumbra.Graphics.Builders
         public VertexPosition2Texture UmbraIntersectionVertex;
         public VertexPosition2Texture UmbraLeftProjectedVertex;
         public VertexPosition2Texture UmbraRightProjectedVertex;
+        public List<HullPointContext> PointContexts;
+        public bool IsConvex;
     }
 
     internal enum IntersectionType

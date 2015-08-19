@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Graphics.Builders;
 using Penumbra.Mathematics;
 using Penumbra.Utilities;
+using UmbraBuilder = Penumbra.Graphics.Builders.UmbraBuilder2;
 
 namespace Penumbra.Graphics.Renderers
 {
@@ -115,31 +116,36 @@ namespace Penumbra.Graphics.Renderers
             return vaos;
         }
 
+        private readonly List<HullPointContext> _hullPointContexts = new List<HullPointContext>();
         private void BuildVaosForLight(Light light, LightVaos vaos)
         {
             // 1. ANY NECESSARY CLEANING OR PREPROCESSING.
             _umbraBuilder.PreProcess();
             _penumbraBuilder.PreProcess();
             _antumbraBuilder.PreProcess();            
-            _solidBuilder.PreProcess();
+            _solidBuilder.PreProcess();            
 
             for (int i = 0; i < _lightRenderer.ResolvedHulls.Count; i++)
             {
                 Hull hull = _lightRenderer.ResolvedHulls[i];
                 if (!hull.Enabled || !light.Intersects(hull)) continue;
 
+                _hullPointContexts.Clear();
+
                 for (int j = 0; j < hull.TransformedPoints.Count; j++)
                 {
                     HullPointContext context;
                     PopulateContextForPoint(light, hull, j, out context);
 
+                    _hullPointContexts.Add(context);
+
                     // 2. PROCESS GEOMETRY DATA FOR HULL POINT.
-                    _umbraBuilder.ProcessHullPoint(light, hull, ref context);
+                    //_umbraBuilder.ProcessHullPoint(light, hull, ref context);
                     _penumbraBuilder.ProcessHullPoint(light, hull, ref context);                    
                 }
 
                 // 3. PROCESS GEOMETRY DATA FOR HULL.  
-                var hullCtx = new HullContext();
+                var hullCtx = new HullContext() { PointContexts = _hullPointContexts, IsConvex = hull.TransformedPoints.IsConvex() };
                 _umbraBuilder.ProcessHull(light, hull, ref hullCtx);
                 _penumbraBuilder.ProcessHull(light, hull, ref hullCtx);                
                 _antumbraBuilder.ProcessHull(light, hull, ref hullCtx);

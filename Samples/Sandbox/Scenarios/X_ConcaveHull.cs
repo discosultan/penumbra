@@ -4,7 +4,7 @@ using static System.Math;
 
 namespace Sandbox.Scenarios
 {
-    class F_ConcaveHull : Scenario
+    class X_ConcaveHull : Scenario
     {
         private Light _light;
         private const float RotationSpeed = MathHelper.TwoPi / 6;
@@ -61,7 +61,7 @@ namespace Sandbox.Scenarios
                 _light.Position.X * c - _light.Position.Y * s,
                 _light.Position.X * s + _light.Position.Y * c
             );
-            //_light.Position = new Vector2(-17, -50);
+            //_light.Position = new Vector2(-10, -55);
         }
     }
 }
