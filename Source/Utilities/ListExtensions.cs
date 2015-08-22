@@ -67,5 +67,33 @@ namespace Penumbra.Utilities
             foreach (T item in source)
                 action(item);
         }
+
+        public static IEnumerable<int> GetIndicesBetween(this IList list, int start, int end) // count must be > 0
+        {            
+            int count = list.Count;
+            int numIndicesMinOne = end >= start ? end - start : count - start + end;
+            int result = start;
+            yield return result;
+            for (int i = 1; i <= numIndicesMinOne; i++)
+            {
+                result = (result + 1) % count;
+                yield return result;
+            }
+        }
+
+        public static IEnumerable<int> GetIndicesBetweenBackward(this IList list, int start, int end) // count must be > 0
+        {
+            int count = list.Count;
+            int numIndicesMinOne = start >= end ? start - end : count - end + start;
+            int result = start;
+            yield return result;
+            for (int i = 1; i <= numIndicesMinOne; i++)
+            {
+                result--;
+                if (result < 0)
+                    result = count - 1;
+                yield return result;
+            }
+        }
     }
 }

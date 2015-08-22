@@ -53,6 +53,7 @@
     <Compile Include="Graphics\Builders\SolidBuilder.cs" />
     <Compile Include="Graphics\Builders\UmbraBuilder.cs" />
     <Compile Include="Graphics\Builders\BuildingContexts.cs" />
+    <Compile Include="Graphics\Builders\UmbraBuilder2.cs" />
     <Compile Include="Graphics\Renderers\BufferedShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\PrimitiveRenderer.cs" />
     <Compile Include="Graphics\LightVaos.cs" />

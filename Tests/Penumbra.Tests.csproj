@@ -67,6 +67,7 @@
     <Compile Include="HullListTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />
+    <Compile Include="VectorUtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
