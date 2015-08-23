@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
+using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
@@ -25,29 +26,8 @@ namespace Penumbra.Graphics.Builders
         public float LeftDot2;
 
         public PointNormals Normals;
-        public int Index;        
-        public bool IsConvex;
-        //public bool IsInAnotherHull;
-
-        //public bool Concave
-        //{
-        //    get { return !Normals.Convex; }
-        //}
-
-        //public bool Convex
-        //{
-        //    get { return Normals.Convex; }
-        //}
-
-        //public static void Copy(PointProcessingContext from, PointProcessingContext to)
-        //{
-        //    to.Index = from.Index;
-        //    to.Position = from.Position;
-        //    to.LightToPointDir = from.LightToPointDir;
-        //    to.Normals = from.Normals;
-        //    to.Dot1 = from.Dot1;
-        //    to.Dot2 = from.Dot2;
-        //}
+        public int Index;
+        public bool IsConvex => Normals.IsConvex;
 
         public override string ToString()
         {
@@ -64,7 +44,7 @@ namespace Penumbra.Graphics.Builders
         public VertexPosition2Texture UmbraIntersectionVertex;
         public VertexPosition2Texture UmbraLeftProjectedVertex;
         public VertexPosition2Texture UmbraRightProjectedVertex;
-        public List<HullPointContext> PointContexts;
+        public FastList<HullPointContext> PointContexts;
         public bool IsConvex;
     }
 

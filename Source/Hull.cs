@@ -269,8 +269,9 @@ namespace Penumbra
 
                     for (var i = 0; i < RawNormals.Count; i++)
                     {
-                        PointNormals normals = RawNormals[i];
-                        _transformedNormals.Add(PointNormals.Transform(ref normals, ref normalMatrix));
+                        PointNormals normals = RawNormals[i];                        
+                        PointNormals.Transform(ref normals, ref normalMatrix, out normals);
+                        _transformedNormals.Add(normals);
                     }
 
                     _transformedNormalsDirty = false;

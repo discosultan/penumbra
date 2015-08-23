@@ -117,7 +117,7 @@ namespace Penumbra.Graphics.Renderers
             return vaos;
         }
 
-        private readonly List<HullPointContext> _hullPointContexts = new List<HullPointContext>();
+        private readonly FastList<HullPointContext> _hullPointContexts = new FastList<HullPointContext>();
         private void BuildVaosForLight(Light light, LightVaos vaos)
         {
             // 1. ANY NECESSARY CLEANING OR PREPROCESSING.
@@ -131,7 +131,7 @@ namespace Penumbra.Graphics.Renderers
                 Hull hull = _lightRenderer.ResolvedHulls[i];
                 if (!hull.Enabled || !light.Intersects(hull)) continue;
 
-                _hullPointContexts.Clear();
+                _hullPointContexts.Clear(true);
 
                 for (int j = 0; j < hull.TransformedPoints.Count; j++)
                 {
@@ -167,8 +167,7 @@ namespace Penumbra.Graphics.Renderers
             {
                 Index = i,
                 Point = position,
-                Normals = hull.TransformedNormals[i],                
-                IsConvex = hull.TransformedNormals[i].IsIsConvex
+                Normals = hull.TransformedNormals[i]                
                 //IsInAnotherHull = _hulls
                 //    .Where(x => x != hull)
                 //    .SelectMany(x => x.TransformedHullVertices)

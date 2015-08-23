@@ -22,10 +22,11 @@ namespace ImagePolygonExtraction
             Content.RootDirectory = "Content";
             _penumbra = new PenumbraComponent(this)
             {
-                AmbientColor = Color.Gray,
-                //ViewProjection = Matrix.CreateTranslation(0.5f, 0.5f, 0)
+                AmbientColor = Color.Gray                
             };
             Components.Add(_penumbra);
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 768;
         }
 
         /// <summary>
@@ -44,20 +45,13 @@ namespace ImagePolygonExtraction
                 Range = 500
             };
             _penumbra.Lights.Add(_light);
-
-            var texData = new uint[_logo.Width*_logo.Height];
-            _logo.GetData(texData);
-            //MarchingSquares.DetectSquares()
-            //List<List<Vector2>> result = TextureConverter.DetectVertices(texData, logo.Width, 0, 255, false, false);
-            //var result2 = SimplifyTools.DouglasPeuckerSimplify(result[0], 1f);
-            //SimplifyTools.
-
+            
             //penumbra.Hulls.Add(new Hull(result[0], WindingOrder.CounterClockwise));
-            _penumbra.Hulls.Add(
-                new Hull(new[]
-                {
-                    new Vector2(100, 100), new Vector2(200, 100), new Vector2(200, 200), new Vector2(100, 200)
-                }));
+            //_penumbra.Hulls.Add(
+            //    new Hull(new[]
+            //    {
+            //        new Vector2(100, 100), new Vector2(200, 100), new Vector2(200, 200), new Vector2(100, 200)
+            //    }));
         }
 
         /// <summary>
@@ -97,7 +91,7 @@ namespace ImagePolygonExtraction
             GraphicsDevice.Clear(Color.White);
 
             _spriteBatch.Begin();
-            //spriteBatch.Draw(logo, Vector2.Zero, Color.White);
+            _spriteBatch.Draw(_logo, Vector2.Zero, Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);

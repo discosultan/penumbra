@@ -54,8 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\square.png" />
-    <Content Include="Content\ttu_logo.png" />
+    <Content Include="Content\ttu_logo.jpg" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
