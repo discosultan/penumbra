@@ -4,9 +4,9 @@ using Penumbra.Mathematics.Clipping;
 using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
 using System.Collections;
+using System.Linq;
 using FarseerPhysics.Common;
 using Penumbra.Mathematics.Collision2;
-using Penumbra.Mathematics.Geometry;
 using BoundingRectangle = Penumbra.Mathematics.Collision.BoundingRectangle;
 using LineSegment2D = Penumbra.Mathematics.Geometry.LineSegment2D;
 
@@ -18,17 +18,15 @@ namespace Penumbra.Mathematics
 
         public Polygon(int capacity = 4)
         {
-            _list = new FastList<Vector2>(capacity);            
-            WindingOrder = IsCounterClockWise() ? WindingOrder.CounterClockwise : WindingOrder.Clockwise;
+            _list = new FastList<Vector2>(capacity);                        
         }
 
         public Polygon(IEnumerable<Vector2> list)
         {
-            _list = new FastList<Vector2>(list);
-            WindingOrder = IsCounterClockWise() ? WindingOrder.CounterClockwise : WindingOrder.Clockwise;
+            _list = new FastList<Vector2>(list);            
         }
 
-        public WindingOrder WindingOrder { get; private set; }
+        public Polygon(params Vector2[] list) : this(list.AsEnumerable()) { }        
 
         public int Count => _list.Count;        
 
@@ -60,9 +58,15 @@ namespace Penumbra.Mathematics
         {
             _list.Insert(index, item);            
         }
+
         public void Clear()
         {
-            _list.Clear();            
+            Clear(false);
+        }
+
+        public void Clear(bool fastClear)
+        {
+            _list.Clear(fastClear);
         }
         public int IndexOf(Vector2 item) => _list.IndexOf(item);
         public void RemoveAt(int index)
@@ -70,13 +74,12 @@ namespace Penumbra.Mathematics
             _list.RemoveAt(index);            
         }
 
-        public void EnsureWindingOrder(WindingOrder desired)
+        public void EnsureCounterClockwiseWindingOrder()
         {
-            if (desired != WindingOrder)
+            if (!IsCounterClockWise())
             {
                 Reverse();
-                WindingOrder = desired;
-            }
+            }            
         }
 
         public static List<Polygon> Wrap(Polygon polygon)
@@ -84,7 +87,7 @@ namespace Penumbra.Mathematics
             return new List<Polygon> {polygon};
         }
         
-        public void GetIndices(WindingOrder windingOrder, List<int> indices)
+        public void GetIndices(WindingOrder windingOrder, FastList<int> indices)
         {
             if (IsConvex())
             {

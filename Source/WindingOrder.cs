@@ -1,6 +1,6 @@
 ﻿namespace Penumbra
 {
-    public enum WindingOrder
+    internal enum WindingOrder
     {
         Clockwise,
         CounterClockwise

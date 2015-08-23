@@ -42,6 +42,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Scenarios\H_HullInsideLightRadius.cs" />
     <Compile Include="Scenarios\X_ConcaveHull.cs" />
     <Compile Include="Scenarios\C_LightBlending.cs" />
     <Compile Include="Scenarios\E_Antumbra.cs" />

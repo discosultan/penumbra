@@ -16,7 +16,7 @@ namespace Penumbra.Mathematics
         public static float Sin(float a)
         {
             return (float) Math.Sin(a);
-        }
+        } 
 
         public static float Cos(float d)
         {

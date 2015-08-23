@@ -6,7 +6,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Graphics.Builders;
 using Penumbra.Mathematics;
 using Penumbra.Utilities;
-using UmbraBuilder = Penumbra.Graphics.Builders.UmbraBuilder2;
+using UmbraBuilder = Penumbra.Graphics.Builders.UmbraBuilder3;
+using PenumbraBuilder = Penumbra.Graphics.Builders.PenumbraBuilder2;
 
 namespace Penumbra.Graphics.Renderers
 {
@@ -30,7 +31,7 @@ namespace Penumbra.Graphics.Renderers
             _lightRenderer.Lights.CollectionChanged += ObservableLightsChanged;            
 
             _penumbraBuilder = new PenumbraBuilder();
-            _umbraBuilder = new UmbraBuilder(_lightRenderer.ResolvedHulls);
+            _umbraBuilder = new UmbraBuilder();
             _solidBuilder = new SolidBuilder();
             _antumbraBuilder = new AntumbraBuilder();
         }
@@ -141,12 +142,12 @@ namespace Penumbra.Graphics.Renderers
 
                     // 2. PROCESS GEOMETRY DATA FOR HULL POINT.
                     //_umbraBuilder.ProcessHullPoint(light, hull, ref context);
-                    _penumbraBuilder.ProcessHullPoint(light, hull, ref context);                    
+                    //_penumbraBuilder.ProcessHullPoint(light, hull, ref context);                    
                 }
 
                 // 3. PROCESS GEOMETRY DATA FOR HULL.  
                 var hullCtx = new HullContext() { PointContexts = _hullPointContexts, IsConvex = hull.TransformedPoints.IsConvex() };
-                _umbraBuilder.ProcessHull(light, hull, ref hullCtx);
+                _umbraBuilder.ProcessHull(light, ref hullCtx);
                 _penumbraBuilder.ProcessHull(light, hull, ref hullCtx);                
                 _antumbraBuilder.ProcessHull(light, hull, ref hullCtx);
                 _solidBuilder.ProcessHull(light, hull);
@@ -167,7 +168,7 @@ namespace Penumbra.Graphics.Renderers
                 Index = i,
                 Point = position,
                 Normals = hull.TransformedNormals[i],                
-                IsConvex = hull.TransformedNormals[i].IsConvex
+                IsConvex = hull.TransformedNormals[i].IsIsConvex
                 //IsInAnotherHull = _hulls
                 //    .Where(x => x != hull)
                 //    .SelectMany(x => x.TransformedHullVertices)

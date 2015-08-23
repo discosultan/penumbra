@@ -33,6 +33,7 @@ namespace Penumbra.Graphics.Builders
             {
                 vaos.HasAntumbra = false;
             }
+            vaos.HasAntumbra = false;
         }
     }
 }

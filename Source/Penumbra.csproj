@@ -49,11 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\Builders\AntumbraBuilder.cs" />
-    <Compile Include="Graphics\Builders\PenumbraBuilder.cs" />
+    <Compile Include="Graphics\Builders\PenumbraBuilder2.cs" />
+    <None Include="Graphics\Builders\PenumbraBuilder.cs_" />
     <Compile Include="Graphics\Builders\SolidBuilder.cs" />
-    <Compile Include="Graphics\Builders\UmbraBuilder.cs" />
+    <None Include="Graphics\Builders\UmbraBuilder.cs_" />
     <Compile Include="Graphics\Builders\BuildingContexts.cs" />
-    <Compile Include="Graphics\Builders\UmbraBuilder2.cs" />
+    <Compile Include="Graphics\Builders\UmbraBuilder3.cs" />
+    <None Include="Graphics\Builders\UmbraBuilder2.cs_" />
     <Compile Include="Graphics\Renderers\BufferedShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\PrimitiveRenderer.cs" />
     <Compile Include="Graphics\LightVaos.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
     <Compile Include="Utilities\FastList.cs" />
+    <Compile Include="Utilities\Graph.cs" />
     <Compile Include="Utilities\ListExtensions.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Pool.cs" />

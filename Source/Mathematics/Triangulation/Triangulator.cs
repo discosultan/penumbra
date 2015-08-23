@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
+using Indices = Penumbra.Utilities.FastList<int>;
 
 namespace Penumbra.Mathematics.Triangulation
 {
@@ -8,8 +8,8 @@ namespace Penumbra.Mathematics.Triangulation
     {
         const float Epsilon = Calc.Epsilon;
 
-        private static readonly List<int> V = new List<int>();
-        public static bool Process(Polygon contour, List<int> resultIndices, WindingOrder windingOrder)
+        private static readonly Indices V = new Indices();
+        public static bool Process(Polygon contour, Indices resultIndices, WindingOrder windingOrder)
         {
             /* allocate and initialize list of Vertices in polygon */
 
@@ -101,7 +101,7 @@ namespace Penumbra.Mathematics.Triangulation
             return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
         }
 
-        private static bool Snip(Polygon contour, int u, int v, int w, int n, List<int> V)
+        private static bool Snip(Polygon contour, int u, int v, int w, int n, Indices V)
         {
             int p;
 

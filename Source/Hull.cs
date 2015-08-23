@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 using Penumbra.Utilities;
-using Indices = System.Collections.Generic.List<int>;
+//using Indices = System.Collections.Generic.List<int>;
+using Indices = Penumbra.Utilities.FastList<int>;
 
 namespace Penumbra
 {
@@ -18,12 +19,13 @@ namespace Penumbra
         private float _rotation;
         private Vector2 _scale = Vector2.One;
 
-        private readonly List<PointNormals> _rawNormals = new List<PointNormals>();
-        private readonly List<PointNormals> _transformedNormals = new List<PointNormals>();
+        private readonly FastList<PointNormals> _rawNormals = new FastList<PointNormals>();
+        private readonly FastList<PointNormals> _transformedNormals = new FastList<PointNormals>();
 
         private bool _transformedNormalsDirty = true;
         private bool _transformedPointsDirty = true;
         private readonly Polygon _transformedPoints = new Polygon();
+        private readonly Indices _indices = new Indices();
 
         private bool _indicesDirty = true;
         private bool _rawNormalsDirty = true;
@@ -44,7 +46,7 @@ namespace Penumbra
 
             Check.True(RawPoints.IsSimple(), "Input points must form a simple polygon, meaning that no two edges may intersect with each other.");
             
-            RawPoints.EnsureWindingOrder(WindingOrder.CounterClockwise);            
+            RawPoints.EnsureCounterClockwiseWindingOrder();
         }
 
         internal Hull()
@@ -196,7 +198,7 @@ namespace Penumbra
             {
                 if (_transformedPointsDirty)
                 {
-                    _transformedPoints.Clear();
+                    _transformedPoints.Clear(true);
 
                     Matrix transform = WorldTransform;
                     for (int i = 0; i < RawPoints.Count; i++)
@@ -213,13 +215,13 @@ namespace Penumbra
             }
         }
 
-        internal List<PointNormals> RawNormals
+        internal FastList<PointNormals> RawNormals
         {
             get
             {
                 if (_rawNormalsDirty)
                 {
-                    _rawNormals.Clear();
+                    _rawNormals.Clear(true);
                     for (int i = 0; i < RawPoints.Count; i++)
                     {
                         Vector2 currentPos = RawPoints[i];
@@ -234,8 +236,9 @@ namespace Penumbra
                         //// Ref: http://stackoverflow.com/a/25646126/1466456
                         Vector2 currentToPrev = prevPos - currentPos;
                         Vector2 currentToNext = nextPos - currentPos;
-                        float angle = Calc.Atan2(currentToNext.Y, currentToNext.X) - Calc.Atan2(currentToPrev.Y, currentToPrev.X);
-                        bool isConvex = angle < Calc.Pi;
+                        // TODO: Find more optimal sln
+                        float angle = ((Calc.Atan2(currentToNext.X, currentToNext.Y) - Calc.Atan2(currentToPrev.X, currentToPrev.Y) + Calc.Pi * 2) % (Calc.Pi * 2)) - Calc.Pi;
+                        bool isConvex = angle < 0;
 
                         _rawNormals.Add(new PointNormals(ref n1, ref n2, isConvex));                        
                     }
@@ -245,13 +248,13 @@ namespace Penumbra
             }
         }
 
-        internal List<PointNormals> TransformedNormals
+        internal FastList<PointNormals> TransformedNormals
         {
             get
             {                
                 if (_transformedNormalsDirty)
                 {
-                    _transformedNormals.Clear();
+                    _transformedNormals.Clear(true);
 
                     Matrix normalMatrix = Matrix.Identity;
 
@@ -274,9 +277,7 @@ namespace Penumbra
                 }
                 return _transformedNormals;
             }
-        }
-
-        private readonly Indices _indices = new Indices();
+        }        
 
         internal Indices Indices
         {
@@ -284,7 +285,7 @@ namespace Penumbra
             {
                 if (_indicesDirty)
                 {
-                    _indices.Clear();
+                    _indices.Clear(true);
                     TransformedPoints.GetIndices(WindingOrder.Clockwise, _indices);
                     _indicesDirty = false;
                 }

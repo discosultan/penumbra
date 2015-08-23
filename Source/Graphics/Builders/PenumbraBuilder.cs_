@@ -167,9 +167,7 @@ namespace Penumbra.Graphics.Builders
             else
             {
                 vaos.HasPenumbra = false;
-            }
-            // TODO: TEMP
-            vaos.HasPenumbra = false;
+            }            
         }
         
         private PenumbraFin CreateFin(Light light, ref HullPointContext context, Hull hull, Side side, bool testIntersection = false)
@@ -390,9 +388,9 @@ namespace Penumbra.Graphics.Builders
 
         private class PenumbraFin
         {
-            public readonly List<VertexPosition2Texture> FinalVertices = new List<VertexPosition2Texture>();
+            public readonly FastList<VertexPosition2Texture> FinalVertices = new FastList<VertexPosition2Texture>();
             public readonly Polygon Vertices = new Polygon();
-            public readonly List<int> Indices = new List<int>();
+            public readonly FastList<int> Indices = new FastList<int>();
 
             public VertexPosition2Texture Vertex1; // hull point
             public VertexPosition2Texture Vertex2; // projected left or right
@@ -405,9 +403,9 @@ namespace Penumbra.Graphics.Builders
             {
                 Intersects = false;
                 IsCreatedByIntersection = false;
-                FinalVertices.Clear();
-                Vertices.Clear();
-                Indices.Clear();
+                FinalVertices.Clear(true);
+                Vertices.Clear(true);
+                Indices.Clear(true);
             }
 
             //public VertexPosition2Texture InnerProjectedVertex => Side == Side.Left ? Vertex3 : Vertex2;

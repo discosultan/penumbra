@@ -41,37 +41,59 @@ namespace Penumbra.Graphics.Builders
 
         private void PopulateSegments(Light light, Hull hull, ref HullContext hullCtx, int lowerLimit = -1, int upperLimit = -1)
         {
-            // FIND FIRST RIGHT WHICH IS NOT OVERLAPPED BE PREVIOUS RIGHT
+            int startIndex = FindStartIndex(ref hullCtx);
+            var graph = new Graph<HullPointContext>();
+            graph.Initialize(hullCtx.PointContexts, startIndex);
+            while (graph.HasUnvisitedSegments)
+            {
+                foreach (var segment in graph.GetSegments())
+                {
+                    VisitSegment(segment);
+                }
+                graph.ResolveSegments();
+            }
+        }
 
-            // FIND FIRST RIGHT
+        private void VisitSegment(List<GraphNode<HullPointContext>> segment)
+        {
+            foreach (var node in segment)
+            {
+                
+            }
+        }
+
+        private int FindStartIndex(ref HullContext hullCtx)
+        {
             var points = hullCtx.PointContexts;
             int count = points.Count;
-            bool isClosed = _segments.Count == 0;
-            foreach (int i in points.GetIndicesBetween(isClosed ? 0 : lowerLimit, isClosed ? count - 1 : upperLimit))
+            int startIndex = 0;
+            foreach (int i in points.GetIndicesBetween(0, count - 1))
             {
                 var ctx = hullCtx.PointContexts[i];
                 if (ctx.RightSide == Side.Right)
-                {
-                    var startIndex = i;
-                    if (!hullCtx.IsConvex || !isClosed && i != lowerLimit)
+                {                    
+                    startIndex = i;
+                    if (!hullCtx.IsConvex)
                     {
                         // FIND PREVIOUS RIGHT TO DETERMINE WHICH ONE COMES FIRST / IF WE NEED TO MERGE
                         //for (int j = (startIndex - 1) < 0 ? count - 1 : startIndex - 1; j != i; j = (j - 1) < 0 ? count - 1 : j - 1)
-                        foreach (int j in points.GetIndicesBetweenBackward(points.PreviousIndex(startIndex), isClosed ? points.NextIndex(startIndex) : lowerLimit))
+                        foreach (int j in points.GetIndicesBetweenBackward(points.PreviousIndex(startIndex), points.NextIndex(startIndex)))
                         {
                             var prevCtx = hullCtx.PointContexts[j];
                             if (prevCtx.LeftSide == Side.Left)
                             {
-                                if (VectorUtil.IsADirectingRightFromB(ref ctx.LightRightToPointDir, ref prevCtx.LightLeftToPointDir))
+                                if (VectorUtil.IsADirectingRightFromB(ref ctx.LightRightToPointDir,
+                                    ref prevCtx.LightLeftToPointDir))
                                 {
                                     break;
                                 }
                             }
                             else if (prevCtx.RightSide == Side.Right)
                             {
-                                if (VectorUtil.IsADirectingRightFromB(ref prevCtx.LightRightToPointDir, ref ctx.LightRightToPointDir))
+                                if (VectorUtil.IsADirectingRightFromB(ref prevCtx.LightRightToPointDir,
+                                    ref ctx.LightRightToPointDir))
                                 {
-                                    startIndex = j;
+                                    startIndex = j;                                    
                                 }
                                 else
                                 {
@@ -80,73 +102,9 @@ namespace Penumbra.Graphics.Builders
                             }
                         }
                     }
-
-                    // FIND LEFT NEXT FROM RIGHT
-                    int endIndex = 0;                    
-                    //for (int j = (i + 1) % count; j != i; j = (j + 1) % count)
-                    int nextIndex = points.NextIndex(i);
-                    if (nextIndex != upperLimit)
-                    { 
-                        foreach (int j in points.GetIndicesBetween(points.NextIndex(i), isClosed ? points.PreviousIndex(i) : upperLimit))
-                        {
-                            var nextCtx = hullCtx.PointContexts[j];
-                            if (nextCtx.LeftSide == Side.Left || !isClosed && j != upperLimit)
-                            {
-                                endIndex = j;
-                                // FIND NEXT LEFT TO DETERMINE WHICH ONE COMES FIRST / IF WE NEED TO MERGE
-                                //for (int k = (endIndex + 1) % count; k != j; k = (k + 1) % count)
-                                foreach (int k in points.GetIndicesBetween(points.NextIndex(endIndex), isClosed ? points.PreviousIndex(endIndex) : upperLimit))
-                                {
-                                    var nextCtx2 = hullCtx.PointContexts[k];
-                                    if (nextCtx2.RightSide == Side.Right)
-                                    {
-                                        if (VectorUtil.IsADirectingRightFromB(ref nextCtx2.LightRightToPointDir, ref nextCtx.LightLeftToPointDir))
-                                        {
-                                            break;                                        
-                                        }
-                                    }
-                                    else if (nextCtx2.LeftSide == Side.Left)
-                                    {
-                                        if (!VectorUtil.IsADirectingRightFromB(ref nextCtx2.LightLeftToPointDir, ref nextCtx.LightLeftToPointDir))
-                                        {
-                                            endIndex = k;
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-
-                    var segment = new List<HullPointContext>();
-                    _segments.Add(segment);
-                    foreach (int j in points.GetIndicesBetween(startIndex, endIndex))
-                    {
-                        segment.Add(points[j]);
-                    }
-
-                    for (int j = 0; j < _segments.Count; j++)
-                    {
-                        var seg = _segments[j];
-                        var nextSeg = _segments.NextElement(j);                                                
-                        var newStartPrev = seg[seg.Count - 1];
-                        var newEndNext = nextSeg[0];
-
-                        var nextStart = points.NextIndex(newStartPrev.Index);
-                        var newEnd = points.PreviousIndex(newEndNext.Index);                        
-                        if (nextStart != newEndNext.Index && newEnd != newStartPrev.Index && nextStart != newEnd)
-                        {
-                            PopulateSegments(light, hull, ref hullCtx, nextStart, newEnd);
-                        }                        
-                    }
-
-                    break;
-                } // foreach ends here 
+                }
             }
+            return startIndex;
         }
 
         private void PopulateVertices(Light light, ref HullContext hullCtx)
