@@ -24,7 +24,7 @@ namespace Penumbra.Graphics.Builders
             _indices.Clear();
         }
 
-        public void ProcessHull(Light light, Hull hull, ref HullContext hullCtx)
+        public void ProcessHull(Light light, Hull hull, HullContext hullCtx)
         {
             var points = hullCtx.PointContexts;
             for (int i = 0; i < points.Count; i++)
@@ -42,22 +42,22 @@ namespace Penumbra.Graphics.Builders
 
             foreach (PenumbraFin fin in _fins)
             {
-                //if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
-                //{
-                //    // CLIP FROM MID                    
-                //    ClipMid(fin, ref hullCtx);                    
-                //}
+                if (hullCtx.UmbraIntersectionContexts.Count > 0)
+                {
+                    // CLIP FROM MID                    
+                    ClipMid(fin, hullCtx);
+                }
 
                 // ADD TEXCOORDS, INTERPOLATE
                 AddTexCoords(fin);
 
                 //if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
                 //{                    
-                //    AttachInterpolatedVerticesToContext(fin, ref hullCtx);                    
+                //    AttachInterpolatedVerticesToContext(fin, ref hullCtx);
                 //}
 
                 // TRIANGULATE
-                TriangulateFin(fin);
+                fin.Vertices.GetIndices(WindingOrder.Clockwise, fin.Indices);
 
                 _vertices.AddRange(fin.FinalVertices);
                 for (int i = 0; i < fin.Indices.Count; i++)
@@ -71,30 +71,30 @@ namespace Penumbra.Graphics.Builders
             }         
             
             // TODO: TEMP   
-            hullCtx.UmbraLeftProjectedVertex.TexCoord = hullCtx.UmbraRightProjectedVertex.TexCoord;
+            //hullCtx.UmbraLeftProjectedVertex.TexCoord = hullCtx.UmbraRightProjectedVertex.TexCoord;
 
             _fins.Clear();
         }
 
-        private void AttachInterpolatedVerticesToContext(PenumbraFin fin, ref HullContext hullCtx)
+        private void AttachInterpolatedVerticesToContext(PenumbraFin fin, HullContext hullCtx)
         {
             foreach (var vertex in fin.FinalVertices)
             {
                 // We can populate only 1 vertex from a single fin.
-                if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraLeftProjectedPoint))
-                {
-                    hullCtx.UmbraLeftProjectedVertex = vertex;                    
-                    return;
-                }
-                if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraRightProjectedPoint))
-                {
-                    hullCtx.UmbraRightProjectedVertex = vertex;
-                    return;
-                }
-                if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraIntersectionPoint))
-                {
-                    hullCtx.UmbraIntersectionVertex = vertex;                    
-                }
+                //if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraLeftProjectedPoint))
+                //{
+                //    hullCtx.UmbraLeftProjectedVertex = vertex;                    
+                //    return;
+                //}
+                //if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraRightProjectedPoint))
+                //{
+                //    hullCtx.UmbraRightProjectedVertex = vertex;
+                //    return;
+                //}
+                //if (VectorUtil.NearEqual(vertex.Position, hullCtx.UmbraIntersectionPoint))
+                //{
+                //    hullCtx.UmbraIntersectionVertex = vertex;                    
+                //}
             }
         }
 
@@ -220,24 +220,20 @@ namespace Penumbra.Graphics.Builders
                         interpolatedTexCoord));                        
                 }
             }
-        }
+        }        
 
-        private void TriangulateFin(PenumbraFin result)
-        {            
-            result.Vertices.GetIndices(WindingOrder.Clockwise, result.Indices);            
-        }
-
-        private static void ClipMid(PenumbraFin fin, ref HullContext hullCtx)
+        private static void ClipMid(PenumbraFin fin, HullContext hullCtx)
         {
+            var intersectionContext = hullCtx.UmbraIntersectionContexts[0];
             if (fin.Side == Side.Left)
             {
-                fin.Vertices.Insert(fin.Vertices.Count - 2, hullCtx.UmbraIntersectionPoint);
-                fin.Vertices[fin.Vertices.Count - 2] = hullCtx.UmbraRightProjectedPoint;
+                fin.Vertices.Insert(fin.Vertices.Count - 2, intersectionContext.UmbraIntersectionPoint);
+                fin.Vertices[fin.Vertices.Count - 2] = intersectionContext.UmbraRightProjectedPoint;
             }
             else
             {
-                fin.Vertices.Insert(2, hullCtx.UmbraLeftProjectedPoint);
-                fin.Vertices[3] = hullCtx.UmbraIntersectionPoint;
+                fin.Vertices.Insert(2, intersectionContext.UmbraLeftProjectedPoint);
+                fin.Vertices[3] = intersectionContext.UmbraIntersectionPoint;
             }
         }
 

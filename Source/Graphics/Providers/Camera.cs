@@ -60,8 +60,9 @@ namespace Penumbra.Graphics.Providers
             Vector2.Transform(ref min, ref _ndcToScreen, out min);
             Vector2.Transform(ref max, ref _ndcToScreen, out max);
 
-            Vector2 minResult = Vector2.Min(min, max);
-            Vector2 maxResult = Vector2.Max(min, max);
+            Vector2 minResult, maxResult;
+            Vector2.Min(ref min, ref max, out minResult);            
+            Vector2.Max(ref min, ref max, out maxResult);
 
             return new Rectangle(
                 (int)minResult.X, 

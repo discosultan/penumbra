@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Penumbra.Mathematics;
 using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
+    // TODO: prefer ctor init to property init
+
     internal struct HullPointContext
     {        
         public Vector2 Point;
@@ -35,23 +36,26 @@ namespace Penumbra.Graphics.Builders
         }
     }
 
-    internal struct HullContext
+    internal struct UmbraIntersectionContext
     {
-        public IntersectionType UmbraIntersectionType;        
         public Vector2 UmbraIntersectionPoint;
         public Vector2 UmbraLeftProjectedPoint;
         public Vector2 UmbraRightProjectedPoint;
         public VertexPosition2Texture UmbraIntersectionVertex;
         public VertexPosition2Texture UmbraLeftProjectedVertex;
         public VertexPosition2Texture UmbraRightProjectedVertex;
-        public FastList<HullPointContext> PointContexts;
-        public bool IsConvex;
     }
 
-    internal enum IntersectionType
+    internal class HullContext
     {
-        None,
-        IntersectsOutsideLight,
-        IntersectsInsideLight
+        public FastList<UmbraIntersectionContext> UmbraIntersectionContexts = new FastList<UmbraIntersectionContext>();
+        public FastList<HullPointContext> PointContexts = new FastList<HullPointContext>();
+        public bool IsConvex;
+
+        public void Clear()
+        {
+            UmbraIntersectionContexts.Clear(true);
+            PointContexts.Clear(true);
+        }   
     }
 }

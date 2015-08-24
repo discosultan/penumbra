@@ -1,4 +1,6 @@
-﻿using Penumbra.Utilities;
+﻿using Microsoft.Xna.Framework;
+using Penumbra.Mathematics;
+using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Builders
 {
@@ -8,18 +10,18 @@ namespace Penumbra.Graphics.Builders
 
         public void PreProcess()
         {
-            _vertices.Clear();
+            _vertices.Clear(true);
         }
 
-        public void ProcessHull(Light light, Hull hull, ref HullContext hullCtx)
+        public void ProcessHull(Light light, HullContext hullCtx)
         {
-            if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
-            {
-                //_vertices.Add(new VertexPosition2Texture(hullCtx.UmbraIntersectionPoint, new Vector2(0, 1)));
-                _vertices.Add(hullCtx.UmbraIntersectionVertex);
-                _vertices.Add(hullCtx.UmbraRightProjectedVertex);
-                _vertices.Add(hullCtx.UmbraLeftProjectedVertex);
-            }            
+            //if (hullCtx.UmbraIntersectionType == IntersectionType.IntersectsInsideLight)
+            //{
+            //    //_vertices.Add(new VertexPosition2Texture(hullCtx.UmbraIntersectionPoint, new Vector2(0, 1)));
+            //    _vertices.Add(hullCtx.UmbraIntersectionVertex);
+            //    _vertices.Add(hullCtx.UmbraRightProjectedVertex);
+            //    _vertices.Add(hullCtx.UmbraLeftProjectedVertex);
+            //}            
         }
 
         public void Build(Light light, LightVaos vaos)
@@ -34,6 +36,24 @@ namespace Penumbra.Graphics.Builders
                 vaos.HasAntumbra = false;
             }
             vaos.HasAntumbra = false;
+        }
+
+        /* AlphaBlendFunction = BlendFunction.Subtract,
+           AlphaSourceBlend = Blend.DestinationAlpha,
+           AlphaDestinationBlend = Blend.InverseSourceAlpha,*/ 
+
+        private static float BlendAlpha(float alpha)
+        {
+            // srcA * destA - destA * (1 - srcA)
+            // destA = 1
+            
+            //return alpha - (1 - alpha);
+            return 2f * alpha - 1f;
+        }
+
+        private static float GetAlphaForTexCoord(ref Vector2 texCoord)
+        {
+            return 1f - Calc.Pow(texCoord.X / (1 - texCoord.Y), 4);
         }
     }
 }

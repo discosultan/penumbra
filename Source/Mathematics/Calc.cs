@@ -33,6 +33,11 @@ namespace Penumbra.Mathematics
             return (float) Math.Sqrt(d);
         }
 
+        public static float Pow(float d, double factor)
+        {
+            return (float) Math.Pow(d, factor);
+        }
+
         public static int Step(float y, float x)
         {
             return x >= y ? 1 : 0;

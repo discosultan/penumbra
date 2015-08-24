@@ -29,10 +29,10 @@ namespace Penumbra.Graphics.Builders
             _indices.Clear();
         }
         
-        public void ProcessHull(Light light, ref HullContext hullCtx)
+        public void ProcessHull(Light light, HullContext hullCtx)
         {
-            PopulateSegments(ref hullCtx);
-            PopulateVertices(light, ref hullCtx);
+            PopulateSegments(hullCtx);
+            PopulateVertices(light, hullCtx);
             ReleaseSegments(_segments);                
         }
 
@@ -43,11 +43,11 @@ namespace Penumbra.Graphics.Builders
             segments.Clear();
         }
         
-        private void PopulateSegments(ref HullContext hullCtx)
+        private void PopulateSegments(HullContext hullCtx)
         {
             var points = hullCtx.PointContexts;
             int count = points.Count;
-            int indexer = FindStartIndex(ref hullCtx);
+            int indexer = FindStartIndex(hullCtx);
             var activeSegment = CreateSegment();
             _skippedContexts.Clear();
             bool segmentIsActive = true;            
@@ -182,7 +182,7 @@ namespace Penumbra.Graphics.Builders
             }
         }        
 
-        private int FindStartIndex(ref HullContext hullCtx)
+        private static int FindStartIndex(HullContext hullCtx)
         {
             var points = hullCtx.PointContexts;
             int count = points.Count;            
@@ -207,7 +207,7 @@ namespace Penumbra.Graphics.Builders
                 _segments.Add(segment);
         }
 
-        private void PopulateVertices(Light light, ref HullContext hullCtx)
+        private void PopulateVertices(Light light, HullContext hullCtx)
         {
             foreach (var segment in _segments)
             {
@@ -246,24 +246,24 @@ namespace Penumbra.Graphics.Builders
 
                 if (linesIntersect && areIntersectingInFrontOfLight)
                 {
-                    var areIntersectingInsideLightRange = Vector2.DistanceSquared(intersectionPos, light.Position) <
+                    bool areIntersectingInsideLightRange = Vector2.DistanceSquared(intersectionPos, light.Position) <
                                                           light.RangeSquared;
 
                     if (areIntersectingInsideLightRange)
                     {
-                        hullCtx.UmbraIntersectionType = IntersectionType.IntersectsInsideLight;
+                        hullCtx.UmbraIntersectionContexts.Add(new UmbraIntersectionContext
+                        {
+                            UmbraIntersectionPoint = intersectionPos,
+                            UmbraRightProjectedPoint = projectedPoint1,
+                            UmbraLeftProjectedPoint = projectedPoint2
+                        });                        
                         _hullVertices.Add(intersectionPos);
                     }
                     else
-                    {
-                        hullCtx.UmbraIntersectionType = IntersectionType.IntersectsOutsideLight;
+                    {                        
                         _hullVertices.Add(projectedPoint1);
                         _hullVertices.Add(projectedPoint2);
-                    }
-
-                    hullCtx.UmbraIntersectionPoint = intersectionPos;
-                    hullCtx.UmbraRightProjectedPoint = projectedPoint1;
-                    hullCtx.UmbraLeftProjectedPoint = projectedPoint2;
+                    }                    
                 }
                 else
                 {

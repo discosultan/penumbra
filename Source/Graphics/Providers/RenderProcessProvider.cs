@@ -131,11 +131,11 @@ namespace Penumbra.Graphics.Providers
             //********************//
 
             var bs = new BlendState
-            {
+            {                
                 AlphaBlendFunction = BlendFunction.Subtract,
                 AlphaSourceBlend = Blend.DestinationAlpha,
                 AlphaDestinationBlend = Blend.InverseSourceAlpha,
-                ColorWriteChannels = ColorWriteChannels.Alpha            
+                ColorWriteChannels = ColorWriteChannels.Alpha
             };                  
             
             var dss = new DepthStencilState

@@ -78,7 +78,8 @@ namespace Penumbra
             ResolvedHulls.Resolve();
 
             // Generate lightmap.
-            for (int i = 0; i < Lights.Count; i++)
+            int lightCount = Lights.Count;
+            for (int i = 0; i < lightCount; i++)
             {
                 Light light = Lights[i];
                 if (!light.Enabled) continue;
@@ -128,10 +129,10 @@ namespace Penumbra
             _primitivesRenderer.DrawFullscreenQuad(_renderProcessProvider.PresentLightmap, _textureBuffer.LightMap);
 
             // Clear hulls dirty flags.
-            for (int j = 0; j < Hulls.Count; j++)
-            {
-                Hull hull = Hulls[j];
-                hull.DirtyFlags &= 0;
+            int hullCount = Hulls.Count;
+            for (int i = 0; i < hullCount; i++)
+            {                
+                Hulls[i].DirtyFlags &= 0;
             }
         }
     }

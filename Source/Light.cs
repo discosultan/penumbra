@@ -7,9 +7,10 @@ namespace Penumbra
 {
     public class Light
     {
+        internal Vector2 _position; // TODO: rename
+
         private bool _castsShadows;
-        private bool _enabled;
-        private Vector2 _position;
+        private bool _enabled;        
         private float _range;
         private float _radius;
 

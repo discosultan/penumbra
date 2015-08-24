@@ -22,8 +22,6 @@ namespace Penumbra.Graphics.Renderers
         private readonly SolidBuilder _solidBuilder;
         private readonly AntumbraBuilder _antumbraBuilder;
 
-        //private readonly PointProcessingContext _currentContext = new PointProcessingContext();
-
         public BufferedShadowRenderer(GraphicsDevice device, PenumbraEngine lightRenderer)
         {
             _graphicsDevice = device;
@@ -116,40 +114,38 @@ namespace Penumbra.Graphics.Renderers
 
             return vaos;
         }
-
-        private readonly FastList<HullPointContext> _hullPointContexts = new FastList<HullPointContext>();
+        
+        private readonly HullContext _hullContext = new HullContext();
         private void BuildVaosForLight(Light light, LightVaos vaos)
         {
             // 1. ANY NECESSARY CLEANING OR PREPROCESSING.
             _umbraBuilder.PreProcess();
             _penumbraBuilder.PreProcess();
-            _antumbraBuilder.PreProcess();            
-            _solidBuilder.PreProcess();            
+            _antumbraBuilder.PreProcess();
+            _solidBuilder.PreProcess();
 
-            for (int i = 0; i < _lightRenderer.ResolvedHulls.Count; i++)
+            int hullCount = _lightRenderer.ResolvedHulls.Count;
+            for (int i = 0; i < hullCount; i++)
             {
                 Hull hull = _lightRenderer.ResolvedHulls[i];
                 if (!hull.Enabled || !light.Intersects(hull)) continue;
 
-                _hullPointContexts.Clear(true);
+                _hullContext.Clear();
+                _hullContext.IsConvex = hull.TransformedPoints.IsConvex(); // TODO: Move isConvex to hull and cache it
 
-                for (int j = 0; j < hull.TransformedPoints.Count; j++)
+                int pointCount = hull.TransformedPoints.Count;
+                for (int j = 0; j < pointCount; j++)
                 {
                     HullPointContext context;
-                    PopulateContextForPoint(light, hull, j, out context);
+                    GetPointContext(light, hull, j, out context);
 
-                    _hullPointContexts.Add(context);
-
-                    // 2. PROCESS GEOMETRY DATA FOR HULL POINT.
-                    //_umbraBuilder.ProcessHullPoint(light, hull, ref context);
-                    //_penumbraBuilder.ProcessHullPoint(light, hull, ref context);                    
+                    _hullContext.PointContexts.Add(context);
                 }
 
-                // 3. PROCESS GEOMETRY DATA FOR HULL.  
-                var hullCtx = new HullContext() { PointContexts = _hullPointContexts, IsConvex = hull.TransformedPoints.IsConvex() };
-                _umbraBuilder.ProcessHull(light, ref hullCtx);
-                _penumbraBuilder.ProcessHull(light, hull, ref hullCtx);                
-                _antumbraBuilder.ProcessHull(light, hull, ref hullCtx);
+                // 3. PROCESS GEOMETRY DATA FOR HULL.                
+                _umbraBuilder.ProcessHull(light, _hullContext);
+                _penumbraBuilder.ProcessHull(light, hull, _hullContext);                
+                _antumbraBuilder.ProcessHull(light, _hullContext);
                 _solidBuilder.ProcessHull(light, hull);
             }
 
@@ -160,46 +156,31 @@ namespace Penumbra.Graphics.Renderers
             _solidBuilder.Build(light, vaos);
         }
 
-        public void PopulateContextForPoint(Light light, Hull hull, int i, out HullPointContext context)
+        public void GetPointContext(Light light, Hull hull, int i, out HullPointContext context)
         {
             Vector2 position = hull.TransformedPoints[i];
             context = new HullPointContext
             {
                 Index = i,
                 Point = position,
-                Normals = hull.TransformedNormals[i]                
-                //IsInAnotherHull = _hulls
-                //    .Where(x => x != hull)
-                //    .SelectMany(x => x.TransformedHullVertices)
-                //    .Any(x => x == position)
+                Normals = hull.TransformedNormals[i]
             };
-            context.LightToPointDir = Vector2.Normalize(context.Point - light.Position);
-            GetDotsForNormals(context.LightToPointDir, context.Normals, out context.Dot1, out context.Dot2);
+            
+            Vector2.Subtract(ref context.Point, ref light._position, out context.LightToPointDir);
+            Vector2.Normalize(ref context.LightToPointDir, out context.LightToPointDir);
 
-            GetUmbraVectors(light, position, context.LightToPointDir, +1f, out context.LightRight, out context.LightRightToPointDir);
-            GetUmbraVectors(light, position, context.LightToPointDir, -1f, out context.LightLeft, out context.LightLeftToPointDir);
+            //context.LightToPointDir = Vector2.Normalize(context.Point - light.Position);
+            GetDotsForNormals(ref context.LightToPointDir, ref context.Normals, out context.Dot1, out context.Dot2);
 
-            GetDotsForNormals(context.LightRightToPointDir, context.Normals, out context.RightDot1, out context.RightDot2);
-            GetDotsForNormals(context.LightLeftToPointDir, context.Normals, out context.LeftDot1, out context.LeftDot2);
+            GetUmbraVectors(light, ref position, ref context.LightToPointDir, +1f, out context.LightRight, out context.LightRightToPointDir);
+            GetUmbraVectors(light, ref position, ref context.LightToPointDir, -1f, out context.LightLeft, out context.LightLeftToPointDir);
 
+            GetDotsForNormals(ref context.LightRightToPointDir, ref context.Normals, out context.RightDot1, out context.RightDot2);
+            GetDotsForNormals(ref context.LightLeftToPointDir, ref context.Normals, out context.LeftDot1, out context.LeftDot2);
 
-
-            //if (context.Normals.IsConvex)
-            //{
             context.Side = GetSide(context.Dot1, context.Dot2);
             context.LeftSide = GetSide(context.LeftDot1, context.LeftDot2);
-            context.RightSide = GetSide(context.RightDot1, context.RightDot2);
-            //}
-            //else
-            //{
-            //    context.Side = Side.Concave;
-            //}
-
-            //_currentContext.Index = i;
-            //_currentContext.Position = hull.Inner.TransformedHullVertices[i];
-            //_currentContext.Normals = hull.TransformedNormals[i];
-            //_currentContext.LightToPointDir = Vector2.Normalize(_currentContext.Position - light.Position);
-            //GetDotsForNormals(_currentContext.LightToPointDir, _currentContext.Normals, out _currentContext.Dot1, out _currentContext.Dot2);            
+            context.RightSide = GetSide(context.RightDot1, context.RightDot2);           
         }
 
         private static Side GetSide(float dot1, float dot2)
@@ -213,15 +194,14 @@ namespace Penumbra.Graphics.Renderers
                             : Side.Forward;
         }
 
-        private static void GetDotsForNormals(Vector2 lightToPointDir, PointNormals normals, out float dot1, out float dot2)
+        private static void GetDotsForNormals(ref Vector2 lightToPointDir, ref PointNormals normals, out float dot1, out float dot2)
         {
-            Vector2 normal1 = normals.Normal1;
-            Vector2 normal2 = normals.Normal2;
-            dot1 = Vector2.Dot(lightToPointDir, normal1);
-            dot2 = Vector2.Dot(lightToPointDir, normal2);
+            Vector2.Dot(ref lightToPointDir, ref normals.Normal1, out dot1);
+            Vector2.Dot(ref lightToPointDir, ref normals.Normal2, out dot2);
         }
 
-        private void GetUmbraVectors(Light light, Vector2 position, Vector2 lightToPointDir, float project, out Vector2 lightSide,
+        // TODO: impr perf
+        private void GetUmbraVectors(Light light, ref Vector2 position, ref Vector2 lightToPointDir, float project, out Vector2 lightSide,
             out Vector2 lightSideToCurrentDir)
         {
             var lightToCurrent90CWDir = VectorUtil.Rotate90CW(lightToPointDir);
