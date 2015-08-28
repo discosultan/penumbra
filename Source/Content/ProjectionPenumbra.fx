@@ -28,7 +28,8 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_TARGET
 {
 	// Ref: http://stackoverflow.com/a/28667361/1466456
-	float alpha = 1 - pow(pin.TexCoord.x / (1 - pin.TexCoord.y), 4);	
+	//float alpha = 1 - pow(pin.TexCoord.x / (1 - pin.TexCoord.y), 4);	
+	float alpha = pow(pin.TexCoord.x / (1 - pin.TexCoord.y), 4);
 	return float4(0,0,0,alpha);
 }
 

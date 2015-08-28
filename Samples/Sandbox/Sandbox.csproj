@@ -43,9 +43,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Scenarios\H_HullInsideLightRadius.cs" />
-    <Compile Include="Scenarios\X_ConcaveHull.cs" />
+    <Compile Include="Scenarios\F_ConcaveHull.cs" />
     <Compile Include="Scenarios\C_LightBlending.cs" />
-    <Compile Include="Scenarios\E_Antumbra.cs" />
+    <Compile Include="Scenarios\X_Antumbra.cs" />
     <Compile Include="Scenarios\B_LightPassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Scenarios\G_OverlappingHulls.cs" />

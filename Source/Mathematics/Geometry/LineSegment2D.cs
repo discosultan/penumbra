@@ -47,6 +47,11 @@ namespace Penumbra.Mathematics.Geometry
             return P0 == other.P0 && P1 == other.P1;
         }
 
+        public override string ToString()
+        {
+            return $"P0:{P0} P1:{P1}";
+        }
+
         // intersect2D_2Segments(): find the 2D intersection of 2 finite segments
         //    Input:  two finite segments S1 and S2
         //    Output: *I0 = intersect point (when it exists)
