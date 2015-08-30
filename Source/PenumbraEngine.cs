@@ -13,6 +13,7 @@ namespace Penumbra
     internal class PenumbraEngine
     {
         private BufferedShadowRenderer _bufferedShadowRenderer;
+        private DynamicShadowRenderer _dynamicShadowRenderer;
 
         private readonly LightmapTextureBuffer _textureBuffer = new LightmapTextureBuffer();
         private RenderProcessProvider _renderProcessProvider;
@@ -40,6 +41,8 @@ namespace Penumbra
             set { Camera.CustomWorld = value; }
         }
 
+        public int RendererType { get; set; } // TODO: TEMP
+
         internal ShaderParameterCollection ShaderParameters { get; } = new ShaderParameterCollection();
         internal ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
         internal ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
@@ -56,6 +59,7 @@ namespace Penumbra
             _renderProcessProvider = new RenderProcessProvider(GraphicsDevice, content, Camera);
             _primitivesRenderer = new PrimitiveRenderer(GraphicsDevice, this);
             _bufferedShadowRenderer = new BufferedShadowRenderer(GraphicsDevice, this);
+            _dynamicShadowRenderer = new DynamicShadowRenderer(GraphicsDevice, content, this);
 
             // Setup logging for debug purposes.
             Logger.Add(new DelegateLogger(x => Debug.WriteLine(x)));
@@ -98,12 +102,15 @@ namespace Penumbra
                 // Draw shadows for light.
                 if (light.CastsShadows)
                 {
-                    _bufferedShadowRenderer.DrawShadows(
-                        light,
-                        _renderProcessProvider.Umbra(light.ShadowType),
-                        _renderProcessProvider.Penumbra(light.ShadowType),
-                        _renderProcessProvider.Antumbra(light.ShadowType),
-                        _renderProcessProvider.Solid(light.ShadowType));
+                    if (RendererType == 0)
+                        _bufferedShadowRenderer.DrawShadows(
+                            light,
+                            _renderProcessProvider.Umbra(light.ShadowType),
+                            _renderProcessProvider.Penumbra(light.ShadowType),
+                            _renderProcessProvider.Antumbra(light.ShadowType),
+                            _renderProcessProvider.Solid(light.ShadowType));
+                    else
+                        _dynamicShadowRenderer.DrawShadows(light);
                 }
 
                 // Draw light.                

@@ -45,6 +45,9 @@ namespace Penumbra
         public void Resolve()
         {
             ResolvedHulls.Clear();
+            ResolvedHulls.AddRange(_hulls);
+            return; // TODO: TEMP;
+
             _resolvedIndices.Clear();
             for (int i = 0; i < _hulls.Count; i++)
             {

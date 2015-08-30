@@ -163,7 +163,7 @@ namespace Penumbra
             }
         }
 
-        internal Matrix WorldTransform
+        internal Matrix LocalToWorld
         {
             get
             {
@@ -200,7 +200,7 @@ namespace Penumbra
                 {
                     _transformedPoints.Clear(true);
 
-                    Matrix transform = WorldTransform;
+                    Matrix transform = LocalToWorld;
                     for (int i = 0; i < RawPoints.Count; i++)
                     {
                         Vector2 originalPos = RawPoints[i];

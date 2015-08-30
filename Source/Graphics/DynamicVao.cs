@@ -39,21 +39,40 @@ namespace Penumbra.Graphics
         public int VertexCount { get; private set; }
         public int IndexCount { get; private set; }
 
+        public void SetVertices<T>(T[] fromData) where T : struct
+        {
+            SetVertices(fromData, fromData.Length);
+        }
+
         public void SetVertices<T>(FastList<T> fromData) where T : struct
         {
-            VertexCount = fromData.Count;
-            if (NeedToIncreaseBufferSize(ref _currentVertexCount, fromData.Count))
+            SetVertices(fromData.Items, fromData.Count);
+        }
+
+        public void SetVertices<T>(T[] fromData, int count) where T : struct
+        {            
+            if (NeedToIncreaseBufferSize(ref _currentVertexCount, count))
                 CreateVertexBuffer();
-            VertexBuffer.SetData<T>(fromData, 0, fromData.Count);
+            VertexBuffer.SetData(fromData, 0, count);
+        }
+
+        public void SetIndices(int[] fromData)
+        {
+            SetIndices(fromData, fromData.Length);
         }
 
         public void SetIndices(FastList<int> fromData)
         {
+            SetIndices(fromData.Items, fromData.Count);
+        }
+
+        public void SetIndices(int[] fromData, int count)
+        {
             if (!_useIndices) return;
-            IndexCount = fromData.Count;
-            if (NeedToIncreaseBufferSize(ref _currentIndexCount, fromData.Count))
+            IndexCount = count;
+            if (NeedToIncreaseBufferSize(ref _currentIndexCount, count))
                 CreateIndexBuffer();
-            IndexBuffer.SetData<int>(fromData, 0, fromData.Count);
+            IndexBuffer.SetData(fromData, 0, count);
         }
 
         public void Dispose()

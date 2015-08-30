@@ -32,14 +32,14 @@ namespace Penumbra.Graphics.Builders
             for (int i = 0; i < points.Count; i++)
             {
                 var ctx = points[i];
-                if (ctx.IsConvex && (ctx.RightSide == Side.Right 
-                    //|| ctx.Side == Side.Right
+                if (ctx.IsConvex && (ctx.RightSide == Side.Right
+                    || ctx.Side == Side.Right
                     ))
                 {
                     _fins.Add(CreateFin(light, ref ctx, hull, Side.Right));
                 }
-                else if (ctx.IsConvex && (ctx.LeftSide == Side.Left 
-                    //|| ctx.Side == Side.Left
+                else if (ctx.IsConvex && (ctx.LeftSide == Side.Left
+                    || ctx.Side == Side.Left
                     ))
                 {
                     _fins.Add(CreateFin(light, ref ctx, hull, Side.Left));

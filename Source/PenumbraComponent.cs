@@ -13,7 +13,13 @@ namespace Penumbra
             _engine = new PenumbraEngine(projections);
             Enabled = false;
             Visible = true;
-        }        
+        }
+
+        public int RendererType
+        {
+            get { return _engine.RendererType; }
+            set { _engine.RendererType = value; }
+        }
 
         public bool DebugDraw
         {

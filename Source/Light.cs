@@ -113,6 +113,24 @@ namespace Penumbra
         public Color Color { get; set; }
         public Texture Texture { get; set; }
 
+        public Matrix LocalToWorld
+        {
+            get
+            {
+                var transform = Matrix.Identity;
+                // Scaling.
+                transform.M11 = Range;
+                transform.M22 = Range;
+                // Translation.
+                transform.M41 = Position.X;
+                transform.M42 = Position.Y;
+                return transform;
+            }
+        }
+
+        public Matrix WorldToLocal => Matrix.Invert(LocalToWorld);
+
+
         //internal float IntensityFactor => 1 / (Intensity * Intensity);
         internal float IntensityFactor => 1 / Intensity;
         internal LightComponentDirtyFlags DirtyFlags { get; set; }

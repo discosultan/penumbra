@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Graphics\Builders\AntumbraBuilder.cs" />
     <Compile Include="Graphics\Builders\PenumbraBuilder2.cs" />
+    <Content Include="Content\Test.fx" />
     <None Include="Graphics\Builders\PenumbraBuilder.cs_" />
     <Compile Include="Graphics\Builders\SolidBuilder.cs" />
     <None Include="Graphics\Builders\UmbraBuilder.cs_" />
@@ -57,6 +58,7 @@
     <Compile Include="Graphics\Builders\UmbraBuilder3.cs" />
     <None Include="Graphics\Builders\UmbraBuilder2.cs_" />
     <Compile Include="Graphics\Renderers\BufferedShadowRenderer.cs" />
+    <Compile Include="Graphics\Renderers\DynamicShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\PrimitiveRenderer.cs" />
     <Compile Include="Graphics\LightVaos.cs" />
     <Compile Include="Graphics\Providers\Camera.cs" />
