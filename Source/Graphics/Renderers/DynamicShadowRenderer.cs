@@ -84,13 +84,13 @@ namespace Penumbra.Graphics.Renderers
             int hullIndexOffset = 0;
             foreach (var hull in _engine.ResolvedHulls.ResolvedHulls)
             {
-                if (!hull.Enabled || !light.Intersects(hull))
+                if (!hull.Enabled || !hull.Valid || !light.Intersects(hull))
                     continue;
                 
                 Matrix t = hull.LocalToWorld * light.WorldToLocal;
 
                 //var points = hull.TransformedPoints;
-                var points = hull.RawPoints;
+                var points = hull.LocalPoints;
                 numSegments += points.Count;
 
                 Vector2 prevPoint = points[points.Count - 1];
@@ -118,13 +118,13 @@ namespace Penumbra.Graphics.Renderers
                     shadowIndexOffset++;
                 }
 
-                _hullVertices.AddRange(hull.TransformedPoints);
+                _hullVertices.AddRange(hull.WorldPoints);
                 int indexCount = hull.Indices.Count;
                 for (int i = 0; i < indexCount; i++)
                 {
                     _hullIndices.Add(hull.Indices[i] + hullIndexOffset);
                 }
-                hullIndexOffset += hull.TransformedPoints.Count;
+                hullIndexOffset += hull.WorldPoints.Count;
             }
 
             if (numSegments == 0)

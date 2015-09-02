@@ -31,9 +31,10 @@ namespace Penumbra
 
         public bool LightIsInside(Light light)
         {
-            for (int j = 0; j < ResolvedHulls.Count; j++)
-            {
-                if (light.IsInside(ResolvedHulls[j]))
+            int hullCount = ResolvedHulls.Count;
+            for (int i = 0; i < hullCount; i++)
+            {                
+                if (light.IsInside(ResolvedHulls[i]))
                 {
                     return true;
                 }
@@ -54,7 +55,7 @@ namespace Penumbra
                 if (_resolvedIndices.Contains(i)) continue;
 
                 _resolvedIndices.Add(i);
-                Polygon poly = _hulls[i].TransformedPoints;
+                Polygon poly = _hulls[i].WorldPoints;
                 Polygon result;
                 bool mergedPolygons = ResolvePolygon(poly, out result);
 
@@ -70,7 +71,7 @@ namespace Penumbra
             {
                 if (_resolvedIndices.Contains(i)) continue;
                 
-                Polygon otherPolygon = _hulls[i].TransformedPoints;
+                Polygon otherPolygon = _hulls[i].WorldPoints;
                 if (polygon.Intersects(otherPolygon))
                 {
                     _resolvedIndices.Add(i);

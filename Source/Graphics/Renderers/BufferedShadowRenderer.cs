@@ -128,12 +128,13 @@ namespace Penumbra.Graphics.Renderers
             for (int i = 0; i < hullCount; i++)
             {
                 Hull hull = _lightRenderer.ResolvedHulls[i];
-                if (!hull.Enabled || !light.Intersects(hull)) continue;
+                if (!hull.Enabled || !hull.Valid || !light.Intersects(hull))
+                    continue;
 
                 _hullContext.Clear();
-                _hullContext.IsConvex = hull.TransformedPoints.IsConvex(); // TODO: Move isConvex to hull and cache it
+                _hullContext.IsConvex = hull.WorldPoints.IsConvex(); // TODO: Move isConvex to hull and cache it
 
-                int pointCount = hull.TransformedPoints.Count;
+                int pointCount = hull.WorldPoints.Count;
                 for (int j = 0; j < pointCount; j++)
                 {
                     HullPointContext context;
@@ -158,12 +159,12 @@ namespace Penumbra.Graphics.Renderers
 
         public void GetPointContext(Light light, Hull hull, int i, out HullPointContext context)
         {
-            Vector2 position = hull.TransformedPoints[i];
+            Vector2 position = hull.WorldPoints[i];
             context = new HullPointContext
             {
                 Index = i,
                 Point = position,
-                Normals = hull.TransformedNormals[i]
+                Normals = hull.WorldNormals[i]
             };
             
             Vector2.Subtract(ref context.Point, ref light._position, out context.LightToPointDir);

@@ -10,8 +10,8 @@ namespace Penumbra
 {
     public class Hull
     {
-        private bool _worldTransformDirty = true;
-        private Matrix _worldTransform;
+        private bool _localToWorldDirty = true;
+        private Matrix _localToWorld;
 
         private bool _enabled = true;
         private Vector2 _position;
@@ -19,16 +19,16 @@ namespace Penumbra
         private float _rotation;
         private Vector2 _scale = Vector2.One;
 
-        private readonly FastList<PointNormals> _rawNormals = new FastList<PointNormals>();
-        private readonly FastList<PointNormals> _transformedNormals = new FastList<PointNormals>();
+        private readonly FastList<PointNormals> _localNormals = new FastList<PointNormals>();
+        private readonly FastList<PointNormals> _worldNormals = new FastList<PointNormals>();
 
-        private bool _transformedNormalsDirty = true;
-        private bool _transformedPointsDirty = true;
-        private readonly Polygon _transformedPoints = new Polygon();
+        private bool _worldNormalsDirty = true;
+        private bool _worldPointsDirty = true;
+        private readonly Polygon _worldPoints = new Polygon();
         private readonly Indices _indices = new Indices();
 
         private bool _indicesDirty = true;
-        private bool _rawNormalsDirty = true;
+        private bool _localNormalsDirty = true;
         private bool _radiusDirty = true;
         private bool _centroidDirty = true;
 
@@ -42,24 +42,28 @@ namespace Penumbra
             Check.ArgumentNotNull(points, nameof(points), "Points cannot be null.");
             Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");
 
-            RawPoints = new Polygon(points);
+            LocalPoints = new Polygon(points);
 
-            Check.True(RawPoints.IsSimple(), "Input points must form a simple polygon, meaning that no two edges may intersect with each other.");
+            Check.True(LocalPoints.IsSimple(), "Input points must form a simple polygon, meaning that no two edges may intersect with each other.");
             
-            RawPoints.EnsureCounterClockwiseWindingOrder();
+            //LocalPoints.EnsureCounterClockwiseWindingOrder();
         }
 
-        internal Hull()
+        public Hull()
         {
-            RawPoints = new Polygon();
+            LocalPoints = new Polygon();
         }
 
-        #endregion
+        #endregion        
 
         #region Public Properties
 
+        public int Count => LocalPoints.Count;
+
         // TODO: Do we want this?
         public int Layer { get; set; }
+
+        public bool Valid { get; private set; }        
 
         public bool Enabled
         {
@@ -130,7 +134,27 @@ namespace Penumbra
             }
         }
 
-        #endregion       
+        #endregion
+
+        #region Public Methods
+
+        public void Add(Vector2 point)
+        {
+            LocalPoints.Add(point);
+            Validate();
+            //if (Valid)
+            //    LocalPoints.EnsureCounterClockwiseWindingOrder();
+            SetDirty();            
+        }
+
+        public void RemoveAt(int index)
+        {
+            LocalPoints.RemoveAt(index);
+            SetDirty();
+            Validate();
+        }
+
+        #endregion
 
         internal bool AnyDirty(HullComponentDirtyFlags flags)
         {
@@ -143,7 +167,7 @@ namespace Penumbra
             {
                 if (_centroidDirty)
                 {
-                    _centroid = TransformedPoints.GetCentroid();
+                    _centroid = WorldPoints.GetCentroid();
                     _centroidDirty = false;
                 }
                 return _centroid;
@@ -156,7 +180,7 @@ namespace Penumbra
             {
                 if (_radiusDirty)
                 {
-                    _radius = TransformedPoints.GetRadius();
+                    _radius = WorldPoints.GetRadius();
                     _radiusDirty = false;
                 }
                 return _radius;
@@ -167,66 +191,66 @@ namespace Penumbra
         {
             get
             {
-                if (_worldTransformDirty)
+                if (_localToWorldDirty)
                 {
-                    _worldTransform = Matrix.Identity;
+                    _localToWorld = Matrix.Identity;
 
                     // Create the matrices
                     float cos = Calc.Cos(Rotation);
                     float sin = Calc.Sin(Rotation);
 
                     // vertexMatrix = scale * rotation * translation;
-                    _worldTransform.M11 = _scale.X * cos;
-                    _worldTransform.M12 = _scale.X * sin;
-                    _worldTransform.M21 = _scale.Y * -sin;
-                    _worldTransform.M22 = _scale.Y * cos;
-                    _worldTransform.M41 = _position.X - _origin.X;
-                    _worldTransform.M42 = _position.Y - _origin.Y;
+                    _localToWorld.M11 = _scale.X * cos;
+                    _localToWorld.M12 = _scale.X * sin;
+                    _localToWorld.M21 = _scale.Y * -sin;
+                    _localToWorld.M22 = _scale.Y * cos;
+                    _localToWorld.M41 = _position.X - _origin.X;
+                    _localToWorld.M42 = _position.Y - _origin.Y;
 
-                    _worldTransformDirty = false;
+                    _localToWorldDirty = false;
                 }
-                return _worldTransform;
+                return _localToWorld;
             }
         }
 
 
-        internal Polygon RawPoints { get; }        
+        internal Polygon LocalPoints { get; }        
 
-        internal Polygon TransformedPoints
+        internal Polygon WorldPoints
         {
             get
             {
-                if (_transformedPointsDirty)
+                if (_worldPointsDirty)
                 {
-                    _transformedPoints.Clear(true);
+                    _worldPoints.Clear(true);
 
                     Matrix transform = LocalToWorld;
-                    for (int i = 0; i < RawPoints.Count; i++)
+                    for (int i = 0; i < LocalPoints.Count; i++)
                     {
-                        Vector2 originalPos = RawPoints[i];
+                        Vector2 originalPos = LocalPoints[i];
                         Vector2 transformedPos;
                         Vector2.Transform(ref originalPos, ref transform, out transformedPos);
                         //_transformedHullVertices[i] = transformedPos;
-                        _transformedPoints.Add(transformedPos);
+                        _worldPoints.Add(transformedPos);
                     }
-                    _transformedPointsDirty = false;
+                    _worldPointsDirty = false;
                 }
-                return _transformedPoints;
+                return _worldPoints;
             }
         }
 
-        internal FastList<PointNormals> RawNormals
+        internal FastList<PointNormals> LocalNormals
         {
             get
             {
-                if (_rawNormalsDirty)
+                if (_localNormalsDirty)
                 {
-                    _rawNormals.Clear(true);
-                    for (int i = 0; i < RawPoints.Count; i++)
+                    _localNormals.Clear(true);
+                    for (int i = 0; i < LocalPoints.Count; i++)
                     {
-                        Vector2 currentPos = RawPoints[i];
-                        Vector2 prevPos = RawPoints.PreviousElement(i);
-                        Vector2 nextPos = RawPoints.NextElement(i);
+                        Vector2 currentPos = LocalPoints[i];
+                        Vector2 prevPos = LocalPoints.PreviousElement(i);
+                        Vector2 nextPos = LocalPoints.NextElement(i);
 
                         Vector2 n1 = VectorUtil.Rotate90CW(currentPos - prevPos);
                         Vector2 n2 = VectorUtil.Rotate90CW(nextPos - currentPos);
@@ -240,21 +264,21 @@ namespace Penumbra
                         float angle = ((Calc.Atan2(currentToNext.X, currentToNext.Y) - Calc.Atan2(currentToPrev.X, currentToPrev.Y) + Calc.Pi * 2) % (Calc.Pi * 2)) - Calc.Pi;
                         bool isConvex = angle < 0;
 
-                        _rawNormals.Add(new PointNormals(ref n1, ref n2, isConvex));                        
+                        _localNormals.Add(new PointNormals(ref n1, ref n2, isConvex));                        
                     }
-                    _rawNormalsDirty = false;
+                    _localNormalsDirty = false;
                 }
-                return _rawNormals;
+                return _localNormals;
             }
         }
 
-        internal FastList<PointNormals> TransformedNormals
+        internal FastList<PointNormals> WorldNormals
         {
             get
             {                
-                if (_transformedNormalsDirty)
+                if (_worldNormalsDirty)
                 {
-                    _transformedNormals.Clear(true);
+                    _worldNormals.Clear(true);
 
                     Matrix normalMatrix = Matrix.Identity;
 
@@ -267,16 +291,16 @@ namespace Penumbra
                     normalMatrix.M21 = (1f / Scale.Y) * -sin;
                     normalMatrix.M22 = (1f / Scale.Y) * cos;
 
-                    for (var i = 0; i < RawNormals.Count; i++)
+                    for (var i = 0; i < LocalNormals.Count; i++)
                     {
-                        PointNormals normals = RawNormals[i];                        
+                        PointNormals normals = LocalNormals[i];                        
                         PointNormals.Transform(ref normals, ref normalMatrix, out normals);
-                        _transformedNormals.Add(normals);
+                        _worldNormals.Add(normals);
                     }
 
-                    _transformedNormalsDirty = false;
+                    _worldNormalsDirty = false;
                 }
-                return _transformedNormals;
+                return _worldNormals;
             }
         }        
 
@@ -287,7 +311,7 @@ namespace Penumbra
                 if (_indicesDirty)
                 {
                     _indices.Clear(true);
-                    TransformedPoints.GetIndices(WindingOrder.Clockwise, _indices);
+                    WorldPoints.GetIndices(WindingOrder.Clockwise, _indices);
                     _indicesDirty = false;
                 }
                 return _indices;
@@ -300,10 +324,21 @@ namespace Penumbra
         {
             _indicesDirty = true;
             _centroidDirty = true;
-            _worldTransformDirty = true;
+            _localToWorldDirty = true;
             _radiusDirty = true;
-            _transformedPointsDirty = true;
-            _transformedNormalsDirty = true;
+            _worldPointsDirty = true;
+            _worldNormalsDirty = true;
+            DirtyFlags = HullComponentDirtyFlags.All;
+        }
+
+        private void Validate()
+        {
+            Valid = true;
+
+            if (LocalPoints.Count < 3)  
+                Valid = false;                            
+            else if (!LocalPoints.IsSimple())            
+                Valid = false;            
         }
     }    
 

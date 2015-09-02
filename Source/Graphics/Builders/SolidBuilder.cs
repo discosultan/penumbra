@@ -19,9 +19,9 @@ namespace Penumbra.Graphics.Builders
         public void ProcessHull(Light light, Hull hull)
         {
             int existingIndexCount = _indices.Count;
-            _vertices.AddRange(hull.TransformedPoints);            
+            _vertices.AddRange(hull.WorldPoints);            
             _indices.AddRange(hull.Indices);
-            int numVertices = hull.TransformedPoints.Count;
+            int numVertices = hull.WorldPoints.Count;
             for (int i = existingIndexCount; i < _indices.Count; i++)
             {
                 _indices[i] = _indices[i] + _indexOffset;

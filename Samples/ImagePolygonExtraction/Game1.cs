@@ -18,15 +18,20 @@ namespace ImagePolygonExtraction
 
         public Game1()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 1280,
+                PreferredBackBufferHeight = 768
+            };
+
             Content.RootDirectory = "Content";
+
             _penumbra = new PenumbraComponent(this)
             {
                 AmbientColor = Color.Gray                
             };
             Components.Add(_penumbra);
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferredBackBufferHeight = 768;
+            Components.Add(new HullGenerationComponent(this, _penumbra));            
         }
 
         /// <summary>

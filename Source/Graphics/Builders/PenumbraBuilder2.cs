@@ -178,7 +178,7 @@ namespace Penumbra.Graphics.Builders
 
         private static void ClipHullFromFin(PenumbraFin result, Hull hull)
         {            
-            Polygon.Clip(result.Vertices, hull.TransformedPoints, result.Vertices);
+            Polygon.Clip(result.Vertices, hull.WorldPoints, result.Vertices);
         }
 
         private void OrderFinVerticesOriginFirst(PenumbraFin fin)
