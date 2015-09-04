@@ -22,27 +22,27 @@ namespace Penumbra.Mathematics.Geometry
         }
     }
 
-    struct LineSegment2D : IEquatable<LineSegment2D>
+    struct LineSegment : IEquatable<LineSegment>
     {
-        private const float Epsilon = Calc.Epsilon;
+        private const float Epsilon = 1e-5f;
 
         public Vector2 P0;
         public Vector2 P1;
 
-        public LineSegment2D(Vector2 p0, Vector2 p1)
+        public LineSegment(Vector2 p0, Vector2 p1)
         {
             P0 = p0;
             P1 = p1;
         }
 
-        public LineSegmentIntersection Intersects(LineSegment2D segment)
+        public LineSegmentIntersection Intersects(LineSegment segment)
         {
             var result = new LineSegmentIntersection();
             result.Type = (LineSegmentIntersectionType)Intersect(this, segment, out result.IntersectionPoint, out result.IntersectionEndPoint);
             return result;
         }
 
-        public bool Equals(LineSegment2D other)
+        public bool Equals(LineSegment other)
         {
             return P0 == other.P0 && P1 == other.P1;
         }
@@ -59,7 +59,7 @@ namespace Penumbra.Mathematics.Geometry
         //    Return: 0=disjoint (no intersect)
         //            1=intersect  in unique point I0
         //            2=overlap  in segment from I0 to I1
-        private static int Intersect(LineSegment2D S1, LineSegment2D S2, out Vector2 I0, out Vector2 I1)
+        private static int Intersect(LineSegment S1, LineSegment S2, out Vector2 I0, out Vector2 I1)
         {
             I0 = Vector2.Zero;
             I1 = Vector2.Zero;
@@ -67,12 +67,12 @@ namespace Penumbra.Mathematics.Geometry
             Vector2 u = S1.P1 - S1.P0;
             Vector2 v = S2.P1 - S2.P0;
             Vector2 w = S1.P0 - S2.P0;
-            float D = VectorUtil.Cross(u, v);
+            float D = VectorUtil.Cross(ref u, ref v);
 
             // test if  they are parallel (includes either being a point)
             if (Math.Abs(D) < Epsilon)
             {           // S1 and S2 are parallel
-                if (VectorUtil.Cross(u, w) != 0 || VectorUtil.Cross(v, w) != 0)
+                if (VectorUtil.Cross(ref u, ref w) != 0 || VectorUtil.Cross(ref v, ref w) != 0)
                 {
                     return 0;                    // they are NOT collinear
                 }
@@ -138,12 +138,12 @@ namespace Penumbra.Mathematics.Geometry
 
             // the segments are skew and may intersect in a point
             // get the intersect parameter for S1
-            float sI = VectorUtil.Cross(v, w) / D;
+            float sI = VectorUtil.Cross(ref v, ref w) / D;
             if (sI < 0 || sI > 1)                // no intersect with S1
                 return 0;
 
             // get the intersect parameter for S2
-            float tI = VectorUtil.Cross(u, w) / D;
+            float tI = VectorUtil.Cross(ref u, ref w) / D;
             if (tI < 0 || tI > 1)                // no intersect with S2
                 return 0;
 
@@ -155,7 +155,7 @@ namespace Penumbra.Mathematics.Geometry
         //    Input:  a point P, and a collinear segment S
         //    Return: 1 = P is inside S
         //            0 = P is  not inside S
-        private static int InSegment(Vector2 P, LineSegment2D S)
+        private static int InSegment(Vector2 P, LineSegment S)
         {
             if (S.P0.X != S.P1.X)
             {    // S is not  vertical

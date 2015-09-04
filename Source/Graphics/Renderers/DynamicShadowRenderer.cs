@@ -70,14 +70,13 @@ namespace Penumbra.Graphics.Renderers
 
         private Tuple<DynamicVao, DynamicVao> TryGetVaoForLight(Light light)
         {                        
-            _hullVertices.Clear(true);
-            _shadowVertices.Clear(true);
-            _shadowIndices.Clear(true);
-            _hullIndices.Clear(true);
+            _hullVertices.Clear();
+            _shadowVertices.Clear();
+            _shadowIndices.Clear();
+            _hullIndices.Clear();
 
-            float radius = light.Radius;
-            //radius = Transform(light.WorldToLocal, new Vector2(radius, radius)).X;
-            radius *= 0.002f; // TODO: fix;
+            Vector2 result = Vector2.TransformNormal(new Vector2(light.Radius), light.WorldToLocal);
+            float radius = result.X;
 
             int numSegments = 0;
             int shadowIndexOffset = 0;
@@ -161,7 +160,7 @@ namespace Penumbra.Graphics.Renderers
             };
             _cullCWRs = new RasterizerState
             {
-                CullMode = CullMode.CullCounterClockwiseFace,
+                CullMode = CullMode.CullClockwiseFace,
                 ScissorTestEnable = true
             };
             _shadowBs = new BlendState

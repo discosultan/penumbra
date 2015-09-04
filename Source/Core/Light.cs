@@ -1,13 +1,14 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Penumbra.Mathematics.Geometry;
 using Penumbra.Utilities;
 
 namespace Penumbra
 {
     public class Light
     {
-        internal Vector2 _position; // TODO: rename
+        internal Vector2 _position;
 
         private bool _castsShadows;
         private bool _enabled;        
@@ -160,9 +161,16 @@ namespace Penumbra
         {
             if (!Hull.Enabled || !Hull.Valid)
                 return false;
-            //return Hull.TransformedHullVertices.PointInPolygon(ref _position) == IntersectionResult.FullyContained;
+            
             return Hull.WorldPoints.PointInPolygon(ref _position);
         }
+    }
+
+    public enum ShadowType
+    {
+        Solid,
+        Illuminated,
+        Occluded
     }
 
     [Flags]

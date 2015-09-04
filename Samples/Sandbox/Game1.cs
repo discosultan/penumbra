@@ -80,12 +80,6 @@ namespace Sandbox
             if (IsKeyPressed(ShadowTypeKey))
                 _scenarios.NextShadowType();
 
-            // TODO: TEMP
-            if (IsKeyPressed(Keys.D1))
-                _penumbra.RendererType = 0;
-            if (IsKeyPressed(Keys.D2))
-                _penumbra.RendererType = 1;
-
             _previousKeyState = _currentKeyState;
 
             base.Update(gameTime);

@@ -10,6 +10,9 @@ namespace ImagePolygonExtraction
     /// </summary>
     public class Game1 : Game
     {
+        private KeyboardState _currentKeyState;
+        private KeyboardState _previousKeyState;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D _logo;
@@ -79,8 +82,12 @@ namespace ImagePolygonExtraction
                 Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            _currentKeyState = Keyboard.GetState();
+
             var ms = Mouse.GetState();
             _light.Position = ms.Position.ToVector2();
+
+            _previousKeyState = _currentKeyState;
 
             base.Update(gameTime);
         }
@@ -100,6 +107,11 @@ namespace ImagePolygonExtraction
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private bool IsKeyPressed(Keys key)
+        {
+            return !_previousKeyState.IsKeyDown(key) && _currentKeyState.IsKeyDown(key);
         }
     }
 }

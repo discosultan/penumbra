@@ -1,30 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
+using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 using Indices = Penumbra.Utilities.FastList<int>;
 
 namespace Penumbra.Mathematics.Triangulation
 {
     // ref: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
-    internal static class Triangulator
+    internal class Triangulator
     {
-        const float Epsilon = Calc.Epsilon;
+        const float Epsilon = 1e-5f;
 
-        private static readonly Indices V = new Indices();
-        public static bool Process(Polygon contour, Indices resultIndices, WindingOrder windingOrder)
+        private readonly Indices V = new Indices();
+        public bool Process(Polygon contour, Indices resultIndices, bool clockwise = true)
         {
-            /* allocate and initialize list of Vertices in polygon */
-
             int n = contour.Count;
             if (n < 3) return false;
 
-            //var V = new int[n];
             V.Clear();
-
-            /* we want a counter-clockwise polygon in V */
-            //contour.EnsureWindingOrder(WindingOrder.CounterClockwise);
-            //if (0.0f < contour.GetSignedArea())            
-                for (int v = 0; v < n; v++) V.Add(v); //V[v] = v;
-            //else
-            //    for (int v = 0; v < n; v++) V.Add((n - 1) - v); //V[v] = (n - 1) - v;
+          
+            for (int v = 0; v < n; v++) V.Add(v);
 
             int nv = n;
 
@@ -53,21 +46,18 @@ namespace Penumbra.Mathematics.Triangulation
                     a = V[u]; b = V[v]; c = V[w];
 
                     /* output Triangle */
-                    if (windingOrder == WindingOrder.CounterClockwise)
+                    if (clockwise)
                     {
                         resultIndices.Add(a);
-                        resultIndices.Add(b);
                         resultIndices.Add(c);
+                        resultIndices.Add(b);                        
                     }
                     else
                     {
                         resultIndices.Add(a);
-                        resultIndices.Add(c);
                         resultIndices.Add(b);
+                        resultIndices.Add(c);
                     }
-                    //resultIndices.Add(u);
-                    //resultIndices.Add(v);
-                    //resultIndices.Add(w);
 
                     m++;
 
@@ -108,9 +98,6 @@ namespace Penumbra.Mathematics.Triangulation
             Vector2 A = contour[V[u]];
             Vector2 B = contour[V[v]];
             Vector2 C = contour[V[w]];
-            //Vector2 A = contour[u];
-            //Vector2 B = contour[v];
-            //Vector2 C = contour[w];
 
             if (Epsilon > (((B.X - A.X) * (C.Y - A.Y)) - ((B.Y - A.Y) * (C.X - A.X)))) return false;
 

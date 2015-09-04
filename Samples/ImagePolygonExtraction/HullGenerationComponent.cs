@@ -26,9 +26,9 @@ namespace ImagePolygonExtraction
             if (!_previousKeyboardState.IsKeyDown(Keys.Space) && 
                 currentKeyboardState.IsKeyDown(Keys.Space))
             {
-                if (_activeHull != null && _activeHull.Count > 0)
+                if (_activeHull != null && _activeHull.Points.Count > 0)
                 {
-                    _activeHull.RemoveAt(_activeHull.Count - 1);
+                    _activeHull.Points.RemoveAt(_activeHull.Points.Count - 1);
                 }
             }
 
@@ -40,7 +40,7 @@ namespace ImagePolygonExtraction
                     _activeHull = new Hull();
                     _penumbra.Hulls.Add(_activeHull);
                 }
-                _activeHull.Add(currentMouseState.Position.ToVector2());
+                _activeHull.Points.Add(currentMouseState.Position.ToVector2());
             }
 
             if (_previousMouseState.RightButton == ButtonState.Released &&

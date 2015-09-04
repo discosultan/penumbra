@@ -31,7 +31,9 @@ namespace Penumbra.Mathematics.Collision
     /// An axis aligned bounding box.
     /// </summary>
     internal struct BoundingRectangle
-    {       
+    {
+        private const float Epsilon = 1e-5f;
+
         /// <summary>
         /// The lower vertex
         /// </summary>
@@ -127,8 +129,8 @@ namespace Penumbra.Mathematics.Collision
         public bool Contains(ref Vector2 point)
         {
             //using epsilon to try and gaurd against float rounding errors.
-            if ((point.X > (LowerBound.X + Calc.Epsilon) && point.X < (UpperBound.X - Calc.Epsilon) &&
-                 (point.Y > (LowerBound.Y + Calc.Epsilon) && point.Y < (UpperBound.Y - Calc.Epsilon))))
+            if ((point.X > (LowerBound.X + Epsilon) && point.X < (UpperBound.X - Epsilon) &&
+                 (point.Y > (LowerBound.Y + Epsilon) && point.Y < (UpperBound.Y - Epsilon))))
             {
                 return true;
             }

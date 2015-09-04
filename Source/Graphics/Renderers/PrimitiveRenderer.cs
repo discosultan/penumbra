@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Penumbra.Mathematics;
 
 namespace Penumbra.Graphics.Renderers
 {
@@ -139,7 +138,7 @@ namespace Penumbra.Graphics.Renderers
             for (int i = 1; i <= circlePoints; i++)
             {
                 var angle = rotationIncrement * i;
-                vertices[i] = new Vector2(Calc.Cos(angle) * radius, Calc.Sin(angle) * radius);
+                vertices[i] = new Vector2((float)Math.Cos(angle) * radius, (float)Math.Sin(angle) * radius);
 
                 int indexStart = (i - 1) * 3;
                 indices[indexStart++] = 0;

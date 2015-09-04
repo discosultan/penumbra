@@ -37,9 +37,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FarseerPhysics MonoGame">
-      <HintPath>..\FarseerPhysics MonoGame.dll</HintPath>
-    </Reference>
     <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.4.0.459\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
@@ -48,16 +45,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\Builders\AntumbraBuilder.cs" />
-    <Compile Include="Graphics\Builders\PenumbraBuilder2.cs" />
     <Content Include="Content\Test.fx" />
-    <None Include="Graphics\Builders\PenumbraBuilder.cs_" />
-    <Compile Include="Graphics\Builders\SolidBuilder.cs" />
-    <None Include="Graphics\Builders\UmbraBuilder.cs_" />
-    <Compile Include="Graphics\Builders\BuildingContexts.cs" />
-    <Compile Include="Graphics\Builders\UmbraBuilder3.cs" />
-    <None Include="Graphics\Builders\UmbraBuilder2.cs_" />
-    <Compile Include="Graphics\Renderers\BufferedShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\DynamicShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\PrimitiveRenderer.cs" />
     <Compile Include="Graphics\LightVaos.cs" />
@@ -66,55 +54,29 @@
     <Compile Include="Graphics\Providers\RenderProcessProvider.cs" />
     <Compile Include="Graphics\Providers\RenderProvider.cs" />
     <Compile Include="Graphics\ShaderParameterCollection.cs" />
-    <Compile Include="Hull.cs" />
-    <Compile Include="HullList.cs" />
-    <Compile Include="Light.cs" />
-    <Compile Include="Mathematics\Clipping\AngusClipper.cs" />
-    <Compile Include="Mathematics\Clipping\clipper.cs" />
-    <Compile Include="Mathematics\Clipping\SimplifyTools.cs" />
-    <Compile Include="Mathematics\Clipping\YuPengClipper.cs" />
-    <Compile Include="Mathematics\Collision2\BoundingCircle.cs" />
-    <Compile Include="Mathematics\Collision2\BoundingPolygon.cs" />
-    <Compile Include="Mathematics\Collision2\BoundingRectangle.cs" />
-    <Compile Include="Mathematics\Collision2\Line.cs" />
-    <Compile Include="Mathematics\Collision2\LineSegment.cs" />
-    <Compile Include="Mathematics\Collision2\Ray.cs" />
-    <Compile Include="Mathematics\Collision33\BoundingRectangle.cs" />
-    <Compile Include="Mathematics\Collision33\Collision.cs" />
-    <Compile Include="Mathematics\Collision33\Line2D.cs" />
-    <Compile Include="Mathematics\Collision33\LineSegment2D.cs" />
-    <Compile Include="Mathematics\Collision33\Ray2D.cs" />
-    <Compile Include="Mathematics\Geometry\LineSegment2D.cs" />
-    <Compile Include="Mathematics\Matrix2x2.cs" />
-    <Compile Include="Mathematics\Matrix2x3.cs" />
-    <Compile Include="Mathematics\Matrix3x3.cs" />
-    <Compile Include="Mathematics\Matrix4x4.cs" />
-    <Compile Include="Mathematics\Polygon.cs" />
-    <Compile Include="Mathematics\Triangulation\Triangulator.cs" />
-    <Compile Include="Mathematics\Triangulation\BayazitDecomposer.cs" />
-    <Compile Include="PenumbraComponent.cs" />
-    <Compile Include="PenumbraEngine.cs" />
-    <Compile Include="Projection.cs" />
+    <Compile Include="Graphics\VertexPosition2Texture.cs" />
+    <Compile Include="Core\Hull.cs" />
+    <Compile Include="Core\HullList.cs" />
+    <Compile Include="Core\Light.cs" />
+    <Compile Include="Geometry\BoundingRectangle.cs" />
+    <Compile Include="Geometry\LineSegment.cs" />
+    <Compile Include="Geometry\PolygonExtensions.cs" />
+    <Compile Include="Utilities\Triangulator.cs" />
+    <Compile Include="Core\PenumbraComponent.cs" />
+    <Compile Include="Core\PenumbraEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\ShaderParameter.cs" />
-    <Compile Include="ShadowType.cs" />
-    <Compile Include="Mathematics\PointNormals.cs" />
-    <Compile Include="Mathematics\Calc.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
+    <Compile Include="Utilities\ExtendedObservableCollection.cs" />
     <Compile Include="Utilities\FastList.cs" />
-    <Compile Include="Utilities\Graph.cs" />
-    <Compile Include="Utilities\ListExtensions.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Pool.cs" />
     <Compile Include="Graphics\RenderProcess.cs" />
     <Compile Include="Graphics\RenderState.cs" />
     <Compile Include="Graphics\RenderStep.cs" />
-    <Compile Include="Mathematics\Side.cs" />
     <Compile Include="Graphics\Vao.cs" />
-    <Compile Include="Mathematics\VectorUtil.cs" />
-    <Compile Include="Graphics\VertexPosition2Texture.cs" />
-    <Compile Include="WindingOrder.cs" />
+    <Compile Include="Utilities\VectorUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
@@ -125,9 +87,9 @@
     <Content Include="Content\ProjectionColor.fx" />
     <Content Include="Content\WorldProjectionColor.fx" />
     <Content Include="Content\WorldProjectionLight.fx" />
-    <Content Include="Content\ProjectionPenumbra.fx" />
     <Content Include="Content\Texture.fx" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

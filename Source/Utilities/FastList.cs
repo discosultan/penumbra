@@ -107,7 +107,7 @@ namespace Penumbra.Utilities
 
         public void Clear()
         {
-            Clear(false);
+            Clear(true);
         }
 
         public bool Contains(T item)

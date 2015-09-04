@@ -15,12 +15,6 @@ namespace Penumbra
             Visible = true;
         }
 
-        public int RendererType
-        {
-            get { return _engine.RendererType; }
-            set { _engine.RendererType = value; }
-        }
-
         public bool DebugDraw
         {
             get { return _engine.DebugDraw; }

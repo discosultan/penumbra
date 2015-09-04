@@ -52,7 +52,8 @@ namespace Penumbra.Graphics
         public static void SetVertexArrayObject(this GraphicsDevice device, Vao vao)
         {            
             device.SetVertexBuffer(vao.VertexBuffer);
-            device.Indices = vao.IndexBuffer;
+            if (vao.IndexBuffer != null)
+                device.Indices = vao.IndexBuffer;
         }
     }
 }

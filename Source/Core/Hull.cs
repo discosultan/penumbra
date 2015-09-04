@@ -1,64 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Microsoft.Xna.Framework;
-using Penumbra.Mathematics;
+using Penumbra.Mathematics.Geometry;
+using Penumbra.Mathematics.Triangulation;
 using Penumbra.Utilities;
-//using Indices = System.Collections.Generic.List<int>;
+using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 using Indices = Penumbra.Utilities.FastList<int>;
 
 namespace Penumbra
 {
     public class Hull
     {
+        private readonly Triangulator _triangulator = new Triangulator();
+
         private bool _localToWorldDirty = true;
         private Matrix _localToWorld;
 
+        private bool _isConvex;
         private bool _enabled = true;
         private Vector2 _position;
         private Vector2 _origin;
         private float _rotation;
         private Vector2 _scale = Vector2.One;
 
-        private readonly FastList<PointNormals> _localNormals = new FastList<PointNormals>();
-        private readonly FastList<PointNormals> _worldNormals = new FastList<PointNormals>();
-
-        private bool _worldNormalsDirty = true;
         private bool _worldPointsDirty = true;
+        private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints = new ExtendedObservableCollection<Vector2>(); 
         private readonly Polygon _worldPoints = new Polygon();
         private readonly Indices _indices = new Indices();
 
         private bool _indicesDirty = true;
-        private bool _localNormalsDirty = true;
         private bool _radiusDirty = true;
         private bool _centroidDirty = true;
+        private bool _convexDirty = true;
 
         private float _radius;
         private Vector2 _centroid;
 
         #region Constructors
 
-        public Hull(ICollection<Vector2> points)
+        public Hull(IEnumerable<Vector2> points = null)            
         {
-            Check.ArgumentNotNull(points, nameof(points), "Points cannot be null.");
-            Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");
+            //Check.ArgumentNotNull(points, nameof(points), "Points cannot be null.");
+            //Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");
 
-            LocalPoints = new Polygon(points);
+            _rawLocalPoints.CollectionChanged += (s, e) =>
+            {
+                ValidateRawLocalPoints();
+                if (Valid)
+                {
+                    ConvertRawLocalPoints();
+                    SetDirty();
+                    if (e.Action == NotifyCollectionChangedAction.Add)
+                        foreach (Vector2 point in e.NewItems)
+                            Logger.Write($"New point at {point}.");
+                }
+            };
 
-            Check.True(LocalPoints.IsSimple(), "Input points must form a simple polygon, meaning that no two edges may intersect with each other.");
-            
-            //LocalPoints.EnsureCounterClockwiseWindingOrder();
-        }
+            if (points != null)
+                _rawLocalPoints.AddRange(points);            
 
-        public Hull()
-        {
-            LocalPoints = new Polygon();
-        }
+            //Check.True(LocalPoints.IsSimple(), "Input points must form a simple polygon, meaning that no two edges may intersect with each other.");
+
+        }   
 
         #endregion        
 
-        #region Public Properties
+        #region Public Properties        
 
-        public int Count => LocalPoints.Count;
+        public IList<Vector2> Points => _rawLocalPoints;
 
         // TODO: Do we want this?
         public int Layer { get; set; }
@@ -136,25 +146,6 @@ namespace Penumbra
 
         #endregion
 
-        #region Public Methods
-
-        public void Add(Vector2 point)
-        {
-            LocalPoints.Add(point);
-            Validate();
-            //if (Valid)
-            //    LocalPoints.EnsureCounterClockwiseWindingOrder();
-            SetDirty();            
-        }
-
-        public void RemoveAt(int index)
-        {
-            LocalPoints.RemoveAt(index);
-            SetDirty();
-            Validate();
-        }
-
-        #endregion
 
         internal bool AnyDirty(HullComponentDirtyFlags flags)
         {
@@ -196,8 +187,8 @@ namespace Penumbra
                     _localToWorld = Matrix.Identity;
 
                     // Create the matrices
-                    float cos = Calc.Cos(Rotation);
-                    float sin = Calc.Sin(Rotation);
+                    var cos = (float)Math.Cos(Rotation);
+                    var sin = (float)Math.Sin(Rotation);
 
                     // vertexMatrix = scale * rotation * translation;
                     _localToWorld.M11 = _scale.X * cos;
@@ -213,8 +204,7 @@ namespace Penumbra
             }
         }
 
-
-        internal Polygon LocalPoints { get; }        
+        internal Polygon LocalPoints { get; } = new Polygon();
 
         internal Polygon WorldPoints
         {
@@ -237,72 +227,7 @@ namespace Penumbra
                 }
                 return _worldPoints;
             }
-        }
-
-        internal FastList<PointNormals> LocalNormals
-        {
-            get
-            {
-                if (_localNormalsDirty)
-                {
-                    _localNormals.Clear(true);
-                    for (int i = 0; i < LocalPoints.Count; i++)
-                    {
-                        Vector2 currentPos = LocalPoints[i];
-                        Vector2 prevPos = LocalPoints.PreviousElement(i);
-                        Vector2 nextPos = LocalPoints.NextElement(i);
-
-                        Vector2 n1 = VectorUtil.Rotate90CW(currentPos - prevPos);
-                        Vector2 n2 = VectorUtil.Rotate90CW(nextPos - currentPos);
-                        n1.Normalize();
-                        n2.Normalize();
-
-                        //// Ref: http://stackoverflow.com/a/25646126/1466456
-                        Vector2 currentToPrev = prevPos - currentPos;
-                        Vector2 currentToNext = nextPos - currentPos;
-                        // TODO: Find more optimal sln
-                        float angle = ((Calc.Atan2(currentToNext.X, currentToNext.Y) - Calc.Atan2(currentToPrev.X, currentToPrev.Y) + Calc.Pi * 2) % (Calc.Pi * 2)) - Calc.Pi;
-                        bool isConvex = angle < 0;
-
-                        _localNormals.Add(new PointNormals(ref n1, ref n2, isConvex));                        
-                    }
-                    _localNormalsDirty = false;
-                }
-                return _localNormals;
-            }
-        }
-
-        internal FastList<PointNormals> WorldNormals
-        {
-            get
-            {                
-                if (_worldNormalsDirty)
-                {
-                    _worldNormals.Clear(true);
-
-                    Matrix normalMatrix = Matrix.Identity;
-
-                    float cos = Calc.Cos(Rotation);
-                    float sin = Calc.Sin(Rotation);
-
-                    // normalMatrix = scaleInv * rotation;
-                    normalMatrix.M11 = (1f / Scale.X) * cos;
-                    normalMatrix.M12 = (1f / Scale.X) * sin;
-                    normalMatrix.M21 = (1f / Scale.Y) * -sin;
-                    normalMatrix.M22 = (1f / Scale.Y) * cos;
-
-                    for (var i = 0; i < LocalNormals.Count; i++)
-                    {
-                        PointNormals normals = LocalNormals[i];                        
-                        PointNormals.Transform(ref normals, ref normalMatrix, out normals);
-                        _worldNormals.Add(normals);
-                    }
-
-                    _worldNormalsDirty = false;
-                }
-                return _worldNormals;
-            }
-        }        
+        }  
 
         internal Indices Indices
         {
@@ -310,11 +235,38 @@ namespace Penumbra
             {
                 if (_indicesDirty)
                 {
-                    _indices.Clear(true);
-                    WorldPoints.GetIndices(WindingOrder.Clockwise, _indices);
+                    _indices.Clear();
+                    if (IsConvex)
+                    {
+                        int numTriangles = LocalPoints.Count - 2;
+                        for (int i = numTriangles - 1; i >= 0; i--)
+                        {
+                            _indices.Add(0);
+                            _indices.Add(i + 2);
+                            _indices.Add(i + 1);
+                        }
+                    }
+                    else
+                    {
+                        _triangulator.Process(LocalPoints, _indices);
+                    }
                     _indicesDirty = false;
                 }
                 return _indices;
+            }            
+        }
+
+
+        internal bool IsConvex
+        {
+            get
+            {
+                if (_convexDirty)
+                {
+                    _isConvex = LocalPoints.IsConvex();
+                    _convexDirty = false;
+                }
+                return _isConvex;
             }
         }
 
@@ -323,22 +275,35 @@ namespace Penumbra
         private void SetDirty()
         {
             _indicesDirty = true;
+            _convexDirty = true;
             _centroidDirty = true;
             _localToWorldDirty = true;
             _radiusDirty = true;
             _worldPointsDirty = true;
-            _worldNormalsDirty = true;
             DirtyFlags = HullComponentDirtyFlags.All;
         }
 
-        private void Validate()
+        private void ConvertRawLocalPoints()
+        {
+            LocalPoints.Clear();
+            LocalPoints.AddRange(_rawLocalPoints);
+            if (!LocalPoints.IsCounterClockWise())
+                LocalPoints.ReverseWindingOrder();            
+        }
+
+        private void ValidateRawLocalPoints()
         {
             Valid = true;
 
-            if (LocalPoints.Count < 3)  
+            // TODO: temp
+            var poly = new Polygon(_rawLocalPoints);
+
+            if (_rawLocalPoints.Count < 3)  
                 Valid = false;                            
-            else if (!LocalPoints.IsSimple())            
-                Valid = false;            
+            else if (!poly.IsSimple())            
+                Valid = false;
+
+            Logger.Write($"Polygon valid:{Valid}");
         }
     }    
 

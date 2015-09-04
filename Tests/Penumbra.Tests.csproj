@@ -66,14 +66,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollisionTests.cs" />
-    <Compile Include="FastListTests.cs" />
-    <Compile Include="GraphTests.cs" />
-    <Compile Include="HullListTests.cs" />
-    <Compile Include="PolygonTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Setup.cs" />
-    <Compile Include="VectorUtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
