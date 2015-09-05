@@ -37,35 +37,30 @@ namespace Penumbra.Geometry
         /// <summary>
         /// The lower vertex
         /// </summary>
-        public Vector2 LowerBound;
+        public Vector2 Min;
 
         /// <summary>
         /// The upper vertex
         /// </summary>
-        public Vector2 UpperBound;
+        public Vector2 Max;
 
         public BoundingRectangle(Vector2 min, Vector2 max)
-            : this(ref min, ref max)
         {
-        }
-
-        public BoundingRectangle(ref Vector2 min, ref Vector2 max)
-        {
-            LowerBound = min;
-            UpperBound = max;
+            Min = min;
+            Max = max;
         }
 
         /// <summary>
         /// Get the center of the AABB.
         /// </summary>
         /// <value></value>
-        public Vector2 Center => 0.5f*(LowerBound + UpperBound);
+        public Vector2 Center => 0.5f*(Min + Max);
 
         /// <summary>
         /// Get the extents of the AABB (half-widths).
         /// </summary>
         /// <value></value>
-        public Vector2 Extents => 0.5f*(UpperBound - LowerBound);
+        public Vector2 Extents => 0.5f*(Max - Min);
 
         /// <summary>
         /// Get the perimeter length
@@ -75,8 +70,8 @@ namespace Penumbra.Geometry
         {
             get
             {
-                float wx = UpperBound.X - LowerBound.X;
-                float wy = UpperBound.Y - LowerBound.Y;
+                float wx = Max.X - Min.X;
+                float wy = Max.Y - Min.Y;
                 return 2.0f*(wx + wy);
             }
         }
@@ -84,13 +79,13 @@ namespace Penumbra.Geometry
         /// <summary>
         /// first quadrant
         /// </summary>
-        public BoundingRectangle Q1 => new BoundingRectangle(Center, UpperBound);
+        public BoundingRectangle Q1 => new BoundingRectangle(Center, Max);
 
-        public BoundingRectangle Q2 => new BoundingRectangle(new Vector2(LowerBound.X, Center.Y), new Vector2(Center.X, UpperBound.Y));
+        public BoundingRectangle Q2 => new BoundingRectangle(new Vector2(Min.X, Center.Y), new Vector2(Center.X, Max.Y));
 
-        public BoundingRectangle Q3 => new BoundingRectangle(LowerBound, Center);
+        public BoundingRectangle Q3 => new BoundingRectangle(Min, Center);
 
-        public BoundingRectangle Q4 => new BoundingRectangle(new Vector2(Center.X, LowerBound.Y), new Vector2(UpperBound.X, Center.Y));
+        public BoundingRectangle Q4 => new BoundingRectangle(new Vector2(Center.X, Min.Y), new Vector2(Max.X, Center.Y));
 
         /// <summary>
         /// Combine an AABB into this one.
@@ -98,8 +93,8 @@ namespace Penumbra.Geometry
         /// <param name="aabb">The aabb.</param>
         public void Combine(ref BoundingRectangle aabb)
         {
-            LowerBound = Vector2.Min(LowerBound, aabb.LowerBound);
-            UpperBound = Vector2.Max(UpperBound, aabb.UpperBound);
+            Min = Vector2.Min(Min, aabb.Min);
+            Max = Vector2.Max(Max, aabb.Max);
         }
 
         /// <summary>
@@ -112,10 +107,10 @@ namespace Penumbra.Geometry
         public bool Contains(ref BoundingRectangle aabb)
         {
             bool result = true;
-            result = result && LowerBound.X <= aabb.LowerBound.X;
-            result = result && LowerBound.Y <= aabb.LowerBound.Y;
-            result = result && aabb.UpperBound.X <= UpperBound.X;
-            result = result && aabb.UpperBound.Y <= UpperBound.Y;
+            result = result && Min.X <= aabb.Min.X;
+            result = result && Min.Y <= aabb.Min.Y;
+            result = result && aabb.Max.X <= Max.X;
+            result = result && aabb.Max.Y <= Max.Y;
             return result;
         }
 
@@ -129,23 +124,23 @@ namespace Penumbra.Geometry
         public bool Contains(ref Vector2 point)
         {
             //using epsilon to try and gaurd against float rounding errors.
-            if ((point.X > (LowerBound.X + Epsilon) && point.X < (UpperBound.X - Epsilon) &&
-                 (point.Y > (LowerBound.Y + Epsilon) && point.Y < (UpperBound.Y - Epsilon))))
+            if ((point.X > (Min.X + Epsilon) && point.X < (Max.X - Epsilon) &&
+                 (point.Y > (Min.Y + Epsilon) && point.Y < (Max.Y - Epsilon))))
             {
                 return true;
             }
             return false;
         }
 
-        public static bool TestOverlap(BoundingRectangle a, BoundingRectangle b)
+        public static bool Intersect(BoundingRectangle a, BoundingRectangle b)
         {
-            return TestOverlap(ref a, ref b);
+            return Intersect(ref a, ref b);
         }
 
-        public static bool TestOverlap(ref BoundingRectangle a, ref BoundingRectangle b)
+        public static bool Intersect(ref BoundingRectangle a, ref BoundingRectangle b)
         {
-            Vector2 d1 = b.LowerBound - a.UpperBound;
-            Vector2 d2 = a.LowerBound - b.UpperBound;
+            Vector2 d1 = b.Min - a.Max;
+            Vector2 d2 = a.Min - b.Max;
 
             if (d1.X > 0.0f || d1.Y > 0.0f)
                 return false;

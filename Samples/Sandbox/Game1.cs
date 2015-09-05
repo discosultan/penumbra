@@ -86,7 +86,7 @@ namespace Sandbox
                 _scenarios.PreviousScenario();
 
             if (IsKeyPressed(DebugKey))
-                _penumbra.DebugDraw = !_penumbra.DebugDraw;
+                _penumbra.Debug = !_penumbra.Debug;
 
             if (IsKeyPressed(ShadowTypeKey))
                 _scenarios.NextShadowType();

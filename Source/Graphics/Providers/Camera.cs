@@ -15,7 +15,7 @@ namespace Penumbra.Graphics.Providers
 
         private readonly Projections _projections;
         private Matrix _ndcToScreen;
-        private Matrix _customWorld = Matrix.Identity;
+        private Matrix _custom = Matrix.Identity;
         private bool _loaded;
 
         public Camera(Projections projections)
@@ -26,72 +26,66 @@ namespace Penumbra.Graphics.Providers
         public override void Load(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphicsDeviceManager)
         {
             base.Load(graphicsDevice, graphicsDeviceManager);
-            CalculateNdcToScreen();
-            CalculateWorldViewProjection();            
+            OnSizeChanged();        
             _loaded = true;         
-        }        
+        }
+
+        public BoundingRectangle Bounds { get; private set; }
 
         public bool InvertedY { get; private set; }
 
-        public Matrix CustomWorld
+        public Matrix Custom
         {
-            get { return _customWorld; }
+            get { return _custom; }
             set
             {
-                _customWorld = value;
+                _custom = value;
                 if ((_projections & Projections.Custom) != 0 && _loaded)
                 {
                     CalculateWorldViewProjection();
+                    CalculateBounds();
                 }
             }
-        }
-
-        public BoundingRectangle GetBoundingRectangle()
-        {
-            //Vector2 tl = Vector2.Transform(new Vector2(-1.0f, +1.0f), _inverseWorldViewProjection);
-            Vector2 c1 = Vector2.Transform(new Vector2(+1.0f, +1.0f), _inverseWorldViewProjection);
-            //Vector2 br = Vector2.Transform(new Vector2(+1.0f, -1.0f), _inverseWorldViewProjection);
-            Vector2 c2 = Vector2.Transform(new Vector2(-1.0f, -1.0f), _inverseWorldViewProjection);
-
-            //return new Rectangle((int)tl.X, (int)tl.Y, (int)(br.X - tl.X), (int)(tl.Y - br.Y));
-            Vector2 min, max;
-            Vector2.Min(ref c1, ref c2, out min);
-            Vector2.Max(ref c1, ref c2, out max);
-            return new BoundingRectangle(min, max);            
-        }
+        }        
 
         /// <summary>
         /// Calculates a screen space rectangle based on world space bounds.
         /// </summary>        
-        public Rectangle GetScissorRectangle(Light light)
-        {
-            Rectangle bounds = light.GetBoundingRectangle();                        
+        public BoundingRectangle GetScissorRectangle(Light light)
+        {            
+            BoundingRectangle bounds = light.Bounds;                
 
-            // 1. Transform from world space to NDC min {-1, -1, 0} max {1, 1, 1}           
-            var min = new Vector2(bounds.X, bounds.Y);
-            var max = new Vector2(bounds.X + bounds.Width, bounds.Y + bounds.Height);            
-            Vector2.Transform(ref min, ref WorldViewProjection, out min);
-            Vector2.Transform(ref max, ref WorldViewProjection, out max);
+            // 1. Transform from world space to NDC min {-1, -1, 0} max {1, 1, 1}                       
+            Vector2.Transform(ref bounds.Min, ref WorldViewProjection, out bounds.Min);
+            Vector2.Transform(ref bounds.Max, ref WorldViewProjection, out bounds.Max);
 
             // 2. Transform from NDC to screen space min {0, 0, 0} max {viewportWidth, viewportHeight, 1}                    
-            Vector2.Transform(ref min, ref _ndcToScreen, out min);
-            Vector2.Transform(ref max, ref _ndcToScreen, out max);
+            Vector2.Transform(ref bounds.Min, ref _ndcToScreen, out bounds.Min);
+            Vector2.Transform(ref bounds.Max, ref _ndcToScreen, out bounds.Max);
 
-            Vector2 minResult, maxResult;
-            Vector2.Min(ref min, ref max, out minResult);            
-            Vector2.Max(ref min, ref max, out maxResult);
+            Vector2 min, max;
+            Vector2.Min(ref bounds.Min, ref bounds.Max, out min);            
+            Vector2.Max(ref bounds.Min, ref bounds.Max, out max);
 
-            return new Rectangle(
-                (int)minResult.X, 
-                (int)minResult.Y, 
-                (int)(maxResult.X - minResult.X), 
-                (int)(maxResult.Y - minResult.Y));
+            return new BoundingRectangle(min, max);
         }        
 
         protected override void OnSizeChanged()
         {
             CalculateNdcToScreen();
             CalculateWorldViewProjection();
+            CalculateBounds();
+        }
+
+        private void CalculateBounds()
+        {
+            Vector2 c1 = Vector2.Transform(new Vector2(+1.0f, +1.0f), _inverseWorldViewProjection);
+            Vector2 c2 = Vector2.Transform(new Vector2(-1.0f, -1.0f), _inverseWorldViewProjection);
+
+            Vector2 min, max;
+            Vector2.Min(ref c1, ref c2, out min);
+            Vector2.Max(ref c1, ref c2, out max);
+            Bounds = new BoundingRectangle(min, max);
         }
 
         private void CalculateNdcToScreen()
@@ -104,7 +98,7 @@ namespace Penumbra.Graphics.Providers
             Matrix wvp = Matrix.Identity;
             if ((_projections & Projections.Custom) != 0)
             {
-                wvp *= CustomWorld;
+                wvp *= Custom;
             }
             if ((_projections & Projections.SpriteBatch) != 0)
             {

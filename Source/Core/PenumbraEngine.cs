@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -18,17 +19,16 @@ namespace Penumbra.Core
 
         private readonly LightmapTextureBuffer _textureBuffer = new LightmapTextureBuffer();
         private RenderProcessProvider _renderProcessProvider;
-        private PrimitiveRenderer _primitivesRenderer;
+        private PrimitiveRenderer _primitivesRenderer;        
 
         private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
 
         public PenumbraEngine(Projections projections)
         {
             Camera = new Camera(projections);
-            ResolvedHulls = new HullList(Hulls);
         }
 
-        public bool DebugDraw { get; set; } = true;
+        public bool Debug { get; set; } = true;
 
         public Color AmbientColor
         {
@@ -38,8 +38,8 @@ namespace Penumbra.Core
 
         public Matrix ViewProjection
         {
-            get { return Camera.CustomWorld; }
-            set { Camera.CustomWorld = value; }
+            get { return Camera.Custom; }
+            set { Camera.Custom = value; }
         }
 
         internal ShaderParameterCollection ShaderParameters { get; } = new ShaderParameterCollection();
@@ -47,7 +47,6 @@ namespace Penumbra.Core
         internal ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
         internal Camera Camera { get; }
         internal GraphicsDevice GraphicsDevice { get; private set; }
-        internal HullList ResolvedHulls { get; }
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, ContentManager content)
         {
@@ -60,7 +59,7 @@ namespace Penumbra.Core
             _dynamicShadowRenderer = new DynamicShadowRenderer(GraphicsDevice, content, this);
 
             // Setup logging for debug purposes.
-            Logger.Add(new DelegateLogger(x => Debug.WriteLine(x)));
+            Logger.Add(new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x)));
         }
 
         public void PreRender()
@@ -76,22 +75,13 @@ namespace Penumbra.Core
 
             ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref Camera.WorldViewProjection);
 
-            // Resolve hulls.
-            ResolvedHulls.Resolve();
-
             // Generate lightmap.
             int lightCount = Lights.Count;
             for (int i = 0; i < lightCount; i++)
             {
                 Light light = Lights[i];
-                if (!light.Enabled)
+                if (!light.Enabled || !BoundingRectangle.Intersect(light.Bounds, Camera.Bounds) || light.IsContainedWithin(Hulls))
                     continue;
-                if (!BoundingRectangle.TestOverlap(light.GetBoundingRectangle2(), Camera.GetBoundingRectangle()))
-                    continue;
-                if (ResolvedHulls.LightIsInside(light))
-                    continue;
-
-                // TODO: Cache and/or spatial tree?
 
                 // Clear stencil.
                 // TODO: use incremental stencil values to avoid clearing every light?
@@ -99,12 +89,12 @@ namespace Penumbra.Core
                     GraphicsDevice.Clear(ClearOptions.Stencil, AmbientColor, 1f, 0);
 
                 // Set scissor rectangle.                
-                GraphicsDevice.ScissorRectangle = Camera.GetScissorRectangle(light);                
+                GraphicsDevice.SetScissorRectangle(Camera.GetScissorRectangle(light));
 
                 // Draw shadows for light.
                 if (light.CastsShadows)
                 {
-                    _dynamicShadowRenderer.DrawShadows(light);
+                    _dynamicShadowRenderer.Render(light);
                 }
 
                 // Draw light.                

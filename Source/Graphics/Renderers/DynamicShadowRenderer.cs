@@ -9,6 +9,8 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Renderers
 {
+    // TODO: Separate hull drawings
+    // TODO: Use RenderProcess
     internal class DynamicShadowRenderer
     {
         private readonly GraphicsDevice _device;
@@ -21,7 +23,7 @@ namespace Penumbra.Graphics.Renderers
         private BlendState _shadowBs;
         private BlendState _hullBs;
 
-        private readonly FastList<VertexTest> _shadowVertices = new FastList<VertexTest>();
+        private readonly FastList<VertexShadow> _shadowVertices = new FastList<VertexShadow>();
         private readonly FastList<Vector2> _hullVertices = new FastList<Vector2>();
         private readonly FastList<int> _shadowIndices = new FastList<int>();
         private readonly FastList<int> _hullIndices = new FastList<int>();
@@ -40,7 +42,7 @@ namespace Penumbra.Graphics.Renderers
             BuildRenderStates();
         }        
 
-        public void DrawShadows(Light light)
+        public void Render(Light light)
         {
             var vao = TryGetVaoForLight(light);
             if (vao == null)
@@ -82,29 +84,31 @@ namespace Penumbra.Graphics.Renderers
             int numSegments = 0;
             int shadowIndexOffset = 0;
             int hullIndexOffset = 0;
-            foreach (var hull in _engine.ResolvedHulls.ResolvedHulls)
+            int hullCount = _engine.Hulls.Count;
+            for (int i = 0; i < hullCount; i++)
             {
+                Hull hull = _engine.Hulls[i];
                 if (!hull.Enabled || !hull.Valid || !light.Intersects(hull))
                     continue;
                 
-                Matrix t = hull.LocalToWorld * light.WorldToLocal;
+                Matrix t = /*hull.LocalToWorld * */light.WorldToLocal;
 
-                //var points = hull.TransformedPoints;
-                var points = hull.LocalPoints;
+                //var points = hull.LocalPoints;
+                var points = hull.WorldPoints;
                 numSegments += points.Count;
 
                 Vector2 prevPoint = points[points.Count - 1];
                 prevPoint = Transform(t, prevPoint);
                 int pointCount = points.Count;          
-                for (int i = 0; i < pointCount; i++)
+                for (int j = 0; j < pointCount; j++)
                 {                    
-                    Vector2 currentPoint = points[i];
+                    Vector2 currentPoint = points[j];
                     currentPoint = Transform(t, currentPoint);                                                            
                     
-                    _shadowVertices.Add(new VertexTest(new Vector3(0.0f, 0.0f, radius), prevPoint, currentPoint));
-                    _shadowVertices.Add(new VertexTest(new Vector3(1.0f, 0.0f, radius), prevPoint, currentPoint));
-                    _shadowVertices.Add(new VertexTest(new Vector3(0.0f, 1.0f, radius), prevPoint, currentPoint));
-                    _shadowVertices.Add(new VertexTest(new Vector3(1.0f, 1.0f, radius), prevPoint, currentPoint));
+                    _shadowVertices.Add(new VertexShadow(new Vector3(0.0f, 0.0f, radius), prevPoint, currentPoint));
+                    _shadowVertices.Add(new VertexShadow(new Vector3(1.0f, 0.0f, radius), prevPoint, currentPoint));
+                    _shadowVertices.Add(new VertexShadow(new Vector3(0.0f, 1.0f, radius), prevPoint, currentPoint));
+                    _shadowVertices.Add(new VertexShadow(new Vector3(1.0f, 1.0f, radius), prevPoint, currentPoint));
 
                     _shadowIndices.Add(shadowIndexOffset * 4 + 0);
                     _shadowIndices.Add(shadowIndexOffset * 4 + 1);
@@ -120,11 +124,9 @@ namespace Penumbra.Graphics.Renderers
 
                 _hullVertices.AddRange(hull.WorldPoints);
                 int indexCount = hull.Indices.Count;
-                for (int i = 0; i < indexCount; i++)
-                {
-                    _hullIndices.Add(hull.Indices[i] + hullIndexOffset);
-                }
-                hullIndexOffset += hull.WorldPoints.Count;
+                for (int j = 0; j < indexCount; j++)
+                    _hullIndices.Add(hull.Indices[j] + hullIndexOffset);
+                hullIndexOffset += pointCount;
             }
 
             if (numSegments == 0)
@@ -134,7 +136,7 @@ namespace Penumbra.Graphics.Renderers
             if (!_lightsVaos.TryGetValue(light, out lightVaos))
             {
                 lightVaos = Tuple.Create(
-                    DynamicVao.New(_device, VertexTest.Layout, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
+                    DynamicVao.New(_device, VertexShadow.Layout, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
                     DynamicVao.New(_device, VertexPosition2.Layout, _hullVertices.Count, _hullIndices.Count, useIndices: true));
                 _lightsVaos.Add(light, lightVaos);
             }
@@ -182,13 +184,13 @@ namespace Penumbra.Graphics.Renderers
     }    
 
     [StructLayout(LayoutKind.Sequential)]
-    internal struct VertexTest
+    internal struct VertexShadow
     {
         public Vector3 OccluderCoordRadius;
         public Vector2 SegmentA;
         public Vector2 SegmentB;
 
-        public VertexTest(Vector3 occ, Vector2 segA, Vector2 segB)
+        public VertexShadow(Vector3 occ, Vector2 segA, Vector2 segB)
         {
             OccluderCoordRadius = occ;
             SegmentA = segA;

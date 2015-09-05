@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Test.fx" />
+    <Compile Include="Graphics\GraphicsExtensions.cs" />
     <Compile Include="Graphics\Renderers\DynamicShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\PrimitiveRenderer.cs" />
     <Compile Include="Graphics\LightVaos.cs" />
@@ -56,12 +57,11 @@
     <Compile Include="Graphics\ShaderParameterCollection.cs" />
     <Compile Include="Graphics\VertexPosition2Texture.cs" />
     <Compile Include="Core\Hull.cs" />
-    <Compile Include="Core\HullList.cs" />
     <Compile Include="Core\Light.cs" />
     <Compile Include="Geometry\BoundingRectangle.cs" />
     <Compile Include="Geometry\LineSegment.cs" />
     <Compile Include="Geometry\PolygonExtensions.cs" />
-    <Compile Include="Utilities\Triangulator.cs" />
+    <Compile Include="Graphics\Triangulator.cs" />
     <Compile Include="Core\PenumbraComponent.cs" />
     <Compile Include="Core\PenumbraEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

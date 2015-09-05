@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
@@ -14,6 +15,9 @@ namespace Penumbra.Core
         private bool _enabled;        
         private float _range;
         private float _radius;
+
+        private bool _worldToLocalDirty = true;
+        private Matrix _worldToLocal;
 
         public Light(Texture texture = null) // TODO: allow creation of light without tex, use cached tex based on radius internally in these cases.
         {
@@ -63,6 +67,7 @@ namespace Penumbra.Core
                 {
                     DirtyFlags |= LightComponentDirtyFlags.Position;
                     _position = value;
+                    _worldToLocalDirty = true;
                 }
             }
         }
@@ -77,6 +82,7 @@ namespace Penumbra.Core
                 {
                     DirtyFlags |= LightComponentDirtyFlags.Range;
                     _range = value;
+                    _worldToLocalDirty = true;
                 }
             }
         }
@@ -107,7 +113,7 @@ namespace Penumbra.Core
                 if (value != _shadowType)
                 {
                     _shadowType = value;
-                    DirtyFlags |= LightComponentDirtyFlags.ShadowType;
+                    DirtyFlags |= LightComponentDirtyFlags.ShadowType;                    
                 }
             }
         }
@@ -129,7 +135,18 @@ namespace Penumbra.Core
             }
         }
 
-        public Matrix WorldToLocal => Matrix.Invert(LocalToWorld);
+        public Matrix WorldToLocal
+        {
+            get
+            {
+                if (_worldToLocalDirty)
+                {
+                    _worldToLocal = Matrix.Invert(LocalToWorld);
+                    _worldToLocalDirty = false;
+                }
+                return _worldToLocal;
+            }   
+        }
 
 
         //internal float IntensityFactor => 1 / (Intensity * Intensity);
@@ -141,23 +158,14 @@ namespace Penumbra.Core
             return (DirtyFlags & flags) != 0;
         }
 
-        internal Rectangle GetBoundingRectangle()
+        internal BoundingRectangle Bounds
         {
-            return new Rectangle(
-                (int)(Position.X - Range),
-                (int)(Position.Y - Range),
-                (int)(Range * 2),
-                (int)(Range * 2));
-        }
-
-        internal BoundingRectangle GetBoundingRectangle2()
-        {
-            Vector2 c1 = Position - new Vector2(Range);
-            Vector2 c2 = Position + new Vector2(Range);
-            Vector2 min, max;
-            Vector2.Min(ref c1, ref c2, out min);
-            Vector2.Max(ref c1, ref c2, out max);
-            return new BoundingRectangle(min, max);
+            get
+            {
+                Vector2 min = Position - new Vector2(Range);
+                Vector2 max = Position + new Vector2(Range);
+                return new BoundingRectangle(min, max);
+            }
         }
 
         internal bool Intersects(Hull Hull)
@@ -167,12 +175,16 @@ namespace Penumbra.Core
             return Vector2.DistanceSquared(Position, Hull.Centroid) < sumOfRadiuses * sumOfRadiuses;
         }        
 
-        internal bool IsInside(Hull Hull)
+        internal bool IsContainedWithin(IList<Hull> hulls)
         {
-            if (!Hull.Enabled || !Hull.Valid)
-                return false;
-            
-            return Hull.WorldPoints.PointInPolygon(ref _position);
+            int hullCount = hulls.Count;
+            for (int i = 0; i < hullCount; i++)
+            {
+                Hull hull = hulls[i];
+                if (hull.Enabled && hull.Valid && hull.WorldPoints.PointInPolygon(ref _position))
+                    return true;
+            }
+            return false;
         }
     }
 

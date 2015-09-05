@@ -16,10 +16,10 @@ namespace Penumbra.Core
             Visible = true;
         }
 
-        public bool DebugDraw
+        public bool Debug
         {
-            get { return _engine.DebugDraw; }
-            set { _engine.DebugDraw = value; }
+            get { return _engine.Debug; }
+            set { _engine.Debug = value; }
         }
 
         public Color AmbientColor

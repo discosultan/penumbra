@@ -45,7 +45,7 @@ namespace Penumbra.Graphics.Renderers
             _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);            
 
             _graphicsDevice.SetVertexArrayObject(_circleVao);
-            foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
+            foreach (RenderStep step in process.Steps(_lightRenderer.Debug))
             {                
                 step.Apply(_lightRenderer.ShaderParameters);
                 _graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _circleVao.VertexBuffer.VertexCount, 0, _circleVao.IndexBuffer.IndexCount / 3);
@@ -66,7 +66,7 @@ namespace Penumbra.Graphics.Renderers
             _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);            
 
             _graphicsDevice.SetVertexArrayObject(_quadVao);
-            foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
+            foreach (RenderStep step in process.Steps(_lightRenderer.Debug))
             {                
                 step.Apply(_lightRenderer.ShaderParameters);
                 _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
@@ -83,7 +83,7 @@ namespace Penumbra.Graphics.Renderers
         public void DrawFullscreenQuad(RenderProcess process)
         {
             _graphicsDevice.SetVertexArrayObject(_fullscreenQuadVao);
-            foreach (RenderStep step in process.Steps(_lightRenderer.DebugDraw))
+            foreach (RenderStep step in process.Steps(_lightRenderer.Debug))
             {
                 step.Apply(_lightRenderer.ShaderParameters);
                 _graphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 1);
