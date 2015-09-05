@@ -25,7 +25,7 @@
 
 using Microsoft.Xna.Framework;
 
-namespace Penumbra.Mathematics.Collision
+namespace Penumbra.Geometry
 {
     /// <summary>
     /// An axis aligned bounding box.

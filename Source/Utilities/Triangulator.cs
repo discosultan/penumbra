@@ -2,7 +2,7 @@
 using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 using Indices = Penumbra.Utilities.FastList<int>;
 
-namespace Penumbra.Mathematics.Triangulation
+namespace Penumbra.Utilities
 {
     // ref: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
     internal class Triangulator

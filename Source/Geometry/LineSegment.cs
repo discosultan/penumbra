@@ -1,7 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Penumbra.Utilities;
 
-namespace Penumbra.Mathematics.Geometry
+namespace Penumbra.Geometry
 {
     enum LineSegmentIntersectionType
     {

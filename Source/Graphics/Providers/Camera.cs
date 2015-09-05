@@ -1,18 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using Penumbra.Core;
+using Penumbra.Geometry;
 
 namespace Penumbra.Graphics.Providers
 {
     internal class Camera : RenderProvider
     {
-        public Matrix WorldViewProjection = Matrix.Identity;
         public event EventHandler YInverted;
+
+        public Matrix WorldViewProjection = Matrix.Identity;
+        private Matrix _inverseWorldViewProjection = Matrix.Identity;
 
         private readonly Projections _projections;
         private Matrix _ndcToScreen;
         private Matrix _customWorld = Matrix.Identity;
-
         private bool _loaded;
 
         public Camera(Projections projections)
@@ -24,7 +27,7 @@ namespace Penumbra.Graphics.Providers
         {
             base.Load(graphicsDevice, graphicsDeviceManager);
             CalculateNdcToScreen();
-            CalculateWorldViewProjection();
+            CalculateWorldViewProjection();            
             _loaded = true;         
         }        
 
@@ -41,6 +44,20 @@ namespace Penumbra.Graphics.Providers
                     CalculateWorldViewProjection();
                 }
             }
+        }
+
+        public BoundingRectangle GetBoundingRectangle()
+        {
+            //Vector2 tl = Vector2.Transform(new Vector2(-1.0f, +1.0f), _inverseWorldViewProjection);
+            Vector2 c1 = Vector2.Transform(new Vector2(+1.0f, +1.0f), _inverseWorldViewProjection);
+            //Vector2 br = Vector2.Transform(new Vector2(+1.0f, -1.0f), _inverseWorldViewProjection);
+            Vector2 c2 = Vector2.Transform(new Vector2(-1.0f, -1.0f), _inverseWorldViewProjection);
+
+            //return new Rectangle((int)tl.X, (int)tl.Y, (int)(br.X - tl.X), (int)(tl.Y - br.Y));
+            Vector2 min, max;
+            Vector2.Min(ref c1, ref c2, out min);
+            Vector2.Max(ref c1, ref c2, out max);
+            return new BoundingRectangle(min, max);            
         }
 
         /// <summary>
@@ -90,13 +107,13 @@ namespace Penumbra.Graphics.Providers
                 wvp *= CustomWorld;
             }
             if ((_projections & Projections.SpriteBatch) != 0)
-            {                
+            {
                 wvp *= Matrix.CreateOrthographicOffCenter(
                     0,
                     GraphicsDevice.PresentationParameters.BackBufferWidth,
                     GraphicsDevice.PresentationParameters.BackBufferHeight,
                     0,
-                    0f, 1f);                
+                    0f, 1f);
             }
             if ((_projections & Projections.OriginCenter_XRight_YUp) != 0)
             {
@@ -118,6 +135,7 @@ namespace Penumbra.Graphics.Providers
             }            
 
             WorldViewProjection = wvp;
+            Matrix.Invert(ref WorldViewProjection, out _inverseWorldViewProjection);
 
             bool previousInvertedY = InvertedY;
             InvertedY = WorldViewProjection.M22 < 0;

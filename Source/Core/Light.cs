@@ -1,10 +1,10 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Penumbra.Mathematics.Geometry;
+using Penumbra.Geometry;
 using Penumbra.Utilities;
 
-namespace Penumbra
+namespace Penumbra.Core
 {
     public class Light
     {
@@ -148,6 +148,16 @@ namespace Penumbra
                 (int)(Position.Y - Range),
                 (int)(Range * 2),
                 (int)(Range * 2));
+        }
+
+        internal BoundingRectangle GetBoundingRectangle2()
+        {
+            Vector2 c1 = Position - new Vector2(Range);
+            Vector2 c2 = Position + new Vector2(Range);
+            Vector2 min, max;
+            Vector2.Min(ref c1, ref c2, out min);
+            Vector2.Max(ref c1, ref c2, out max);
+            return new BoundingRectangle(min, max);
         }
 
         internal bool Intersects(Hull Hull)

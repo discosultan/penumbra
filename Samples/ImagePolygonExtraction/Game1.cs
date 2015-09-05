@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Common;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
+using Penumbra.Core;
 
 namespace ImagePolygonExtraction
 {
@@ -34,7 +36,8 @@ namespace ImagePolygonExtraction
                 AmbientColor = Color.Gray                
             };
             Components.Add(_penumbra);
-            Components.Add(new HullGenerationComponent(this, _penumbra));            
+            Components.Add(new HullGenerationComponent(this, _penumbra));
+            Components.Add(new CameraMovementComponent(this, _penumbra) { InvertedY = true });
         }
 
         /// <summary>

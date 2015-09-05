@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿#if MONOGAME
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Penumbra
+namespace Penumbra.Core
 {
     public class PenumbraComponent : DrawableGameComponent
     {        
@@ -31,7 +32,7 @@ namespace Penumbra
         {
             get { return _engine.ViewProjection; }
             set { _engine.ViewProjection = value; }
-        }
+        }        
 
         public IList<Light> Lights => _engine.Lights;
         public IList<Hull> Hulls => _engine.Hulls;
@@ -42,14 +43,9 @@ namespace Penumbra
             _engine.Load(GraphicsDevice, graphicsDeviceManager, Game.Content);            
         }
 
-        public void BeginDraw()
-        {
-            _engine.PreRender();
-        }
+        public void BeginDraw() => _engine.PreRender();        
 
-        public override void Draw(GameTime gameTime)
-        {
-            _engine.Render();
-        }
+        public override void Draw(GameTime gameTime) => _engine.Render();        
     }
 }
+#endif

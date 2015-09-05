@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Microsoft.Xna.Framework;
-using Penumbra.Mathematics.Geometry;
-using Penumbra.Mathematics.Triangulation;
+using Penumbra.Geometry;
 using Penumbra.Utilities;
 using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 using Indices = Penumbra.Utilities.FastList<int>;
 
-namespace Penumbra
+namespace Penumbra.Core
 {
     public class Hull
     {

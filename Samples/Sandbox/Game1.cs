@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Common;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
+using Penumbra.Core;
 
 namespace Sandbox
 {
@@ -12,8 +14,10 @@ namespace Sandbox
         public const Keys PreviousScenarioKey = Keys.Left;
         public const Keys NextScenarioKey = Keys.Right;
         public const Keys PauseKey = Keys.Space;
-        public const Keys DebugKey = Keys.D;
-        public const Keys ShadowTypeKey = Keys.S;
+        //public const Keys DebugKey = Keys.D;
+        //public const Keys ShadowTypeKey = Keys.S;
+        public const Keys DebugKey = Keys.Q;
+        public const Keys ShadowTypeKey = Keys.E;
 
         private static readonly Color BackgroundColor = Color.White;
 
@@ -31,12 +35,19 @@ namespace Sandbox
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            _penumbra = new PenumbraComponent(this, Projections.OriginCenter_XRight_YUp) { AmbientColor = Color.Black };
+            _penumbra = new PenumbraComponent(this, Projections.OriginCenter_XRight_YUp | Projections.Custom)
+            {
+                AmbientColor = Color.Black
+            };
             Components.Add(_penumbra);
             _scenarios = new ScenariosComponent(this, _penumbra);
             Components.Add(_scenarios);
-            var ui = new UIComponent(this) { DrawOrder = int.MaxValue };
+            var ui = new UIComponent(this)
+            {
+                DrawOrder = int.MaxValue
+            };
             Components.Add(ui);
+            Components.Add(new CameraMovementComponent(this, _penumbra));
             
             IsMouseVisible = true;
             // Disable FPS limit.

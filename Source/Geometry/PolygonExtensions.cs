@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Penumbra.Utilities;
 using Polygon = System.Collections.Generic.IList<Microsoft.Xna.Framework.Vector2>;
 
-namespace Penumbra.Mathematics.Geometry
+namespace Penumbra.Geometry
 {
     internal static class PolygonExtensions
     {

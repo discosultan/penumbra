@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Penumbra.Tests", "Tests\Pen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImagePolygonExtraction", "Samples\ImagePolygonExtraction\ImagePolygonExtraction.csproj", "{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Samples\Common\Common.csproj", "{581A9C04-4407-4DB7-A139-8E6CA64915A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,14 @@ Global
 		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Release|Any CPU.Build.0 = Release|x86
 		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Release|x86.ActiveCfg = Release|x86
 		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D}.Release|x86.Build.0 = Release|x86
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Debug|x86.Build.0 = Debug|Any CPU
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Release|x86.ActiveCfg = Release|Any CPU
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +70,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{42F21905-2DA7-44A3-AA3A-B80C74F49D1A} = {86F61E1C-736A-48A1-9C97-C2E3A2DFADA4}
 		{B01EB9CE-485F-40F5-A67C-62E2A8FA6B6D} = {86F61E1C-736A-48A1-9C97-C2E3A2DFADA4}
+		{581A9C04-4407-4DB7-A139-8E6CA64915A9} = {86F61E1C-736A-48A1-9C97-C2E3A2DFADA4}
 	EndGlobalSection
 EndGlobal

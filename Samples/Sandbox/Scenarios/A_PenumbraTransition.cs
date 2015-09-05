@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Penumbra;
+using Penumbra.Core;
 using static System.Math;
 
 namespace Sandbox.Scenarios

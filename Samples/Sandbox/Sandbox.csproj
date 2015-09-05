@@ -81,6 +81,10 @@
       <Project>{b021f95c-38bc-493a-bb92-c3c575e4b50f}</Project>
       <Name>Penumbra</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{581a9c04-4407-4db7-a139-8e6ca64915a9}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

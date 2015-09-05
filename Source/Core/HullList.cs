@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 
-namespace Penumbra
+namespace Penumbra.Core
 {
     internal class HullList
     {

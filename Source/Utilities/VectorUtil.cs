@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace Penumbra.Mathematics
+namespace Penumbra.Utilities
 {
     internal static class VectorUtil
     {

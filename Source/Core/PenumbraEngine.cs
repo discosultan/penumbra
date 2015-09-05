@@ -4,12 +4,13 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Penumbra.Geometry;
 using Penumbra.Graphics;
 using Penumbra.Graphics.Providers;
 using Penumbra.Graphics.Renderers;
 using Penumbra.Utilities;
 
-namespace Penumbra
+namespace Penumbra.Core
 {
     internal class PenumbraEngine
     {        
@@ -83,8 +84,12 @@ namespace Penumbra
             for (int i = 0; i < lightCount; i++)
             {
                 Light light = Lights[i];
-                if (!light.Enabled) continue;
-                if (ResolvedHulls.LightIsInside(light)) continue;
+                if (!light.Enabled)
+                    continue;
+                if (!BoundingRectangle.TestOverlap(light.GetBoundingRectangle2(), Camera.GetBoundingRectangle()))
+                    continue;
+                if (ResolvedHulls.LightIsInside(light))
+                    continue;
 
                 // TODO: Cache and/or spatial tree?
 
