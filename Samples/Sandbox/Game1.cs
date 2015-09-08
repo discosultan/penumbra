@@ -16,8 +16,8 @@ namespace Sandbox
         public const Keys PauseKey = Keys.Space;
         //public const Keys DebugKey = Keys.D;
         //public const Keys ShadowTypeKey = Keys.S;
-        public const Keys DebugKey = Keys.Q;
-        public const Keys ShadowTypeKey = Keys.E;
+        public const Keys DebugKey = Keys.T;
+        public const Keys ShadowTypeKey = Keys.G;
 
         private static readonly Color BackgroundColor = Color.White;
 

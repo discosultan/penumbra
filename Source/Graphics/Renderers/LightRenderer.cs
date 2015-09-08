@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Core;
 
@@ -8,34 +7,35 @@ namespace Penumbra.Graphics.Renderers
 {
     internal class LightRenderer
     {
-        private readonly GraphicsDevice _device;
-        private readonly PenumbraEngine _engine;
+        private static readonly Color DebugColor = Color.LimeGreen;
 
+        private PenumbraEngine _engine;        
+
+        private Effect _fxLight;
+        private Effect _fxLightDebug;
         private StaticVao _quadVao;
         private StaticVao _circleVao;
-        private BlendState _bsLight;
+        private BlendState _bsLight;        
 
-        private readonly Effect _fxLight;
-        private readonly Effect _fxLightDebug; 
-
-        public LightRenderer(GraphicsDevice device, ContentManager content, PenumbraEngine engine)
-        {
-            _device = device;
+        public void Load(PenumbraEngine engine)
+        {            
             _engine = engine;
-            _fxLight = content.Load<Effect>("WorldProjectionLight");
-            _fxLightDebug = content.Load<Effect>("WorldProjectionColor");
+
+            _fxLight = engine.Content.Load<Effect>("WorldProjectionLight");
+            _fxLightDebug = engine.Content.Load<Effect>("WorldProjectionColor");
+
             BuildGraphicsResources();
         }        
 
         public void Render(Light light)
         {
-            _device.BlendState = _bsLight;
-            _device.RasterizerState = _engine.Rs;
+            _engine.Device.BlendState = _bsLight;
+            _engine.Device.RasterizerState = _engine.Rs;
             _fxLight.Parameters["World"].SetValue(light.LocalToWorld);
             _fxLight.Parameters["Color"].SetValue(light.Color.ToVector3());
             _fxLight.Parameters["Intensity"].SetValue(light.IntensityFactor);
             _fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-            _device.Draw(_fxLight, _quadVao);
+            _engine.Device.Draw(_fxLight, _quadVao);
 
             if (_engine.Debug)
             {
@@ -47,30 +47,29 @@ namespace Penumbra.Graphics.Renderers
                 world.M41 = light.Position.X;
                 world.M42 = light.Position.Y;                
 
-                _device.BlendState = BlendState.Opaque;
-                _device.RasterizerState = _engine.RsDebug;
+                _engine.Device.BlendState = BlendState.Opaque;
+                _engine.Device.RasterizerState = _engine.RsDebug;
+                _fxLightDebug.Parameters["Color"].SetValue(DebugColor.ToVector4());
                 _fxLightDebug.Parameters["World"].SetValue(world);
                 _fxLightDebug.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-                _device.DrawIndexed(_fxLightDebug, _circleVao);
+                _engine.Device.DrawIndexed(_fxLightDebug, _circleVao);
             }
         }
 
         private void BuildGraphicsResources()
         {
             // Quad.
-
             VertexPosition2Texture[] quadVertices =
             {
                 new VertexPosition2Texture(new Vector2(-1, +1), new Vector2(0, 0)),
                 new VertexPosition2Texture(new Vector2(+1, +1), new Vector2(1, 0)),
                 new VertexPosition2Texture(new Vector2(-1, -1), new Vector2(0, 1)),
                 new VertexPosition2Texture(new Vector2(+1, -1), new Vector2(1, 1))
-            };
-            
-            _quadVao = StaticVao.New(_device, quadVertices, VertexPosition2Texture.Layout);
+            };            
+
+            _quadVao = StaticVao.New(_engine.Device, quadVertices, VertexPosition2Texture.Layout);
 
             // Circle.
-
             const short circlePoints = 12;
             const float radius = 1f;
             const float rotationIncrement = MathHelper.TwoPi / circlePoints;
@@ -92,7 +91,7 @@ namespace Penumbra.Graphics.Renderers
             }
             indices[indices.Length - 1] = 1;
 
-            _circleVao = StaticVao.New(_device, vertices, VertexPosition2.Layout, indices);
+            _circleVao = StaticVao.New(_engine.Device, vertices, VertexPosition2.Layout, indices);
 
             // Render states.
             _bsLight = new BlendState

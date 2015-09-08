@@ -15,54 +15,36 @@ namespace Penumbra.Core
         private RasterizerState _rsCcw;
         private RasterizerState _rsCw;
 
-        private ShadowRenderer _shadowRenderer;
-        private LightRenderer _lightRenderer;
-
-        private readonly LightmapTextureBuffer _textureBuffer = new LightmapTextureBuffer();
-        private RenderProcessProvider _renderProcessProvider;
-        private PrimitiveRenderer _primitivesRenderer;        
-
-        private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-
-        public PenumbraEngine(Projections projections)
-        {
-            Camera = new Camera(projections);
-        }
-
+        public ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
+        public ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
+        public CameraProvider Camera { get; } = new CameraProvider();
+        public TextureProvider Textures { get; } = new TextureProvider();
+        public ShadowRenderer ShadowRenderer { get; } = new ShadowRenderer();
+        public LightRenderer LightRenderer { get; } = new LightRenderer();
+        public LightMapRenderer LightMapRenderer { get; } = new LightMapRenderer();
+        public GraphicsDevice Device { get; private set; }
+        public GraphicsDeviceManager DeviceManager { get; private set; }
+        public ContentManager Content { get; private set; }
+        public RasterizerState RsDebug { get; private set;}
+        public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;
         public bool Debug { get; set; } = true;
-
-        public Color AmbientColor
-        {
-            get { return new Color(_ambientColor.R, _ambientColor.G, _ambientColor.B); }
-            set { _ambientColor = new Color(value, 1f); }
-        }
-
-        public Matrix ViewProjection
-        {
-            get { return Camera.Custom; }
-            set { Camera.Custom = value; }
-        }
-
-        internal ShaderParameterCollection ShaderParameters { get; } = new ShaderParameterCollection();
-        internal ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
-        internal ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
-        internal Camera Camera { get; }
-        internal GraphicsDevice GraphicsDevice { get; private set; }
-        internal RasterizerState RsDebug { get; private set;}
-
-        internal RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, ContentManager content)
         {
-            GraphicsDevice = device;
+            Device = device;
+            DeviceManager = deviceManager;
+            Content = content;
+
             BuildGraphicsResources();
 
-            Camera.Load(GraphicsDevice, deviceManager);
-            _textureBuffer.Load(GraphicsDevice, deviceManager);
-            _renderProcessProvider = new RenderProcessProvider(GraphicsDevice, content, Camera);
-            _primitivesRenderer = new PrimitiveRenderer(GraphicsDevice, this);            
-            _shadowRenderer = new ShadowRenderer(GraphicsDevice, content, this);
-            _lightRenderer = new LightRenderer(GraphicsDevice, content, this);
+            // Load providers.
+            Camera.Load(this);
+            Textures.Load(this);
+
+            // Load renderers.
+            LightMapRenderer.Load(this);
+            ShadowRenderer.Load(this);
+            LightRenderer.Load(this);
 
             // Setup logging for debug purposes.
             Logger.Add(new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x)));
@@ -70,16 +52,12 @@ namespace Penumbra.Core
 
         public void PreRender()
         {
-            GraphicsDevice.SetRenderTarget(_textureBuffer.Scene);
+            LightMapRenderer.PreRenderSetup();            
         }
 
         public void Render()
         {
-            // Switch render target to lightmap.
-            GraphicsDevice.SetRenderTarget(_textureBuffer.LightMap);
-            GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, AmbientColor, 1f, 0);
-
-            ShaderParameters.SetMatrix(ShaderParameter.ViewProjection, ref Camera.ViewProjection);
+            LightMapRenderer.RenderSetup();
 
             // Generate lightmap.
             int lightCount = Lights.Count;
@@ -89,36 +67,24 @@ namespace Penumbra.Core
                 if (!light.Enabled || !light.Intersects(Camera) || light.ContainedIn(Hulls))
                     continue;
 
-                // Clear stencil.
-                // TODO: use incremental stencil values to avoid clearing every light?
-                if (light.ShadowType == ShadowType.Occluded)
-                    GraphicsDevice.Clear(ClearOptions.Stencil, AmbientColor, 1f, 0);
-
                 // Set scissor rectangle.                
-                GraphicsDevice.SetScissorRectangle(Camera.GetScissorRectangle(light));
+                Device.SetScissorRectangle(Camera.GetScissorRectangle(light));
 
                 // Draw shadows for light.
                 if (light.CastsShadows)
-                    _shadowRenderer.Render(light);
+                    ShadowRenderer.Render(light);
 
                 // Draw light.                
-                _lightRenderer.Render(light);
+                LightRenderer.Render(light);
 
                 // Clear light's dirty flags.
                 light.DirtyFlags &= 0;
             }
 
-            // Switch render target back to default.
-            GraphicsDevice.SetRenderTarget(null);
-
-            // Present lightmap.            
-            _primitivesRenderer.DrawFullscreenQuad(_renderProcessProvider.Present, _textureBuffer.Scene);
-            _primitivesRenderer.DrawFullscreenQuad(_renderProcessProvider.PresentLightmap, _textureBuffer.LightMap);
+            LightMapRenderer.Render();
 
             // Clear hulls dirty flags.
-            int hullCount = Hulls.Count;
-            for (int i = 0; i < hullCount; i++)
-                Hulls[i].DirtyFlags &= 0;
+            Hulls.ClearDirtyFlags();
         }
 
         private void BuildGraphicsResources()

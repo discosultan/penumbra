@@ -13,12 +13,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Color.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:Color.fx
-
 #begin ProjectionColor.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -43,15 +37,15 @@
 /processorParam:DebugMode=Auto
 /build:WorldProjectionLight.fx
 
-#begin Test.fx
+#begin Shadow.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Test.fx
+/build:Shadow.fx
 
-#begin TestDebug.fx
+#begin ShadowDebug.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:TestDebug.fx
+/build:ShadowDebug.fx
 

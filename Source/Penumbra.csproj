@@ -45,17 +45,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\TestDebug.fx" />
-    <Content Include="Content\Test.fx" />
+    <Content Include="Content\ShadowDebug.fx" />
+    <Content Include="Content\Shadow.fx" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
     <Compile Include="Graphics\IVao.cs" />
     <Compile Include="Graphics\Renderers\LightRenderer.cs" />
     <Compile Include="Graphics\Renderers\ShadowRenderer.cs" />
-    <Compile Include="Graphics\Renderers\PrimitiveRenderer.cs" />
-    <Compile Include="Graphics\Providers\Camera.cs" />
-    <Compile Include="Graphics\Providers\LightmapTextureBuffer.cs" />
-    <Compile Include="Graphics\Providers\RenderProcessProvider.cs" />
-    <Compile Include="Graphics\Providers\RenderProvider.cs" />
+    <Compile Include="Graphics\Renderers\LightMapRenderer.cs" />
+    <Compile Include="Graphics\Providers\CameraProvider.cs" />
+    <Compile Include="Graphics\Providers\TextureProvider.cs" />
+    <Compile Include="Graphics\Providers\GraphicsProvider.cs" />
     <Compile Include="Graphics\RenderState.cs" />
     <Compile Include="Graphics\ShaderParameterCollection.cs" />
     <Compile Include="Graphics\VertexTypes.cs" />
@@ -84,7 +83,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Color.fx" />
     <Content Include="Content\ProjectionColor.fx" />
     <Content Include="Content\WorldProjectionColor.fx" />
     <Content Include="Content\WorldProjectionLight.fx" />

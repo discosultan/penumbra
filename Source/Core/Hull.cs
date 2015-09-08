@@ -25,7 +25,8 @@ namespace Penumbra.Core
         private Vector2 _scale = Vector2.One;
 
         private bool _worldPointsDirty = true;
-        private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints = new ExtendedObservableCollection<Vector2>(); 
+        private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints = 
+            new ExtendedObservableCollection<Vector2>(); 
         private readonly Polygon _worldPoints = new Polygon();
         private readonly Indices _indices = new Indices();
 
@@ -61,7 +62,6 @@ namespace Penumbra.Core
                 _rawLocalPoints.AddRange(points);            
 
             //Check.True(LocalPoints.IsSimple(), "Input points must form a simple polygon, meaning that no two edges may intersect with each other.");
-
         }   
 
         #endregion        
@@ -272,7 +272,7 @@ namespace Penumbra.Core
 
         internal BoundingRectangle Bounds
         {
-            get { return WorldPoints.GetCollisionBox(); }
+            get { return WorldPoints.GetCollisionBox(); } // TODO: cache
         }
 
         internal HullComponentDirtyFlags DirtyFlags { get; set; } = HullComponentDirtyFlags.All;        
@@ -298,19 +298,26 @@ namespace Penumbra.Core
 
         private void ValidateRawLocalPoints()
         {
-            Valid = true;
-
-            // TODO: temp
-            var poly = new Polygon(_rawLocalPoints);
+            Valid = true;            
 
             if (_rawLocalPoints.Count < 3)  
                 Valid = false;                            
-            else if (!poly.IsSimple())            
+            else if (!_rawLocalPoints.IsSimple())            
                 Valid = false;
 
             Logger.Write($"Polygon valid:{Valid}");
         }
-    }    
+    }
+
+    internal static class HullExtensions
+    {
+        public static void ClearDirtyFlags(this IList<Hull> hulls)
+        {
+            int hullCount = hulls.Count;
+            for (int i = 0; i < hullCount; i++)
+                hulls[i].DirtyFlags &= 0;
+        }
+    }
 
     [Flags]
     internal enum HullComponentDirtyFlags

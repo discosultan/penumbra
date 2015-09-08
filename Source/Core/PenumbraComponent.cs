@@ -6,14 +6,15 @@ namespace Penumbra.Core
 {
     public class PenumbraComponent : DrawableGameComponent
     {        
-        private readonly PenumbraEngine _engine;
+        private readonly PenumbraEngine _engine = new PenumbraEngine();
 
         public PenumbraComponent(Game game, Projections projections = Projections.SpriteBatch | Projections.Custom) 
             : base(game)
         {
-            _engine = new PenumbraEngine(projections);
+            _engine.Camera.Projections = projections;
+
             Enabled = false;
-            Visible = true;
+            Visible = true;            
         }
 
         public bool Debug
@@ -24,14 +25,14 @@ namespace Penumbra.Core
 
         public Color AmbientColor
         {
-            get { return _engine.AmbientColor; }
-            set { _engine.AmbientColor = value; }
+            get { return _engine.LightMapRenderer.AmbientColor; }
+            set { _engine.LightMapRenderer.AmbientColor = value; }
         }
 
-        public Matrix ViewProjection
+        public Matrix Transform
         {
-            get { return _engine.ViewProjection; }
-            set { _engine.ViewProjection = value; }
+            get { return _engine.Camera.Custom; }
+            set { _engine.Camera.Custom = value; }
         }        
 
         public IList<Light> Lights => _engine.Lights;

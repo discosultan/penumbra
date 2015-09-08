@@ -2,28 +2,25 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
-using Penumbra;
 using Penumbra.Core;
 
 namespace Sandbox
 {
     class ScenariosComponent : GameComponent
-    {               
-        private static readonly ShadowType[] ShadowTypes = {ShadowType.Illuminated, ShadowType.Solid, ShadowType.Occluded};
+    {
+        public event EventHandler ShadowTypeChanged;
 
         private readonly PenumbraComponent _penumbra;
+        private readonly ShadowType[] ShadowTypes;        
         
         private Scenario[] _scenarios;
-        private Scenario _activeScenario;
         private int _currentScenarioIndex;
-
-        private int _currentShadowType;
-
-        public event EventHandler ShadowTypeChanged;
+        private int _currentShadowType;        
 
         public ScenariosComponent(Game game, PenumbraComponent penumbra) : base(game)
         {
-            _penumbra = penumbra;            
+            _penumbra = penumbra;
+            ShadowTypes = (ShadowType[])Enum.GetValues(typeof (ShadowType));
         }        
 
         public override void Initialize()
@@ -34,7 +31,7 @@ namespace Sandbox
             SwitchScenario();
         }
 
-        public Scenario ActiveScenario => _activeScenario;
+        public Scenario ActiveScenario { get; private set; }
         public ShadowType ActiveShadowType => ShadowTypes[_currentShadowType];
 
         public void NextShadowType()
@@ -67,7 +64,7 @@ namespace Sandbox
 
         public override void Update(GameTime gameTime)
         {            
-            _activeScenario.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            ActiveScenario.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         private void LoadScenarios()
@@ -87,17 +84,15 @@ namespace Sandbox
         {
             _penumbra.Lights.Clear();
             _penumbra.Hulls.Clear();
-            _activeScenario = _scenarios[_currentScenarioIndex];
-            _activeScenario.Activate(_penumbra);
+            ActiveScenario = _scenarios[_currentScenarioIndex];
+            ActiveScenario.Activate(_penumbra);
             SwitchShadowType();
         }
 
         private void SwitchShadowType()
         {
             foreach (Light light in _penumbra.Lights)
-            {
                 light.ShadowType = ActiveShadowType;
-            }
             ShadowTypeChanged?.Invoke(this, EventArgs.Empty);
         }      
     }

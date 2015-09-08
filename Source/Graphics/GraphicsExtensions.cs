@@ -17,15 +17,12 @@ namespace Penumbra.Graphics
         }
 
         public static void SetScissorRectangle(this GraphicsDevice device, BoundingRectangle bounds)
-        {
-            // There seem to be 1 pixel offset errors converting rectangle from world -> ndc -> screen.
-            // Current fix is to add a 1 px margin to the screen rectangle.
-            const int pixelErrorFix = 1;
+        {                        
             device.ScissorRectangle = new Rectangle(
-                (int) bounds.Min.X + pixelErrorFix,
-                (int) bounds.Min.Y + pixelErrorFix,
-                (int) (bounds.Max.X - bounds.Min.X) - pixelErrorFix * 2,
-                (int) (bounds.Max.Y - bounds.Min.Y) - pixelErrorFix * 2);
+                (int) bounds.Min.X,
+                (int) bounds.Min.Y,
+                (int) (bounds.Max.X - bounds.Min.X),
+                (int) (bounds.Max.Y - bounds.Min.Y));
         }
 
         public static void DrawIndexed(this GraphicsDevice device, Effect effect, IVao vao)

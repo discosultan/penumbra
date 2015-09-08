@@ -169,7 +169,7 @@ namespace Penumbra.Core
             }
         }
 
-        internal bool Intersects(Camera camera)
+        internal bool Intersects(CameraProvider camera)
         {
             return Bounds.Intersects(ref camera.Bounds);
         }
@@ -199,9 +199,9 @@ namespace Penumbra.Core
 
     public enum ShadowType
     {
-        Solid,
         Illuminated,
-        Occluded
+        Solid,        
+        //Occluded
     }
 
     [Flags]
