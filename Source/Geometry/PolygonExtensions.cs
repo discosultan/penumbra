@@ -29,18 +29,14 @@ namespace Penumbra.Geometry
                 {
                     // Don't check vertices on the current edge.
                     if (j == i1 || j == i2)
-                    {
                         continue;
-                    }
 
                     Vector2 r = polygon[j] - polygon[i1];
 
                     float s = edge.X * r.Y - edge.Y * r.X;
 
                     if (s <= 0.0f)
-                    {
                         return false;
-                    }
                 }
             }
             return true;
@@ -100,6 +96,7 @@ namespace Penumbra.Geometry
                 area += polygon[i].X * polygon[j].Y;
                 area -= polygon[i].Y * polygon[j].X;
             }
+
             area *= 0.5f;
             return area;
         }
@@ -164,9 +161,7 @@ namespace Penumbra.Geometry
 
             float radiusSqrd = area / MathHelper.Pi;
             if (radiusSqrd < 0)
-            {
                 radiusSqrd *= -1;
-            }
 
             return (float)Math.Sqrt(radiusSqrd);
         }
@@ -196,28 +191,63 @@ namespace Penumbra.Geometry
                 Vector2 edge = p2 - p1;
                 float area = VectorUtil.Area(ref p1, ref p2, ref point);
                 if (area == 0f && Vector2.Dot(point - p1, edge) >= 0f && Vector2.Dot(point - p2, edge) <= 0f)
-                {
-                    //return IntersectionResult.PartiallyContained;
                     return true;
-                }
+
                 // Test edge for intersection with ray from point
-                if (p1.Y <= point.Y)
+                if (p1.Y <= point.Y && p2.Y > point.Y && area > 0f)
+                    ++wn;
+                else if (p2.Y <= point.Y && area < 0f)
+                    --wn;
+            }
+
+            return wn != 0;
+        }
+
+        public static bool Contains(this Polygon polygon, ref Vector2 point)
+        {
+            // Ref: http://stackoverflow.com/a/8721483/1466456
+            int i, j;
+            bool contains = false;
+            int polyCount = polygon.Count;
+            for (i = 0, j = polyCount - 1; i < polyCount; j = i++)
+            {
+                if ((polygon[i].Y > point.Y) != (polygon[j].Y > point.Y) &&
+                    (point.X <
+                        (polygon[j].X - polygon[i].X) *
+                        (point.Y - polygon[i].Y) /
+                        (polygon[j].Y - polygon[i].Y) +
+                        polygon[i].X))
                 {
-                    if (p2.Y > point.Y && area > 0f)
-                    {
-                        ++wn;
-                    }
-                }
-                else
-                {
-                    if (p2.Y <= point.Y && area < 0f)
-                    {
-                        --wn;
-                    }
+                    contains = !contains;
                 }
             }
-            //return (wn == 0 ? IntersectionResult.None : IntersectionResult.FullyContained);
-            return wn != 0;
+            return contains;
+        }
+
+        /// <summary>
+        /// Returns an AABB for vertex.
+        /// </summary>
+        /// <returns></returns>
+        public static BoundingRectangle GetCollisionBox(this Polygon polygon)
+        {
+            Vector2 lowerBound = new Vector2(float.MaxValue, float.MaxValue);
+            Vector2 upperBound = new Vector2(float.MinValue, float.MinValue);
+
+            int polyCount = polygon.Count;
+            for (int i = 0; i < polyCount; i++)
+            {
+                if (polygon[i].X < lowerBound.X)
+                    lowerBound.X = polygon[i].X;
+                if (polygon[i].X > upperBound.X)
+                    upperBound.X = polygon[i].X;
+
+                if (polygon[i].Y < lowerBound.Y)
+                    lowerBound.Y = polygon[i].Y;
+                if (polygon[i].Y > upperBound.Y)
+                    upperBound.Y = polygon[i].Y;
+            }
+
+            return new BoundingRectangle(lowerBound, upperBound);
         }
     }
 }

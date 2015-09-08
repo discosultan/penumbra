@@ -1,12 +1,12 @@
 ﻿cbuffer cbPerObject
 {
 	float4 Color;
-	float4x4 WorldTransform;
+	float4x4 World;
 };
 
 cbuffer cbPerFrame
 {
-	float4x4 ProjectionTransform;
+	float4x4 ViewProjection;
 };
 
 struct VertexIn
@@ -23,8 +23,8 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 
-	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldTransform);
-	vout.Position = mul(posW, ProjectionTransform);
+	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), World);
+	vout.Position = mul(posW, ViewProjection);
 
 	return vout;
 }

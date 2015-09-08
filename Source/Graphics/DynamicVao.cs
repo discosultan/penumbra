@@ -4,16 +4,15 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics
 {
-    internal class DynamicVao : IDisposable
+    internal class DynamicVao : IVao, IDisposable
     {
         private const int DefaultVertexCount = 32;
         
         private readonly GraphicsDevice _graphicsDevice;
         private readonly VertexDeclaration _vertexDeclaration;
         private readonly bool _useIndices;
-
-        public DynamicVertexBuffer VertexBuffer { get; set; }
-        public DynamicIndexBuffer IndexBuffer { get; set; }
+        public VertexBuffer VertexBuffer { get; private set; }
+        public IndexBuffer IndexBuffer { get; private set; }
         private int _currentVertexCount;
         private int _currentIndexCount;
 
@@ -50,7 +49,8 @@ namespace Penumbra.Graphics
         }
 
         public void SetVertices<T>(T[] fromData, int count) where T : struct
-        {            
+        {
+            VertexCount = count;
             if (NeedToIncreaseBufferSize(ref _currentVertexCount, count))
                 CreateVertexBuffer();
             VertexBuffer.SetData(fromData, 0, count);
@@ -115,14 +115,5 @@ namespace Penumbra.Graphics
         {
             return new DynamicVao(graphicsDevice, vertexDecl, vertexCount, indexCount, useIndices);
         }        
-    }
-
-    internal static class DynamicVaoExtensions
-    {
-        public static void SetVertexArrayObject(this GraphicsDevice device, DynamicVao vao)
-        {
-            device.SetVertexBuffer(vao.VertexBuffer);
-            device.Indices = vao.IndexBuffer;
-        }
     }
 }

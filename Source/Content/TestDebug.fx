@@ -1,4 +1,9 @@
-﻿cbuffer cbPerObject
+﻿cbuffer cbPerFrame
+{
+	float4 Color;
+};
+
+cbuffer cbPerObject
 {
 	float4x4 WorldViewProjection;
 };
@@ -56,24 +61,13 @@ VertexOut VS(VertexIn vin)
 	vout.penumbra = float4(penumbraA, penumbraB);
 	vout.clipValue = clipValue;
 
-	/*if (penumbraA.x == 0 && penumbraA.y == 0)
-	{
-		vout.position = float4(-1, -1, 0, 1);
-	}*/
-
 	return vout;
 }
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
 	clip(-pin.clipValue);
-
-	float2 p = clamp(pin.penumbra.xz / pin.penumbra.yw, -1.0, 1.0);
-	float2 value = lerp(p*(3.0 - p*p)*0.25 + 0.5, 1.0, step(pin.penumbra.yw, 0.0));	
-	float occlusion = (value[0] + value[1] - 1.0);
-	// If clipvalue > 0, dont shadow.
-	//return float4(0.0, 0.0, 0.0, occlusion*step(pin.clipValue, 0.0));
-	return float4(0.0, 0.0, 0.0, occlusion);
+	return Color;
 }
 
 technique Main

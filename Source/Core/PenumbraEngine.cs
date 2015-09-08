@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Penumbra.Geometry;
 using Penumbra.Graphics;
 using Penumbra.Graphics.Providers;
 using Penumbra.Graphics.Renderers;
@@ -14,8 +11,12 @@ using Penumbra.Utilities;
 namespace Penumbra.Core
 {
     internal class PenumbraEngine
-    {        
-        private DynamicShadowRenderer _dynamicShadowRenderer;
+    {
+        private RasterizerState _rsCcw;
+        private RasterizerState _rsCw;
+
+        private ShadowRenderer _shadowRenderer;
+        private LightRenderer _lightRenderer;
 
         private readonly LightmapTextureBuffer _textureBuffer = new LightmapTextureBuffer();
         private RenderProcessProvider _renderProcessProvider;
@@ -47,16 +48,21 @@ namespace Penumbra.Core
         internal ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
         internal Camera Camera { get; }
         internal GraphicsDevice GraphicsDevice { get; private set; }
+        internal RasterizerState RsDebug { get; private set;}
+
+        internal RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, ContentManager content)
         {
             GraphicsDevice = device;
-            
+            BuildGraphicsResources();
+
             Camera.Load(GraphicsDevice, deviceManager);
             _textureBuffer.Load(GraphicsDevice, deviceManager);
             _renderProcessProvider = new RenderProcessProvider(GraphicsDevice, content, Camera);
             _primitivesRenderer = new PrimitiveRenderer(GraphicsDevice, this);            
-            _dynamicShadowRenderer = new DynamicShadowRenderer(GraphicsDevice, content, this);
+            _shadowRenderer = new ShadowRenderer(GraphicsDevice, content, this);
+            _lightRenderer = new LightRenderer(GraphicsDevice, content, this);
 
             // Setup logging for debug purposes.
             Logger.Add(new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x)));
@@ -73,14 +79,14 @@ namespace Penumbra.Core
             GraphicsDevice.SetRenderTarget(_textureBuffer.LightMap);
             GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, AmbientColor, 1f, 0);
 
-            ShaderParameters.SetMatrix(ShaderParameter.ProjectionTransform, ref Camera.WorldViewProjection);
+            ShaderParameters.SetMatrix(ShaderParameter.ViewProjection, ref Camera.ViewProjection);
 
             // Generate lightmap.
             int lightCount = Lights.Count;
             for (int i = 0; i < lightCount; i++)
             {
                 Light light = Lights[i];
-                if (!light.Enabled || !BoundingRectangle.Intersect(light.Bounds, Camera.Bounds) || light.IsContainedWithin(Hulls))
+                if (!light.Enabled || !light.Intersects(Camera) || light.ContainedIn(Hulls))
                     continue;
 
                 // Clear stencil.
@@ -93,20 +99,10 @@ namespace Penumbra.Core
 
                 // Draw shadows for light.
                 if (light.CastsShadows)
-                {
-                    _dynamicShadowRenderer.Render(light);
-                }
+                    _shadowRenderer.Render(light);
 
                 // Draw light.                
-                ShaderParameters.SetVector3(ShaderParameter.LightColor, light.Color.ToVector3());
-                ShaderParameters.SetSingle(ShaderParameter.LightIntensity, light.IntensityFactor);
-                _primitivesRenderer.DrawQuad(_renderProcessProvider.Light, light.Position, light.Range * 2);
-
-                // Draw light source (for debugging purposes only).
-                _primitivesRenderer.DrawCircle(_renderProcessProvider.LightSource, light.Position, light.Radius);
-
-                // Clear alpha.                
-                _primitivesRenderer.DrawFullscreenQuad(_renderProcessProvider.ClearAlpha);
+                _lightRenderer.Render(light);
 
                 // Clear light's dirty flags.
                 light.DirtyFlags &= 0;
@@ -122,9 +118,27 @@ namespace Penumbra.Core
             // Clear hulls dirty flags.
             int hullCount = Hulls.Count;
             for (int i = 0; i < hullCount; i++)
-            {                
                 Hulls[i].DirtyFlags &= 0;
-            }
+        }
+
+        private void BuildGraphicsResources()
+        {
+            _rsCcw = new RasterizerState
+            {
+                CullMode = CullMode.CullCounterClockwiseFace,
+                ScissorTestEnable = true
+            };
+            _rsCw = new RasterizerState
+            {
+                CullMode = CullMode.CullClockwiseFace,
+                ScissorTestEnable = true
+            };
+            RsDebug = new RasterizerState
+            {
+                CullMode = CullMode.None,
+                FillMode = FillMode.WireFrame,
+                ScissorTestEnable = true
+            };
         }
     }
 

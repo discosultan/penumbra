@@ -40,7 +40,7 @@ namespace Penumbra.Core
         protected override void LoadContent()
         {            
             var graphicsDeviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
-            _engine.Load(GraphicsDevice, graphicsDeviceManager, Game.Content);            
+            _engine.Load(GraphicsDevice, graphicsDeviceManager, Game.Content);
         }
 
         public void BeginDraw() => _engine.PreRender();        

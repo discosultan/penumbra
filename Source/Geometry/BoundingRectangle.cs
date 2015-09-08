@@ -132,15 +132,16 @@ namespace Penumbra.Geometry
             return false;
         }
 
-        public static bool Intersect(BoundingRectangle a, BoundingRectangle b)
+        public bool Intersects(BoundingRectangle other)
         {
-            return Intersect(ref a, ref b);
+            return Intersects(ref other);
         }
 
-        public static bool Intersect(ref BoundingRectangle a, ref BoundingRectangle b)
+        public bool Intersects(ref BoundingRectangle other)
         {
-            Vector2 d1 = b.Min - a.Max;
-            Vector2 d2 = a.Min - b.Max;
+ 
+            Vector2 d1 = other.Min - Max;
+            Vector2 d2 = Min - other.Max;
 
             if (d1.X > 0.0f || d1.Y > 0.0f)
                 return false;

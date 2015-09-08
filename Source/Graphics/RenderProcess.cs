@@ -13,7 +13,7 @@ namespace Penumbra.Graphics
         public RenderProcess(params RenderStep[] steps)
         {
             _stepsIncludingDebug = steps;
-            _steps = steps.Where(step => !step.IsDebug).ToArray();
+            _steps = steps.Where(step => !step.Debug).ToArray();
         }
 
         public RenderStep[] Steps(bool debug)

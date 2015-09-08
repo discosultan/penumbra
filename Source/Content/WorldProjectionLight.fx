@@ -1,17 +1,17 @@
 ﻿cbuffer cbPerObject
 {
-	float4x4 WorldTransform;
+	float4x4 World;
 };
 
 cbuffer cbPerLight
 {
-	float3 LightColor;
-	float LightIntensity;
+	float3 Color;
+	float Intensity;
 };
 
 cbuffer cbPerFrame
 {
-	float4x4 ProjectionTransform;
+	float4x4 ViewProjection;
 };
 
 struct VertexIn
@@ -30,8 +30,8 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 	
-	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0, 1), WorldTransform);
-	vout.Position = mul(posW, ProjectionTransform);
+	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0, 1), World);
+	vout.Position = mul(posW, ViewProjection);
 	vout.TexCoord = vin.TexCoord;
 
 	return vout;
@@ -47,8 +47,8 @@ float4 PS(VertexOut pin) : SV_TARGET
 {
 	float alpha = GetAlphaAtTexCoord(pin.TexCoord);
 	float4 color = float4(alpha, alpha, alpha, 1);
-	float4 lightColor = float4(LightColor.x, LightColor.y, LightColor.z, 1);
-	return pow(abs(color) * lightColor, LightIntensity);
+	float4 lightColor = float4(Color.x, Color.y, Color.z, 1);
+	return pow(abs(color) * lightColor, Intensity);
 }
 
 technique Main

@@ -4,6 +4,18 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics
 {
+    internal enum ShaderParameter
+    {
+        LightColor,
+        LightIntensity,
+
+        Color,
+        ViewProjection,
+        World,
+        Texture,
+        TextureSampler
+    }
+
     internal class ShaderParameterCollection
     {
         private readonly Dictionary<ShaderParameter, float> _singles = new Dictionary<ShaderParameter, float>();

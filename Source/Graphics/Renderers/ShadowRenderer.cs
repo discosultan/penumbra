@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -9,17 +8,14 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Renderers
 {
-    // TODO: Separate hull drawings
-    // TODO: Use RenderProcess
-    internal class DynamicShadowRenderer
+    internal class ShadowRenderer
     {
         private readonly GraphicsDevice _device;
         private readonly PenumbraEngine _engine;
 
-        private readonly Effect _shadowFx;
+        private readonly Effect _fxShadow;
+        private readonly Effect _fxDebugShadow;
         private readonly Effect _hullFx;
-        private RasterizerState _cullCCWRs;
-        private RasterizerState _cullCWRs;
         private BlendState _shadowBs;
         private BlendState _hullBs;
 
@@ -31,15 +27,16 @@ namespace Penumbra.Graphics.Renderers
         private readonly Dictionary<Light, Tuple<DynamicVao, DynamicVao>> _lightsVaos =
             new Dictionary<Light, Tuple<DynamicVao, DynamicVao>>();
 
-        public DynamicShadowRenderer(GraphicsDevice device, ContentManager content, PenumbraEngine engine)
+        public ShadowRenderer(GraphicsDevice device, ContentManager content, PenumbraEngine engine)
         {
             _device = device;
             _engine = engine;
 
-            _shadowFx = content.Load<Effect>("Test");
+            _fxShadow = content.Load<Effect>("Test");
+            _fxDebugShadow = content.Load<Effect>("TestDebug");
             _hullFx = content.Load<Effect>("ProjectionColor");
-
-            BuildRenderStates();
+            
+            BuildGraphicsResources();
         }        
 
         public void Render(Light light)
@@ -48,28 +45,36 @@ namespace Penumbra.Graphics.Renderers
             if (vao == null)
                 return;
 
-            _device.RasterizerState = _engine.Camera.InvertedY ? _cullCWRs : _cullCCWRs;
+            _device.RasterizerState = _engine.Rs;
             _device.DepthStencilState = DepthStencilState.None;
 
-            // Draw shadows.
-            var shadowVao = vao.Item1;
-            _device.SetVertexArrayObject(shadowVao);            
-            _device.BlendState = _shadowBs;
-            _shadowFx.Parameters["WVP"].SetValue(light.LocalToWorld * _engine.Camera.WorldViewProjection);
-            _shadowFx.CurrentTechnique.Passes[0].Apply();
-            _device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount/3);
+            Matrix worldViewProjection = light.LocalToWorld * _engine.Camera.ViewProjection;
 
-            // Draw hull.
-            var hullVao = vao.Item2;
-            _device.SetVertexArrayObject(hullVao);
+            // Draw shadows.
+            var shadowVao = vao.Item1;            
+            _device.BlendState = _shadowBs;
+            _fxShadow.Parameters["WorldViewProjection"].SetValue(worldViewProjection);
+            _device.DrawIndexed(_fxShadow, shadowVao);
+
+            // Draw hull.            
+            var hullVao = vao.Item2;            
             _device.BlendState = _hullBs;
-            _hullFx.Parameters["ProjectionTransform"].SetValue(_engine.Camera.WorldViewProjection);
+            _hullFx.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
             _hullFx.Parameters["Color"].SetValue(light.ShadowType == ShadowType.Illuminated 
                 ? Color.White.ToVector4() 
-                : Color.Transparent.ToVector4());
-            _hullFx.CurrentTechnique.Passes[0].Apply();
-            _device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, hullVao.VertexCount, 0, hullVao.IndexCount/3);
-        }               
+                : Color.Transparent.ToVector4());            
+            _device.DrawIndexed(_hullFx, hullVao);
+
+            // Draw shadows borders if debugging.
+            if (_engine.Debug)
+            {                
+                _device.RasterizerState = _engine.RsDebug;
+                _device.BlendState = BlendState.Opaque;
+                _fxDebugShadow.Parameters["WorldViewProjection"].SetValue(worldViewProjection);
+                _fxDebugShadow.Parameters["Color"].SetValue(Color.Red.ToVector4());
+                _device.DrawIndexed(_fxDebugShadow, shadowVao);
+            }
+        }
 
         private Tuple<DynamicVao, DynamicVao> TryGetVaoForLight(Light light)
         {                        
@@ -154,18 +159,8 @@ namespace Penumbra.Graphics.Renderers
             return new Vector2(p.X * m[0] + p.Y * m[4] + m[12], p.X * m[1] + p.Y * m[5] + m[13]);
         }
 
-        private void BuildRenderStates()
+        private void BuildGraphicsResources()
         {
-            _cullCCWRs = new RasterizerState
-            {
-                CullMode = CullMode.CullCounterClockwiseFace,
-                ScissorTestEnable = true
-            };
-            _cullCWRs = new RasterizerState
-            {
-                CullMode = CullMode.CullClockwiseFace,
-                ScissorTestEnable = true
-            };
             _shadowBs = new BlendState
             {
                 ColorWriteChannels = ColorWriteChannels.Alpha,
@@ -179,29 +174,7 @@ namespace Penumbra.Graphics.Renderers
                 AlphaBlendFunction = BlendFunction.Add,
                 AlphaSourceBlend = Blend.One,
                 AlphaDestinationBlend = Blend.Zero
-            };
+            };            
         }
-    }    
-
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct VertexShadow
-    {
-        public Vector3 OccluderCoordRadius;
-        public Vector2 SegmentA;
-        public Vector2 SegmentB;
-
-        public VertexShadow(Vector3 occ, Vector2 segA, Vector2 segB)
-        {
-            OccluderCoordRadius = occ;
-            SegmentA = segA;
-            SegmentB = segB;
-        }
-
-        public static readonly VertexDeclaration Layout = new VertexDeclaration(
-            new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
-            new VertexElement(12, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
-            new VertexElement(20, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 1));
-
-        public const int Size = 28;
-    }
+    }        
 }

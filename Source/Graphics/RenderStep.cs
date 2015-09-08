@@ -27,11 +27,11 @@ namespace Penumbra.Graphics
             _device = device;
             _renderState = renderState;
             _effect = effect;
-            IsDebug = isDebug;
+            Debug = isDebug;
             _addParams = addParams;
         }
         
-        public bool IsDebug { get; }        
+        public bool Debug { get; }        
 
         public void Apply(ShaderParameterCollection parameters)
         {
@@ -67,18 +67,18 @@ namespace Penumbra.Graphics
                         _effect.Parameters[nameof(ShaderParameter.Color)].SetValue(result);
                         break;
                     }
-                    case ShaderParameter.ProjectionTransform:
+                    case ShaderParameter.ViewProjection:
                     {
                         Matrix result;
                         parameters.GetMatrix(reqParam, out result);
-                        _effect.Parameters[nameof(ShaderParameter.ProjectionTransform)].SetValue(result);
+                        _effect.Parameters[nameof(ShaderParameter.ViewProjection)].SetValue(result);
                         break;
                     }
-                    case ShaderParameter.WorldTransform:
+                    case ShaderParameter.World:
                     {
                         Matrix result;
                         parameters.GetMatrix(reqParam, out result);
-                        _effect.Parameters[nameof(ShaderParameter.WorldTransform)].SetValue(result);
+                        _effect.Parameters[nameof(ShaderParameter.World)].SetValue(result);
                         break;
                     }
                     case ShaderParameter.Texture:
@@ -98,7 +98,7 @@ namespace Penumbra.Graphics
 
         public override string ToString()
         {
-            return $"{_effect} Debug: {IsDebug}";
+            return $"{_effect} Debug: {Debug}";
         }
     }
 }

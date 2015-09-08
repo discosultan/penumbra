@@ -66,7 +66,7 @@ namespace Penumbra.Core
 
         #endregion        
 
-        #region Public Properties        
+        #region Public Properties                
 
         public IList<Vector2> Points => _rawLocalPoints;
 
@@ -270,7 +270,12 @@ namespace Penumbra.Core
             }
         }
 
-        internal HullComponentDirtyFlags DirtyFlags { get; set; } = HullComponentDirtyFlags.All;
+        internal BoundingRectangle Bounds
+        {
+            get { return WorldPoints.GetCollisionBox(); }
+        }
+
+        internal HullComponentDirtyFlags DirtyFlags { get; set; } = HullComponentDirtyFlags.All;        
 
         private void SetDirty()
         {

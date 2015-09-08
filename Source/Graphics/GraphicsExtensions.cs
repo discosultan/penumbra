@@ -6,23 +6,40 @@ namespace Penumbra.Graphics
 {
     internal static class GraphicsExtensions
     {
-        public static void SetRenderState(this GraphicsDevice graphicsDevice, RenderState renderState)
+        public static void SetRenderState(this GraphicsDevice device, RenderState renderState)
         {
             if (renderState.BlendState != null)
-                graphicsDevice.BlendState = renderState.BlendState;
+                device.BlendState = renderState.BlendState;
             if (renderState.DepthStencilState != null)
-                graphicsDevice.DepthStencilState = renderState.DepthStencilState;
+                device.DepthStencilState = renderState.DepthStencilState;
             if (renderState.RasterizerState != null)
-                graphicsDevice.RasterizerState = renderState.RasterizerState;
+                device.RasterizerState = renderState.RasterizerState;
         }
 
-        public static void SetScissorRectangle(this GraphicsDevice graphicsDevice, BoundingRectangle bounds)
+        public static void SetScissorRectangle(this GraphicsDevice device, BoundingRectangle bounds)
         {
-            graphicsDevice.ScissorRectangle = new Rectangle(
-                (int) bounds.Min.X,
-                (int) bounds.Min.Y,
-                (int) (bounds.Max.X - bounds.Min.X),
-                (int) (bounds.Max.Y - bounds.Min.Y));
+            // There seem to be 1 pixel offset errors converting rectangle from world -> ndc -> screen.
+            // Current fix is to add a 1 px margin to the screen rectangle.
+            const int pixelErrorFix = 1;
+            device.ScissorRectangle = new Rectangle(
+                (int) bounds.Min.X + pixelErrorFix,
+                (int) bounds.Min.Y + pixelErrorFix,
+                (int) (bounds.Max.X - bounds.Min.X) - pixelErrorFix * 2,
+                (int) (bounds.Max.Y - bounds.Min.Y) - pixelErrorFix * 2);
+        }
+
+        public static void DrawIndexed(this GraphicsDevice device, Effect effect, IVao vao)
+        {
+            device.SetVertexArrayObject(vao);
+            effect.CurrentTechnique.Passes[0].Apply();
+            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, vao.VertexCount, 0, vao.IndexCount / 3);            
+        }
+
+        public static void Draw(this GraphicsDevice device, Effect effect, IVao vao)
+        {
+            device.SetVertexArrayObject(vao);
+            effect.CurrentTechnique.Passes[0].Apply();
+            device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, vao.VertexCount - 2);
         }
     }
 }

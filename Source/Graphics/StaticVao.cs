@@ -5,12 +5,14 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics
 {
-    internal sealed class Vao : IDisposable
-    {
-        public readonly VertexBuffer VertexBuffer;
-        public readonly IndexBuffer IndexBuffer;        
+    internal sealed class StaticVao : IVao, IDisposable
+    {        
+        public VertexBuffer VertexBuffer { get; }
+        public IndexBuffer IndexBuffer { get; }
+        public int VertexCount => VertexBuffer.VertexCount;
+        public int IndexCount => IndexBuffer.IndexCount;
 
-        private Vao(VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
+        private StaticVao(VertexBuffer vertexBuffer, IndexBuffer indexBuffer)
         {
             IndexBuffer = indexBuffer;
             VertexBuffer = vertexBuffer;
@@ -22,38 +24,28 @@ namespace Penumbra.Graphics
             IndexBuffer.Dispose();
         }
 
-        public static Vao New<T>(
+        public static StaticVao New<T>(
             GraphicsDevice graphicsDevice,
             IList<T> vertices,
             VertexDeclaration vertexDeclaration,
             IList<int> indices = null) where T : struct
         {
-            Vao result;
+            StaticVao result;
             var vb = new VertexBuffer(graphicsDevice, vertexDeclaration, vertices.Count, BufferUsage.None);
             vb.SetData(vertices.ToArray());
             if (indices == null)
             {
                 // Vertex buffer only.
-                result = new Vao(vb, null);
+                result = new StaticVao(vb, null);
             }
             else
             {
                 var ib = new IndexBuffer(graphicsDevice, IndexElementSize.ThirtyTwoBits, indices.Count, BufferUsage.None);
                 ib.SetData(indices.ToArray());
                 // Vertex and index buffers.
-                result = new Vao(vb, ib);
+                result = new StaticVao(vb, ib);
             }
             return result;
         }    
     }    
-
-    internal static class VaoExtensions
-    {
-        public static void SetVertexArrayObject(this GraphicsDevice device, Vao vao)
-        {            
-            device.SetVertexBuffer(vao.VertexBuffer);
-            if (vao.IndexBuffer != null)
-                device.Indices = vao.IndexBuffer;
-        }
-    }
 }

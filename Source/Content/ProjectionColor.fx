@@ -5,7 +5,7 @@
 
 cbuffer cbPerFrame
 {
-	float4x4 ProjectionTransform;
+	float4x4 ViewProjection;
 };
 
 struct VertexIn
@@ -22,7 +22,7 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), ProjectionTransform);
+	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), ViewProjection);
 
 	return vout;
 }

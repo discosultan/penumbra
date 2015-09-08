@@ -34,8 +34,7 @@ namespace Penumbra.Graphics.Providers
             DestroyLightmaps();
 
             PresentationParameters pp = GraphicsDevice.PresentationParameters;
-
-            //LightMap = new RenderTarget2D(GraphicsDevice, BackBufferWidth, BackBufferHeight);
+            
             LightMap = new RenderTarget2D(GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
             Scene = new RenderTarget2D(GraphicsDevice, BackBufferWidth, BackBufferHeight, false,

@@ -10,8 +10,8 @@ namespace Penumbra.Graphics.Providers
     {
         public event EventHandler YInverted;
 
-        public Matrix WorldViewProjection = Matrix.Identity;
-        private Matrix _inverseWorldViewProjection = Matrix.Identity;
+        public Matrix ViewProjection = Matrix.Identity;
+        private Matrix _inverseViewProjection = Matrix.Identity;
 
         private readonly Projections _projections;
         private Matrix _ndcToScreen;
@@ -30,7 +30,7 @@ namespace Penumbra.Graphics.Providers
             _loaded = true;         
         }
 
-        public BoundingRectangle Bounds { get; private set; }
+        public BoundingRectangle Bounds;
 
         public bool InvertedY { get; private set; }
 
@@ -42,7 +42,7 @@ namespace Penumbra.Graphics.Providers
                 _custom = value;
                 if ((_projections & Projections.Custom) != 0 && _loaded)
                 {
-                    CalculateWorldViewProjection();
+                    CalculateViewProjection();
                     CalculateBounds();
                 }
             }
@@ -56,8 +56,8 @@ namespace Penumbra.Graphics.Providers
             BoundingRectangle bounds = light.Bounds;                
 
             // 1. Transform from world space to NDC min {-1, -1, 0} max {1, 1, 1}                       
-            Vector2.Transform(ref bounds.Min, ref WorldViewProjection, out bounds.Min);
-            Vector2.Transform(ref bounds.Max, ref WorldViewProjection, out bounds.Max);
+            Vector2.Transform(ref bounds.Min, ref ViewProjection, out bounds.Min);
+            Vector2.Transform(ref bounds.Max, ref ViewProjection, out bounds.Max);
 
             // 2. Transform from NDC to screen space min {0, 0, 0} max {viewportWidth, viewportHeight, 1}                    
             Vector2.Transform(ref bounds.Min, ref _ndcToScreen, out bounds.Min);
@@ -73,14 +73,14 @@ namespace Penumbra.Graphics.Providers
         protected override void OnSizeChanged()
         {
             CalculateNdcToScreen();
-            CalculateWorldViewProjection();
+            CalculateViewProjection();
             CalculateBounds();
         }
-
+        
         private void CalculateBounds()
-        {
-            Vector2 c1 = Vector2.Transform(new Vector2(+1.0f, +1.0f), _inverseWorldViewProjection);
-            Vector2 c2 = Vector2.Transform(new Vector2(-1.0f, -1.0f), _inverseWorldViewProjection);
+        {            
+            Vector2 c1 = Vector2.Transform(new Vector2(+1.0f, +1.0f), _inverseViewProjection);
+            Vector2 c2 = Vector2.Transform(new Vector2(-1.0f, -1.0f), _inverseViewProjection);
 
             Vector2 min, max;
             Vector2.Min(ref c1, ref c2, out min);
@@ -93,50 +93,40 @@ namespace Penumbra.Graphics.Providers
             _ndcToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, 1));
         }
 
-        private void CalculateWorldViewProjection()
+        private void CalculateViewProjection()
         {
             Matrix wvp = Matrix.Identity;
             if ((_projections & Projections.Custom) != 0)
-            {
                 wvp *= Custom;
-            }
             if ((_projections & Projections.SpriteBatch) != 0)
-            {
                 wvp *= Matrix.CreateOrthographicOffCenter(
                     0,
                     GraphicsDevice.PresentationParameters.BackBufferWidth,
                     GraphicsDevice.PresentationParameters.BackBufferHeight,
                     0,
                     0f, 1f);
-            }
             if ((_projections & Projections.OriginCenter_XRight_YUp) != 0)
-            {
                 wvp *= Matrix.CreateOrthographicOffCenter(
                     -GraphicsDevice.PresentationParameters.BackBufferWidth / 2f,
                     GraphicsDevice.PresentationParameters.BackBufferWidth / 2f,
                     -GraphicsDevice.PresentationParameters.BackBufferHeight / 2f,
                     GraphicsDevice.PresentationParameters.BackBufferHeight / 2f,
                     0f, 1f);
-            }
             if ((_projections & Projections.OriginBottomLeft_XRight_YUp) != 0)
-            {
                 wvp *= Matrix.CreateOrthographicOffCenter(
                     0,
                     GraphicsDevice.PresentationParameters.BackBufferWidth,
                     0,
                     GraphicsDevice.PresentationParameters.BackBufferHeight,
                     0f, 1f);
-            }            
 
-            WorldViewProjection = wvp;
-            Matrix.Invert(ref WorldViewProjection, out _inverseWorldViewProjection);
+            ViewProjection = wvp;
+            Matrix.Invert(ref ViewProjection, out _inverseViewProjection);
 
             bool previousInvertedY = InvertedY;
-            InvertedY = WorldViewProjection.M22 < 0;
+            InvertedY = ViewProjection.M22 < 0;
             if (InvertedY != previousInvertedY)
-            {
                 YInverted?.Invoke(this, EventArgs.Empty);
-            }
         }
     }
 }

@@ -7,29 +7,20 @@ namespace Penumbra.Graphics.Renderers
 {
     internal sealed class PrimitiveRenderer : IDisposable
     {
-        private static readonly object Lock = new object();
-        private static int _refCounter;
+        private StaticVao _fullscreenQuadVao;
+        private StaticVao _quadVao;
+        private StaticVao _circleVao;
 
         private readonly GraphicsDevice _graphicsDevice;
-        private readonly PenumbraEngine _lightRenderer;
-
-        private static Vao _fullscreenQuadVao;
-        private static Vao _quadVao;
-        private static Vao _circleVao;
+        private readonly PenumbraEngine _lightRenderer;        
 
         public PrimitiveRenderer(GraphicsDevice device, PenumbraEngine lightRenderer)
         {            
             _graphicsDevice = device;
             _lightRenderer = lightRenderer;
-            lock (Lock)
-            {
-                if (_refCounter <= 0)
-                {
-                    BuildQuadBuffers();
-                    BuildCircleBuffer();       
-                }
-                _refCounter++;
-            }
+
+            BuildQuadBuffers();
+            BuildCircleBuffer();       
         }
 
         public void DrawCircle(RenderProcess process, Vector2 position, float radius)
@@ -42,7 +33,7 @@ namespace Penumbra.Graphics.Renderers
             transform.M41 = position.X;
             transform.M42 = position.Y;
 
-            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);            
+            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.World, ref transform);            
 
             _graphicsDevice.SetVertexArrayObject(_circleVao);
             foreach (RenderStep step in process.Steps(_lightRenderer.Debug))
@@ -63,7 +54,7 @@ namespace Penumbra.Graphics.Renderers
             transform.M41 = position.X;
             transform.M42 = position.Y;
 
-            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.WorldTransform, ref transform);            
+            _lightRenderer.ShaderParameters.SetMatrix(ShaderParameter.World, ref transform);            
 
             _graphicsDevice.SetVertexArrayObject(_quadVao);
             foreach (RenderStep step in process.Steps(_lightRenderer.Debug))
@@ -92,16 +83,9 @@ namespace Penumbra.Graphics.Renderers
          
         public void Dispose()
         {
-            lock (Lock)
-            {
-                _refCounter--;
-                if (_refCounter <= 0)
-                {
-                    _quadVao?.Dispose();
-                    _fullscreenQuadVao?.Dispose();
-                    _circleVao?.Dispose();                    
-                }
-            }            
+            _quadVao?.Dispose();
+            _fullscreenQuadVao?.Dispose();
+            _circleVao?.Dispose();                             
         }      
 
         private void BuildQuadBuffers()
@@ -121,8 +105,8 @@ namespace Penumbra.Graphics.Renderers
                 new VertexPosition2Texture(new Vector2(+1, -1), new Vector2(1, 1))
             };
 
-            _fullscreenQuadVao = Vao.New(_graphicsDevice, fullscreenQuadVertices, VertexPosition2Texture.Layout);
-            _quadVao = Vao.New(_graphicsDevice, quadVertices, VertexPosition2Texture.Layout);
+            _fullscreenQuadVao = StaticVao.New(_graphicsDevice, fullscreenQuadVertices, VertexPosition2Texture.Layout);
+            _quadVao = StaticVao.New(_graphicsDevice, quadVertices, VertexPosition2Texture.Layout);
         }
 
         private void BuildCircleBuffer()
@@ -148,7 +132,7 @@ namespace Penumbra.Graphics.Renderers
             }
             indices[indices.Length - 1] = 1;
 
-            _circleVao = Vao.New(_graphicsDevice, vertices, VertexPosition2.Layout, indices);
+            _circleVao = StaticVao.New(_graphicsDevice, vertices, VertexPosition2.Layout, indices);
         }
     }
 }

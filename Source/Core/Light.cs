@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
+using Penumbra.Graphics.Providers;
 using Penumbra.Utilities;
 
 namespace Penumbra.Core
@@ -168,6 +169,11 @@ namespace Penumbra.Core
             }
         }
 
+        internal bool Intersects(Camera camera)
+        {
+            return Bounds.Intersects(ref camera.Bounds);
+        }
+
         internal bool Intersects(Hull Hull)
         {
             // Ref: Jason Gregory Game Engine Architecture 2nd p.172
@@ -175,13 +181,16 @@ namespace Penumbra.Core
             return Vector2.DistanceSquared(Position, Hull.Centroid) < sumOfRadiuses * sumOfRadiuses;
         }        
 
-        internal bool IsContainedWithin(IList<Hull> hulls)
+        internal bool ContainedIn(IList<Hull> hulls)
         {
             int hullCount = hulls.Count;
             for (int i = 0; i < hullCount; i++)
             {
                 Hull hull = hulls[i];
-                if (hull.Enabled && hull.Valid && hull.WorldPoints.PointInPolygon(ref _position))
+                // If hull is valid and enabled:
+                // 1. test AABB intersection
+                // 2. test point is contained in polygon
+                if (hull.Enabled && hull.Valid && Bounds.Intersects(hull.Bounds) && hull.WorldPoints.Contains(ref _position))
                     return true;
             }
             return false;
