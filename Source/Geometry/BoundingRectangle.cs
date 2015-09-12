@@ -150,6 +150,6 @@ namespace Penumbra.Geometry
                 return false;
 
             return true;
-        }
+        }        
     }
 }

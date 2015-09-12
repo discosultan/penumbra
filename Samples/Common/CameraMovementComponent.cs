@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using Penumbra.Core;
+using Penumbra;
 
 namespace Common
 {
@@ -17,9 +17,35 @@ namespace Common
 
         private readonly PenumbraComponent _penumbra;
 
+        private bool _dirty = true;
         private Vector2 _position;
         private float _scale = 1.0f;
-        private float _rotation;                
+        private float _rotation;
+        private Vector2 _origin;
+
+        public Vector2 Position
+        {
+            get { return _position; }
+            set { _position = value; _dirty = true; }
+        }
+
+        public float Scale
+        {
+            get { return _scale; }
+            set { _scale = value; _dirty = true; }
+        }
+
+        public float Rotation
+        {
+            get { return _rotation; }
+            set { _rotation = value; _dirty = true; }
+        }
+
+        public Vector2 Origin
+        {
+            get { return _origin; }
+            set { _origin = value; _dirty = true; }
+        }
 
         public float MoveSpeed { get; set; } = 600f;
         public float ZoomSpeed { get; set; } = 0.65f;
@@ -27,6 +53,21 @@ namespace Common
         public float MaxZoom { get; set; } = 3.0f;
         public float RotationSpeed { get; set; } = 1 / MathHelper.TwoPi * 4;
         public bool InvertedY { get; set; }
+
+        private Matrix _transform;
+
+        public Matrix Transform
+        {
+            get { return _transform; }
+            set
+            {
+                _transform = value;
+                _penumbra.Transform = value;
+                InverseTransform = Matrix.Invert(value);
+            }
+        }
+
+        public Matrix InverseTransform { get; private set; }
 
         public CameraMovementComponent(Game game, PenumbraComponent penumbra) : base(game)
         {
@@ -64,23 +105,31 @@ namespace Common
             if (moveDirection != Vector2.Zero)
             {
                 moveDirection.Normalize();
-                _position += moveDirection * MoveSpeed * deltaSeconds;
+                Position += moveDirection * MoveSpeed * deltaSeconds;
+                _dirty = true;
             }
             if (zoomDir != 0)
-                _scale = MathHelper.Clamp(_scale + zoomDir * ZoomSpeed * deltaSeconds, MinZoom, MaxZoom);
+            {
+                Scale = MathHelper.Clamp(Scale + zoomDir * ZoomSpeed * deltaSeconds, MinZoom, MaxZoom);
+                _dirty = true;
+            }
             if (rotationDir != 0)
-                _rotation = MathHelper.WrapAngle(_rotation + rotationDir * RotationSpeed * deltaSeconds);
+            {
+                _dirty = true;
+                Rotation = MathHelper.WrapAngle(Rotation + rotationDir * RotationSpeed * deltaSeconds);
+            }
 
-            if (moveDirection != Vector2.Zero || zoomDir != 0 || rotationDir != 0)
+            if (_dirty)
                 SetViewMatrix();
         }
 
         private void SetViewMatrix()
         {
-            _penumbra.Transform =
-				Matrix.CreateScale(_scale);
-                * Matrix.CreateRotationZ(_rotation)
-                * Matrix.CreateTranslation(new Vector3(-_position, 0));
+            Transform =
+                Matrix.CreateTranslation(new Vector3(-Position, 0)) *
+                Matrix.CreateRotationZ(Rotation) *                
+                Matrix.CreateScale(Scale) *
+                Matrix.CreateTranslation(new Vector3(Origin, 0));
         }
     }
 }

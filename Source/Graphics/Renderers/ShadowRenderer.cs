@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Penumbra.Core;
 using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Renderers

@@ -1,9 +1,9 @@
-﻿using Common;
+﻿using System.Diagnostics;
+using Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
-using Penumbra.Core;
 
 namespace ImagePolygonExtraction
 {
@@ -19,7 +19,10 @@ namespace ImagePolygonExtraction
         private SpriteBatch _spriteBatch;
         private Texture2D _logo;
         private readonly PenumbraComponent _penumbra;
-        private Light _light;      
+        private readonly CameraMovementComponent _camera;
+        private Light _light;
+
+        private readonly Matrix _screenToNdc;
 
         public Game1()
         {
@@ -37,7 +40,25 @@ namespace ImagePolygonExtraction
             };
             Components.Add(_penumbra);
             Components.Add(new HullGenerationComponent(this, _penumbra));
-            Components.Add(new CameraMovementComponent(this, _penumbra) { InvertedY = true });
+            var origin = new Vector2(_graphics.PreferredBackBufferWidth / 2f, _graphics.PreferredBackBufferHeight / 2f);
+            _camera = new CameraMovementComponent(this, _penumbra)
+            {
+                Position = origin,
+                InvertedY = true,
+                Origin = origin
+            };
+            Components.Add(_camera);
+            Components.Add(new FpsGarbageComponent(this));
+            
+            _screenToNdc = Matrix.CreateOrthographicOffCenter(
+                0,
+                _graphics.PreferredBackBufferHeight,
+                _graphics.PreferredBackBufferHeight,
+                0,
+                0f, 1f);
+
+            Window.AllowUserResizing = false;
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -81,14 +102,15 @@ namespace ImagePolygonExtraction
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-                Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             _currentKeyState = Keyboard.GetState();
 
+            Matrix mouseTransform = _screenToNdc * _camera.InverseTransform;
             var ms = Mouse.GetState();
-            _light.Position = ms.Position.ToVector2();
+            Debug.WriteLine(ms.Position);
+            _light.Position = Vector2.Transform(ms.Position.ToVector2(), mouseTransform);
 
             _previousKeyState = _currentKeyState;
 
@@ -105,8 +127,10 @@ namespace ImagePolygonExtraction
 
             GraphicsDevice.Clear(Color.White);
 
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(_logo, Vector2.Zero, Color.White);
+            var scale = (float)GraphicsDevice.Viewport.Width / _logo.Width;
+
+            _spriteBatch.Begin(transformMatrix: _camera.Transform);
+            _spriteBatch.Draw(_logo, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             _spriteBatch.End();
 
             base.Draw(gameTime);

@@ -42,7 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CameraMovementComponent.cs" />
+    <Compile Include="FpsGarbageComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\FPS.cs" />
+    <Compile Include="Utilities\Garbage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

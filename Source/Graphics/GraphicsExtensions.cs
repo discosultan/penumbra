@@ -17,12 +17,20 @@ namespace Penumbra.Graphics
         }
 
         public static void SetScissorRectangle(this GraphicsDevice device, BoundingRectangle bounds)
-        {                        
+        {
             device.ScissorRectangle = new Rectangle(
-                (int) bounds.Min.X,
-                (int) bounds.Min.Y,
-                (int) (bounds.Max.X - bounds.Min.X),
-                (int) (bounds.Max.Y - bounds.Min.Y));
+                (int)bounds.Min.X,
+                (int)bounds.Min.Y,
+                (int)(bounds.Max.X - bounds.Min.X),
+                (int)(bounds.Max.Y - bounds.Min.Y));
+
+            //Vector2 extents = bounds.Extents;
+
+            //device.ScissorRectangle = new Rectangle(
+            //    (int)bounds.Min.X,
+            //    (int)(bounds.Max.Y),
+            //    (int)(extents.X * 2),
+            //    (int)(extents.Y * 2));
         }
 
         public static void DrawIndexed(this GraphicsDevice device, Effect effect, IVao vao)

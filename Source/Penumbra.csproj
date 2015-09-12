@@ -58,14 +58,14 @@
     <Compile Include="Graphics\RenderState.cs" />
     <Compile Include="Graphics\ShaderParameterCollection.cs" />
     <Compile Include="Graphics\VertexTypes.cs" />
-    <Compile Include="Core\Hull.cs" />
-    <Compile Include="Core\Light.cs" />
+    <Compile Include="Hull.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="Geometry\BoundingRectangle.cs" />
     <Compile Include="Geometry\LineSegment.cs" />
     <Compile Include="Geometry\PolygonExtensions.cs" />
     <Compile Include="Graphics\Triangulator.cs" />
-    <Compile Include="Core\PenumbraComponent.cs" />
-    <Compile Include="Core\PenumbraEngine.cs" />
+    <Compile Include="PenumbraComponent.cs" />
+    <Compile Include="PenumbraEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Check.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
@@ -85,6 +85,7 @@
   <ItemGroup>
     <Content Include="Content\ProjectionColor.fx" />
     <Content Include="Content\WorldProjectionColor.fx" />
+    <Content Include="Content\WorldProjectionTexture.fx" />
     <Content Include="Content\WorldProjectionLight.fx" />
     <Content Include="Content\Texture.fx" />
   </ItemGroup>

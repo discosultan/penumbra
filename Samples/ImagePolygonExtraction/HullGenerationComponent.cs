@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
-using Penumbra.Core;
 
 namespace ImagePolygonExtraction
 {

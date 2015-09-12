@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace Penumbra.Core
+namespace Penumbra
 {
     public class PenumbraComponent : DrawableGameComponent
     {        
@@ -25,8 +25,8 @@ namespace Penumbra.Core
 
         public Color AmbientColor
         {
-            get { return _engine.LightMapRenderer.AmbientColor; }
-            set { _engine.LightMapRenderer.AmbientColor = value; }
+            get { return _engine.AmbientColor; }
+            set { _engine.AmbientColor = value; }
         }
 
         public Matrix Transform

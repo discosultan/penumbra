@@ -49,9 +49,7 @@
     <Compile Include="Scenarios\B_LightPassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Scenarios\G_OverlappingHulls.cs" />
-    <Compile Include="Utilities\FPS.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="Utilities\Garbage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenario.cs" />

@@ -6,7 +6,7 @@ using Penumbra.Geometry;
 using Penumbra.Graphics.Providers;
 using Penumbra.Utilities;
 
-namespace Penumbra.Core
+namespace Penumbra
 {
     public class Light
     {
@@ -120,6 +120,7 @@ namespace Penumbra.Core
         }
         public Color Color { get; set; }
         public Texture Texture { get; set; }
+        public Matrix TextureTransform { get; set; } = Matrix.Identity;
 
         public Matrix LocalToWorld
         {

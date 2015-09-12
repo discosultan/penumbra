@@ -1,6 +1,10 @@
-﻿cbuffer cbPerObject
+﻿Texture2D Texture;
+SamplerState TextureSampler;
+
+cbuffer cbPerLight
 {
-	float4x4 World;
+	float4x4 TextureTransform;
+	float4x4 World;	
 	float3 Color;
 	float Intensity;
 };
@@ -28,23 +32,14 @@ VertexOut VS(VertexIn vin)
 	
 	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0, 1), World);
 	vout.Position = mul(posW, ViewProjection);
-	vout.TexCoord = vin.TexCoord;
+	vout.TexCoord = mul(float4(vin.TexCoord, 0.0f, 1.0f), TextureTransform).xy;
 
 	return vout;
 }
 
-float GetAlphaAtTexCoord(float2 texCoord)
-{
-	float len = length(texCoord - float2(0.5, 0.5));
-	return saturate(1 - len * 2);
-}
-
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	float alpha = GetAlphaAtTexCoord(pin.TexCoord);
-	float4 color = float4(alpha, alpha, alpha, 1);
-	float4 lightColor = float4(Color.x, Color.y, Color.z, 1);
-	return pow(abs(color) * lightColor, Intensity);
+	return Texture.Sample(TextureSampler, pin.TexCoord);
 }
 
 technique Main

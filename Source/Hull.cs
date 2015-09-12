@@ -8,7 +8,7 @@ using Penumbra.Utilities;
 using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 using Indices = Penumbra.Utilities.FastList<int>;
 
-namespace Penumbra.Core
+namespace Penumbra
 {
     public class Hull
     {

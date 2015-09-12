@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Penumbra.Core;
 using Penumbra.Utilities;
 
 namespace Penumbra.Graphics.Providers

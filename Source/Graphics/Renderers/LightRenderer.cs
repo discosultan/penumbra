@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Penumbra.Core;
 
 namespace Penumbra.Graphics.Renderers
 {
@@ -12,6 +11,7 @@ namespace Penumbra.Graphics.Renderers
         private PenumbraEngine _engine;        
 
         private Effect _fxLight;
+        private Effect _fxLightTexture;
         private Effect _fxLightDebug;
         private StaticVao _quadVao;
         private StaticVao _circleVao;
@@ -22,6 +22,7 @@ namespace Penumbra.Graphics.Renderers
             _engine = engine;
 
             _fxLight = engine.Content.Load<Effect>("WorldProjectionLight");
+            _fxLightTexture = engine.Content.Load<Effect>("WorldProjectionTexture");
             _fxLightDebug = engine.Content.Load<Effect>("WorldProjectionColor");
 
             BuildGraphicsResources();
@@ -29,13 +30,24 @@ namespace Penumbra.Graphics.Renderers
 
         public void Render(Light light)
         {
+            Effect fxLight;
+            if (light.Texture == null) // Draw light using spotlight algorithm.
+            {
+                fxLight = _fxLight;
+            }
+            else // Draw light using texture.
+            {
+                fxLight = _fxLightTexture;
+                fxLight.Parameters["TextureTransform"].SetValue(light.TextureTransform);
+            }
+
             _engine.Device.BlendState = _bsLight;
             _engine.Device.RasterizerState = _engine.Rs;
-            _fxLight.Parameters["World"].SetValue(light.LocalToWorld);
-            _fxLight.Parameters["Color"].SetValue(light.Color.ToVector3());
-            _fxLight.Parameters["Intensity"].SetValue(light.IntensityFactor);
-            _fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-            _engine.Device.Draw(_fxLight, _quadVao);
+            fxLight.Parameters["World"].SetValue(light.LocalToWorld);
+            fxLight.Parameters["Color"].SetValue(light.Color.ToVector3());
+            fxLight.Parameters["Intensity"].SetValue(light.IntensityFactor);
+            fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
+            _engine.Device.Draw(fxLight, _quadVao);
 
             if (_engine.Debug)
             {
@@ -57,15 +69,19 @@ namespace Penumbra.Graphics.Renderers
         }
 
         private void BuildGraphicsResources()
-        {
+        {            
+            float d1 = (float) (2 / Math.Sqrt(2));
+            float d2 = (float) (1 / Math.Sqrt(2));
+
             // Quad.
             VertexPosition2Texture[] quadVertices =
             {
-                new VertexPosition2Texture(new Vector2(-1, +1), new Vector2(0, 0)),
-                new VertexPosition2Texture(new Vector2(+1, +1), new Vector2(1, 0)),
-                new VertexPosition2Texture(new Vector2(-1, -1), new Vector2(0, 1)),
-                new VertexPosition2Texture(new Vector2(+1, -1), new Vector2(1, 1))
+                new VertexPosition2Texture(new Vector2(-1 - d1, +1 + d1), new Vector2(0 - d2, 0 - d2)),
+                new VertexPosition2Texture(new Vector2(+1 + d1, +1 + d1), new Vector2(1 + d2, 0 - d2)),
+                new VertexPosition2Texture(new Vector2(-1 - d1, -1 - d1), new Vector2(0 - d2, 1 + d2)),
+                new VertexPosition2Texture(new Vector2(+1 + d1, -1 - d1), new Vector2(1 + d2, 1 + d2))
             };            
+          
 
             _quadVao = StaticVao.New(_engine.Device, quadVertices, VertexPosition2Texture.Layout);
 

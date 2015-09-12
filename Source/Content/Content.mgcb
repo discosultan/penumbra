@@ -37,6 +37,12 @@
 /processorParam:DebugMode=Auto
 /build:WorldProjectionLight.fx
 
+#begin WorldProjectionTexture.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:WorldProjectionTexture.fx
+
 #begin Shadow.fx
 /importer:EffectImporter
 /processor:EffectProcessor

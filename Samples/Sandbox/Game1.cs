@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
-using Penumbra.Core;
 
 namespace Sandbox
 {
@@ -32,7 +31,7 @@ namespace Sandbox
         internal ScenariosComponent Scenarios => _scenarios;
 
         public Game1()
-        {
+        {            
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _penumbra = new PenumbraComponent(this, Projections.OriginCenter_XRight_YUp | Projections.Custom)
@@ -48,11 +47,9 @@ namespace Sandbox
             };
             Components.Add(ui);
             Components.Add(new CameraMovementComponent(this, _penumbra));
+            Components.Add(new FpsGarbageComponent(this));
             
-            IsMouseVisible = true;
-            // Disable FPS limit.
-            IsFixedTimeStep = false;
-            _graphics.SynchronizeWithVerticalRetrace = false;            
+            IsMouseVisible = true;            
         }
 
         /// <summary>

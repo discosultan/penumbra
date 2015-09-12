@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Sandbox.Utilities
+namespace Common.Utilities
 {
     /// <summary>
     /// Event argumentss used to pass the FPS info to an event handler.

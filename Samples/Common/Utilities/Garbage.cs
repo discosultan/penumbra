@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sandbox.Utilities
+namespace Common.Utilities
 {
     /// <summary>
     /// Event argumentss used to pass the FPS info to an event handler.

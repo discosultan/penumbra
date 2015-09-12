@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Penumbra.Core;
 
 namespace Penumbra.Graphics.Renderers
 {
@@ -13,14 +12,6 @@ namespace Penumbra.Graphics.Renderers
         private BlendState _bsLightMap;
         private StaticVao _fullscreenQuadVao;
 
-        private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-
-        public Color AmbientColor
-        {
-            get { return new Color(_ambientColor.R, _ambientColor.G, _ambientColor.B); }
-            set { _ambientColor = new Color(value, 1f); }
-        }
-
         public void Load(PenumbraEngine engine)
         {                        
             _engine = engine;
@@ -30,26 +21,8 @@ namespace Penumbra.Graphics.Renderers
             BuildGraphicsResources();
         }
 
-        public void PreRenderSetup()
-        {
-            // Switch render target to custom scene texture.
-            _engine.Device.SetRenderTarget(_engine.Textures.Scene);
-        }
-
-        public void RenderSetup()
-        {
-            // Switch render target to lightmap.
-            _engine.Device.SetRenderTarget(_engine.Textures.LightMap);
-            // Clear lightmap color, depth and stencil data.
-            _engine.Device.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
-        }
-
-        public void Render()
-        {
-            // Switch render target back to default.
-            _engine.Device.SetRenderTarget(null);
-
-            _engine.Device.SamplerStates[0] = SamplerState.LinearClamp;
+        public void Present()
+        {            
             _engine.Device.DepthStencilState = DepthStencilState.None;
             _engine.Device.RasterizerState = RasterizerState.CullCounterClockwise;
 

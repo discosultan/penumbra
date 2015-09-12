@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Microsoft.Xna.Framework;
-using Penumbra.Core;
+using Penumbra;
 
 namespace Sandbox
 {
