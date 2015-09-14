@@ -12,11 +12,7 @@ namespace Sandbox
     {
         public const Keys PreviousScenarioKey = Keys.Left;
         public const Keys NextScenarioKey = Keys.Right;
-        public const Keys PauseKey = Keys.Space;
-        //public const Keys DebugKey = Keys.D;
-        //public const Keys ShadowTypeKey = Keys.S;
-        public const Keys DebugKey = Keys.T;
-        public const Keys ShadowTypeKey = Keys.G;
+        public const Keys PauseKey = Keys.Space;                
 
         private static readonly Color BackgroundColor = Color.White;
 
@@ -39,9 +35,11 @@ namespace Sandbox
                 AmbientColor = Color.Black
             };
             Components.Add(_penumbra);
-            _scenarios = new ScenariosComponent(this, _penumbra);
+            var penumbraController = new PenumbraControllerComponent(this, _penumbra);
+            Components.Add(penumbraController);
+            _scenarios = new ScenariosComponent(this, _penumbra, penumbraController);
             Components.Add(_scenarios);
-            var ui = new UIComponent(this)
+            var ui = new UIComponent(this, penumbraController)
             {
                 DrawOrder = int.MaxValue
             };
@@ -82,11 +80,7 @@ namespace Sandbox
             if (IsKeyPressed(PreviousScenarioKey))
                 _scenarios.PreviousScenario();
 
-            if (IsKeyPressed(DebugKey))
-                _penumbra.Debug = !_penumbra.Debug;
-
-            if (IsKeyPressed(ShadowTypeKey))
-                _scenarios.NextShadowType();
+            
 
             _previousKeyState = _currentKeyState;
 
@@ -98,7 +92,7 @@ namespace Sandbox
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
-        {
+        {            
             _penumbra.BeginDraw();
 
             GraphicsDevice.Clear(BackgroundColor);            

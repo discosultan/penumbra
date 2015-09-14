@@ -177,9 +177,11 @@ namespace Penumbra
 
         internal bool Intersects(Hull Hull)
         {
+            return Bounds.Intersects(Hull.Bounds);
+
             // Ref: Jason Gregory Game Engine Architecture 2nd p.172
-            float sumOfRadiuses = Range + Hull.Radius;
-            return Vector2.DistanceSquared(Position, Hull.Centroid) < sumOfRadiuses * sumOfRadiuses;
+            //float sumOfRadiuses = Range + Hull.Radius;
+            //return Vector2.DistanceSquared(Position, Hull.Centroid) < sumOfRadiuses * sumOfRadiuses;
         }        
 
         internal bool ContainedIn(IList<Hull> hulls)
@@ -202,7 +204,7 @@ namespace Penumbra
     {
         Illuminated,
         Solid,        
-        //Occluded
+        Occluded
     }
 
     [Flags]

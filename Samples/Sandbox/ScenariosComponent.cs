@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Common;
 using Microsoft.Xna.Framework;
 using Penumbra;
 
@@ -8,45 +9,26 @@ namespace Sandbox
 {
     class ScenariosComponent : GameComponent
     {
-        public event EventHandler ShadowTypeChanged;
-
         private readonly PenumbraComponent _penumbra;
-        private readonly ShadowType[] ShadowTypes;        
-        
-        private Scenario[] _scenarios;
-        private int _currentScenarioIndex;
-        private int _currentShadowType;        
+        private readonly PenumbraControllerComponent _penumbraController;
 
-        public ScenariosComponent(Game game, PenumbraComponent penumbra) : base(game)
+        private Scenario[] _scenarios;
+        private int _currentScenarioIndex;        
+
+        public ScenariosComponent(Game game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController) : base(game)
         {
             _penumbra = penumbra;
-            ShadowTypes = (ShadowType[])Enum.GetValues(typeof (ShadowType));
-        }        
+            _penumbraController = penumbraController;
+        }
 
         public override void Initialize()
         {
-            base.Initialize();
-            SwitchShadowType();
+            base.Initialize();            
             LoadScenarios();
             SwitchScenario();
         }
 
-        public Scenario ActiveScenario { get; private set; }
-        public ShadowType ActiveShadowType => ShadowTypes[_currentShadowType];
-
-        public void NextShadowType()
-        {
-            _currentShadowType = (_currentShadowType + 1) % ShadowTypes.Length;
-            SwitchShadowType();
-        }        
-
-        public void PreviousShadowType()
-        {
-            _currentShadowType--;
-            if (_currentShadowType == -1)
-                _currentShadowType = ShadowTypes.Length - 1;
-            SwitchShadowType();
-        }
+        public Scenario ActiveScenario { get; private set; }        
 
         public void NextScenario()
         {
@@ -86,14 +68,8 @@ namespace Sandbox
             _penumbra.Hulls.Clear();
             ActiveScenario = _scenarios[_currentScenarioIndex];
             ActiveScenario.Activate(_penumbra);
-            SwitchShadowType();
-        }
-
-        private void SwitchShadowType()
-        {
             foreach (Light light in _penumbra.Lights)
-                light.ShadowType = ActiveShadowType;
-            ShadowTypeChanged?.Invoke(this, EventArgs.Empty);
-        }      
+                light.ShadowType = _penumbraController.ActiveShadowType;            
+        }
     }
 }

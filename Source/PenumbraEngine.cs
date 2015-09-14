@@ -34,7 +34,7 @@ namespace Penumbra
             get { return new Color(_ambientColor.R, _ambientColor.G, _ambientColor.B); }
             set { _ambientColor = new Color(value, 1f); }
         }
-        public bool Debug { get; set; } = true;
+        public bool Debug { get; set; }
         public ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
         public ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
         public CameraProvider Camera { get; } = new CameraProvider();
@@ -94,14 +94,13 @@ namespace Penumbra
             {
                 Light light = Lights[i];
                 if (!light.Enabled || !light.Intersects(Camera) || light.ContainedIn(Hulls))
-                    continue;
+                    continue;                
 
                 // Set scissor rectangle.                
                 Device.SetScissorRectangle(Camera.GetScissorRectangle(light));
 
-                // Draw shadows for light.
-                if (light.CastsShadows)
-                    ShadowRenderer.Render(light);
+                // Draw shadows for light.                
+                ShadowRenderer.Render(light);
 
                 // Draw light and clear alpha.
                 LightRenderer.Render(light);

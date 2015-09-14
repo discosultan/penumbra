@@ -1,17 +1,17 @@
 ﻿#if MONOGAME
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 
 namespace Penumbra
 {
     public class PenumbraComponent : DrawableGameComponent
     {        
-        private readonly PenumbraEngine _engine = new PenumbraEngine();
+        private readonly PenumbraEngine _engine = new PenumbraEngine();        
 
         public PenumbraComponent(Game game, Projections projections = Projections.SpriteBatch | Projections.Custom) 
             : base(game)
         {
-            _engine.Camera.Projections = projections;
+            _engine.Camera.Projections = projections;            
 
             Enabled = false;
             Visible = true;            
@@ -35,8 +35,12 @@ namespace Penumbra
             set { _engine.Camera.Custom = value; }
         }        
 
-        public IList<Light> Lights => _engine.Lights;
-        public IList<Hull> Hulls => _engine.Hulls;
+        public ObservableCollection<Light> Lights => _engine.Lights;
+        public ObservableCollection<Hull> Hulls => _engine.Hulls;
+        public void Load()
+        {
+            LoadContent();
+        }
 
         protected override void LoadContent()
         {            
@@ -44,9 +48,17 @@ namespace Penumbra
             _engine.Load(GraphicsDevice, graphicsDeviceManager, Game.Content);
         }
 
-        public void BeginDraw() => _engine.PreRender();        
+        public void BeginDraw()
+        {
+            if (Visible)
+                _engine.PreRender();
+        }
 
-        public override void Draw(GameTime gameTime) => _engine.Render();        
+        public override void Draw(GameTime gameTime)
+        {
+            if (Visible)
+                _engine.Render();
+        }
     }
 }
 #endif

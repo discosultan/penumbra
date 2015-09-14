@@ -12,8 +12,7 @@
     <AssemblyName>Sandbox</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <MonoGameContentBuilderExe>
-    </MonoGameContentBuilderExe>
+    <MonoGameContentBuilderExe></MonoGameContentBuilderExe>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
