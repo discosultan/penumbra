@@ -35,7 +35,7 @@ namespace Penumbra
 
         public bool Enabled
         {
-            get { return _enabled; }
+            get { return _enabled && _range > 0; }
             set
             {
                 if (_enabled != value)
@@ -204,7 +204,7 @@ namespace Penumbra
     {
         Illuminated,
         Solid,        
-        Occluded
+        //Occluded
     }
 
     [Flags]

@@ -22,8 +22,8 @@ namespace Penumbra.Graphics.Renderers
         private Effect _fxHull;
         private BlendState _bsShadow;
         private BlendState _bsHull;
-        private DepthStencilState _dsOccludedShadow;
-        private DepthStencilState _dsOccludedHull;
+        //private DepthStencilState _dsOccludedShadow;
+        //private DepthStencilState _dsOccludedHull;
 
         public void Load(PenumbraEngine engine)
         {            
@@ -43,9 +43,10 @@ namespace Penumbra.Graphics.Renderers
                 return;
 
             _engine.Device.RasterizerState = _engine.Rs;
-            _engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded 
-                ? _dsOccludedShadow 
-                : DepthStencilState.None;
+            _engine.Device.DepthStencilState = DepthStencilState.None;
+            //_engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded 
+            //    ? _dsOccludedShadow 
+            //    : DepthStencilState.None;
 
             Matrix worldViewProjection = light.LocalToWorld * _engine.Camera.ViewProjection;
 
@@ -69,17 +70,20 @@ namespace Penumbra.Graphics.Renderers
             }
 
             // Draw hull.            
-            if (light.ShadowType == ShadowType.Occluded)
-                _engine.Device.DepthStencilState = _dsOccludedHull;
+            //if (light.ShadowType == ShadowType.Occluded)
+            //    _engine.Device.DepthStencilState = _dsOccludedHull;
 
-            var hullVao = vao.Item2;
-            _engine.Device.RasterizerState = _engine.Rs;
-            _engine.Device.BlendState = _bsHull;
-            _fxHull.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-            _fxHull.Parameters["Color"].SetValue(light.ShadowType == ShadowType.Solid
-                ? Color.Transparent.ToVector4()
-                : Color.White.ToVector4());
-            _engine.Device.DrawIndexed(_fxHull, hullVao);
+            if (light.CastsShadows || light.ShadowType == ShadowType.Solid)
+            {
+                var hullVao = vao.Item2;
+                _engine.Device.RasterizerState = _engine.Rs;
+                _engine.Device.BlendState = _bsHull;
+                _fxHull.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
+                _fxHull.Parameters["Color"].SetValue(light.ShadowType == ShadowType.Solid
+                    ? Color.Transparent.ToVector4()
+                    : Color.White.ToVector4());
+                _engine.Device.DrawIndexed(_fxHull, hullVao);
+            }
         }
 
         private Tuple<DynamicVao, DynamicVao> TryGetVaoForLight(Light light)
@@ -181,28 +185,28 @@ namespace Penumbra.Graphics.Renderers
                 AlphaSourceBlend = Blend.One,
                 AlphaDestinationBlend = Blend.Zero
             };
-            _dsOccludedShadow = new DepthStencilState
-            {
-                DepthBufferEnable = false,
+            //_dsOccludedShadow = new DepthStencilState
+            //{
+            //    DepthBufferEnable = false,
 
-                StencilEnable = true,
-                StencilWriteMask = 0xff,
-                StencilMask = 0x00,
-                StencilFunction = CompareFunction.Always,
-                StencilPass = StencilOperation.IncrementSaturation                           
-            };
-            _dsOccludedHull = new DepthStencilState
-            {
-                DepthBufferEnable = false,
+            //    StencilEnable = true,
+            //    StencilWriteMask = 0xff,
+            //    StencilMask = 0x00,
+            //    StencilFunction = CompareFunction.Always,
+            //    StencilPass = StencilOperation.IncrementSaturation                           
+            //};
+            //_dsOccludedHull = new DepthStencilState
+            //{
+            //    DepthBufferEnable = false,
 
-                StencilEnable = true,
-                StencilWriteMask = 0x00,
-                StencilMask = 0xff,
-                StencilFunction = CompareFunction.Less,
-                StencilPass = StencilOperation.Keep,
-                StencilFail = StencilOperation.Keep,
-                ReferenceStencil = 1
-            };
+            //    StencilEnable = true,
+            //    StencilWriteMask = 0x00,
+            //    StencilMask = 0xff,
+            //    StencilFunction = CompareFunction.Less,
+            //    StencilPass = StencilOperation.Keep,
+            //    StencilFail = StencilOperation.Keep,
+            //    ReferenceStencil = 1
+            //};
         }
     }        
 }

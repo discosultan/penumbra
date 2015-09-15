@@ -20,6 +20,8 @@ namespace Platformer2D
     /// </summary>
     class Gem
     {
+        private static readonly Random random = new Random();
+
         private Texture2D texture;
         private Vector2 origin;
         private SoundEffect collectedSound;
@@ -29,9 +31,12 @@ namespace Platformer2D
 
         // The gem is animated from a base position along the Y axis.
         private Vector2 basePosition;
-        private float bounce;
+        private float bounce;        
 
-        public Light Light { get; } = new Light { Range = 40, Color = Color.Yellow, CastsShadows = false };
+        private const float LightRange = 40;
+        private const float LightOscillationSpeed = 2;
+        private float oscillationProgress = (float)random.NextDouble();
+        public Light Light { get; } = new Light { Range = LightRange, Color = Color.Yellow, CastsShadows = false };
 
         public Level Level
         {
@@ -96,7 +101,14 @@ namespace Platformer2D
             // Include the X coordinate so that neighboring gems bounce in a nice wave pattern.            
             double t = gameTime.TotalGameTime.TotalSeconds * BounceRate + Position.X * BounceSync;
             bounce = (float)Math.Sin(t) * BounceHeight * texture.Height;
+
             Light.Position = Position;
+            oscillationProgress += (float)gameTime.ElapsedGameTime.TotalSeconds / LightOscillationSpeed;
+            if (oscillationProgress >= 1)
+            {
+                oscillationProgress -= 1;
+            }
+            Light.Range = (float)Math.Sin(oscillationProgress * Math.PI) * LightRange * 0.25f + LightRange * 0.75f;
         }
 
         /// <summary>
