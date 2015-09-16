@@ -12,7 +12,8 @@
     <AssemblyName>Platformer2D</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-	<MonoGameContentBuilderExe></MonoGameContentBuilderExe>        
+    <MonoGameContentBuilderExe>
+    </MonoGameContentBuilderExe>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -41,21 +42,21 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Accelerometer.cs" />
-    <Compile Include="Animation.cs" />
-    <Compile Include="AnimationPlayer.cs" />
-    <Compile Include="Circle.cs" />
-    <Compile Include="Enemy.cs" />
-    <Compile Include="Game.cs" />
-    <Compile Include="Gem.cs" />
-    <Compile Include="Level.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Game\Accelerometer.cs" />
+    <Compile Include="Game\Animation.cs" />
+    <Compile Include="Game\AnimationPlayer.cs" />
+    <Compile Include="Game\Circle.cs" />
+    <Compile Include="Game\Enemy.cs" />
+    <Compile Include="PlatformerGame.cs" />
+    <Compile Include="Game\Gem.cs" />
+    <Compile Include="Game\Level.cs" />
+    <Compile Include="Game\Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RectangleExtensions.cs" />
-    <Compile Include="Tile.cs" />
-    <Compile Include="TouchCollectionExtensions.cs" />
-    <Compile Include="VirtualGamePad.cs" />
+    <Compile Include="Game\RectangleExtensions.cs" />
+    <Compile Include="Game\Tile.cs" />
+    <Compile Include="Game\TouchCollectionExtensions.cs" />
+    <Compile Include="Game\VirtualGamePad.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Backgrounds\Layer0_0.png" />

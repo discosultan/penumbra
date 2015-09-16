@@ -13,20 +13,29 @@ namespace Sandbox
 
         private SpriteBatch _spriteBatch;
         private SpriteFont _font;
-        private Vector2 _fontSize;        
+        private Vector2 _fontSize;
 
+        private string _shadowTypeInfo = "";
         private string _info;
         private Vector2 _infoPosition;
 
         private readonly ScenariosComponent _scenarios;
 
-        public UIComponent(Game1 game, PenumbraControllerComponent penumbraController) : base(game)
+        public UIComponent(SandboxGame game, PenumbraControllerComponent penumbraController) : base(game)
         {
             _penumbraController = penumbraController;
-            _scenarios = game.Scenarios;                               
+            _scenarios = game.Scenarios;
+
+            penumbraController.ShadowTypeChanged += (s, e) => SetShadowTypeInfo();            
+            SetShadowTypeInfo();
 
             Enabled = false;
             Visible = true;
+        }
+
+        private void SetShadowTypeInfo()
+        {
+            _shadowTypeInfo = $"Shadow type: {_penumbraController.ActiveShadowType}";
         }
 
         protected override void LoadContent()
@@ -35,7 +44,7 @@ namespace Sandbox
             _font = Game.Content.Load<SpriteFont>("Font");
             _fontSize = _font.MeasureString("I");
 
-            _info = $"Previous {Game1.PreviousScenarioKey} | Next {Game1.NextScenarioKey} | Pause {Game1.PauseKey} | Debug {PenumbraControllerComponent.DebugKey} | Shadow type {PenumbraControllerComponent.ShadowTypeKey}";
+            _info = $"Previous {Sandbox.SandboxGame.PreviousScenarioKey} | Next {Sandbox.SandboxGame.NextScenarioKey} | Pause {Sandbox.SandboxGame.PauseKey} | Debug {PenumbraControllerComponent.DebugKey} | Shadow type {PenumbraControllerComponent.ShadowTypeKey}";
             Vector2 size = _font.MeasureString(_info);
             _infoPosition = new Vector2(Padding, GraphicsDevice.Viewport.Height - size.Y - Padding);
         }
@@ -44,7 +53,7 @@ namespace Sandbox
         {
             _spriteBatch.Begin();            
             _spriteBatch.DrawString(_font, _scenarios.ActiveScenario.Name, new Vector2(Padding), Color);
-            _spriteBatch.DrawString(_font, $"Shadow type: {_penumbraController.ActiveShadowType}", new Vector2(Padding, Padding * 2 + _fontSize.Y), Color);
+            _spriteBatch.DrawString(_font, _shadowTypeInfo, new Vector2(Padding, Padding * 2 + _fontSize.Y), Color);
             _spriteBatch.DrawString(_font, _info, _infoPosition, Color);            
             _spriteBatch.End();
         }

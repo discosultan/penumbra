@@ -7,10 +7,9 @@
 //-----------------------------------------------------------------------------
 #endregion
 
-using System;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Platformer2D
+namespace Platformer2D.Game
 {
     /// <summary>
     /// Represents an animated texture.

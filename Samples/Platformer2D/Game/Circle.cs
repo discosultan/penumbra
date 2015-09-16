@@ -7,10 +7,9 @@
 //-----------------------------------------------------------------------------
 #endregion
 
-using System;
 using Microsoft.Xna.Framework;
 
-namespace Platformer2D
+namespace Platformer2D.Game
 {
     /// <summary>
     /// Represents a 2D circle.

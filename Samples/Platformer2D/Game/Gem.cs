@@ -9,11 +9,11 @@
 
 using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
 
-namespace Platformer2D
+namespace Platformer2D.Game
 {
     /// <summary>
     /// A valuable item the player can collect.
@@ -34,7 +34,7 @@ namespace Platformer2D
         private float bounce;        
 
         private const float LightRange = 40;
-        private const float LightOscillationSpeed = 2;
+        private const float LightOscillationSpeed = 1.5f;
         private float oscillationProgress = (float)random.NextDouble();
         public Light Light { get; } = new Light { Range = LightRange, Color = Color.Yellow, CastsShadows = false };
 
@@ -108,7 +108,7 @@ namespace Platformer2D
             {
                 oscillationProgress -= 1;
             }
-            Light.Range = (float)Math.Sin(oscillationProgress * Math.PI) * LightRange * 0.25f + LightRange * 0.75f;
+            Light.Range = (float)Math.Sin(oscillationProgress * Math.PI) * LightRange * 0.3f + LightRange * 0.7f;
         }
 
         /// <summary>

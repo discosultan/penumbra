@@ -8,27 +8,26 @@ namespace Sandbox
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class SandboxGame : Game
     {
         public const Keys PreviousScenarioKey = Keys.Left;
         public const Keys NextScenarioKey = Keys.Right;
-        public const Keys PauseKey = Keys.Space;                
+        public const Keys PauseKey = Keys.Space;
 
-        private static readonly Color BackgroundColor = Color.White;
+        private static readonly Color BackgroundColor = Color.CornflowerBlue;
 
-        private readonly GraphicsDeviceManager _graphics;        
-
+        private readonly GraphicsDeviceManager _deviceManager;
         private readonly PenumbraComponent _penumbra;
-        private readonly ScenariosComponent _scenarios;        
+        private readonly ScenariosComponent _scenarios;
 
         private KeyboardState _currentKeyState;
         private KeyboardState _previousKeyState;
 
         internal ScenariosComponent Scenarios => _scenarios;
 
-        public Game1()
+        public SandboxGame()
         {            
-            _graphics = new GraphicsDeviceManager(this);
+            _deviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _penumbra = new PenumbraComponent(this, Projections.OriginCenter_XRight_YUp | Projections.Custom)
             {

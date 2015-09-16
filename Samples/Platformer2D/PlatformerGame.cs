@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Input.Touch;
 using Penumbra;
+using Platformer2D.Game;
 
 
 namespace Platformer2D
@@ -81,7 +82,9 @@ namespace Platformer2D
             penumbra = new PenumbraComponent(this) { AmbientColor = new Color(50, 40, 25) };
 
             var penumbraController = new PenumbraControllerComponent(this, penumbra);
-            Components.Add(penumbraController);            
+            Components.Add(penumbraController);
+
+            //Components.Add(new CameraMovementComponent(this, penumbra) { InvertedY = true });
 
             //We cannot disable fps limiter since movements seems to be fps dependant ... doh.
             //Components.Add(new FpsGarbageComponent(this));

@@ -55,7 +55,6 @@
     <Compile Include="Graphics\Providers\CameraProvider.cs" />
     <Compile Include="Graphics\Providers\TextureProvider.cs" />
     <Compile Include="Graphics\Providers\GraphicsProvider.cs" />
-    <Compile Include="Graphics\RenderState.cs" />
     <Compile Include="Graphics\ShaderParameterCollection.cs" />
     <Compile Include="Graphics\VertexTypes.cs" />
     <Compile Include="Hull.cs" />
@@ -73,8 +72,6 @@
     <Compile Include="Utilities\FastList.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Utilities\Pool.cs" />
-    <Compile Include="Graphics\RenderProcess.cs" />
-    <Compile Include="Graphics\RenderStep.cs" />
     <Compile Include="Graphics\StaticVao.cs" />
     <Compile Include="Utilities\VectorUtil.cs" />
   </ItemGroup>

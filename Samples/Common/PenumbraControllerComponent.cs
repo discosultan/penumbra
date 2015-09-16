@@ -13,6 +13,8 @@ namespace Common
         public const Keys ShadowTypeKey = Keys.Y;
         public const Keys EnabledKey = Keys.U;
 
+        public event EventHandler ShadowTypeChanged;
+
         private SpriteBatch _spriteBatch;
 
         private readonly PenumbraComponent _penumbra;
@@ -20,7 +22,7 @@ namespace Common
 
         private KeyboardState _currentKeyState;
         private KeyboardState _previousKeyState;
-        private int _currentShadowType;        
+        private int _currentShadowType;
 
         public PenumbraControllerComponent(Game game, PenumbraComponent penumbra) : base(game)
         {
@@ -36,8 +38,7 @@ namespace Common
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-            SetShadowTypes();
+            _spriteBatch = new SpriteBatch(GraphicsDevice);            
         }
 
         public ShadowType ActiveShadowType => ShadowTypes[_currentShadowType];
@@ -50,7 +51,7 @@ namespace Common
                 _penumbra.Debug = !_penumbra.Debug;
 
             if (IsKeyPressed(ShadowTypeKey))
-                SetShadowTypes();
+                ChangeShadowType();
 
             if (IsKeyPressed(EnabledKey))
                 _penumbra.Visible = !_penumbra.Visible;
@@ -58,11 +59,12 @@ namespace Common
             _previousKeyState = _currentKeyState;
         }
 
-        private void SetShadowTypes()
+        private void ChangeShadowType()
         {
             _currentShadowType = (_currentShadowType + 1) % ShadowTypes.Length;
             foreach (Light light in _penumbra.Lights)
-                light.ShadowType = ActiveShadowType;            
+                light.ShadowType = ActiveShadowType;
+            ShadowTypeChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private bool IsKeyPressed(Keys key)

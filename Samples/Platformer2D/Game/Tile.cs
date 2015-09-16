@@ -7,11 +7,10 @@
 //-----------------------------------------------------------------------------
 #endregion
 
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Platformer2D
+namespace Platformer2D.Game
 {
     /// <summary>
     /// Controls the collision detection and response behavior of a tile.

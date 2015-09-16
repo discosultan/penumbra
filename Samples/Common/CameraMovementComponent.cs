@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
 
@@ -48,10 +49,10 @@ namespace Common
         }
 
         public float MoveSpeed { get; set; } = 600f;
-        public float ZoomSpeed { get; set; } = 0.65f;
+        public float ZoomSpeed { get; set; } = 0.75f;
         public float MinZoom { get; set; } = 0.1f;
         public float MaxZoom { get; set; } = 3.0f;
-        public float RotationSpeed { get; set; } = 1 / MathHelper.TwoPi * 4;
+        public float RotationSpeed { get; set; } = MathHelper.TwoPi * 0.25f;
         public bool InvertedY { get; set; }
 
         private Matrix _transform;
@@ -78,6 +79,8 @@ namespace Common
 
         public override void Update(GameTime gameTime)
         {
+            Debug.WriteLine($"Rotation {Rotation}");
+
             KeyboardState keyState = Keyboard.GetState();
             var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             
@@ -105,6 +108,7 @@ namespace Common
             if (moveDirection != Vector2.Zero)
             {
                 moveDirection.Normalize();
+                moveDirection = Vector2.TransformNormal(moveDirection, Matrix.CreateRotationZ(-Rotation));
                 Position += moveDirection * MoveSpeed * deltaSeconds;
                 _dirty = true;
             }
@@ -114,9 +118,9 @@ namespace Common
                 _dirty = true;
             }
             if (rotationDir != 0)
-            {
-                _dirty = true;
+            {                
                 Rotation = MathHelper.WrapAngle(Rotation + rotationDir * RotationSpeed * deltaSeconds);
+                _dirty = true;
             }
 
             if (_dirty)

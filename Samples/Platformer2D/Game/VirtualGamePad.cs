@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
-namespace Platformer2D
+namespace Platformer2D.Game
 {
     class VirtualGamePad
     {

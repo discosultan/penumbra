@@ -14,7 +14,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
 
-namespace Platformer2D
+namespace Platformer2D.Game
 {
     /// <summary>
     /// Our fearless adventurer!

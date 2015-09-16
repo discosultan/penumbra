@@ -10,7 +10,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace Platformer2D
+namespace Platformer2D.Game
 {
     /// <summary>
     /// A set of helpful methods for working with rectangles.

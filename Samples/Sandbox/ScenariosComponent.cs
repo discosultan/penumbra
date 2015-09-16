@@ -15,7 +15,7 @@ namespace Sandbox
         private Scenario[] _scenarios;
         private int _currentScenarioIndex;        
 
-        public ScenariosComponent(Game game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController) : base(game)
+        public ScenariosComponent(SandboxGame game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController) : base(game)
         {
             _penumbra = penumbra;
             _penumbraController = penumbraController;

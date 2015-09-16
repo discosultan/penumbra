@@ -12,7 +12,8 @@
     <AssemblyName>Sandbox</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <MonoGameContentBuilderExe></MonoGameContentBuilderExe>
+    <MonoGameContentBuilderExe>
+    </MonoGameContentBuilderExe>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -41,6 +42,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="HullGenerationComponent.cs" />
     <Compile Include="Scenarios\H_HullInsideLightRadius.cs" />
     <Compile Include="Scenarios\F_ConcaveHull.cs" />
     <Compile Include="Scenarios\C_LightBlending.cs" />
@@ -48,7 +50,7 @@
     <Compile Include="Scenarios\B_LightPassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Scenarios\G_OverlappingHulls.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="SandboxGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scenario.cs" />
