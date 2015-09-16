@@ -1,5 +1,8 @@
 ﻿// TODO: Performance improvements:
 // TODO:    1.  Update constant buffers based on their usage frequency (ie per frame / per object etc).
+// TODO: Usability improvements:
+// TODO:    1.  Instead of relying on default backbuffer, query and store active rendertarget before 
+// TODO:        rendering lightmap and restore it after. 
 // TODO: Features:
 // TODO:    1.  Provide similar transforming capabilities for camera as are for light and hull. Currently
 // TODO:        user must provide custom matrix for camera transformations.
@@ -88,21 +91,22 @@ namespace Penumbra
             // Clear lightmap color, depth and stencil data.
             Device.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
 
-            // Generate lightmap.
+            // Generate lightmap. For each light, mask the shadowed areas determined by hulls and render light.
             int lightCount = Lights.Count;
             for (int i = 0; i < lightCount; i++)
             {
                 Light light = Lights[i];
+                // Render light only if it is enabled, inside camera view and its center is not inside a hull.
                 if (!light.Enabled || !light.Intersects(Camera) || light.ContainedIn(Hulls))
                     continue;                
 
-                // Set scissor rectangle.                
+                // Set scissor rectangle to clip any shadows outside of light's range.
                 Device.SetScissorRectangle(Camera.GetScissorRectangle(light));
 
-                // Draw shadows for light.                
+                // Mask shadowed areas by reducing alpha.                
                 ShadowRenderer.Render(light);
 
-                // Draw light and clear alpha.
+                // Draw light and clear alpha (reset it to 1 [fully lit] for next light).
                 LightRenderer.Render(light);
 
                 // Clear light's dirty flags.
@@ -140,6 +144,18 @@ namespace Penumbra
         }
     }
 
+    /// <summary>
+    /// Camera projection types to determine the final view projection matrix used to generate lightmap.
+    /// More than one can be applied.     
+    /// </summary>
+    /// <remarks>
+    /// Some examples: 
+    ///     To use the system with <see cref="SpriteBatch"/>, specify <c>Projections.SpriteBatch</c>.
+    ///     If custom transform is also applied to <see cref="SpriteBatch"/>, specify both
+    ///     <c>Projections.SpriteBatch | Projections.Custom</c> and apply the custom transform through the
+    ///     Transform porperty.
+    ///     To take full control of the projections, specify only <c>Projections.Custom</c>.
+    /// </remarks>
     [Flags]
     public enum Projections
     {

@@ -14,7 +14,7 @@ namespace Sandbox
         public const Keys NextScenarioKey = Keys.Right;
         public const Keys PauseKey = Keys.Space;
 
-        private static readonly Color BackgroundColor = Color.CornflowerBlue;
+        private static readonly Color BackgroundColor = Color.White;
 
         private readonly GraphicsDeviceManager _deviceManager;
         private readonly PenumbraComponent _penumbra;
