@@ -35,6 +35,7 @@ VertexOut VS(VertexIn vin)
 
 float GetAlphaAtTexCoord(float2 texCoord)
 {
+	// Point light linear falloff.
 	float len = length(texCoord - float2(0.5, 0.5));
 	return saturate(1 - len * 2);
 }

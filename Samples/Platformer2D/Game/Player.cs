@@ -35,7 +35,7 @@ namespace Platformer2D.Game
         private SoundEffect jumpSound;
         private SoundEffect fallSound;
 
-        public Light Light { get; private set; } = new Light { Range = 300 };
+        public Light Light { get; private set; } = new Light { Range = 500 };
 
         public Level Level
         {

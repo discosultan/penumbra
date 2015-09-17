@@ -26,12 +26,8 @@ using Penumbra.Utilities;
 namespace Penumbra
 {
     internal class PenumbraEngine
-    {
-        private RasterizerState _rsCcw;
-        private RasterizerState _rsCw;
-
+    {        
         private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
-
         public Color AmbientColor
         {
             get { return new Color(_ambientColor.R, _ambientColor.G, _ambientColor.B); }
@@ -49,6 +45,8 @@ namespace Penumbra
         public GraphicsDeviceManager DeviceManager { get; private set; }
         public ContentManager Content { get; private set; }
         public RasterizerState RsDebug { get; private set;}
+        private RasterizerState _rsCcw;
+        private RasterizerState _rsCw;
         public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, ContentManager content)
@@ -96,9 +94,13 @@ namespace Penumbra
             for (int i = 0; i < lightCount; i++)
             {
                 Light light = Lights[i];
+
+                // Update light's internal data structures if necessary.
+                light.Update();
+
                 // Render light only if it is enabled, inside camera view and its center is not inside a hull.
-                if (!light.Enabled || !light.Intersects(Camera) || light.ContainedIn(Hulls))
-                    continue;                
+                if (!light.Enabled || !light.Intersects(Camera) || light.ContainedIn(Hulls))                
+                    continue;
 
                 // Set scissor rectangle to clip any shadows outside of light's range.
                 Device.SetScissorRectangle(Camera.GetScissorRectangle(light));
@@ -109,8 +111,8 @@ namespace Penumbra
                 // Draw light and clear alpha (reset it to 1 [fully lit] for next light).
                 LightRenderer.Render(light);
 
-                // Clear light's dirty flags.
-                light.DirtyFlags &= 0;
+                // Clear light's dirty flag.
+                light.Dirty = false;
             }
 
             // Switch render target back to default.
@@ -150,8 +152,8 @@ namespace Penumbra
     /// </summary>
     /// <remarks>
     /// Some examples: 
-    ///     To use the system with <see cref="SpriteBatch"/>, specify <c>Projections.SpriteBatch</c>.
-    ///     If custom transform is also applied to <see cref="SpriteBatch"/>, specify both
+    ///     To use the system with SpriteBatch, specify <c>Projections.SpriteBatch</c>.
+    ///     If custom transform is also applied to SpriteBatch, specify both
     ///     <c>Projections.SpriteBatch | Projections.Custom</c> and apply the custom transform through the
     ///     Transform porperty.
     ///     To take full control of the projections, specify only <c>Projections.Custom</c>.
@@ -159,9 +161,23 @@ namespace Penumbra
     [Flags]
     public enum Projections
     {
+        /// <summary>
+        /// Provides the same projection used by SpriteBatch.
+        /// </summary>
         SpriteBatch = 1 << 0,
+        /// <summary>
+        /// Provides a projection where the world origin (0;0) is located at the center of the screen,
+        /// X axis runs from left to right and Y axis runs from bottom to top.
+        /// </summary>
         OriginCenter_XRight_YUp = 1 << 1,
+        /// <summary>
+        /// Provides a projection where the world origin (0;0) is located at the left bottom corner of the screen,
+        /// X axis runs from left to right and Y axis runs from bottom to top.
+        /// </summary>
         OriginBottomLeft_XRight_YUp = 1 << 2,
+        /// <summary>
+        /// Uses the custom transform supplied through the Transform property.
+        /// </summary>
         Custom = 1 << 3
     }
 }

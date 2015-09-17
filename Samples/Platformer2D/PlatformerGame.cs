@@ -41,7 +41,7 @@ namespace Platformer2D
         private Texture2D diedOverlay;
 
         // Meta-level game state.
-        private int levelIndex = 0;
+        private int levelIndex = -1;
         private Level level;
         private bool wasContinuePressed;
 
@@ -79,7 +79,12 @@ namespace Platformer2D
 
             Accelerometer.Initialize();
 
-            penumbra = new PenumbraComponent(this) { AmbientColor = new Color(50, 40, 25) };
+            penumbra = new PenumbraComponent(this)
+            {
+                //AmbientColor = new Color(40, 30, 15)
+                AmbientColor = new Color(30, 30, 30),
+                Visible = false
+            };
 
             var penumbraController = new PenumbraControllerComponent(this, penumbra);
             Components.Add(penumbraController);

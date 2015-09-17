@@ -5,12 +5,11 @@ using Indices = Penumbra.Utilities.FastList<int>;
 namespace Penumbra.Graphics
 {
     // ref: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
-    internal class Triangulator
+    internal static class Triangulator
     {
         const float Epsilon = 1e-5f;
-
-        private readonly Indices V = new Indices();
-        public bool Process(Polygon contour, Indices resultIndices, bool clockwise = true)
+        
+        public static bool Process(Polygon contour, Indices V, Indices resultIndices, bool clockwise = true)
         {
             int n = contour.Count;
             if (n < 3) return false;

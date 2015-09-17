@@ -48,7 +48,8 @@ namespace Penumbra.Graphics.Renderers
             //    ? _dsOccludedShadow 
             //    : DepthStencilState.None;
 
-            Matrix worldViewProjection = light.LocalToWorld * _engine.Camera.ViewProjection;
+            Matrix worldViewProjection;
+            Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out worldViewProjection);
 
             if (light.CastsShadows)
             {

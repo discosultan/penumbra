@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
@@ -9,164 +8,85 @@ using Penumbra.Utilities;
 namespace Penumbra
 {
     public class Light
-    {
-        internal Vector2 _position;
+    {        
+        public bool Enabled { get; set; } = true;
 
-        private bool _castsShadows;
-        private bool _enabled;        
-        private float _range;
-        private float _radius;
+        public bool CastsShadows { get; set; } = true;
 
-        private bool _worldToLocalDirty = true;
-        private Matrix _worldToLocal;
-
-        public Light(Texture texture = null) // TODO: allow creation of light without tex, use cached tex based on radius internally in these cases.
-        {
-            Enabled = true;
-            CastsShadows = true;
-            Range = 100f;
-            Radius = 20f;
-            Intensity = 1;
-            ShadowType = ShadowType.Illuminated;
-            Color = new Color(1f,1f,1f,1f);
-            Texture = texture;
-            DirtyFlags = LightComponentDirtyFlags.All;
-        }        
-
-        public bool Enabled
-        {
-            get { return _enabled && _range > 0; }
-            set
-            {
-                if (_enabled != value)
-                {
-                    DirtyFlags |= LightComponentDirtyFlags.Enabled;
-                    _enabled = value;
-                }
-            }
-        }
-
-        public bool CastsShadows
-        {
-            get { return _castsShadows; }
-            set
-            {
-                if (_castsShadows != value)
-                {
-                    DirtyFlags |= LightComponentDirtyFlags.CastsShadows;
-                    _castsShadows = value;
-                }
-            }
-        }
-
+        private Vector2 _position;
         public Vector2 Position
         {
             get { return _position; }
             set
             {
                 if (_position != value)
-                {
-                    DirtyFlags |= LightComponentDirtyFlags.Position;
+                {                    
                     _position = value;
-                    _worldToLocalDirty = true;
+                    _worldDirty = true;
                 }
             }
         }
 
+        private float _range = 100f;
         public float Range
         {
             get { return _range; }
             set
-            {
-                Check.ArgumentNotLessThan(value, 1, "value", "Range cannot be smaller than 1.");
+            {                
                 if (_range != value)
-                {
-                    DirtyFlags |= LightComponentDirtyFlags.Range;
+                {                    
                     _range = value;
-                    _worldToLocalDirty = true;
+                    _worldDirty = true;
                 }
             }
         }
 
-        public float RangeSquared => Range*Range;
+        public float Radius { get; set; } = 20.0f;
 
-        public float Radius
-        {
-            get { return _radius; }
-            set
-            {
-                Check.ArgumentWithinRange(value, 1, Range, "value", "Radius cannot cannot be smaller than 1 and larger than Range.");
-                if (_radius != value)
-                {
-                    DirtyFlags |= LightComponentDirtyFlags.Radius;
-                    _radius = value;
-                }
-            }
-        }
+        public float Intensity { get; set; } = 1.0f;
 
-        public float Intensity { get; set; }
-        private ShadowType _shadowType;
-        public ShadowType ShadowType
-        {
-            get { return _shadowType; }
-            set
-            {
-                if (value != _shadowType)
-                {
-                    _shadowType = value;
-                    DirtyFlags |= LightComponentDirtyFlags.ShadowType;                    
-                }
-            }
-        }
-        public Color Color { get; set; }
+        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
+
+        public Color Color { get; set; } = Color.White;
+
         public Texture Texture { get; set; }
+
         public Matrix TextureTransform { get; set; } = Matrix.Identity;
 
-        public Matrix LocalToWorld
+        // Used privately to determine when to calculate world transform and bounds.
+        private bool _worldDirty = true;
+
+        // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
+        internal bool Dirty;        
+
+        internal BoundingRectangle Bounds;
+
+        internal Matrix LocalToWorld;
+        internal Matrix WorldToLocal;
+
+        internal void Update()
         {
-            get
+            if (_worldDirty)
             {
-                var transform = Matrix.Identity;
+                // Calculate local to world transform.
+                LocalToWorld = Matrix.Identity;
                 // Scaling.
-                transform.M11 = Range;
-                transform.M22 = Range;
+                LocalToWorld.M11 = Range;
+                LocalToWorld.M22 = Range;
                 // Translation.
-                transform.M41 = Position.X;
-                transform.M42 = Position.Y;
-                return transform;
-            }
-        }
+                LocalToWorld.M41 = Position.X;
+                LocalToWorld.M42 = Position.Y;
 
-        public Matrix WorldToLocal
-        {
-            get
-            {
-                if (_worldToLocalDirty)
-                {
-                    _worldToLocal = Matrix.Invert(LocalToWorld);
-                    _worldToLocalDirty = false;
-                }
-                return _worldToLocal;
-            }   
-        }
+                // Calculate world to local transform.
+                Matrix.Invert(ref LocalToWorld, out WorldToLocal);
 
-
-        //internal float IntensityFactor => 1 / (Intensity * Intensity);
-        internal float IntensityFactor => 1 / Intensity;
-        internal LightComponentDirtyFlags DirtyFlags { get; set; }
-
-        internal bool AnyDirty(LightComponentDirtyFlags flags)
-        {
-            return (DirtyFlags & flags) != 0;
-        }
-
-        internal BoundingRectangle Bounds
-        {
-            get
-            {
+                // Calculate bounds.
                 Vector2 min = Position - new Vector2(Range);
                 Vector2 max = Position + new Vector2(Range);
-                return new BoundingRectangle(min, max);
+                Bounds = new BoundingRectangle(min, max);
+
+                _worldDirty = false;
+                Dirty = true;
             }
         }
 
@@ -178,10 +98,6 @@ namespace Penumbra
         internal bool Intersects(Hull Hull)
         {
             return Bounds.Intersects(Hull.Bounds);
-
-            // Ref: Jason Gregory Game Engine Architecture 2nd p.172
-            //float sumOfRadiuses = Range + Hull.Radius;
-            //return Vector2.DistanceSquared(Position, Hull.Centroid) < sumOfRadiuses * sumOfRadiuses;
         }        
 
         internal bool ContainedIn(IList<Hull> hulls)
@@ -200,22 +116,19 @@ namespace Penumbra
         }
     }
 
+    /// <summary>
+    /// Determines how the shadows cast by the light affect shadow <see cref="Hull"/>s.
+    /// </summary>
     public enum ShadowType
     {
+        /// <summary>
+        /// Shadow hulls are lit by the light.
+        /// </summary>
         Illuminated,
+        /// <summary>
+        /// Shadow hulls are not lit by the light.
+        /// </summary>
         Solid,        
         //Occluded
-    }
-
-    [Flags]
-    internal enum LightComponentDirtyFlags
-    {
-        CastsShadows = 1 << 0,
-        Position = 1 << 1,
-        Radius = 1 << 2,
-        Range = 1 << 3,
-        Enabled = 1 << 4,
-        ShadowType = 1 << 5,
-        All = int.MaxValue
     }
 }

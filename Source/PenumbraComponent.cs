@@ -5,7 +5,7 @@ namespace Penumbra
 {
     /// <summary>
     /// GPU based 2D lighting and shadowing engine with penumbra support. Operates with
-    /// <see cref="Light"/>s and shadow <see cref="Hull"/>s, where light is essentially a
+    /// <see cref="Light"/>s and shadow <see cref="Hull"/>s, where light is a
     /// colored light source which casts shadows on shadow hulls that are outlines of scene
     /// geometry (polygons) impassable by light.
     /// </summary>

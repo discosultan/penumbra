@@ -12,8 +12,6 @@ namespace Penumbra
 {
     public class Hull
     {
-        private readonly Triangulator _triangulator = new Triangulator();
-
         private bool _localToWorldDirty = true;
         private Matrix _localToWorld;
 
@@ -29,6 +27,7 @@ namespace Penumbra
             new ExtendedObservableCollection<Vector2>(); 
         private readonly Polygon _worldPoints = new Polygon();
         private readonly Indices _indices = new Indices();
+        private readonly Indices _intermediaryIndicesBuffer = new Indices();
 
         private bool _indicesDirty = true;
         private bool _radiusDirty = true;
@@ -42,9 +41,6 @@ namespace Penumbra
 
         public Hull(IEnumerable<Vector2> points = null)            
         {
-            //Check.ArgumentNotNull(points, nameof(points), "Points cannot be null.");
-            //Check.ArgumentNotLessThan(points.Count, 3, "points", "Hull must consist minimum of 3 points.");
-
             _rawLocalPoints.CollectionChanged += (s, e) =>
             {
                 ValidateRawLocalPoints();
@@ -248,7 +244,7 @@ namespace Penumbra
                     }
                     else
                     {
-                        _triangulator.Process(LocalPoints, _indices);
+                        Triangulator.Process(LocalPoints, _intermediaryIndicesBuffer, _indices);
                     }
                     _indicesDirty = false;
                 }

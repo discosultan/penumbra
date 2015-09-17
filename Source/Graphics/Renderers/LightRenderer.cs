@@ -50,7 +50,7 @@ namespace Penumbra.Graphics.Renderers
             _engine.Device.RasterizerState = _engine.Rs;
             fxLight.Parameters["World"].SetValue(light.LocalToWorld);
             fxLight.Parameters["Color"].SetValue(light.Color.ToVector3());
-            fxLight.Parameters["Intensity"].SetValue(light.IntensityFactor);
+            fxLight.Parameters["Intensity"].SetValue(light.Intensity);
             fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
             _engine.Device.Draw(fxLight, _quadVao);
 
