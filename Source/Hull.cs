@@ -66,9 +66,6 @@ namespace Penumbra
 
         public IList<Vector2> Points => _rawLocalPoints;
 
-        // TODO: Do we want this?
-        public int Layer { get; set; }
-
         public bool Valid { get; private set; }        
 
         public bool Enabled

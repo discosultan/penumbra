@@ -70,7 +70,7 @@ namespace Penumbra
 
         /// <summary>
         /// Explicitly loads the content for the engine. This should only be called if the
-        /// component was NOT added to the game's components list through <c>Components.Add</c>.
+        /// component was not added to the game's components list through <c>Components.Add</c>.
         /// </summary>
         public void Load()
         {
@@ -97,8 +97,8 @@ namespace Penumbra
 
         protected override void LoadContent()
         {
-            var graphicsDeviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
-            _engine.Load(GraphicsDevice, graphicsDeviceManager, Game.Content);
+            var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
+            _engine.Load(GraphicsDevice, deviceManager, Game.Content);
         }
     }
 }

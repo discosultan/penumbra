@@ -7,13 +7,24 @@ using Penumbra.Utilities;
 
 namespace Penumbra
 {
+    /// <summary>
+    /// A concept of light source casting shadows from shadow <see cref="Hull"/>s.
+    /// </summary>
     public class Light
     {        
+        /// <summary>
+        /// Gets or sets if the light is enabled and should be rendered.
+        /// </summary>
         public bool Enabled { get; set; } = true;
-
+        /// <summary>
+        /// Gets or sets if the light casts shadows.
+        /// </summary>
         public bool CastsShadows { get; set; } = true;
 
         private Vector2 _position;
+        /// <summary>
+        /// Gets or sets the light's position in world space.
+        /// </summary>
         public Vector2 Position
         {
             get { return _position; }
@@ -28,6 +39,9 @@ namespace Penumbra
         }
 
         private float _range = 100f;
+        /// <summary>
+        /// Gets or sets how far from the position the light reaches (falls off).
+        /// </summary>
         public float Range
         {
             get { return _range; }
@@ -40,15 +54,29 @@ namespace Penumbra
                 }
             }
         }
-
+        /// <summary>
+        /// Gets or sets the radius of the light source (the area emitting light). 
+        /// This determines the shape of casted shadow umbra and penumbra regions.
+        /// </summary>
         public float Radius { get; set; } = 20.0f;
-
+        /// <summary>
+        /// Gets or sets the intensity of the color applied to the final scene.
+        /// </summary>
         public float Intensity { get; set; } = 1.0f;
-
+        /// <summary>
+        /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
+        /// <see cref="ShadowType"/> for more information.
+        /// </summary>
         public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
-
+        /// <summary>
+        /// Gets or sets the color emitted by the light.
+        /// </summary>
         public Color Color { get; set; } = Color.White;
-
+        /// <summary>
+        /// Gets or sets the texture used to determine in what shape to render the light.
+        /// A spotlight could be simulated with a spotlight texture. If no texture is set,
+        /// uses a linear falloff equation to render a point light shaped light. 
+        /// </summary>
         public Texture Texture { get; set; }
 
         public Matrix TextureTransform { get; set; } = Matrix.Identity;
@@ -95,9 +123,9 @@ namespace Penumbra
             return Bounds.Intersects(ref camera.Bounds);
         }
 
-        internal bool Intersects(Hull Hull)
+        internal bool Intersects(Hull hull)
         {
-            return Bounds.Intersects(Hull.Bounds);
+            return Bounds.Intersects(hull.Bounds);
         }        
 
         internal bool ContainedIn(IList<Hull> hulls)

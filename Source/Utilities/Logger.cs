@@ -17,7 +17,8 @@ namespace Penumbra.Utilities
 
         public DelegateLogger(Action<string> log)
         {
-            Check.ArgumentNotNull(log, nameof(log));
+            if (log == null)
+                throw new ArgumentNullException(nameof(log));
             Delegate = log;
         }
 
