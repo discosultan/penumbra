@@ -82,7 +82,7 @@ namespace Platformer2D
             penumbra = new PenumbraComponent(this)
             {
                 //AmbientColor = new Color(40, 30, 15)
-                AmbientColor = new Color(30, 30, 30),
+                AmbientColor = new Color(40, 40, 40),
                 Visible = false
             };
 

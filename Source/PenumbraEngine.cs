@@ -12,6 +12,7 @@
 // TODO:        illumination for hulls and allow users to change the height for hull or light. This would also
 // TODO:        allow to render hulls in a single draw call instead of per light, since the illumination is no
 // TODO:        longer dependant on the shadow type of a concrete light.
+// TODO:    4.  Programmatically rendered spotlight.
 
 using System;
 using System.Collections.ObjectModel;
@@ -26,16 +27,34 @@ using Penumbra.Utilities;
 namespace Penumbra
 {
     internal class PenumbraEngine
-    {        
+    {
+        private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
+
         private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
         public Color AmbientColor
         {
             get { return new Color(_ambientColor.R, _ambientColor.G, _ambientColor.B); }
             set { _ambientColor = new Color(value, 1f); }
         }
-        public bool Debug { get; set; }
+
+        private bool _debug;
+        public bool Debug
+        {
+            get { return _debug; }
+            set
+            {
+                if (_debug != value)                
+                {
+                    if (value)
+                        Logger.Add(_delegateLogger);                    
+                    else
+                        Logger.Remove(_delegateLogger);
+                    _debug = value;
+                }                
+            }
+        }
         public ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
-        public ObservableCollection<Hull> Hulls { get; } = new ObservableCollection<Hull>();
+        public HullList Hulls { get; } = new HullList();
         public CameraProvider Camera { get; } = new CameraProvider();
         public TextureProvider Textures { get; } = new TextureProvider();
         public ShadowRenderer ShadowRenderer { get; } = new ShadowRenderer();
@@ -65,9 +84,6 @@ namespace Penumbra
             LightMapRenderer.Load(this);
             ShadowRenderer.Load(this);
             LightRenderer.Load(this);
-
-            // Setup logging for debug purposes.
-            Logger.Add(new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x)));
         }
 
         public void PreRender()
@@ -77,7 +93,10 @@ namespace Penumbra
         }
         
         public void Render()
-        {            
+        {
+            // Update hulls internal data structures.
+            Hulls.Update();
+                     
             // We want to use clamping sampler state throughout the lightmap rendering process.
             // This is required when drawing lights. Since light rendering and alpha clearing is done 
             // in a single step, light is rendered with slightly larger quad where tex coords run out of the [0..1] range.
@@ -95,11 +114,15 @@ namespace Penumbra
             {
                 Light light = Lights[i];
 
-                // Update light's internal data structures if necessary.
+                // Continue only if light is enabled and not inside any hull.
+                if (!light.Enabled || Hulls.Contains(light))
+                    continue;
+
+                // Update light's internal data structures.
                 light.Update();
 
-                // Render light only if it is enabled, inside camera view and its center is not inside a hull.
-                if (!light.Enabled || !light.Intersects(Camera) || light.ContainedIn(Hulls))                
+                // Continue only if light is within camera view.
+                if (!light.Intersects(Camera))                
                     continue;
 
                 // Set scissor rectangle to clip any shadows outside of light's range.
@@ -121,8 +144,8 @@ namespace Penumbra
             // Blend original scene and lightmap and present to backbuffer.
             LightMapRenderer.Present();
 
-            // Clear hulls dirty flags.
-            Hulls.ClearDirtyFlags();
+            // Clear hulls dirty flag.
+            Hulls.Dirty = false;
         }
 
         private void BuildGraphicsResources()

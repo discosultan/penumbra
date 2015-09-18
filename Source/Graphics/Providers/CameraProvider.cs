@@ -14,7 +14,7 @@ namespace Penumbra.Graphics.Providers
         private Matrix _inverseViewProjection = Matrix.Identity;        
         private Matrix _ndcToScreen = Matrix.Identity;
         private Matrix _custom = Matrix.Identity;
-        private bool _loaded;                
+        private bool _loaded;
 
         public bool InvertedY { get; private set; }
 
@@ -55,63 +55,43 @@ namespace Penumbra.Graphics.Providers
         /// </summary>        
         public BoundingRectangle GetScissorRectangle(Light light)
         {
-            BoundingRectangle bounds = light.Bounds;
-
             Matrix transform;
             Matrix.Multiply(ref ViewProjection, ref _ndcToScreen, out transform);
 
-            var c1 = new Vector2(bounds.Min.X, bounds.Max.Y);
-            var c2 = bounds.Max;
-            var c3 = new Vector2(bounds.Max.X, bounds.Min.Y);
-            var c4 = bounds.Min;
-
-            Vector2 tc1, tc2, tc3, tc4;
-            Vector2.Transform(ref c1, ref transform, out tc1);
-            Vector2.Transform(ref c2, ref transform, out tc2);
-            Vector2.Transform(ref c3, ref transform, out tc3);
-            Vector2.Transform(ref c4, ref transform, out tc4);
+            var c1 = new Vector2(light.Bounds.Min.X, light.Bounds.Max.Y);
+            var c2 = light.Bounds.Max;
+            var c3 = new Vector2(light.Bounds.Max.X, light.Bounds.Min.Y);
+            var c4 = light.Bounds.Min;
+            
+            Vector2.Transform(ref c1, ref transform, out c1);
+            Vector2.Transform(ref c2, ref transform, out c2);
+            Vector2.Transform(ref c3, ref transform, out c3);
+            Vector2.Transform(ref c4, ref transform, out c4);
 
             Vector2 min, max;
 
-            Vector2.Min(ref tc1, ref tc2, out min);
-            Vector2.Min(ref min, ref tc3, out min);
-            Vector2.Min(ref min, ref tc4, out min);
+            Vector2.Min(ref c1, ref c2, out min);
+            Vector2.Min(ref min, ref c3, out min);
+            Vector2.Min(ref min, ref c4, out min);
 
-            Vector2.Max(ref tc1, ref tc2, out max);
-            Vector2.Max(ref max, ref tc3, out max);
-            Vector2.Max(ref max, ref tc4, out max);
-
-            //// 1. Transform from world space to NDC min {-1, -1, 0} max {1, 1, 1}                       
-            //Vector2.Transform(ref bounds.Min, ref ViewProjection, out bounds.Min);
-            //Vector2.Transform(ref bounds.Max, ref ViewProjection, out bounds.Max);
-
-            //// 2. Transform from NDC to screen space min {0, 0, 0} max {viewportWidth, viewportHeight, 1}                    
-            //Vector2.Transform(ref bounds.Min, ref _ndcToScreen, out bounds.Min);
-            //Vector2.Transform(ref bounds.Max, ref _ndcToScreen, out bounds.Max);
-
-            //Vector2 min, max;
-            //Vector2.Min(ref bounds.Min, ref bounds.Max, out min);            
-            //Vector2.Max(ref bounds.Min, ref bounds.Max, out max);
-
-            //// There seem to be 1 pixel offset errors converting rectangle from world -> ndc -> screen.
-            //// Current fix is to add a a small margin to the screen rectangle.
-            //const float margin = 1f;
-            //min += new Vector2(margin);
-            //max -= new Vector2(margin);
+            Vector2.Max(ref c1, ref c2, out max);
+            Vector2.Max(ref max, ref c3, out max);
+            Vector2.Max(ref max, ref c4, out max);
 
             return new BoundingRectangle(min, max);
         }        
 
         protected override void OnSizeChanged()
         {
+            Logger.Write($"Screen size changed to {BackBufferWidth}x{BackBufferHeight}.");
             CalculateNdcToScreen();
-            CalculateViewProjectionAndBounds();
+            CalculateViewProjectionAndBounds();            
         }
 
         private void CalculateNdcToScreen()
         {
             PresentationParameters pp = Engine.Device.PresentationParameters;
-            _ndcToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1));
+            _ndcToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1));            
         }
 
         private void CalculateViewProjectionAndBounds()

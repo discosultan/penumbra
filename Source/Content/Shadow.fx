@@ -1,13 +1,19 @@
-﻿cbuffer cbPerObject
+﻿cbuffer cbPerFrame
+{
+	float4 Color; // Used in debugging.
+};
+
+cbuffer cbPerObject
 {
 	float4x4 WorldViewProjection;
 };
 
 struct VertexIn
-{
-	float3 occluderCoord_radius : SV_POSITION0;
-	float2 segmentA_soften : TEXCOORD0;
+{	
+	float2 segmentA : TEXCOORD0;
 	float2 segmentB : TEXCOORD1;
+	float2 occluderCoord : SV_POSITION0;
+	float radius : NORMAL0;
 };
 
 struct VertexOut
@@ -17,19 +23,20 @@ struct VertexOut
 	float clipValue : TEXCOORD2;
 };
 
-float2x2 penumbraMatrix(float2 basisX, float2 basisY) {
+float2x2 penumbraMatrix(float2 basisX, float2 basisY) 
+{
 	float2x2 m = float2x2(basisX, basisY);
-	// Find inverse of m. https://www.mathsisfun.com/algebra/matrix-inverse.html
+	// Find inverse of m.
 	return float2x2(m._m11, -m._m01, -m._m10, m._m00) / determinant(m);
 }
 
 VertexOut VS(VertexIn vin)
 {
-	float2 occluderCoord = vin.occluderCoord_radius.xy;	
+	float2 occluderCoord = vin.occluderCoord;	
 	// Ensure radius never reaches 0.
-	float radius = max(1e-5, vin.occluderCoord_radius.z);	
+	float radius = max(1e-5, vin.radius);	
 
-	float2 segmentA = vin.segmentA_soften.xy;
+	float2 segmentA = vin.segmentA;
 	float2 segmentB = vin.segmentB;
 
 	// Find radius offsets 90deg left and right from light source relative to vertex.
@@ -76,11 +83,26 @@ float4 PS(VertexOut pin) : SV_TARGET
 	return float4(0.0, 0.0, 0.0, occlusion);
 }
 
+float4 PSDebug(VertexOut pin) : SV_TARGET
+{
+	clip(-pin.clipValue);
+	return Color;
+}
+
 technique Main
 {
 	pass P0
 	{
 		VertexShader = compile vs_4_0_level_9_1 VS();
 		PixelShader = compile ps_4_0_level_9_1 PS();
+	}
+}
+
+technique Debug
+{
+	pass P0
+	{
+		VertexShader = compile vs_4_0_level_9_1 VS();
+		PixelShader = compile ps_4_0_level_9_1 PSDebug();
 	}
 }

@@ -45,7 +45,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\ShadowDebug.fx" />
     <Content Include="Content\Shadow.fx" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
     <Compile Include="Graphics\IVao.cs" />
@@ -55,7 +54,6 @@
     <Compile Include="Graphics\Providers\CameraProvider.cs" />
     <Compile Include="Graphics\Providers\TextureProvider.cs" />
     <Compile Include="Graphics\Providers\GraphicsProvider.cs" />
-    <Compile Include="Graphics\ShaderParameterCollection.cs" />
     <Compile Include="Graphics\VertexTypes.cs" />
     <Compile Include="Hull.cs" />
     <Compile Include="Light.cs" />
@@ -70,7 +68,6 @@
     <Compile Include="Utilities\ExtendedObservableCollection.cs" />
     <Compile Include="Utilities\FastList.cs" />
     <Compile Include="Utilities\Logger.cs" />
-    <Compile Include="Utilities\Pool.cs" />
     <Compile Include="Graphics\StaticVao.cs" />
     <Compile Include="Utilities\VectorUtil.cs" />
   </ItemGroup>

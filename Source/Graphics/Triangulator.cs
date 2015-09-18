@@ -13,8 +13,6 @@ namespace Penumbra.Graphics
         {
             int n = contour.Count;
             if (n < 3) return false;
-
-            V.Clear();
           
             for (int v = 0; v < n; v++) V.Add(v);
 

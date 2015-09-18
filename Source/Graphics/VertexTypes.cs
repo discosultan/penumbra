@@ -23,25 +23,18 @@ namespace Penumbra.Graphics
             new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
             new VertexElement(8, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0));
 
+        public Vector2 Position;
+        public Vector2 TexCoord;
+
         public VertexPosition2Texture(Vector2 position, Vector2 texCoord)
         {
             Position = position;
             TexCoord = texCoord;            
-        }
-
-        /// <summary>
-        /// The position of the vertex.
-        /// </summary>        
-        public Vector2 Position;
-
-        /// <summary>
-        /// The texture coordinate of the vertex.
-        /// </summary>        
-        public Vector2 TexCoord;
+        }             
 
         public override string ToString()
         {
-            return $"Position:{Position} TexCoord:{TexCoord}";
+            return $"{nameof(Position)}:{Position} {nameof(TexCoord)}:{TexCoord}";
         }
     }
     
@@ -50,20 +43,28 @@ namespace Penumbra.Graphics
     {
         public const int Size = 28;
 
-        public Vector3 OccluderCoordRadius;
+        public static readonly VertexDeclaration Layout = new VertexDeclaration(
+            new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
+            new VertexElement(8, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 1),
+            new VertexElement(16, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
+            new VertexElement(24, VertexElementFormat.Single, VertexElementUsage.Normal, 0));
+        
         public Vector2 SegmentA;
         public Vector2 SegmentB;
+        public Vector2 OccluderCoord;
+        public float Radius;     
 
-        public VertexShadow(Vector3 occ, Vector2 segA, Vector2 segB)
+        public VertexShadow(Vector2 segA, Vector2 segB, Vector2 occluderCoord, float radius)
         {
-            OccluderCoordRadius = occ;
             SegmentA = segA;
             SegmentB = segB;
+            OccluderCoord = occluderCoord;            
+            Radius = radius;
         }
 
-        public static readonly VertexDeclaration Layout = new VertexDeclaration(
-            new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
-            new VertexElement(12, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
-            new VertexElement(20, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 1));        
+        public override string ToString()
+        {
+            return $"{nameof(SegmentA)}:{SegmentA} {nameof(SegmentB)}:{SegmentB} {nameof(OccluderCoord)}:{OccluderCoord} {nameof(Radius)}:{Radius}";
+        }
     }
 }

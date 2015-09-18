@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Utilities;
+using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 
 namespace Penumbra.Graphics.Renderers
 {
@@ -18,8 +19,14 @@ namespace Penumbra.Graphics.Renderers
         private PenumbraEngine _engine;
 
         private Effect _fxShadow;
-        private Effect _fxDebugShadow;
+        private EffectTechnique _fxShadowTech;
+        private EffectTechnique _fxShadowTechDebug;
+        private EffectParameter _fxShadowParamWvp;
+        private EffectParameter _fxShadowParamColor;
         private Effect _fxHull;
+        private EffectTechnique _fxHullTech;
+        private EffectParameter _fxHullParamVp;
+        private EffectParameter _fxHullParamColor;
         private BlendState _bsShadow;
         private BlendState _bsHull;
         //private DepthStencilState _dsOccludedShadow;
@@ -30,15 +37,22 @@ namespace Penumbra.Graphics.Renderers
             _engine = engine;
 
             _fxShadow = engine.Content.Load<Effect>("Shadow");
-            _fxDebugShadow = engine.Content.Load<Effect>("ShadowDebug");
+            _fxShadowTech = _fxShadow.Techniques["Main"];
+            _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
+            _fxShadowParamWvp = _fxShadow.Parameters["WorldViewProjection"];
+            _fxShadowParamColor = _fxShadow.Parameters["Color"];
+
             _fxHull = engine.Content.Load<Effect>("ProjectionColor");
+            _fxHullTech = _fxHull.Techniques["Main"];
+            _fxHullParamVp = _fxHull.Parameters["ViewProjection"];
+            _fxHullParamColor = _fxHull.Parameters["Color"];
             
             BuildGraphicsResources();
         }        
 
         public void Render(Light light)
         {
-            var vao = TryGetVaoForLight(light);
+            Tuple<DynamicVao, DynamicVao> vao = TryGetVaoForLight(light);
             if (vao == null)
                 return;
 
@@ -56,21 +70,23 @@ namespace Penumbra.Graphics.Renderers
                 // Draw shadows.
                 var shadowVao = vao.Item1;
                 _engine.Device.BlendState = _bsShadow;
-                _fxShadow.Parameters["WorldViewProjection"].SetValue(worldViewProjection);
-                _engine.Device.DrawIndexed(_fxShadow, shadowVao);
+                _fxShadowParamWvp.SetValue(worldViewProjection);
+                _engine.Device.SetVertexArrayObject(shadowVao);
+                _fxShadowTech.Passes[0].Apply();
+                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                
 
                 // Draw shadows borders if debugging.
                 if (_engine.Debug)
                 {
                     _engine.Device.RasterizerState = _engine.RsDebug;
                     _engine.Device.BlendState = BlendState.Opaque;
-                    _fxDebugShadow.Parameters["WorldViewProjection"].SetValue(worldViewProjection);
-                    _fxDebugShadow.Parameters["Color"].SetValue(Color.Red.ToVector4());
-                    _engine.Device.DrawIndexed(_fxDebugShadow, shadowVao);
+                    _fxShadowParamColor.SetValue(Color.Red.ToVector4());                    
+                    _fxShadowTechDebug.Passes[0].Apply();                    
+                    _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                    
                 }
             }
 
-            // Draw hull.            
+            // Draw hulls.            
             //if (light.ShadowType == ShadowType.Occluded)
             //    _engine.Device.DepthStencilState = _dsOccludedHull;
 
@@ -79,23 +95,37 @@ namespace Penumbra.Graphics.Renderers
                 var hullVao = vao.Item2;
                 _engine.Device.RasterizerState = _engine.Rs;
                 _engine.Device.BlendState = _bsHull;
-                _fxHull.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-                _fxHull.Parameters["Color"].SetValue(light.ShadowType == ShadowType.Solid
+                _fxHullParamVp.SetValue(_engine.Camera.ViewProjection);
+                _fxHullParamColor.SetValue(light.ShadowType == ShadowType.Solid
                     ? Color.Transparent.ToVector4()
                     : Color.White.ToVector4());
-                _engine.Device.DrawIndexed(_fxHull, hullVao);
+                _engine.Device.SetVertexArrayObject(hullVao);
+                _fxHullTech.Passes[0].Apply();
+                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, hullVao.VertexCount, 0, hullVao.IndexCount / 3);
             }
         }
 
         private Tuple<DynamicVao, DynamicVao> TryGetVaoForLight(Light light)
+        {
+            if (light.Dirty || _engine.Hulls.Dirty)
+                return TryBuildVaoForLight(light);
+
+            Tuple<DynamicVao, DynamicVao> vao;
+            _lightsVaos.TryGetValue(light, out vao);
+            return vao;
+        }
+
+        private Tuple<DynamicVao, DynamicVao> TryBuildVaoForLight(Light light)
         {                        
             _hullVertices.Clear();
             _shadowVertices.Clear();
             _shadowIndices.Clear();
             _hullIndices.Clear();
 
-            Vector2 result = Vector2.TransformNormal(new Vector2(light.Radius), light.WorldToLocal);
-            float radius = result.X;
+            Vector2 worldRadiusVector = new Vector2(light.Radius);
+            Vector2 localRadiusVector;
+            Vector2.TransformNormal(ref worldRadiusVector, ref light.WorldToLocal, out localRadiusVector);
+            float radius = localRadiusVector.X;
 
             int numSegments = 0;
             int shadowIndexOffset = 0;
@@ -107,24 +137,22 @@ namespace Penumbra.Graphics.Renderers
                 if (!hull.Enabled || !hull.Valid || !light.Intersects(hull))
                     continue;
                 
-                Matrix t = /*hull.LocalToWorld * */light.WorldToLocal;
+                Polygon points = hull.WorldPoints;                
 
-                //var points = hull.LocalPoints;
-                var points = hull.WorldPoints;
-                numSegments += points.Count;
+                Vector2 prevPoint = points[points.Count - 1];                
+                Vector2.Transform(ref prevPoint, ref light.WorldToLocal, out prevPoint);
 
-                Vector2 prevPoint = points[points.Count - 1];
-                prevPoint = Transform(t, prevPoint);
-                int pointCount = points.Count;          
+                int pointCount = points.Count;
+                numSegments += pointCount;
                 for (int j = 0; j < pointCount; j++)
                 {                    
                     Vector2 currentPoint = points[j];
-                    currentPoint = Transform(t, currentPoint);                                                            
+                    Vector2.Transform(ref currentPoint, ref light.WorldToLocal, out currentPoint);                    
                     
-                    _shadowVertices.Add(new VertexShadow(new Vector3(0.0f, 0.0f, radius), prevPoint, currentPoint));
-                    _shadowVertices.Add(new VertexShadow(new Vector3(1.0f, 0.0f, radius), prevPoint, currentPoint));
-                    _shadowVertices.Add(new VertexShadow(new Vector3(0.0f, 1.0f, radius), prevPoint, currentPoint));
-                    _shadowVertices.Add(new VertexShadow(new Vector3(1.0f, 1.0f, radius), prevPoint, currentPoint));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 0.0f), radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 0.0f), radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 1.0f), radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 1.0f), radius));
 
                     _shadowIndices.Add(shadowIndexOffset * 4 + 0);
                     _shadowIndices.Add(shadowIndexOffset * 4 + 1);
@@ -139,6 +167,7 @@ namespace Penumbra.Graphics.Renderers
                 }
 
                 _hullVertices.AddRange(hull.WorldPoints);
+
                 int indexCount = hull.Indices.Count;
                 for (int j = 0; j < indexCount; j++)
                     _hullIndices.Add(hull.Indices[j] + hullIndexOffset);
@@ -163,11 +192,6 @@ namespace Penumbra.Graphics.Renderers
             lightVaos.Item2.SetIndices(_hullIndices);
 
             return lightVaos;
-        }
-
-        private static Vector2 Transform(Matrix m, Vector2 p)
-        {
-            return new Vector2(p.X * m[0] + p.Y * m[4] + m[12], p.X * m[1] + p.Y * m[5] + m[13]);
         }
 
         private void BuildGraphicsResources()

@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
 using Penumbra.Graphics.Providers;
-using Penumbra.Utilities;
 
 namespace Penumbra
 {
@@ -11,7 +9,10 @@ namespace Penumbra
     /// A concept of light source casting shadows from shadow <see cref="Hull"/>s.
     /// </summary>
     public class Light
-    {        
+    {
+        // Used privately to determine when to calculate world transform and bounds.
+        private bool _worldDirty = true;
+
         /// <summary>
         /// Gets or sets if the light is enabled and should be rendered.
         /// </summary>
@@ -21,18 +22,18 @@ namespace Penumbra
         /// </summary>
         public bool CastsShadows { get; set; } = true;
 
-        private Vector2 _position;
+        internal Vector2 PositionInternal;
         /// <summary>
         /// Gets or sets the light's position in world space.
         /// </summary>
         public Vector2 Position
         {
-            get { return _position; }
+            get { return PositionInternal; }
             set
             {
-                if (_position != value)
-                {                    
-                    _position = value;
+                if (PositionInternal != value)
+                {
+                    PositionInternal = value;
                     _worldDirty = true;
                 }
             }
@@ -79,10 +80,7 @@ namespace Penumbra
         /// </summary>
         public Texture Texture { get; set; }
 
-        public Matrix TextureTransform { get; set; } = Matrix.Identity;
-
-        // Used privately to determine when to calculate world transform and bounds.
-        private bool _worldDirty = true;
+        public Matrix TextureTransform { get; set; } = Matrix.Identity;        
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
         internal bool Dirty;        
@@ -127,21 +125,6 @@ namespace Penumbra
         {
             return Bounds.Intersects(hull.Bounds);
         }        
-
-        internal bool ContainedIn(IList<Hull> hulls)
-        {
-            int hullCount = hulls.Count;
-            for (int i = 0; i < hullCount; i++)
-            {
-                Hull hull = hulls[i];
-                // If hull is valid and enabled:
-                // 1. test AABB intersection
-                // 2. test point is contained in polygon
-                if (hull.Enabled && hull.Valid && Bounds.Intersects(hull.Bounds) && hull.WorldPoints.Contains(ref _position))
-                    return true;
-            }
-            return false;
-        }
     }
 
     /// <summary>

@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 namespace Penumbra.Utilities
 {
     // Differs from List{T} by allowing direct access to the underlying array.
+    // Modified to use fast clearing by default.
     // ref: https://github.com/SiliconStudio/paradox/blob/master/sources/common/core/SiliconStudio.Core/Collections/FastList.cs
     public class FastList<T> : IList<T>, IReadOnlyList<T>
     {

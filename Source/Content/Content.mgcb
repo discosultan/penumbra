@@ -48,10 +48,3 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Shadow.fx
-
-#begin ShadowDebug.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:ShadowDebug.fx
-

@@ -93,7 +93,7 @@ namespace Penumbra.Graphics.Renderers
             _quadVao = StaticVao.New(_engine.Device, quadVertices, VertexPosition2Texture.Layout);
 
             // Circle.
-            const short circlePoints = 12;
+            const int circlePoints = 12;
             const float radius = 1f;
             const float rotationIncrement = MathHelper.TwoPi / circlePoints;
 
@@ -120,7 +120,7 @@ namespace Penumbra.Graphics.Renderers
             _bsLight = new BlendState
             {
                 ColorBlendFunction = BlendFunction.Add,
-                ColorSourceBlend = Blend.DestinationAlpha,
+                ColorSourceBlend = Blend.DestinationAlpha,                
                 ColorDestinationBlend = Blend.One,
                 ColorWriteChannels = ColorWriteChannels.All
             };

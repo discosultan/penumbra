@@ -17,12 +17,12 @@ namespace Penumbra.Utilities
         {                        
             CheckReentrancy();
             //
-            // We need the starting index later
+            // We need the starting index later.
             //
             int startingIndex = Count;
 
             //
-            // Add the items directly to the inner collection
+            // Add the items directly to the inner collection.
             //
             var changedItems = items.ToList();
             foreach (var data in changedItems)
@@ -31,7 +31,7 @@ namespace Penumbra.Utilities
             }
             
             //
-            // Now raise the changed events
+            // Now raise the changed events.
             //
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Count)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Items)));

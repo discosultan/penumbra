@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -40,14 +39,12 @@ namespace Penumbra.Utilities
     internal static class Logger
     {        
         private static readonly List<ILogger> Loggers = new List<ILogger>();
-
-        [Conditional("DEBUG")]
+        
         public static void Write(object message, [CallerMemberName]string caller = "")
         {
             Write(message.ToString(), caller);
         }
-
-        [Conditional("DEBUG")]
+        
         public static void Write(string message, [CallerMemberName]string caller = "")
         {
             foreach (ILogger logger in Loggers)
@@ -55,14 +52,12 @@ namespace Penumbra.Utilities
                 logger.Write(message, caller);
             }
         }
-
-        [Conditional("DEBUG")]
+        
         public static void Add(ILogger logger)
         {
             Loggers.Add(logger);
         }
-
-        [Conditional("DEBUG")]
+        
         public static void Remove(ILogger logger)
         {
             Loggers.Remove(logger);
