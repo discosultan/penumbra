@@ -25,23 +25,11 @@
 /processorParam:DebugMode=Auto
 /build:Texture.fx
 
-#begin WorldProjectionColor.fx
+#begin Light.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:WorldProjectionColor.fx
-
-#begin WorldProjectionLight.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:WorldProjectionLight.fx
-
-#begin WorldProjectionTexture.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:WorldProjectionTexture.fx
+/build:Light.fx
 
 #begin Shadow.fx
 /importer:EffectImporter

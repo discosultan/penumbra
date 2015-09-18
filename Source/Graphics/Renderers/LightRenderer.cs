@@ -11,8 +11,13 @@ namespace Penumbra.Graphics.Renderers
         private PenumbraEngine _engine;        
 
         private Effect _fxLight;
-        private Effect _fxLightTexture;
-        private Effect _fxLightDebug;
+        private EffectTechnique _fxPointLightTech;
+        private EffectTechnique _fxTexturedLightTech;
+        private EffectTechnique _fxDebugLightTech;
+        private EffectParameter _fxLightParamTextureTransform;
+        private EffectParameter _fxLightParamWvp;
+        private EffectParameter _fxLightParamColor;
+        private EffectParameter _fxLightParamIntensity;
         private StaticVao _quadVao;
         private StaticVao _circleVao;
         private BlendState _bsLight;
@@ -22,25 +27,36 @@ namespace Penumbra.Graphics.Renderers
         {            
             _engine = engine;
 
-            _fxLight = engine.Content.Load<Effect>("WorldProjectionLight");
-            _fxLightTexture = engine.Content.Load<Effect>("WorldProjectionTexture");
-            _fxLightDebug = engine.Content.Load<Effect>("WorldProjectionColor");
+            _fxLight = engine.Content.Load<Effect>("Light");
+            _fxPointLightTech = _fxLight.Techniques["PointLight"];
+            _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];
+            _fxDebugLightTech = _fxLight.Techniques["DebugLight"];
+            _fxLightParamTextureTransform = _fxLight.Parameters["TextureTransform"];
+            _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
+            _fxLightParamColor = _fxLight.Parameters["LightColor"];
+            _fxLightParamIntensity = _fxLight.Parameters["Intensity"];
+
+            // Constant shader param.
+            _fxLight.Parameters["Color"].SetValue(DebugColor.ToVector4());
 
             BuildGraphicsResources();
         }        
 
         public void Render(Light light)
         {
-            Effect fxLight;
-            if (light.Texture == null) // Draw light using spotlight algorithm.
+            EffectTechnique fxTech;
+            if (light.Texture == null)
             {
-                fxLight = _fxLight;
+                fxTech = _fxPointLightTech;
             }
             else // Draw light using texture.
             {
-                fxLight = _fxLightTexture;
-                fxLight.Parameters["TextureTransform"].SetValue(light.TextureTransform);
+                fxTech = _fxTexturedLightTech;
+                _fxLightParamTextureTransform.SetValue(light.TextureTransform);
             }
+
+            Matrix wvp;
+            Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
 
             _engine.Device.DepthStencilState = DepthStencilState.None;
             //_engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded 
@@ -48,11 +64,12 @@ namespace Penumbra.Graphics.Renderers
             //    : DepthStencilState.None;
             _engine.Device.BlendState = _bsLight;
             _engine.Device.RasterizerState = _engine.Rs;
-            fxLight.Parameters["World"].SetValue(light.LocalToWorld);
-            fxLight.Parameters["Color"].SetValue(light.Color.ToVector3());
-            fxLight.Parameters["Intensity"].SetValue(light.Intensity);
-            fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-            _engine.Device.Draw(fxLight, _quadVao);
+            _engine.Device.SetVertexArrayObject(_quadVao);
+            _fxLightParamColor.SetValue(light.Color.ToVector3());
+            _fxLightParamIntensity.SetValue(light.Intensity);
+            _fxLightParamWvp.SetValue(wvp);            
+            fxTech.Passes[0].Apply();
+            _engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
 
             if (_engine.Debug)
             {
@@ -62,14 +79,15 @@ namespace Penumbra.Graphics.Renderers
                 world.M22 = light.Radius;
                 // Translation.
                 world.M41 = light.Position.X;
-                world.M42 = light.Position.Y;                
+                world.M42 = light.Position.Y;
+                Matrix.Multiply(ref world, ref _engine.Camera.ViewProjection, out wvp);
 
                 _engine.Device.BlendState = BlendState.Opaque;
                 _engine.Device.RasterizerState = _engine.RsDebug;
-                _fxLightDebug.Parameters["Color"].SetValue(DebugColor.ToVector4());
-                _fxLightDebug.Parameters["World"].SetValue(world);
-                _fxLightDebug.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-                _engine.Device.DrawIndexed(_fxLightDebug, _circleVao);
+                _engine.Device.SetVertexArrayObject(_circleVao);                
+                _fxLightParamWvp.SetValue(wvp);                
+                _fxDebugLightTech.Passes[0].Apply();
+                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _circleVao.VertexCount, 0, _circleVao.IndexCount / 3);
             }
         }
 
@@ -97,15 +115,15 @@ namespace Penumbra.Graphics.Renderers
             const float radius = 1f;
             const float rotationIncrement = MathHelper.TwoPi / circlePoints;
 
-            var vertices = new Vector2[circlePoints + 1];
+            var vertices = new VertexPosition2Texture[circlePoints + 1];
             var indices = new int[circlePoints * 3];
 
-            var center = new Vector2(0, 0);
+            var center = new VertexPosition2Texture(new Vector2(0, 0), new Vector2(1, 1));
             vertices[0] = center;
             for (int i = 1; i <= circlePoints; i++)
             {
                 var angle = rotationIncrement * i;
-                vertices[i] = new Vector2((float)Math.Cos(angle) * radius, (float)Math.Sin(angle) * radius);
+                vertices[i] = new VertexPosition2Texture(new Vector2((float)Math.Cos(angle) * radius, (float)Math.Sin(angle) * radius), Vector2.Zero);
 
                 int indexStart = (i - 1) * 3;
                 indices[indexStart++] = 0;
@@ -114,7 +132,7 @@ namespace Penumbra.Graphics.Renderers
             }
             indices[indices.Length - 1] = 1;
 
-            _circleVao = StaticVao.New(_engine.Device, vertices, VertexPosition2.Layout, indices);
+            _circleVao = StaticVao.New(_engine.Device, vertices, VertexPosition2Texture.Layout, indices);
 
             // Render states.
             _bsLight = new BlendState

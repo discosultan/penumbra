@@ -77,9 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\ProjectionColor.fx" />
-    <Content Include="Content\WorldProjectionColor.fx" />
-    <Content Include="Content\WorldProjectionTexture.fx" />
-    <Content Include="Content\WorldProjectionLight.fx" />
+    <Content Include="Content\Light.fx" />
     <Content Include="Content\Texture.fx" />
   </ItemGroup>
   <ItemGroup />

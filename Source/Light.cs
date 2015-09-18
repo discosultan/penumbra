@@ -39,7 +39,7 @@ namespace Penumbra
             }
         }
 
-        private float _range = 100f;
+        private float _range = 100.0f;
         /// <summary>
         /// Gets or sets how far from the position the light reaches (falls off).
         /// </summary>
@@ -55,11 +55,22 @@ namespace Penumbra
                 }
             }
         }
+
+        private float _radius = 20.0f;
+
         /// <summary>
         /// Gets or sets the radius of the light source (the area emitting light). 
         /// This determines the shape of casted shadow umbra and penumbra regions.
         /// </summary>
-        public float Radius { get; set; } = 20.0f;
+        public float Radius
+        {
+            get { return _radius; }
+            set
+            {
+                _radius = value;
+                Dirty = true;
+            }
+        }
         /// <summary>
         /// Gets or sets the intensity of the color applied to the final scene.
         /// </summary>
