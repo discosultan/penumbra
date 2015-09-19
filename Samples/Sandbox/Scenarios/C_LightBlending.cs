@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Penumbra;
 using static System.Math;
 
@@ -23,7 +24,7 @@ namespace Sandbox.Scenarios
         private Light _light3;
         private Hull _hull;
 
-        public override void Activate(PenumbraComponent penumbra)
+        public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
             _hull = new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })
             {

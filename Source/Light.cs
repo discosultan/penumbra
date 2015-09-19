@@ -40,6 +40,21 @@ namespace Penumbra
             }
         }
 
+        private Vector2 _origin;
+
+        public Vector2 Origin
+        {
+            get { return _origin; }
+            set
+            {
+                if (_origin != value)
+                {
+                    _origin = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
         private float _range = 100.0f;
         /// <summary>
         /// Gets or sets how far from the position the light reaches (falls off).
@@ -84,19 +99,12 @@ namespace Penumbra
         /// <summary>
         /// Gets or sets the color emitted by the light.
         /// </summary>
-        public Color Color { get; set; } = Color.White;
-        /// <summary>
-        /// Gets or sets the texture used to determine in what shape to render the light.
-        /// A spotlight could be simulated with a spotlight texture. If no texture is set,
-        /// uses a linear falloff equation to render a point light shaped light. 
-        /// </summary>
-        public Texture Texture { get; set; }
-
-        public Matrix TextureTransform { get; set; } = Matrix.Identity;        
+        public Color Color { get; set; } = Color.White;        
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
-        internal bool Dirty;        
+        internal bool Dirty;
 
+        internal Vector2 CenterPosition;
         internal BoundingRectangle Bounds;
 
         internal Matrix LocalToWorld;
@@ -114,21 +122,28 @@ namespace Penumbra
         {
             if (_worldDirty)
             {
+                Vector2.Subtract(ref _position, ref _origin, out CenterPosition);
+
                 // Calculate local to world transform.
                 LocalToWorld = Matrix.Identity;
                 // Scaling.
                 LocalToWorld.M11 = Range;
                 LocalToWorld.M22 = Range;
                 // Translation.
+                LocalToWorld.M41 = CenterPosition.X;
+                LocalToWorld.M42 = CenterPosition.Y;
+
+                Matrix copy = LocalToWorld;
                 LocalToWorld.M41 = Position.X;
                 LocalToWorld.M42 = Position.Y;
 
                 // Calculate world to local transform.
-                Matrix.Invert(ref LocalToWorld, out WorldToLocal);
+                Matrix.Invert(ref copy, out WorldToLocal);
 
                 // Calculate bounds.
-                Vector2 min = Position - new Vector2(Range);
-                Vector2 max = Position + new Vector2(Range);
+                var rangeVector = new Vector2(Range);
+                Vector2 min = CenterPosition - rangeVector;
+                Vector2 max = CenterPosition + rangeVector;
                 Bounds = new BoundingRectangle(min, max);
 
                 _worldDirty = false;

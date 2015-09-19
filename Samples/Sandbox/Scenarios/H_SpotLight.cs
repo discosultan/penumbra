@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Penumbra;
 using static System.Math;
 
@@ -15,7 +16,7 @@ namespace Sandbox.Scenarios
         
         private const float RotationSpeed = MathHelper.TwoPi/8;
 
-        public override void Activate(PenumbraComponent penumbra)
+        public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
             _hulls.Clear();
             _lights.Clear();
@@ -52,7 +53,7 @@ namespace Sandbox.Scenarios
         private void GenerateHulls(PenumbraComponent penumbra)
         {
             float increment = MathHelper.TwoPi / NumHulls;
-            const float distance = 200;
+            const float distance = 185;
             for (int i = 0; i < NumHulls; i++)
             {
                 float angle = increment * i;                

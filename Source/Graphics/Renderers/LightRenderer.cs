@@ -15,6 +15,7 @@ namespace Penumbra.Graphics.Renderers
         internal EffectTechnique _fxSpotLightTech;
         internal EffectTechnique _fxTexturedLightTech;
         internal EffectTechnique _fxDebugLightTech;
+        internal EffectParameter _fxLightParamTexture;
         internal EffectParameter _fxLightParamTextureTransform;
         internal EffectParameter _fxLightParamWvp;
         internal EffectParameter _fxLightParamColor;
@@ -36,6 +37,7 @@ namespace Penumbra.Graphics.Renderers
             _fxSpotLightTech = _fxLight.Techniques["SpotLight"];
             _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];
             _fxDebugLightTech = _fxLight.Techniques["DebugLight"];
+            _fxLightParamTexture = _fxLight.Parameters["Texture"];
             _fxLightParamTextureTransform = _fxLight.Parameters["TextureTransform"];
             _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
@@ -75,8 +77,8 @@ namespace Penumbra.Graphics.Renderers
                 world.M11 = light.Radius;
                 world.M22 = light.Radius;
                 // Translation.
-                world.M41 = light.Position.X;
-                world.M42 = light.Position.Y;
+                world.M41 = light.CenterPosition.X;
+                world.M42 = light.CenterPosition.Y;
                 Matrix.Multiply(ref world, ref _engine.Camera.ViewProjection, out wvp);
 
                 _engine.Device.BlendState = BlendState.Opaque;

@@ -63,6 +63,7 @@
     <Compile Include="Graphics\Triangulator.cs" />
     <Compile Include="PenumbraComponent.cs" />
     <Compile Include="PenumbraEngine.cs" />
+    <Compile Include="TexturedLight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
     <Compile Include="PointLight.cs" />

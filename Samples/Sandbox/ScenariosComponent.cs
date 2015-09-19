@@ -16,7 +16,7 @@ namespace Sandbox
         private int _currentScenarioIndex;        
 
         public ScenariosComponent(SandboxGame game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController) : base(game)
-        {
+        {            
             _penumbra = penumbra;
             _penumbraController = penumbraController;
         }
@@ -67,7 +67,7 @@ namespace Sandbox
             _penumbra.Lights.Clear();
             _penumbra.Hulls.Clear();
             ActiveScenario = _scenarios[_currentScenarioIndex];
-            ActiveScenario.Activate(_penumbra);
+            ActiveScenario.Activate(_penumbra, Game.Content);
             foreach (Light light in _penumbra.Lights)
                 light.ShadowType = _penumbraController.ActiveShadowType;            
         }

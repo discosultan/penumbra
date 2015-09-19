@@ -14,7 +14,7 @@ namespace Sandbox.Scenarios
         private bool _isRadiusIncreasing;
         private float _progress;
 
-        public override void Activate(PenumbraComponent penumbra)
+        public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
             _light = new PointLight
             {

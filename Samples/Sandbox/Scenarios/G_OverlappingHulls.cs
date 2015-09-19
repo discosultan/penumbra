@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Penumbra;
 using static System.Math;
 
@@ -19,7 +20,7 @@ namespace Sandbox.Scenarios
         private const float ShakingMagnitude = 2;
         private readonly Random _random = new Random();
 
-        public override void Activate(PenumbraComponent penumbra)
+        public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
             _light = new PointLight
             {

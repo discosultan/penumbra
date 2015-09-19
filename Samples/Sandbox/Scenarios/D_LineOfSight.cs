@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Penumbra;
 
 namespace Sandbox.Scenarios
@@ -22,7 +23,7 @@ namespace Sandbox.Scenarios
         private State _state;
         private float _progress;        
 
-        public override void Activate(PenumbraComponent penumbra)
+        public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
             _state = State.MovingInward;
             _progress = 0;

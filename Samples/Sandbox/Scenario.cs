@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
 using Sandbox.Utilities;
 
@@ -16,9 +17,9 @@ namespace Sandbox
             Name = Name.Replace(" And ", " and ");
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public abstract void Activate(PenumbraComponent penumbra);
+        public abstract void Activate(PenumbraComponent penumbra, ContentManager content);
 
         public virtual void Update(float deltaSeconds)
         {            

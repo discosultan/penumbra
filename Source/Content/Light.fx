@@ -13,7 +13,7 @@ cbuffer cbPerLight
 	float LightIntensity;
 };
 
-cbuffer cbPerSpotLight
+cbuffer cbPerSpotlight
 {
 	float2 ConeDirection;
 	float ConeAngle;
@@ -41,7 +41,7 @@ VertexOut VSPointLight(VertexIn vin)
 {
 	VertexOut vout;
 	
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0, 1), WorldViewProjection);	
+	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldViewProjection);	
 	vout.TexCoord = vin.TexCoord;
 
 	return vout;
@@ -51,7 +51,7 @@ VertexOut VSTexturedLight(VertexIn vin)
 {
 	VertexOut vout;
 
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0, 1), WorldViewProjection);	
+	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldViewProjection);	
 	vout.TexCoord = mul(float4(vin.TexCoord, 0.0f, 1.0f), TextureTransform).xy;
 
 	return vout;
@@ -61,30 +61,30 @@ float4 GetComputedColor(float alpha)
 {
 	alpha = abs(alpha);
 	float3 lightColor = LightColor * alpha;
-	lightColor = pow(lightColor, 1 / LightIntensity);
-	return float4(lightColor, 1);
+	lightColor = pow(lightColor, 1.0f / LightIntensity);
+	return float4(lightColor, 1.0f);
 }
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET
 {	
-	float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
-	float alpha = saturate(1 - halfMagnitude * 2);
+	float halfMagnitude = length(pin.TexCoord - float2(0.5f, 0.5f));
+	float alpha = saturate(1 - halfMagnitude * 2.0f);
 	return GetComputedColor(alpha);
 }
 
 float4 PSSpotLight(VertexOut pin) : SV_TARGET
 {
-	float2 lightVector = (pin.TexCoord - float2(0.5, 0.5));
+	float2 lightVector = (pin.TexCoord - float2(0.5f, 0.5f));
 	float halfMagnitude = length(lightVector);
 	float2 lightDir = lightVector / halfMagnitude;
 
-	float halfConeAngle = ConeAngle * 0.5;
+	float halfConeAngle = ConeAngle * 0.5f;
 	float halfAngle = acos(dot(ConeDirection, lightDir));
 
 	float occlusion = step(halfAngle, halfConeAngle);
 
-	float distanceAttenuation = saturate(1 - halfMagnitude * 2);
-	float coneAttenuation = 1 - pow(halfAngle / halfConeAngle, ConeDecay);
+	float distanceAttenuation = saturate(1.0f - halfMagnitude * 2.0f);
+	float coneAttenuation = 1.0f - pow(halfAngle / halfConeAngle, ConeDecay);
 
 	float alpha = distanceAttenuation * coneAttenuation;
 

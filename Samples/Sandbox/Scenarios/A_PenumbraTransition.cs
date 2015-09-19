@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Penumbra;
 using static System.Math;
 
@@ -9,7 +10,7 @@ namespace Sandbox.Scenarios
         private Light _light;
         private const float RotationSpeed = MathHelper.TwoPi/6;
 
-        public override void Activate(PenumbraComponent penumbra)
+        public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
             _light = new PointLight
             {
