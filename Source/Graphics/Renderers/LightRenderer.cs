@@ -34,7 +34,7 @@ namespace Penumbra.Graphics.Renderers
             _fxLightParamTextureTransform = _fxLight.Parameters["TextureTransform"];
             _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
-            _fxLightParamIntensity = _fxLight.Parameters["Intensity"];
+            _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
 
             // Constant shader param.
             _fxLight.Parameters["Color"].SetValue(DebugColor.ToVector4());

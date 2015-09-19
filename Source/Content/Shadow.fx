@@ -1,4 +1,4 @@
-﻿cbuffer cbPerFrame
+﻿cbuffer cbConstant
 {
 	float4 Color; // Used in debugging.
 };

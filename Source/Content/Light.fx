@@ -10,7 +10,7 @@ cbuffer cbPerObject
 {	
 	float4x4 WorldViewProjection;
 	float3 LightColor;
-	float Intensity;
+	float LightIntensity;
 };
 
 cbuffer cbPerObject2
@@ -60,7 +60,7 @@ float GetAlphaAtTexCoord(float2 texCoord)
 float4 GetComputedColor(float4 alpha)
 {
 	float4 lightColor = float4(LightColor, 1);
-	return pow(abs(alpha) * lightColor, Intensity);
+	return pow(abs(alpha) * lightColor, 1 / LightIntensity);
 }
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET

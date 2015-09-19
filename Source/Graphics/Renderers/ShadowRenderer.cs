@@ -22,7 +22,6 @@ namespace Penumbra.Graphics.Renderers
         private EffectTechnique _fxShadowTech;
         private EffectTechnique _fxShadowTechDebug;
         private EffectParameter _fxShadowParamWvp;
-        private EffectParameter _fxShadowParamColor;
         private Effect _fxHull;
         private EffectTechnique _fxHullTech;
         private EffectParameter _fxHullParamVp;
@@ -40,9 +39,9 @@ namespace Penumbra.Graphics.Renderers
             _fxShadowTech = _fxShadow.Techniques["Main"];
             _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
             _fxShadowParamWvp = _fxShadow.Parameters["WorldViewProjection"];
-            _fxShadowParamColor = _fxShadow.Parameters["Color"];
+            _fxShadow.Parameters["Color"].SetValue(Color.Red.ToVector4());
 
-            _fxHull = engine.Content.Load<Effect>("ProjectionColor");
+            _fxHull = engine.Content.Load<Effect>("Hull");
             _fxHullTech = _fxHull.Techniques["Main"];
             _fxHullParamVp = _fxHull.Parameters["ViewProjection"];
             _fxHullParamColor = _fxHull.Parameters["Color"];
@@ -79,8 +78,7 @@ namespace Penumbra.Graphics.Renderers
                 if (_engine.Debug)
                 {
                     _engine.Device.RasterizerState = _engine.RsDebug;
-                    _engine.Device.BlendState = BlendState.Opaque;
-                    _fxShadowParamColor.SetValue(Color.Red.ToVector4());                    
+                    _engine.Device.BlendState = BlendState.Opaque;                                       
                     _fxShadowTechDebug.Passes[0].Apply();                    
                     _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                    
                 }

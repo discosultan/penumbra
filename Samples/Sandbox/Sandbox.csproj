@@ -43,10 +43,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HullGenerationComponent.cs" />
-    <Compile Include="Scenarios\H_HullInsideLightRadius.cs" />
+    <None Include="Scenarios\H_HullInsideLightRadius.cs_" />
     <Compile Include="Scenarios\F_ConcaveHull.cs" />
     <Compile Include="Scenarios\C_LightBlending.cs" />
-    <Compile Include="Scenarios\X_Antumbra.cs" />
+    <Compile Include="Scenarios\E_Antumbra.cs" />
     <Compile Include="Scenarios\B_LightPassThrough.cs" />
     <Compile Include="Scenarios\D_LineOfSight.cs" />
     <Compile Include="Scenarios\G_OverlappingHulls.cs" />

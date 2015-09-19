@@ -13,11 +13,11 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin ProjectionColor.fx
+#begin Hull.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:ProjectionColor.fx
+/build:Hull.fx
 
 #begin Texture.fx
 /importer:EffectImporter

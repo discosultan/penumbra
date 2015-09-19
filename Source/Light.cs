@@ -134,7 +134,7 @@ namespace Penumbra
 
         internal bool Intersects(Hull hull)
         {
-            return Bounds.Intersects(hull.Bounds);
+            return Bounds.Intersects(ref hull.Bounds);
         }        
     }
 

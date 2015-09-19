@@ -30,15 +30,14 @@ namespace Penumbra.Graphics.Renderers
 
             // Present original scene to backbuffer.            
             _engine.Device.BlendState = BlendState.Opaque;
-            _fxTextureParamTexture.SetValue(_engine.Textures.Scene);
             _engine.Device.SetVertexArrayObject(_fullscreenQuadVao);
+            _fxTextureParamTexture.SetValue(_engine.Textures.Scene);            
             _fxTexture.CurrentTechnique.Passes[0].Apply();
             _engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _fullscreenQuadVao.VertexCount - 2);
 
             // Present lightmap to backbuffer.
             _engine.Device.BlendState = _bsLightMap;
-            _fxTextureParamTexture.SetValue(_engine.Textures.LightMap);
-            _engine.Device.SetVertexArrayObject(_fullscreenQuadVao);
+            _fxTextureParamTexture.SetValue(_engine.Textures.LightMap);            
             _fxTexture.CurrentTechnique.Passes[0].Apply();
             _engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _fullscreenQuadVao.VertexCount - 2);
         }

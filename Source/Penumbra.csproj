@@ -76,7 +76,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\ProjectionColor.fx" />
+    <Content Include="Content\Hull.fx" />
     <Content Include="Content\Light.fx" />
     <Content Include="Content\Texture.fx" />
   </ItemGroup>
