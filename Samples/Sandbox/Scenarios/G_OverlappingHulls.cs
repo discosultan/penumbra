@@ -21,7 +21,7 @@ namespace Sandbox.Scenarios
 
         public override void Activate(PenumbraComponent penumbra)
         {
-            _light = new Light
+            _light = new PointLight
             {
                 Position = new Vector2(-150, 0),
                 Color = Color.White,

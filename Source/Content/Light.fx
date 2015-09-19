@@ -6,17 +6,24 @@ cbuffer cbConstant
 	float4 Color;
 };
 
-cbuffer cbPerObject
+cbuffer cbPerLight
 {	
 	float4x4 WorldViewProjection;
 	float3 LightColor;
 	float LightIntensity;
 };
 
-cbuffer cbPerObject2
+cbuffer cbPerSpotLight
+{
+	float2 ConeDirection;
+	float ConeAngle;
+	float ConeDecay;
+};
+
+cbuffer cbPerTexturedLight
 {
 	float4x4 TextureTransform;
-}
+};
 
 struct VertexIn
 {
@@ -50,28 +57,43 @@ VertexOut VSTexturedLight(VertexIn vin)
 	return vout;
 }
 
-float GetAlphaAtTexCoord(float2 texCoord)
+float4 GetComputedColor(float alpha)
 {
-	// Point light linear attenuation.
-	float len = length(texCoord - float2(0.5, 0.5));
-	return saturate(1 - len * 2);
-}
-
-float4 GetComputedColor(float4 alpha)
-{
-	float4 lightColor = float4(LightColor, 1);
-	return pow(abs(alpha) * lightColor, 1 / LightIntensity);
+	alpha = abs(alpha);
+	float3 lightColor = LightColor * alpha;
+	lightColor = pow(lightColor, 1 / LightIntensity);
+	return float4(lightColor, 1);
 }
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET
+{	
+	float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
+	float alpha = saturate(1 - halfMagnitude * 2);
+	return GetComputedColor(alpha);
+}
+
+float4 PSSpotLight(VertexOut pin) : SV_TARGET
 {
-	float alpha = GetAlphaAtTexCoord(pin.TexCoord);	
-	return GetComputedColor(float4(alpha, alpha, alpha, 1));
+	float2 lightVector = (pin.TexCoord - float2(0.5, 0.5));
+	float halfMagnitude = length(lightVector);
+	float2 lightDir = lightVector / halfMagnitude;
+
+	float halfConeAngle = ConeAngle * 0.5;
+	float halfAngle = acos(dot(ConeDirection, lightDir));
+
+	float occlusion = step(halfAngle, halfConeAngle);
+
+	float distanceAttenuation = saturate(1 - halfMagnitude * 2);
+	float coneAttenuation = 1 - pow(halfAngle / halfConeAngle, ConeDecay);
+
+	float alpha = distanceAttenuation * coneAttenuation;
+
+	return GetComputedColor(alpha * occlusion);
 }
 
 float4 PSTexturedLight(VertexOut pin) : SV_TARGET
 {
-	return GetComputedColor(Texture.Sample(TextureSampler, pin.TexCoord));	
+	return GetComputedColor(Texture.Sample(TextureSampler, pin.TexCoord).x);	
 }
 
 float4 PSDebugLight(VertexOut pin) : SV_TARGET
@@ -85,6 +107,15 @@ technique PointLight
 	{		
 		VertexShader = compile vs_4_0_level_9_1 VSPointLight();
 		PixelShader = compile ps_4_0_level_9_1 PSPointLight();
+	}
+}
+
+technique SpotLight
+{
+	pass P0
+	{		
+		VertexShader = compile vs_4_0_level_9_1 VSPointLight();
+		PixelShader = compile ps_4_0_level_9_1 PSSpotLight();
 	}
 }
 

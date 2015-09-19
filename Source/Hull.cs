@@ -15,7 +15,7 @@ namespace Penumbra
     /// Represents a shadow hull in the scene. A simple convex or concave polygon impassable by light
     /// from which shadows are cast.
     /// </summary>
-    public class Hull
+    public sealed class Hull
     {                                                        
         private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints = 
             new ExtendedObservableCollection<Vector2>();        
@@ -281,7 +281,7 @@ namespace Penumbra
                 // If hull is valid and enabled:
                 // 1. test AABB intersection
                 // 2. test point is contained in polygon
-                if (hull.Enabled && hull.Valid && light.Bounds.Intersects(ref hull.Bounds) && hull.WorldPoints.Contains(ref light.PositionInternal))
+                if (hull.Enabled && hull.Valid && light.Bounds.Intersects(ref hull.Bounds) && hull.WorldPoints.Contains(ref light._position))
                     return true;
             }
             return false;

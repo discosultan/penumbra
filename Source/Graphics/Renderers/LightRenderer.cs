@@ -11,13 +11,17 @@ namespace Penumbra.Graphics.Renderers
         private PenumbraEngine _engine;        
 
         private Effect _fxLight;
-        private EffectTechnique _fxPointLightTech;
-        private EffectTechnique _fxTexturedLightTech;
-        private EffectTechnique _fxDebugLightTech;
-        private EffectParameter _fxLightParamTextureTransform;
-        private EffectParameter _fxLightParamWvp;
-        private EffectParameter _fxLightParamColor;
-        private EffectParameter _fxLightParamIntensity;
+        internal EffectTechnique _fxPointLightTech;
+        internal EffectTechnique _fxSpotLightTech;
+        internal EffectTechnique _fxTexturedLightTech;
+        internal EffectTechnique _fxDebugLightTech;
+        internal EffectParameter _fxLightParamTextureTransform;
+        internal EffectParameter _fxLightParamWvp;
+        internal EffectParameter _fxLightParamColor;
+        internal EffectParameter _fxLightParamIntensity;
+        internal EffectParameter _fxLightParamConeDirection;
+        internal EffectParameter _fxLightParamConeDecay;
+        internal EffectParameter _fxLightParamConeAngle;
         private StaticVao _quadVao;
         private StaticVao _circleVao;
         private BlendState _bsLight;
@@ -29,12 +33,16 @@ namespace Penumbra.Graphics.Renderers
 
             _fxLight = engine.Content.Load<Effect>("Light");
             _fxPointLightTech = _fxLight.Techniques["PointLight"];
+            _fxSpotLightTech = _fxLight.Techniques["SpotLight"];
             _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];
             _fxDebugLightTech = _fxLight.Techniques["DebugLight"];
             _fxLightParamTextureTransform = _fxLight.Parameters["TextureTransform"];
             _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
             _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
+            _fxLightParamConeDirection = _fxLight.Parameters["ConeDirection"];
+            _fxLightParamConeAngle = _fxLight.Parameters["ConeAngle"];
+            _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
             // Constant shader param.
             _fxLight.Parameters["Color"].SetValue(DebugColor.ToVector4());
@@ -44,16 +52,7 @@ namespace Penumbra.Graphics.Renderers
 
         public void Render(Light light)
         {
-            EffectTechnique fxTech;
-            if (light.Texture == null)
-            {
-                fxTech = _fxPointLightTech;
-            }
-            else // Draw light using texture.
-            {
-                fxTech = _fxTexturedLightTech;
-                _fxLightParamTextureTransform.SetValue(light.TextureTransform);
-            }
+            EffectTechnique fxTech = light.ApplyEffectParams(this);
 
             Matrix wvp;
             Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
@@ -64,10 +63,8 @@ namespace Penumbra.Graphics.Renderers
             //    : DepthStencilState.None;
             _engine.Device.BlendState = _bsLight;
             _engine.Device.RasterizerState = _engine.Rs;
-            _engine.Device.SetVertexArrayObject(_quadVao);
-            _fxLightParamColor.SetValue(light.Color.ToVector3());
-            _fxLightParamIntensity.SetValue(light.Intensity);
-            _fxLightParamWvp.SetValue(wvp);            
+            _engine.Device.SetVertexArrayObject(_quadVao);            
+            _fxLightParamWvp.SetValue(wvp);
             fxTech.Passes[0].Apply();
             _engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
 

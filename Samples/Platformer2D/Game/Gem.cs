@@ -36,7 +36,7 @@ namespace Platformer2D.Game
         private const float LightRange = 40;
         private const float LightOscillationSpeed = 1.5f;
         private float oscillationProgress = (float)random.NextDouble();
-        public Light Light { get; } = new Light { Range = LightRange, Color = Color.Yellow, CastsShadows = false };
+        public Light Light { get; } = new PointLight { Range = LightRange, Color = Color.Yellow, CastsShadows = false };
 
         public Level Level
         {

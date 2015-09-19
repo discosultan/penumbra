@@ -19,7 +19,7 @@ namespace Sandbox.Scenarios
             _isRadiusIncreasing = true;
             _progress = 0;
 
-            _light = new Light
+            _light = new PointLight
             {
                 //Position = new Vector2(-100, 50),
                 Position = new Vector2(-100, 0),

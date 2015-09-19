@@ -29,7 +29,7 @@ namespace Sandbox.Scenarios
                 new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f)
             };
 
-            _light1 = new Light
+            _light1 = new PointLight
             {
                 //Color = Color.OrangeRed,
                 Color = Color.White,
@@ -38,7 +38,7 @@ namespace Sandbox.Scenarios
                 Radius = 40,
                 ShadowType = ShadowType.Illuminated
             };
-            //_light2 = new Light
+            //_light2 = new PointLight
             //{
             //    Color = Color.LightBlue,
             //    Range = 300,

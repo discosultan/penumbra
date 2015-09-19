@@ -8,7 +8,9 @@ using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 namespace Penumbra.Graphics.Renderers
 {
     internal class ShadowRenderer
-    {                
+    {
+        private static readonly Color DebugColor = Color.Red;
+
         private readonly FastList<VertexShadow> _shadowVertices = new FastList<VertexShadow>();
         private readonly FastList<Vector2> _hullVertices = new FastList<Vector2>();
         private readonly FastList<int> _shadowIndices = new FastList<int>();
@@ -39,7 +41,7 @@ namespace Penumbra.Graphics.Renderers
             _fxShadowTech = _fxShadow.Techniques["Main"];
             _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
             _fxShadowParamWvp = _fxShadow.Parameters["WorldViewProjection"];
-            _fxShadow.Parameters["Color"].SetValue(Color.Red.ToVector4());
+            _fxShadow.Parameters["Color"].SetValue(DebugColor.ToVector4());
 
             _fxHull = engine.Content.Load<Effect>("Hull");
             _fxHullTech = _fxHull.Techniques["Main"];

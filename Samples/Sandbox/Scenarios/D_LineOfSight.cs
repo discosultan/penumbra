@@ -27,7 +27,7 @@ namespace Sandbox.Scenarios
             _state = State.MovingInward;
             _progress = 0;
 
-            penumbra.Lights.Add(new Light
+            penumbra.Lights.Add(new PointLight
             {
                 Position = new Vector2(0, -100),
                 Color = Color.White,

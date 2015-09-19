@@ -2,14 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
 using Penumbra.Graphics.Providers;
+using Penumbra.Graphics.Renderers;
 
 namespace Penumbra
 {
     /// <summary>
     /// A concept of light source casting shadows from shadow <see cref="Hull"/>s.
     /// </summary>
-    public class Light
-    {
+    public abstract class Light
+    {        
         // Used privately to determine when to calculate world transform and bounds.
         private bool _worldDirty = true;
 
@@ -22,18 +23,18 @@ namespace Penumbra
         /// </summary>
         public bool CastsShadows { get; set; } = true;
 
-        internal Vector2 PositionInternal;
+        internal Vector2 _position;
         /// <summary>
         /// Gets or sets the light's position in world space.
         /// </summary>
         public Vector2 Position
         {
-            get { return PositionInternal; }
+            get { return _position; }
             set
             {
-                if (PositionInternal != value)
+                if (_position != value)
                 {
-                    PositionInternal = value;
+                    _position = value;
                     _worldDirty = true;
                 }
             }
@@ -60,7 +61,7 @@ namespace Penumbra
 
         /// <summary>
         /// Gets or sets the radius of the light source (the area emitting light). 
-        /// This determines the shape of casted shadow umbra and penumbra regions.
+        /// This determines the shape of the cast shadow umbra and penumbra regions.
         /// </summary>
         public float Radius
         {
@@ -99,7 +100,15 @@ namespace Penumbra
         internal BoundingRectangle Bounds;
 
         internal Matrix LocalToWorld;
-        internal Matrix WorldToLocal;
+        internal Matrix WorldToLocal;        
+
+        internal virtual EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        {
+            renderer._fxLightParamColor.SetValue(Color.ToVector3());
+            renderer._fxLightParamIntensity.SetValue(Intensity);
+
+            return null; 
+        }
 
         internal void Update()
         {

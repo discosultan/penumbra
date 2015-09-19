@@ -32,7 +32,7 @@ namespace Sandbox.Scenarios
             };
             penumbra.Hulls.Add(_hull);
 
-            _light1 = new Light
+            _light1 = new PointLight
             {
                 Position = new Vector2(-250, 0),
                 Color = LightColors[0],
@@ -40,7 +40,7 @@ namespace Sandbox.Scenarios
                 Range = 400,
                 Radius = 20                
             };
-            _light2 = new Light
+            _light2 = new PointLight
             {
                 Position = new Vector2(0, 150),
                 Color = LightColors[1],
@@ -48,7 +48,7 @@ namespace Sandbox.Scenarios
                 Range = 200,
                 Radius = 30
             };
-            _light3 = new Light
+            _light3 = new PointLight
             {
                 Position = new Vector2(0, -50),
                 Color = LightColors[2],

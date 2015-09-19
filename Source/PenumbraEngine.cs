@@ -12,7 +12,7 @@
 // TODO:        illumination for hulls and allow users to change the height for hull or light. This would also
 // TODO:        allow to render hulls in a single draw call instead of per light, since the illumination is no
 // TODO:        longer dependant on the shadow type of a concrete light.
-// TODO:    4.  Programmatically rendered spotlight.
+// TODO:    4.  Normal mapped lighting.
 
 using System;
 using System.Collections.ObjectModel;
