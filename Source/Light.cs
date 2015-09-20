@@ -104,38 +104,41 @@ namespace Penumbra
 
         internal void Update()
         {
-            if (_worldDirty)
-            {
-                // Calculate local to world transform.
-                LocalToWorld = Matrix.Identity;
-                // Scaling.
-                LocalToWorld.M11 = Range;
-                LocalToWorld.M22 = Range;
-                // Translation.
-                LocalToWorld.M41 = Position.X;
-                LocalToWorld.M42 = Position.Y;
-
-                Matrix copy = LocalToWorld;
-                LocalToWorld.M41 = Position.X;
-                LocalToWorld.M42 = Position.Y;
-
-                CalculateBounds(out Bounds);
-
+            //if (_worldDirty)
+            //{                
+                CalculateLocalToWorld(out LocalToWorld);
                 // Calculate world to local transform.
-                Matrix.Invert(ref copy, out WorldToLocal);
+                Matrix.Invert(ref LocalToWorld, out WorldToLocal);
+                CalculateBounds(out Bounds);                
 
                 _worldDirty = false;
                 Dirty = true;
-            }
+            //}
         }
 
-        internal virtual void CalculateBounds(out BoundingRectangle bounds)
-        {
-            var rangeVector = new Vector2(Range);
-            Vector2 min = Position - rangeVector;
-            Vector2 max = Position + rangeVector;
-            bounds = new BoundingRectangle(min, max);
-        }
+        internal abstract void CalculateLocalToWorld(out Matrix transform);
+        internal abstract void CalculateBounds(out BoundingRectangle bounds);
+
+
+        //internal virtual void CalculateLocalToWorld(out Matrix transform)
+        //{
+        //    // Calculate local to world transform.
+        //    transform = Matrix.Identity;
+        //    // Scaling.
+        //    transform.M11 = Range;
+        //    transform.M22 = Range;
+        //    // Translation.
+        //    transform.M41 = Position.X;
+        //    transform.M42 = Position.Y;
+        //}
+
+        //internal virtual void CalculateBounds(out BoundingRectangle bounds)
+        //{
+        //    var rangeVector = new Vector2(Range);
+        //    Vector2 min = Position - rangeVector;
+        //    Vector2 max = Position + rangeVector;
+        //    bounds = new BoundingRectangle(min, max);
+        //}
 
         internal bool Intersects(CameraProvider camera)
         {

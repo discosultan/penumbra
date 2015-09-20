@@ -14,12 +14,12 @@ namespace Sandbox.Scenarios
         {
             _light = new TexturedLight
             {           
-				Position = new Vector2(0, 0),
-				Origin = new Vector2(0, -400),
+				Position = new Vector2(-400, 0),
+				Origin = new Vector2(-400, 0),
                 Color = Color.Cornsilk,
                 Range = 400,                				
 				Texture = content.Load<Texture2D>("LightTexture"),
-				TextureTransform = Matrix.CreateTranslation(new Vector3(0, -0.5f, 0)) * Matrix.CreateRotationZ(MathHelper.PiOver2)
+                TextureTransform = Matrix.CreateTranslation(new Vector3(0, -1f, 0)) * Matrix.CreateRotationZ(MathHelper.PiOver2)
             };
             penumbra.Lights.Add(_light);
 			_hull = new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })

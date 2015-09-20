@@ -68,10 +68,13 @@ namespace Penumbra.Graphics.Renderers
 
             if (light.CastsShadows)
             {
+                _fxShadow.Parameters["LightPosition"].SetValue(light.Position);
+
                 // Draw shadows.
                 var shadowVao = vao.Item1;
                 _engine.Device.BlendState = _bsShadow;
-                _fxShadowParamWvp.SetValue(worldViewProjection);
+                //_fxShadowParamWvp.SetValue(worldViewProjection);
+                _fxShadowParamWvp.SetValue(_engine.Camera.ViewProjection);
                 _engine.Device.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
                 _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                
@@ -124,8 +127,9 @@ namespace Penumbra.Graphics.Renderers
 
             Vector2 worldRadiusVector = new Vector2(light.Radius);
             Vector2 localRadiusVector;
-            Vector2.TransformNormal(ref worldRadiusVector, ref light.WorldToLocal, out localRadiusVector);
-            float radius = localRadiusVector.X;
+            //Vector2.TransformNormal(ref worldRadiusVector, ref light.WorldToLocal, out localRadiusVector);
+            //float radius = localRadiusVector.X;
+            float radius = light.Radius;
 
             int numSegments = 0;
             int shadowIndexOffset = 0;
@@ -140,14 +144,14 @@ namespace Penumbra.Graphics.Renderers
                 Polygon points = hull.WorldPoints;                
 
                 Vector2 prevPoint = points[points.Count - 1];                
-                Vector2.Transform(ref prevPoint, ref light.WorldToLocal, out prevPoint);
+                //Vector2.Transform(ref prevPoint, ref light.WorldToLocal, out prevPoint);
 
                 int pointCount = points.Count;
                 numSegments += pointCount;
                 for (int j = 0; j < pointCount; j++)
                 {                    
                     Vector2 currentPoint = points[j];
-                    Vector2.Transform(ref currentPoint, ref light.WorldToLocal, out currentPoint);                    
+                    //Vector2.Transform(ref currentPoint, ref light.WorldToLocal, out currentPoint);                    
                     
                     _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 0.0f), radius));
                     _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 0.0f), radius));
