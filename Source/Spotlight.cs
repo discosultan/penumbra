@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Penumbra.Geometry;
 using Penumbra.Graphics.Renderers;
+using Penumbra.Utilities;
 
 namespace Penumbra
 {
@@ -17,6 +20,7 @@ namespace Penumbra
                     value = Vector2.UnitY;                
                 value.Normalize();            
                 _coneDirection = value;
+                _worldDirty = true;
             }
         }
         public float ConeAngle { get; set; } = MathHelper.PiOver2;
@@ -32,5 +36,31 @@ namespace Penumbra
 
             return renderer._fxSpotLightTech;
         }
+
+        //internal override void CalculateBounds(out BoundingRectangle bounds)
+        //{
+        //    float halfAngle = ConeAngle*0.5f;
+
+        //    //Vector2 pos;
+        //    //Vector2.Multiply(ref _coneDirection, Range, out pos);
+        //    //Vector2.Add(ref _position, ref pos, out pos);
+
+        //    var magnitude = (float)(Range/Math.Cos(halfAngle));
+
+        //    Vector2 xDir;
+        //    VectorUtil.Rotate(ref _coneDirection, halfAngle, out xDir);
+
+        //    Vector2 x = Position + xDir*magnitude;
+
+        //    Vector2 yDir;
+        //    VectorUtil.Rotate(ref _coneDirection, -halfAngle, out yDir);
+
+        //    Vector2 y = Position + yDir*magnitude;
+
+        //    Vector2 min = Vector2.Min(Position, Vector2.Min(x, y));
+        //    Vector2 max = Vector2.Max(Position, Vector2.Max(x, y));
+
+        //    bounds = new BoundingRectangle(min, max);
+        //}
     }
 }

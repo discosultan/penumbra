@@ -5,8 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Penumbra.Graphics.Renderers
 {
     internal class LightRenderer
-    {
-        private static readonly Color DebugColor = Color.LimeGreen;
+    {        
+        private static readonly Color DebugColor = Color.Green;
 
         private PenumbraEngine _engine;        
 
@@ -72,17 +72,27 @@ namespace Penumbra.Graphics.Renderers
 
             if (_engine.Debug)
             {
+                //// Draw debug quad.
+                //const float factor = 0.41f;
+                //wvp.M11 = wvp.M11* factor;
+                //wvp.M22 = wvp.M22 * factor;
+
+                //_engine.Device.BlendState = BlendState.Opaque;
+                //_engine.Device.RasterizerState = _engine.RsDebug;
+
+                //_fxLightParamWvp.SetValue(wvp);
+                //_fxDebugLightTech.Passes[0].Apply();
+                //_engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
+
                 Matrix world = Matrix.Identity;
                 // Scaling.
                 world.M11 = light.Radius;
                 world.M22 = light.Radius;
                 // Translation.
-                world.M41 = light.CenterPosition.X;
-                world.M42 = light.CenterPosition.Y;
+                world.M41 = light.Position.X;
+                world.M42 = light.Position.Y;
                 Matrix.Multiply(ref world, ref _engine.Camera.ViewProjection, out wvp);
-
-                _engine.Device.BlendState = BlendState.Opaque;
-                _engine.Device.RasterizerState = _engine.RsDebug;
+                
                 _engine.Device.SetVertexArrayObject(_circleVao);                
                 _fxLightParamWvp.SetValue(wvp);                
                 _fxDebugLightTech.Passes[0].Apply();
@@ -137,9 +147,13 @@ namespace Penumbra.Graphics.Renderers
             _bsLight = new BlendState
             {
                 ColorBlendFunction = BlendFunction.Add,
-                ColorSourceBlend = Blend.DestinationAlpha,                
+                ColorSourceBlend = Blend.DestinationAlpha,
                 ColorDestinationBlend = Blend.One,
-                ColorWriteChannels = ColorWriteChannels.All
+                //ColorDestinationBlend = Blend.InverseSourceColor, // Blends lights a little softer.
+                ColorWriteChannels = ColorWriteChannels.All,
+                AlphaBlendFunction = BlendFunction.Add,
+                AlphaSourceBlend = Blend.One,
+                AlphaDestinationBlend = Blend.Zero
             };
             //_dssOccludedLight = new DepthStencilState
             //{

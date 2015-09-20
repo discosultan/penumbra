@@ -6,6 +6,21 @@ namespace Penumbra
 {
     public sealed class TexturedLight : Light
     {
+        private Vector2 _origin;
+
+        public Vector2 Origin
+        {
+            get { return _origin; }
+            set
+            {
+                if (_origin != value)
+                {
+                    _origin = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
         /// <summary>
         /// Gets or sets the texture used to determine in what shape to render the light.
         /// A spotlight could be simulated with a spotlight texture. If no texture is set,

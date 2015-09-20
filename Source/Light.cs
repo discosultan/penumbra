@@ -12,7 +12,7 @@ namespace Penumbra
     public abstract class Light
     {        
         // Used privately to determine when to calculate world transform and bounds.
-        private bool _worldDirty = true;
+        protected bool _worldDirty = true;
 
         /// <summary>
         /// Gets or sets if the light is enabled and should be rendered.
@@ -35,21 +35,6 @@ namespace Penumbra
                 if (_position != value)
                 {
                     _position = value;
-                    _worldDirty = true;
-                }
-            }
-        }
-
-        private Vector2 _origin;
-
-        public Vector2 Origin
-        {
-            get { return _origin; }
-            set
-            {
-                if (_origin != value)
-                {
-                    _origin = value;
                     _worldDirty = true;
                 }
             }
@@ -103,8 +88,7 @@ namespace Penumbra
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
         internal bool Dirty;
-
-        internal Vector2 CenterPosition;
+        
         internal BoundingRectangle Bounds;
 
         internal Matrix LocalToWorld;
@@ -122,33 +106,35 @@ namespace Penumbra
         {
             if (_worldDirty)
             {
-                Vector2.Subtract(ref _position, ref _origin, out CenterPosition);
-
                 // Calculate local to world transform.
                 LocalToWorld = Matrix.Identity;
                 // Scaling.
                 LocalToWorld.M11 = Range;
                 LocalToWorld.M22 = Range;
                 // Translation.
-                LocalToWorld.M41 = CenterPosition.X;
-                LocalToWorld.M42 = CenterPosition.Y;
+                LocalToWorld.M41 = Position.X;
+                LocalToWorld.M42 = Position.Y;
 
                 Matrix copy = LocalToWorld;
                 LocalToWorld.M41 = Position.X;
                 LocalToWorld.M42 = Position.Y;
 
+                CalculateBounds(out Bounds);
+
                 // Calculate world to local transform.
                 Matrix.Invert(ref copy, out WorldToLocal);
-
-                // Calculate bounds.
-                var rangeVector = new Vector2(Range);
-                Vector2 min = CenterPosition - rangeVector;
-                Vector2 max = CenterPosition + rangeVector;
-                Bounds = new BoundingRectangle(min, max);
 
                 _worldDirty = false;
                 Dirty = true;
             }
+        }
+
+        internal virtual void CalculateBounds(out BoundingRectangle bounds)
+        {
+            var rangeVector = new Vector2(Range);
+            Vector2 min = Position - rangeVector;
+            Vector2 max = Position + rangeVector;
+            bounds = new BoundingRectangle(min, max);
         }
 
         internal bool Intersects(CameraProvider camera)

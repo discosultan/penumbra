@@ -14,7 +14,7 @@ namespace Sandbox.Scenarios
         {
             _light = new TexturedLight
             {           
-				Position = new Vector2(0, -400),
+				Position = new Vector2(0, 0),
 				Origin = new Vector2(0, -400),
                 Color = Color.Cornsilk,
                 Range = 400,                				

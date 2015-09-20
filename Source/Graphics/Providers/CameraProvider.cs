@@ -96,7 +96,7 @@ namespace Penumbra.Graphics.Providers
 
         private void CalculateViewProjectionAndBounds()
         {
-            // Calculate viewprojection.
+            // Calculate view projection transform.
             PresentationParameters pp = Engine.Device.PresentationParameters;
 
             ViewProjection = Matrix.Identity;
@@ -108,21 +108,21 @@ namespace Penumbra.Graphics.Providers
                     pp.BackBufferWidth,
                     pp.BackBufferHeight,
                     0,
-                    0f, 1f);
+                    0.0f, 1.0f);
             if ((_projections & Projections.OriginCenter_XRight_YUp) != 0)
                 ViewProjection *= Matrix.CreateOrthographicOffCenter(
                     -pp.BackBufferWidth / 2f,
                     pp.BackBufferWidth / 2f,
                     -pp.BackBufferHeight / 2f,
                     pp.BackBufferHeight / 2f,
-                    0f, 1f);
+                    0.0f, 1.0f);
             if ((_projections & Projections.OriginBottomLeft_XRight_YUp) != 0)
                 ViewProjection *= Matrix.CreateOrthographicOffCenter(
                     0,
                     pp.BackBufferWidth,
                     0,
                     pp.BackBufferHeight,
-                    0f, 1f);
+                    0.0f, 1.0f);
             //LogViewProjection();
 
             // Calculate inversion of viewprojection.
