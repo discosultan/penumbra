@@ -48,9 +48,7 @@ namespace Penumbra.Utilities
         public static void Write(string message, [CallerMemberName]string caller = "")
         {
             foreach (ILogger logger in Loggers)
-            {
                 logger.Write(message, caller);
-            }
         }
         
         public static void Add(ILogger logger)

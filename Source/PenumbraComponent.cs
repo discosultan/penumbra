@@ -31,7 +31,8 @@ namespace Penumbra
             _engine.Camera.Projections = projections;            
 
             Enabled = false;
-            Visible = true;            
+            Visible = true;
+            Debug = true;
         }
 
         /// <summary>

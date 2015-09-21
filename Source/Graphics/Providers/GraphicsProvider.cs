@@ -5,7 +5,7 @@ using Penumbra.Utilities;
 namespace Penumbra.Graphics.Providers
 {
     internal abstract class GraphicsProvider : IDisposable
-    {                
+    {        
         protected PenumbraEngine Engine { get; private set; }
         protected int BackBufferWidth { get; private set; }
         protected int BackBufferHeight { get; private set; }
@@ -14,7 +14,9 @@ namespace Penumbra.Graphics.Providers
         {
             Engine = engine;
 
-            engine.DeviceManager.PreparingDeviceSettings += OnPreparingDeviceSettings;
+            // Not working due to https://github.com/mono/MonoGame/issues/3572
+            Engine.DeviceManager.PreparingDeviceSettings += SizeChanged;
+
             BackBufferWidth = engine.Device.Viewport.Width;
             BackBufferHeight = engine.Device.Viewport.Height;
         }
@@ -28,15 +30,22 @@ namespace Penumbra.Graphics.Providers
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-                Engine.DeviceManager.PreparingDeviceSettings -= OnPreparingDeviceSettings;
+                Engine.DeviceManager.PreparingDeviceSettings -= SizeChanged;
         }
 
         protected virtual void OnSizeChanged() { }
 
-        private void OnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs e)
+        private void SizeChanged(object sender, PreparingDeviceSettingsEventArgs args)
         {
-            BackBufferWidth = e.GraphicsDeviceInformation.PresentationParameters.BackBufferWidth;
-            BackBufferHeight = e.GraphicsDeviceInformation.PresentationParameters.BackBufferHeight;
+            ChangeSize(
+                args.GraphicsDeviceInformation.PresentationParameters.BackBufferWidth,
+                args.GraphicsDeviceInformation.PresentationParameters.BackBufferHeight);
+        }
+
+        private void ChangeSize(int width, int height)
+        {
+            BackBufferWidth = width;
+            BackBufferHeight = height;
             Logger.Write($"Back buffer size changed to {BackBufferWidth}x{BackBufferHeight}");
             OnSizeChanged();
         }               

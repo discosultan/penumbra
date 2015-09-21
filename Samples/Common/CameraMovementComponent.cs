@@ -79,8 +79,6 @@ namespace Common
 
         public override void Update(GameTime gameTime)
         {
-            Debug.WriteLine($"Rotation {Rotation}");
-
             KeyboardState keyState = Keyboard.GetState();
             var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
             

@@ -33,7 +33,7 @@ namespace Sandbox
             {
                 AmbientColor = Color.Black
             };
-            Components.Add(_penumbra);
+            Components.Add(_penumbra);            
             var penumbraController = new PenumbraControllerComponent(this, _penumbra);
             Components.Add(penumbraController);
             _scenarios = new ScenariosComponent(this, _penumbra, penumbraController);
@@ -45,7 +45,12 @@ namespace Sandbox
             Components.Add(ui);
             Components.Add(new CameraMovementComponent(this, _penumbra));
             Components.Add(new FpsGarbageComponent(this));
-            
+
+            // There's a bug when trying to change resolution during window resize.
+            // https://github.com/mono/MonoGame/issues/3572
+            _deviceManager.PreferredBackBufferWidth = 1240;
+            _deviceManager.PreferredBackBufferHeight = 768;
+            Window.AllowUserResizing = false;            
             IsMouseVisible = true;            
         }
 

@@ -15,7 +15,7 @@ namespace Sandbox
 
         public HullGenerationComponent(SandboxGame game, PenumbraComponent penumbra) : base(game)
         {
-            _penumbra = penumbra;
+            _penumbra = penumbra;            
         }
 
         public override void Update(GameTime gameTime)
