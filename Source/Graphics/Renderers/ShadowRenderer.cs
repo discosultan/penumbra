@@ -69,6 +69,7 @@ namespace Penumbra.Graphics.Renderers
             if (light.CastsShadows)
             {
                 _fxShadow.Parameters["LightPosition"].SetValue(light.Position);
+                _fxShadow.Parameters["LightRange"].SetValue(light.Range);
 
                 // Draw shadows.
                 var shadowVao = vao.Item1;
