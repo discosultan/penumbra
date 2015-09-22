@@ -34,7 +34,7 @@ float2x2 penumbraMatrix(float2 basisX, float2 basisY)
 
 VertexOut VS(VertexIn vin)
 {
-	// OccluderCoord.x determines if we are dealing with A vertex or B vertex.
+	// OccluderCoord.x determines if we are dealing with vertex A or vertex B.
 	// OccluderCoord.y determines if we are projecting the vertex or not.
 	float2 occluderCoord = vin.OccluderCoord;
 	// Ensure radius never reaches 0.
