@@ -23,7 +23,8 @@ namespace Penumbra.Graphics.Renderers
         private Effect _fxShadow;
         private EffectTechnique _fxShadowTech;
         private EffectTechnique _fxShadowTechDebug;
-        private EffectParameter _fxShadowParamWvp;
+        private EffectParameter _fxShadowParamLightPosition;
+        private EffectParameter _fxShadowParamVp;
         private Effect _fxHull;
         private EffectTechnique _fxHullTech;
         private EffectParameter _fxHullParamVp;
@@ -40,7 +41,9 @@ namespace Penumbra.Graphics.Renderers
             _fxShadow = engine.Content.Load<Effect>("Shadow");
             _fxShadowTech = _fxShadow.Techniques["Main"];
             _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
-            _fxShadowParamWvp = _fxShadow.Parameters["WorldViewProjection"];
+            _fxShadowParamLightPosition = _fxShadow.Parameters["LightPosition"];
+            _fxShadowParamVp = _fxShadow.Parameters["ViewProjection"];
+
             _fxShadow.Parameters["Color"].SetValue(DebugColor.ToVector4());
 
             _fxHull = engine.Content.Load<Effect>("Hull");
@@ -68,14 +71,12 @@ namespace Penumbra.Graphics.Renderers
 
             if (light.CastsShadows)
             {
-                _fxShadow.Parameters["LightPosition"].SetValue(light.Position);
-                _fxShadow.Parameters["LightRange"].SetValue(light.Range);
+                _fxShadowParamLightPosition.SetValue(light.Position);                
 
                 // Draw shadows.
                 var shadowVao = vao.Item1;
-                _engine.Device.BlendState = _bsShadow;
-                //_fxShadowParamWvp.SetValue(worldViewProjection);
-                _fxShadowParamWvp.SetValue(_engine.Camera.ViewProjection);
+                _engine.Device.BlendState = _bsShadow;                                
+                _fxShadowParamVp.SetValue(_engine.Camera.ViewProjection); // TODO: Only need to set it once per frame.
                 _engine.Device.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
                 _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                
@@ -126,12 +127,6 @@ namespace Penumbra.Graphics.Renderers
             _shadowIndices.Clear();
             _hullIndices.Clear();
 
-            Vector2 worldRadiusVector = new Vector2(light.Radius);
-            Vector2 localRadiusVector;
-            //Vector2.TransformNormal(ref worldRadiusVector, ref light.WorldToLocal, out localRadiusVector);
-            //float radius = localRadiusVector.X;
-            float radius = light.Radius;
-
             int numSegments = 0;
             int shadowIndexOffset = 0;
             int hullIndexOffset = 0;
@@ -145,19 +140,17 @@ namespace Penumbra.Graphics.Renderers
                 Polygon points = hull.WorldPoints;                
 
                 Vector2 prevPoint = points[points.Count - 1];                
-                //Vector2.Transform(ref prevPoint, ref light.WorldToLocal, out prevPoint);
 
                 int pointCount = points.Count;
                 numSegments += pointCount;
                 for (int j = 0; j < pointCount; j++)
                 {                    
                     Vector2 currentPoint = points[j];
-                    //Vector2.Transform(ref currentPoint, ref light.WorldToLocal, out currentPoint);                    
                     
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 0.0f), radius));
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 0.0f), radius));
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 1.0f), radius));
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 1.0f), radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 0.0f), light.Radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 0.0f), light.Radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 1.0f), light.Radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 1.0f), light.Radius));
 
                     _shadowIndices.Add(shadowIndexOffset * 4 + 0);
                     _shadowIndices.Add(shadowIndexOffset * 4 + 1);
