@@ -9,6 +9,23 @@ namespace Penumbra
 {
     public sealed class Spotlight : Light
     {
+        private float _range = 100.0f;
+        /// <summary>
+        /// Gets or sets how far from the position the light reaches (falls off).
+        /// </summary>
+        public float Range
+        {
+            get { return _range; }
+            set
+            {
+                if (_range != value)
+                {
+                    _range = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
         private Vector2 _coneDirection = Vector2.UnitY;
 
         public Vector2 ConeDirection
@@ -26,20 +43,8 @@ namespace Penumbra
         public float ConeAngle { get; set; } = MathHelper.PiOver2;
         public float ConeDecay { get; set; } = 0.5f;
 
-        internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
-        {
-            base.ApplyEffectParams(renderer);
-
-            renderer._fxLightParamConeAngle.SetValue(ConeAngle);
-            renderer._fxLightParamConeDecay.SetValue(ConeDecay);
-            renderer._fxLightParamConeDirection.SetValue(ConeDirection);
-
-            return renderer._fxSpotLightTech;
-        }
-
         internal override void CalculateLocalToWorld(out Matrix transform)
         {
-            // Calculate local to world transform.
             transform = Matrix.Identity;
             // Scaling.
             transform.M11 = Range;
@@ -82,5 +87,16 @@ namespace Penumbra
 
         //    bounds = new BoundingRectangle(min, max);
         //}
+
+        internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        {
+            base.ApplyEffectParams(renderer);
+
+            renderer._fxLightParamConeAngle.SetValue(ConeAngle);
+            renderer._fxLightParamConeDecay.SetValue(ConeDecay);
+            renderer._fxLightParamConeDirection.SetValue(ConeDirection);
+
+            return renderer._fxSpotLightTech;
+        }
     }
 }

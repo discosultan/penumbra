@@ -83,7 +83,8 @@ namespace Platformer2D
             {
                 //AmbientColor = new Color(40, 30, 15)
                 AmbientColor = new Color(40, 40, 40),
-                Visible = false
+                Visible = false,
+                Debug = false
             };
 
             var penumbraController = new PenumbraControllerComponent(this, penumbra);

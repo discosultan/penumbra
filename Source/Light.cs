@@ -43,23 +43,6 @@ namespace Penumbra
             }
         }
 
-        private float _range = 100.0f;
-        /// <summary>
-        /// Gets or sets how far from the position the light reaches (falls off).
-        /// </summary>
-        public float Range
-        {
-            get { return _range; }
-            set
-            {                
-                if (_range != value)
-                {                    
-                    _range = value;
-                    _worldDirty = true;
-                }
-            }
-        }
-
         private float _radius = 20.0f;
 
         /// <summary>
@@ -131,20 +114,8 @@ namespace Penumbra
             }
         }
 
-        internal abstract void CalculateLocalToWorld(out Matrix transform);
         internal abstract void CalculateBounds(out BoundingRectangle bounds);
-
-        //internal virtual void CalculateLocalToWorld(out Matrix transform)
-        //{
-        //    // Calculate local to world transform.
-        //    transform = Matrix.Identity;
-        //    // Scaling.
-        //    transform.M11 = Range;
-        //    transform.M22 = Range;
-        //    // Translation.
-        //    transform.M41 = Position.X;
-        //    transform.M42 = Position.Y;
-        //}
+        internal abstract void CalculateLocalToWorld(out Matrix transform);
 
         //internal virtual void CalculateBounds(out BoundingRectangle bounds)
         //{

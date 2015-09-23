@@ -72,13 +72,13 @@ namespace Penumbra.Graphics.Renderers
 
             if (_engine.Debug)
             {
-                //// Draw debug quad.
-                //const float factor = 0.41f;
-                //wvp.M11 = wvp.M11* factor;
-                //wvp.M22 = wvp.M22 * factor;
+                _engine.Device.BlendState = BlendState.Opaque;
+                _engine.Device.RasterizerState = _engine.RsDebug;
 
-                //_engine.Device.BlendState = BlendState.Opaque;
-                //_engine.Device.RasterizerState = _engine.RsDebug;
+                // Draw debug quad.
+                //const float factor = 0.41f;
+                //wvp.M11 = wvp.M11 * factor;
+                //wvp.M22 = wvp.M22 * factor;                
 
                 //_fxLightParamWvp.SetValue(wvp);
                 //_fxDebugLightTech.Passes[0].Apply();

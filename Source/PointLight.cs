@@ -7,16 +7,25 @@ namespace Penumbra
 {
     public sealed class PointLight : Light
     {
-        internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        private float _range = 100.0f;
+        /// <summary>
+        /// Gets or sets how far from the position the light reaches (falls off).
+        /// </summary>
+        public float Range
         {
-            base.ApplyEffectParams(renderer);
-
-            return renderer._fxPointLightTech;
+            get { return _range; }
+            set
+            {
+                if (_range != value)
+                {
+                    _range = value;
+                    _worldDirty = true;
+                }
+            }
         }
 
         internal override void CalculateLocalToWorld(out Matrix transform)
-        {
-            // Calculate local to world transform.
+        {            
             transform = Matrix.Identity;
             // Scaling.
             transform.M11 = Range;
@@ -32,6 +41,13 @@ namespace Penumbra
             Vector2 min = Position - rangeVector;
             Vector2 max = Position + rangeVector;
             bounds = new BoundingRectangle(min, max);
+        }
+
+        internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        {
+            base.ApplyEffectParams(renderer);
+
+            return renderer._fxPointLightTech;
         }
     }
 }

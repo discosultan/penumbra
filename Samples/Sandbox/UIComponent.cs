@@ -44,7 +44,7 @@ namespace Sandbox
             _font = Game.Content.Load<SpriteFont>("Font");
             _fontSize = _font.MeasureString("I");
 
-            _info = $"Previous {Sandbox.SandboxGame.PreviousScenarioKey} | Next {Sandbox.SandboxGame.NextScenarioKey} | Pause {Sandbox.SandboxGame.PauseKey} | Debug {PenumbraControllerComponent.DebugKey} | Shadow type {PenumbraControllerComponent.ShadowTypeKey}";
+            _info = $"Previous {SandboxGame.PreviousScenarioKey} | Next {SandboxGame.NextScenarioKey} | Pause {SandboxGame.PauseKey} | Debug {_penumbraController.DebugKey} | Shadow type {_penumbraController.ShadowTypeKey}";
             Vector2 size = _font.MeasureString(_info);
             _infoPosition = new Vector2(Padding, GraphicsDevice.Viewport.Height - size.Y - Padding);
         }

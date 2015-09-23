@@ -69,7 +69,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\LightTexture.jpg" />
+    <Content Include="Content\LightTexture.jpg" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

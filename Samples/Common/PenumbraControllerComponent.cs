@@ -8,11 +8,7 @@ using Penumbra;
 namespace Common
 {
     public class PenumbraControllerComponent : DrawableGameComponent
-    {
-        public const Keys DebugKey = Keys.T;
-        public const Keys ShadowTypeKey = Keys.Y;
-        public const Keys EnabledKey = Keys.U;
-
+    {        
         public event EventHandler ShadowTypeChanged;
 
         private SpriteBatch _spriteBatch;
@@ -35,6 +31,10 @@ namespace Common
                         light.ShadowType = ActiveShadowType;
             };
         }
+
+        public Keys EnabledKey { get; set; } = Keys.T;
+        public Keys ShadowTypeKey { get; set; } = Keys.Y;
+        public Keys DebugKey { get; set; } = Keys.U;
 
         protected override void LoadContent()
         {

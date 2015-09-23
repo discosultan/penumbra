@@ -10,16 +10,25 @@ namespace Sandbox.Scenarios
         private TexturedLight _light;
         private Hull _hull;
 
+        private const float MarginFromEdge = 200;
+        private const float MovingSeconds = 2;
+
+        private bool _movingUp;
+
+        private float _progress;
+
         public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
-            _light = new TexturedLight
+            Texture2D tex = content.Load<Texture2D>("LightTexture");
+            _light = new TexturedLight(tex)
             {           
-				Position = new Vector2(-400, 0),
-				Origin = new Vector2(-400, 0),
-                Color = Color.Cornsilk,
-                Range = 400,                				
-				Texture = content.Load<Texture2D>("LightTexture"),
-                TextureTransform = Matrix.CreateTranslation(new Vector3(0, -1f, 0)) * Matrix.CreateRotationZ(MathHelper.PiOver2)
+				Position = new Vector2(-tex.Height / 2f, 0),
+				Origin = new Vector2(-tex.Height / 2f, 0),
+                Color = Color.White,                
+                Width = tex.Height,
+                Height = tex.Width,
+                Radius = 150,
+                TextureTransform = Matrix.CreateTranslation(0, -1, 0) * Matrix.CreateRotationZ(MathHelper.PiOver2)
             };
             penumbra.Lights.Add(_light);
 			_hull = new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })
@@ -32,14 +41,20 @@ namespace Sandbox.Scenarios
 
         public override void Update(float deltaSeconds)
         {
-            //float angle = deltaSeconds*RotationSpeed;
-            //var s = (float) Sin(angle);
-            //var c = (float) Cos(angle);
+            float halfHeight = Device.Viewport.Height / 2f;
 
-            //_light.Position = new Vector2(
-            //    _light.Position.X * c - _light.Position.Y * s,
-            //    _light.Position.X * s + _light.Position.Y * c
-            //);
+            _progress += deltaSeconds / MovingSeconds;
+
+            float y = _movingUp
+                ? MathHelper.Lerp(-halfHeight + MarginFromEdge, halfHeight - MarginFromEdge, _progress)
+                : MathHelper.Lerp(halfHeight - MarginFromEdge, -halfHeight + MarginFromEdge, _progress);
+            _hull.Position = new Vector2(0, y);
+
+            if (_progress >= 1)
+            {
+                _progress = 0;
+                _movingUp = !_movingUp;
+            }
         }
     }
 }
