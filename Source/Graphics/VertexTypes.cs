@@ -41,30 +41,27 @@ namespace Penumbra.Graphics
     [StructLayout(LayoutKind.Sequential)]
     internal struct VertexShadow
     {
-        public const int Size = 28;
+        public const int Size = 24;
 
         public static readonly VertexDeclaration Layout = new VertexDeclaration(
             new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
             new VertexElement(8, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 1),
-            new VertexElement(16, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
-            new VertexElement(24, VertexElementFormat.Single, VertexElementUsage.Normal, 0));
+            new VertexElement(16, VertexElementFormat.Vector2, VertexElementUsage.Position, 0));
         
         public Vector2 SegmentA;
         public Vector2 SegmentB;
         public Vector2 OccluderCoord;
-        public float Radius;     
 
-        public VertexShadow(Vector2 segA, Vector2 segB, Vector2 occluderCoord, float radius)
+        public VertexShadow(Vector2 segA, Vector2 segB, Vector2 occluderCoord)
         {
             SegmentA = segA;
             SegmentB = segB;
-            OccluderCoord = occluderCoord;            
-            Radius = radius;
+            OccluderCoord = occluderCoord;                        
         }
 
         public override string ToString()
         {
-            return $"{nameof(SegmentA)}:{SegmentA} {nameof(SegmentB)}:{SegmentB} {nameof(OccluderCoord)}:{OccluderCoord} {nameof(Radius)}:{Radius}";
+            return $"{nameof(SegmentA)}:{SegmentA} {nameof(SegmentB)}:{SegmentB} {nameof(OccluderCoord)}:{OccluderCoord}";
         }
     }
 }

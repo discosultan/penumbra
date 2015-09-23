@@ -24,6 +24,7 @@ namespace Penumbra.Graphics.Renderers
         private EffectTechnique _fxShadowTech;
         private EffectTechnique _fxShadowTechDebug;
         private EffectParameter _fxShadowParamLightPosition;
+        private EffectParameter _fxShadowParamLightRadius;
         private EffectParameter _fxShadowParamVp;
         private Effect _fxHull;
         private EffectTechnique _fxHullTech;
@@ -42,6 +43,7 @@ namespace Penumbra.Graphics.Renderers
             _fxShadowTech = _fxShadow.Techniques["Main"];
             _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
             _fxShadowParamLightPosition = _fxShadow.Parameters["LightPosition"];
+            _fxShadowParamLightRadius = _fxShadow.Parameters["LightRadius"];
             _fxShadowParamVp = _fxShadow.Parameters["ViewProjection"];
 
             _fxShadow.Parameters["Color"].SetValue(DebugColor.ToVector4());
@@ -52,7 +54,12 @@ namespace Penumbra.Graphics.Renderers
             _fxHullParamColor = _fxHull.Parameters["Color"];
             
             BuildGraphicsResources();
-        }        
+        }
+
+        public void PreRender()
+        {            
+            _fxShadowParamVp.SetValue(_engine.Camera.ViewProjection);
+        }
 
         public void Render(Light light)
         {
@@ -64,19 +71,16 @@ namespace Penumbra.Graphics.Renderers
             _engine.Device.DepthStencilState = DepthStencilState.None;
             //_engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded 
             //    ? _dsOccludedShadow 
-            //    : DepthStencilState.None;
-
-            Matrix worldViewProjection;
-            Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out worldViewProjection);
+            //    : DepthStencilState.None;            
 
             if (light.CastsShadows)
             {
-                _fxShadowParamLightPosition.SetValue(light.Position);                
+                _fxShadowParamLightPosition.SetValue(light.Position);
+                _fxShadowParamLightRadius.SetValue(light.Radius);
 
                 // Draw shadows.
                 var shadowVao = vao.Item1;
-                _engine.Device.BlendState = _bsShadow;                                
-                _fxShadowParamVp.SetValue(_engine.Camera.ViewProjection); // TODO: Only need to set it once per frame.
+                _engine.Device.BlendState = _bsShadow;                                                
                 _engine.Device.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
                 _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                
@@ -147,10 +151,10 @@ namespace Penumbra.Graphics.Renderers
                 {                    
                     Vector2 currentPoint = points[j];
                     
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 0.0f), light.Radius));
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 0.0f), light.Radius));
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 1.0f), light.Radius));
-                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 1.0f), light.Radius));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 0.0f)));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 0.0f)));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 1.0f)));
+                    _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 1.0f)));
 
                     _shadowIndices.Add(shadowIndexOffset * 4 + 0);
                     _shadowIndices.Add(shadowIndexOffset * 4 + 1);

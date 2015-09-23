@@ -1,26 +1,26 @@
-﻿Texture2D Texture;
+﻿Texture2D Texture : register(t0);
 SamplerState TextureSampler;
 
-cbuffer cbConstant
+cbuffer cbConstant : register(c0)
 {
 	float4 Color;
 };
 
-cbuffer cbPerLight
+cbuffer cbPerLight : register(c1)
 {	
 	float4x4 WorldViewProjection;
 	float3 LightColor;
 	float LightIntensity;
 };
 
-cbuffer cbPerSpotlight
+cbuffer cbPerSpotlight : register(c6)
 {
 	float2 ConeDirection;
 	float ConeAngle;
 	float ConeDecay;
 };
 
-cbuffer cbPerTexturedLight
+cbuffer cbPerTexturedLight : register(c7)
 {
 	float4x4 TextureTransform;
 };
@@ -37,7 +37,7 @@ struct VertexOut
 	float2 TexCoord : TEXCOORD0;
 };
 
-VertexOut VSPointLight(VertexIn vin)
+VertexOut VSLight(VertexIn vin)
 {
 	VertexOut vout;
 	
@@ -61,7 +61,7 @@ float4 GetComputedColor(float alpha)
 {
 	alpha = abs(alpha);
 	float3 lightColor = LightColor * alpha;
-	lightColor = pow(lightColor, 1.0f / LightIntensity);
+	lightColor = pow(lightColor, LightIntensity);
 	return float4(lightColor, 1.0f);
 }
 
@@ -93,7 +93,15 @@ float4 PSSpotLight(VertexOut pin) : SV_TARGET
 
 float4 PSTexturedLight(VertexOut pin) : SV_TARGET
 {
-	return GetComputedColor(Texture.Sample(TextureSampler, pin.TexCoord).x);	
+	float alpha = Texture.Sample(TextureSampler, pin.TexCoord).x;
+	
+	// Shift tex coord to range [-0.5...0.5] and take absolute value.
+	float2 tc = abs(pin.TexCoord - float2(0.5f, 0.5f));
+
+	// If tex coord is outside its normal range, don't lit the pixel.
+	alpha = alpha * step(tc.x, 0.5f) * step(tc.y, 0.5f);
+
+	return GetComputedColor(alpha);	
 }
 
 float4 PSDebugLight(VertexOut pin) : SV_TARGET
@@ -105,7 +113,7 @@ technique PointLight
 {
 	pass P0
 	{		
-		VertexShader = compile vs_4_0_level_9_1 VSPointLight();
+		VertexShader = compile vs_4_0_level_9_1 VSLight();
 		PixelShader = compile ps_4_0_level_9_1 PSPointLight();
 	}
 }
@@ -114,7 +122,7 @@ technique SpotLight
 {
 	pass P0
 	{		
-		VertexShader = compile vs_4_0_level_9_1 VSPointLight();
+		VertexShader = compile vs_4_0_level_9_1 VSLight();
 		PixelShader = compile ps_4_0_level_9_1 PSSpotLight();
 	}
 }
@@ -132,7 +140,7 @@ technique DebugLight
 {
 	pass P0
 	{
-		VertexShader = compile vs_4_0_level_9_1 VSPointLight();
+		VertexShader = compile vs_4_0_level_9_1 VSLight();
 		PixelShader = compile ps_4_0_level_9_1 PSDebugLight();
 	}
 }

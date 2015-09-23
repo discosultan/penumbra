@@ -108,6 +108,9 @@ namespace Penumbra
             // Clear lightmap color, depth and stencil data.
             Device.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
 
+            // Set per frame shader data.
+            ShadowRenderer.PreRender();
+
             // Generate lightmap. For each light, mask the shadowed areas determined by hulls and render light.
             int lightCount = Lights.Count;
             for (int i = 0; i < lightCount; i++)

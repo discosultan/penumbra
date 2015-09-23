@@ -51,15 +51,15 @@ namespace Sandbox.Scenarios
         {
             _progress = Math.Min(_progress + deltaSeconds / RadiusSpeed, 1f);
 
-            _light.Radius = _isRadiusIncreasing 
-                ? MathHelper.Lerp(MinLightRadius, MaxLightRadius, _progress) 
+            _light.Radius = _isRadiusIncreasing
+                ? MathHelper.Lerp(MinLightRadius, MaxLightRadius, _progress)
                 : MathHelper.Lerp(MaxLightRadius, MinLightRadius, _progress);
 
             if (_progress >= 1f)
             {
                 _progress = 0;
                 _isRadiusIncreasing = !_isRadiusIncreasing;
-            }
+            }            
         }
     }
 }

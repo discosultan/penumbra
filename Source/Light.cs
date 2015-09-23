@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
 using Penumbra.Graphics.Providers;
@@ -10,7 +11,9 @@ namespace Penumbra
     /// A concept of light source casting shadows from shadow <see cref="Hull"/>s.
     /// </summary>
     public abstract class Light
-    {        
+    {
+        private const float Epsilon = 1e-5f;
+
         // Used privately to determine when to calculate world transform and bounds.
         protected bool _worldDirty = true;
 
@@ -68,14 +71,30 @@ namespace Penumbra
             get { return _radius; }
             set
             {
-                _radius = value;
-                Dirty = true;
+                value = Math.Max(value, Epsilon);
+                if (_radius != value)
+                {
+                    _radius = value;
+                    Dirty = true;
+                }
             }
         }
+        
+        private float _intensity = 1.0f;
+        internal float IntensityFactor { get; private set; } = 1.0f;
         /// <summary>
         /// Gets or sets the intensity of the color applied to the final scene.
         /// </summary>
-        public float Intensity { get; set; } = 1.0f;
+        public float Intensity
+        {
+            get { return _intensity; }
+            set
+            {
+                _intensity = Math.Max(value, Epsilon);
+                IntensityFactor = 1 / _intensity;
+            }
+        }        
+        
         /// <summary>
         /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
         /// <see cref="ShadowType"/> for more information.
@@ -91,34 +110,29 @@ namespace Penumbra
         
         internal BoundingRectangle Bounds;
 
-        internal Matrix LocalToWorld;
-        internal Matrix WorldToLocal;        
+        internal Matrix LocalToWorld;              
 
         internal virtual EffectTechnique ApplyEffectParams(LightRenderer renderer)
         {
             renderer._fxLightParamColor.SetValue(Color.ToVector3());
-            renderer._fxLightParamIntensity.SetValue(Intensity);
-
+            renderer._fxLightParamIntensity.SetValue(IntensityFactor);
             return null; 
         }
 
         internal void Update()
         {
-            //if (_worldDirty)
-            //{                
+            if (_worldDirty)
+            {
                 CalculateLocalToWorld(out LocalToWorld);
-                // Calculate world to local transform.
-                Matrix.Invert(ref LocalToWorld, out WorldToLocal);
-                CalculateBounds(out Bounds);                
+                CalculateBounds(out Bounds);
 
                 _worldDirty = false;
                 Dirty = true;
-            //}
+            }
         }
 
         internal abstract void CalculateLocalToWorld(out Matrix transform);
         internal abstract void CalculateBounds(out BoundingRectangle bounds);
-
 
         //internal virtual void CalculateLocalToWorld(out Matrix transform)
         //{
