@@ -32,6 +32,8 @@ namespace Common
             };
         }
 
+        public bool InputEnabled { get; set; } = true;
+
         public Keys EnabledKey { get; set; } = Keys.T;
         public Keys ShadowTypeKey { get; set; } = Keys.Y;
         public Keys DebugKey { get; set; } = Keys.U;
@@ -47,14 +49,17 @@ namespace Common
         {
             _currentKeyState = Keyboard.GetState();
 
-            if (IsKeyPressed(DebugKey))
-                _penumbra.Debug = !_penumbra.Debug;
+            if (InputEnabled)
+            {
+                if (IsKeyPressed(DebugKey))
+                    _penumbra.Debug = !_penumbra.Debug;
 
-            if (IsKeyPressed(ShadowTypeKey))
-                ChangeShadowType();
+                if (IsKeyPressed(ShadowTypeKey))
+                    ChangeShadowType();
 
-            if (IsKeyPressed(EnabledKey))
-                _penumbra.Visible = !_penumbra.Visible;
+                if (IsKeyPressed(EnabledKey))
+                    _penumbra.Visible = !_penumbra.Visible;
+            }
 
             _previousKeyState = _currentKeyState;
         }

@@ -117,14 +117,6 @@ namespace Penumbra
         internal abstract void CalculateBounds(out BoundingRectangle bounds);
         internal abstract void CalculateLocalToWorld(out Matrix transform);
 
-        //internal virtual void CalculateBounds(out BoundingRectangle bounds)
-        //{
-        //    var rangeVector = new Vector2(Range);
-        //    Vector2 min = Position - rangeVector;
-        //    Vector2 max = Position + rangeVector;
-        //    bounds = new BoundingRectangle(min, max);
-        //}
-
         internal bool Intersects(CameraProvider camera)
         {
             return Bounds.Intersects(ref camera.Bounds);

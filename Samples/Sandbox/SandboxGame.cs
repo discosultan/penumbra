@@ -1,7 +1,9 @@
 ﻿using Common;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
+using QuakeConsole;
 
 namespace Sandbox
 {
@@ -17,8 +19,12 @@ namespace Sandbox
         private static readonly Color BackgroundColor = Color.White;
 
         private readonly GraphicsDeviceManager _deviceManager;
+        private readonly PenumbraControllerComponent _penumbraController;
         private readonly PenumbraComponent _penumbra;
+        private readonly CameraMovementComponent _camera;
         private readonly ScenariosComponent _scenarios;
+        private readonly ConsoleComponent _console;
+        private readonly PythonInterpreter _consoleInterpreter = new PythonInterpreter();
 
         private KeyboardState _currentKeyState;
         private KeyboardState _previousKeyState;
@@ -33,18 +39,21 @@ namespace Sandbox
             {
                 AmbientColor = Color.Black
             };
-            Components.Add(_penumbra);            
-            var penumbraController = new PenumbraControllerComponent(this, _penumbra);
-            Components.Add(penumbraController);
-            _scenarios = new ScenariosComponent(this, _penumbra, penumbraController);
+            Components.Add(_penumbra);
+            _penumbraController = new PenumbraControllerComponent(this, _penumbra);
+            Components.Add(_penumbraController);
+            _scenarios = new ScenariosComponent(this, _penumbra, _penumbraController, _consoleInterpreter);
             Components.Add(_scenarios);
-            var ui = new UIComponent(this, penumbraController)
+            var ui = new UIComponent(this, _penumbraController)
             {
                 DrawOrder = int.MaxValue
             };
             Components.Add(ui);
-            Components.Add(new CameraMovementComponent(this, _penumbra));
+            _camera = new CameraMovementComponent(this, _penumbra);
+            Components.Add(_camera);
             Components.Add(new FpsGarbageComponent(this));
+            _console = new ConsoleComponent(this);
+            Components.Add(_console);
 
             // There's a bug when trying to change resolution during window resize.
             // https://github.com/mono/MonoGame/issues/3572
@@ -52,6 +61,13 @@ namespace Sandbox
             _deviceManager.PreferredBackBufferHeight = 768;
             Window.AllowUserResizing = false;            
             IsMouseVisible = true;            
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+
+            _console.LoadContent(Content.Load<SpriteFont>("Font"), _consoleInterpreter);
         }
 
         /// <summary>
@@ -75,16 +91,22 @@ namespace Sandbox
 
             _currentKeyState = Keyboard.GetState();
 
-            if (IsKeyPressed(PauseKey))
-                _scenarios.Enabled = !_scenarios.Enabled;
+            _penumbraController.InputEnabled = !_console.IsAcceptingInput;
+            _camera.InputEnabled = !_console.IsAcceptingInput;
+            if (!_console.IsAcceptingInput)
+            {
+                if (IsKeyPressed(PauseKey))
+                    _scenarios.Enabled = !_scenarios.Enabled;
 
-            if (IsKeyPressed(NextScenarioKey))
-                _scenarios.NextScenario();
+                if (IsKeyPressed(NextScenarioKey))
+                    _scenarios.NextScenario();
 
-            if (IsKeyPressed(PreviousScenarioKey))
-                _scenarios.PreviousScenario();
+                if (IsKeyPressed(PreviousScenarioKey))
+                    _scenarios.PreviousScenario();
+            }
 
-            
+            if (IsKeyPressed(Keys.OemTilde))
+                _console.ToggleOpenClose();
 
             _previousKeyState = _currentKeyState;
 

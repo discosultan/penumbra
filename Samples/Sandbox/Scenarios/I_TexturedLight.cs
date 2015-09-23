@@ -48,7 +48,7 @@ namespace Sandbox.Scenarios
             float y = _movingUp
                 ? MathHelper.Lerp(-halfHeight + MarginFromEdge, halfHeight - MarginFromEdge, _progress)
                 : MathHelper.Lerp(halfHeight - MarginFromEdge, -halfHeight + MarginFromEdge, _progress);
-            _hull.Position = new Vector2(0, y);
+            _hull.Position = new Vector2(_hull.Position.X, y);
 
             if (_progress >= 1)
             {

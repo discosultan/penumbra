@@ -51,9 +51,11 @@ namespace Sandbox
 
         public override void Draw(GameTime gameTime)
         {
+            float screenWidth = GraphicsDevice.Viewport.Width;            
+
             _spriteBatch.Begin();            
-            _spriteBatch.DrawString(_font, _scenarios.ActiveScenario.Name, new Vector2(Padding), Color);
-            _spriteBatch.DrawString(_font, _shadowTypeInfo, new Vector2(Padding, Padding * 2 + _fontSize.Y), Color);
+            _spriteBatch.DrawString(_font, _scenarios.ActiveScenario.Name, new Vector2(screenWidth - Padding - _font.MeasureString(_scenarios.ActiveScenario.Name).X, Padding), Color);
+            _spriteBatch.DrawString(_font, _shadowTypeInfo, new Vector2(screenWidth - Padding - _font.MeasureString(_shadowTypeInfo).X, Padding * 2 + _fontSize.Y), Color);
             _spriteBatch.DrawString(_font, _info, _infoPosition, Color);            
             _spriteBatch.End();
         }

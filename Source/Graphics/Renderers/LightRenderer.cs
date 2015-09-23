@@ -105,7 +105,7 @@ namespace Penumbra.Graphics.Renderers
             // We build the quad a little larger than required in order to be able to also properly clear the alpha
             // for the region. The reason we need larger quad is due to camera rotation.
             float d1 = (float) (2 / Math.Sqrt(2));
-            float d2 = (float) (1 / Math.Sqrt(2));
+            float d2 = (float) (1 / Math.Sqrt(2));            
 
             // Quad.
             VertexPosition2Texture[] quadVertices =

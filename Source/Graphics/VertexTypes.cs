@@ -50,18 +50,18 @@ namespace Penumbra.Graphics
         
         public Vector2 SegmentA;
         public Vector2 SegmentB;
-        public Vector2 OccluderCoord;
+        public Vector2 Occlusion;
 
-        public VertexShadow(Vector2 segA, Vector2 segB, Vector2 occluderCoord)
+        public VertexShadow(Vector2 segA, Vector2 segB, Vector2 occlusion)
         {
             SegmentA = segA;
             SegmentB = segB;
-            OccluderCoord = occluderCoord;                        
+            Occlusion = occlusion;                        
         }
 
         public override string ToString()
         {
-            return $"{nameof(SegmentA)}:{SegmentA} {nameof(SegmentB)}:{SegmentB} {nameof(OccluderCoord)}:{OccluderCoord}";
+            return $"{nameof(SegmentA)}:{SegmentA} {nameof(SegmentB)}:{SegmentB} {nameof(Occlusion)}:{Occlusion}";
         }
     }
 }

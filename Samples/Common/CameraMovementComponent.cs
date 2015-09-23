@@ -70,6 +70,8 @@ namespace Common
 
         public Matrix InverseTransform { get; private set; }
 
+        public bool InputEnabled { get; set; } = true;
+
         public CameraMovementComponent(Game game, PenumbraComponent penumbra) : base(game)
         {
             _penumbra = penumbra;
@@ -79,46 +81,49 @@ namespace Common
 
         public override void Update(GameTime gameTime)
         {
-            KeyboardState keyState = Keyboard.GetState();
-            var deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            
-            Vector2 moveDirection = Vector2.Zero;
-            float zoomDir = 0;
-            float rotationDir = 0;
-
-            if (keyState.IsKeyDown(Left))
-                moveDirection.X -= 1f;
-            if (keyState.IsKeyDown(Right))
-                moveDirection.X += 1f;
-            if (InvertedY && keyState.IsKeyDown(Down) || !InvertedY && keyState.IsKeyDown(Up))
-                moveDirection.Y += 1f;
-            if (InvertedY && keyState.IsKeyDown(Up) || !InvertedY && keyState.IsKeyDown(Down))
-                moveDirection.Y -= 1f;
-            if (keyState.IsKeyDown(ZoomIn))
-                zoomDir += 1;
-            if (keyState.IsKeyDown(ZoomOut))
-                zoomDir -= 1;
-            if (keyState.IsKeyDown(RotateLeft))
-                rotationDir -= 1;
-            if (keyState.IsKeyDown(RotateRight))
-                rotationDir += 1;
-
-            if (moveDirection != Vector2.Zero)
+            if (InputEnabled)
             {
-                moveDirection.Normalize();
-                moveDirection = Vector2.TransformNormal(moveDirection, Matrix.CreateRotationZ(-Rotation));
-                Position += moveDirection * MoveSpeed * deltaSeconds;
-                _dirty = true;
-            }
-            if (zoomDir != 0)
-            {
-                Scale = MathHelper.Clamp(Scale + zoomDir * ZoomSpeed * deltaSeconds, MinZoom, MaxZoom);
-                _dirty = true;
-            }
-            if (rotationDir != 0)
-            {                
-                Rotation = MathHelper.WrapAngle(Rotation + rotationDir * RotationSpeed * deltaSeconds);
-                _dirty = true;
+                KeyboardState keyState = Keyboard.GetState();
+                var deltaSeconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+                Vector2 moveDirection = Vector2.Zero;
+                float zoomDir = 0;
+                float rotationDir = 0;
+
+                if (keyState.IsKeyDown(Left))
+                    moveDirection.X -= 1f;
+                if (keyState.IsKeyDown(Right))
+                    moveDirection.X += 1f;
+                if (InvertedY && keyState.IsKeyDown(Down) || !InvertedY && keyState.IsKeyDown(Up))
+                    moveDirection.Y += 1f;
+                if (InvertedY && keyState.IsKeyDown(Up) || !InvertedY && keyState.IsKeyDown(Down))
+                    moveDirection.Y -= 1f;
+                if (keyState.IsKeyDown(ZoomIn))
+                    zoomDir += 1;
+                if (keyState.IsKeyDown(ZoomOut))
+                    zoomDir -= 1;
+                if (keyState.IsKeyDown(RotateLeft))
+                    rotationDir -= 1;
+                if (keyState.IsKeyDown(RotateRight))
+                    rotationDir += 1;
+
+                if (moveDirection != Vector2.Zero)
+                {
+                    moveDirection.Normalize();
+                    moveDirection = Vector2.TransformNormal(moveDirection, Matrix.CreateRotationZ(-Rotation));
+                    Position += moveDirection*MoveSpeed*deltaSeconds;
+                    _dirty = true;
+                }
+                if (zoomDir != 0)
+                {
+                    Scale = MathHelper.Clamp(Scale + zoomDir*ZoomSpeed*deltaSeconds, MinZoom, MaxZoom);
+                    _dirty = true;
+                }
+                if (rotationDir != 0)
+                {
+                    Rotation = MathHelper.WrapAngle(Rotation + rotationDir*RotationSpeed*deltaSeconds);
+                    _dirty = true;
+                }
             }
 
             if (_dirty)
