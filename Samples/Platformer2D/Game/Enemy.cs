@@ -26,7 +26,7 @@ namespace Platformer2D.Game
     /// <summary>
     /// A monster who is impeding the progress of our fearless adventurer.
     /// </summary>
-    class Enemy
+    public class Enemy
     {
         public Level Level
         {

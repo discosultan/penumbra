@@ -43,6 +43,23 @@ namespace Penumbra
             }
         }
 
+        private float _range = 100.0f;
+        /// <summary>
+        /// Gets or sets how far from the position the light reaches (falls off).
+        /// </summary>
+        public float Range
+        {
+            get { return _range; }
+            set
+            {
+                if (_range != value)
+                {
+                    _range = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
         private float _radius = 20.0f;
 
         /// <summary>

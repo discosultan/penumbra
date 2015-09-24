@@ -9,22 +9,22 @@ namespace Penumbra
 {
     public sealed class Spotlight : Light
     {
-        private float _range = 100.0f;
-        /// <summary>
-        /// Gets or sets how far from the position the light reaches (falls off).
-        /// </summary>
-        public float Range
-        {
-            get { return _range; }
-            set
-            {
-                if (_range != value)
-                {
-                    _range = value;
-                    _worldDirty = true;
-                }
-            }
-        }
+        //private float _range = 100.0f;
+        ///// <summary>
+        ///// Gets or sets how far from the position the light reaches (falls off).
+        ///// </summary>
+        //public float Range
+        //{
+        //    get { return _range; }
+        //    set
+        //    {
+        //        if (_range != value)
+        //        {
+        //            _range = value;
+        //            _worldDirty = true;
+        //        }
+        //    }
+        //}
 
         private Vector2 _coneDirection = Vector2.UnitY;
 

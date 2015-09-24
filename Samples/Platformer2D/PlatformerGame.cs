@@ -9,6 +9,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,6 +18,7 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Input.Touch;
 using Penumbra;
 using Platformer2D.Game;
+using QuakeConsole;
 
 
 namespace Platformer2D
@@ -26,12 +28,17 @@ namespace Platformer2D
     /// </summary>
     public class PlatformerGame : Microsoft.Xna.Framework.Game
     {
+        private const Keys ConsoleToggleOpenKey = Keys.OemTilde;
+
         // Resources for drawing.
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         Vector2 baseScreenSize = new Vector2(800, 480);
         private Matrix globalTransformation;
         private PenumbraComponent penumbra;
+        private PenumbraControllerComponent penumbraController;
+        private ConsoleComponent console;
+        private PythonInterpreter consoleInterpreter = new PythonInterpreter();
 
         // Global content.
         private SpriteFont hudFont;
@@ -51,11 +58,18 @@ namespace Platformer2D
         // We store our input states so that we only poll once per frame, 
         // then we use the same input state wherever needed
         private GamePadState gamePadState;
+        private KeyboardState previousKeyboardState;
         private KeyboardState keyboardState;
         private TouchCollection touchState;
         private AccelerometerState accelerometerState;
 
         private VirtualGamePad virtualGamePad;
+
+        private PointLight pointLight = new PointLight { Range = 500, Color = Color.Indigo };
+        private Spotlight spotlight = new Spotlight
+        {
+            Range = 500, ConeAngle = MathHelper.PiOver2, Color = Color.LightGreen, Intensity = 2f, ConeDecay = 0.5f
+        };
 
         // The number of levels in the Levels directory of our content. We assume that
         // levels in our content are 0-based and that all numbers under this constant
@@ -75,7 +89,8 @@ namespace Platformer2D
 
             //graphics.PreferredBackBufferWidth = 800;
             //graphics.PreferredBackBufferHeight = 480;
-            graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;            
+            graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
+            IsMouseVisible = true;
 
             Accelerometer.Initialize();
 
@@ -87,8 +102,14 @@ namespace Platformer2D
                 Debug = false
             };
 
-            var penumbraController = new PenumbraControllerComponent(this, penumbra);
+            penumbraController = new PenumbraControllerComponent(this, penumbra);
             Components.Add(penumbraController);
+
+            console = new ConsoleComponent(this);
+            Components.Add(console);
+
+            consoleInterpreter.AddVariable("spotlight", spotlight);
+            consoleInterpreter.AddVariable("pointLight", pointLight);
 
             //Components.Add(new CameraMovementComponent(this, penumbra) { InvertedY = true });
 
@@ -114,6 +135,7 @@ namespace Platformer2D
             diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
 
             penumbra.Load();
+            console.LoadContent(hudFont, consoleInterpreter);
 
             //Work out how much we need to scale our graphics to fill the screen
             float horScaling = GraphicsDevice.PresentationParameters.BackBufferWidth / baseScreenSize.X;
@@ -145,8 +167,8 @@ namespace Platformer2D
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            // Handle polling for our input and handling high-level input
-            HandleInput(gameTime);
+            // Handle polling for our input and handling high-level input            
+            HandleInput(gameTime);                            
 
             // update our level, passing down the GameTime along with all of our input states
             level.Update(gameTime, keyboardState, gamePadState, 
@@ -161,38 +183,54 @@ namespace Platformer2D
         private void HandleInput(GameTime gameTime)
         {
             // get all of our input states
-            keyboardState = Keyboard.GetState();
+            previousKeyboardState = keyboardState;
+            keyboardState = Keyboard.GetState();            
             touchState = TouchPanel.GetState();
             gamePadState = virtualGamePad.GetState(touchState, GamePad.GetState(PlayerIndex.One));
             accelerometerState = Accelerometer.GetState();
+            var mouseState = Mouse.GetState();
+            Vector2 lookDir = Vector2.Normalize(mouseState.Position.ToVector2() - level.Player.Position);
+            lookDir.Y *= -1;
+            spotlight.ConeDirection = lookDir;
 
 #if !NETFX_CORE
             // Exit the game when back is pressed.
             if (gamePadState.Buttons.Back == ButtonState.Pressed)
                 Exit();
 #endif
-            bool continuePressed =
-                keyboardState.IsKeyDown(Keys.Space) ||
-                gamePadState.IsButtonDown(Buttons.A) ||
-                touchState.AnyTouch();
+            if (keyboardState.IsKeyDown(ConsoleToggleOpenKey) && !previousKeyboardState.IsKeyDown(ConsoleToggleOpenKey))
+                console.ToggleOpenClose();
 
-            // Perform the appropriate action to advance the game and
-            // to get the player back to playing.
-            if (!wasContinuePressed && continuePressed)
+            bool continuePressed = false;
+            if (!console.IsAcceptingInput)
             {
-                if (!level.Player.IsAlive)
+                penumbraController.InputEnabled = true;
+
+                continuePressed =
+                    keyboardState.IsKeyDown(Keys.Space) ||
+                    gamePadState.IsButtonDown(Buttons.A) ||
+                    touchState.AnyTouch();
+
+                // Perform the appropriate action to advance the game and
+                // to get the player back to playing.
+                if (!wasContinuePressed && continuePressed)
                 {
-                    level.StartNewLife();
-                }
-                else if (level.TimeRemaining == TimeSpan.Zero)
-                {
-                    if (level.ReachedExit)
-                        LoadNextLevel();
-                    else
-                        ReloadCurrentLevel();
+                    if (!level.Player.IsAlive)
+                    {
+                        level.StartNewLife();
+                    } else if (level.TimeRemaining == TimeSpan.Zero)
+                    {
+                        if (level.ReachedExit)
+                            LoadNextLevel();
+                        else
+                            ReloadCurrentLevel();
+                    }
                 }
             }
-
+            else
+            {
+                penumbraController.InputEnabled = false;    
+            }
             wasContinuePressed = continuePressed;
 
             virtualGamePad.Update(gameTime);
@@ -213,7 +251,10 @@ namespace Platformer2D
             // Load the level.
             string levelPath = string.Format("Content/Levels/{0}.txt", levelIndex);
             using (Stream fileStream = TitleContainer.OpenStream(levelPath))
-                level = new Level(Services, fileStream, levelIndex, penumbra);            
+                level = new Level(Services, fileStream, levelIndex, penumbra, console);
+
+            consoleInterpreter.RemoveVariable("level");
+            consoleInterpreter.AddVariable("level", level);
         }
 
         private void ReloadCurrentLevel()

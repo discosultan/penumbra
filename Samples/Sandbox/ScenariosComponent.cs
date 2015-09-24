@@ -63,7 +63,7 @@ namespace Sandbox
                 .ToArray();
             foreach (Scenario scenario in _scenarios)
                 scenario.Device = Game.GraphicsDevice;
-            _currentScenarioIndex = _scenarios.Length - 1;
+            _currentScenarioIndex = 0;
         }
 
         private void SwitchScenario()

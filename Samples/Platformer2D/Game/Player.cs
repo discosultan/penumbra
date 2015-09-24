@@ -19,7 +19,7 @@ namespace Platformer2D.Game
     /// <summary>
     /// Our fearless adventurer!
     /// </summary>
-    class Player
+    public class Player
     {
         // Animations
         private Animation idleAnimation;
@@ -35,7 +35,17 @@ namespace Platformer2D.Game
         private SoundEffect jumpSound;
         private SoundEffect fallSound;
 
-        public Light Light { get; } = new PointLight { Range = 500, Color = new Color(200, 200, 200) };
+        private Light light = new PointLight { Range = 500, Color = new Color(200, 200, 200) };
+        public Light Light
+        {
+            get { return light; }
+            set
+            {
+                level.Penumbra.Lights.Remove(light);                
+                light = value;
+                level.Penumbra.Lights.Add(light);
+            }
+        }
 
         public Level Level
         {
@@ -186,7 +196,8 @@ namespace Platformer2D.Game
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {
-            GetInput(keyboardState, gamePadState, accelState, orientation);
+            if (!level.Console.IsAcceptingInput)
+                GetInput(keyboardState, gamePadState, accelState, orientation);
 
             ApplyPhysics(gameTime);
 

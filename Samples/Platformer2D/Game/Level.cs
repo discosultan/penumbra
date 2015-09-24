@@ -16,6 +16,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
+using QuakeConsole;
 
 namespace Platformer2D.Game
 {
@@ -24,10 +25,8 @@ namespace Platformer2D.Game
     /// The level owns the player and controls the game's win and lose
     /// conditions as well as scoring.
     /// </summary>
-    class Level : IDisposable
+    public class Level : IDisposable
     {
-        private readonly PenumbraComponent penumbra;
-
         // Physical structure of the level.
         private Tile[,] tiles;
         private Texture2D[] layers;
@@ -81,6 +80,9 @@ namespace Platformer2D.Game
 
         private SoundEffect exitReachedSound;
 
+        public ConsoleComponent Console { get; private set; }
+        public PenumbraComponent Penumbra { get; private set; }
+
         #region Loading
 
         /// <summary>
@@ -92,9 +94,11 @@ namespace Platformer2D.Game
         /// <param name="fileStream">
         /// A stream containing the tile data.
         /// </param>
-        public Level(IServiceProvider serviceProvider, Stream fileStream, int levelIndex, PenumbraComponent penumbra)
+        public Level(IServiceProvider serviceProvider, Stream fileStream, int levelIndex, 
+            PenumbraComponent penumbra, ConsoleComponent console)
         {
-            this.penumbra = penumbra;
+            Penumbra = penumbra;
+            Console = console;
             // Create a new content manager to load content used just by this level.
             content = new ContentManager(serviceProvider, "Content");
 
@@ -161,12 +165,12 @@ namespace Platformer2D.Game
                     }
                     else if (tile.Collision == TileCollision.Passable && hullStartX != -1)
                     {
-                        penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX));                
+                        Penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX));                
                         hullStartX = -1;
                     }
                     else if (x == width - 1 && hullStartX != -1)
                     {
-                        penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX + 1));
+                        Penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX + 1));
                         hullStartX = -1;
                     }
                 }
@@ -289,7 +293,7 @@ namespace Platformer2D.Game
 
             start = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
             player = new Player(this, start);
-            penumbra.Lights.Add(player.Light);
+            Penumbra.Lights.Add(player.Light);
 
             return new Tile(null, TileCollision.Passable);
         }
@@ -303,7 +307,7 @@ namespace Platformer2D.Game
                 throw new NotSupportedException("A level may only have one exit.");
 
             exit = GetBounds(x, y).Center;
-            penumbra.Lights.Add(new PointLight { Position = exit.ToVector2(), Range = 50, Color = Color.Red, CastsShadows = false });
+            Penumbra.Lights.Add(new PointLight { Position = exit.ToVector2(), Range = 50, Color = Color.Red, CastsShadows = false });
 
             return LoadTile("Exit", TileCollision.Passable);
         }
@@ -316,7 +320,7 @@ namespace Platformer2D.Game
             Vector2 position = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
             var enemy = new Enemy(this, position, spriteSet);
             enemies.Add(enemy);
-            penumbra.Lights.Add(enemy.Light);
+            Penumbra.Lights.Add(enemy.Light);
 
             return new Tile(null, TileCollision.Passable);
         }
@@ -329,7 +333,7 @@ namespace Platformer2D.Game
             Point position = GetBounds(x, y).Center;
             var gem = new Gem(this, new Vector2(position.X, position.Y));
             gems.Add(gem);
-            penumbra.Lights.Add(gem.Light);
+            Penumbra.Lights.Add(gem.Light);
 
             return new Tile(null, TileCollision.Passable);
         }
@@ -460,7 +464,7 @@ namespace Platformer2D.Game
                 {
                     gems.RemoveAt(i--);
                     OnGemCollected(gem, Player);
-                    penumbra.Lights.Remove(gem.Light);
+                    Penumbra.Lights.Remove(gem.Light);
                 }
             }
         }
