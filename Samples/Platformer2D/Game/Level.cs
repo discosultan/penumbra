@@ -102,7 +102,7 @@ namespace Platformer2D.Game
             // Create a new content manager to load content used just by this level.
             content = new ContentManager(serviceProvider, "Content");
 
-            timeRemaining = TimeSpan.FromMinutes(1.0);
+            timeRemaining = TimeSpan.FromMinutes(2.0);
 
             LoadTiles(fileStream);
 
