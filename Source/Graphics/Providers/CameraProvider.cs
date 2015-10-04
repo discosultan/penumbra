@@ -58,27 +58,10 @@ namespace Penumbra.Graphics.Providers
             Matrix transform;
             Matrix.Multiply(ref ViewProjection, ref _ndcToScreen, out transform);
 
-            var c1 = new Vector2(light.Bounds.Min.X, light.Bounds.Max.Y);
-            var c2 = light.Bounds.Max;
-            var c3 = new Vector2(light.Bounds.Max.X, light.Bounds.Min.Y);
-            var c4 = light.Bounds.Min;
-            
-            Vector2.Transform(ref c1, ref transform, out c1);
-            Vector2.Transform(ref c2, ref transform, out c2);
-            Vector2.Transform(ref c3, ref transform, out c3);
-            Vector2.Transform(ref c4, ref transform, out c4);
+            BoundingRectangle result;
+            BoundingRectangle.Transform(ref light.Bounds, ref transform, out result);
 
-            Vector2 min, max;
-
-            Vector2.Min(ref c1, ref c2, out min);
-            Vector2.Min(ref min, ref c3, out min);
-            Vector2.Min(ref min, ref c4, out min);
-
-            Vector2.Max(ref c1, ref c2, out max);
-            Vector2.Max(ref max, ref c3, out max);
-            Vector2.Max(ref max, ref c4, out max);
-
-            return new BoundingRectangle(min, max);
+            return result;
         }        
 
         protected override void OnSizeChanged()
@@ -131,24 +114,10 @@ namespace Penumbra.Graphics.Providers
             // Determine if we are dealing with an inverted (upside down) Y axis.
             InvertedY = ViewProjection.M22 < 0 && ViewProjection.M11 >= 0 ||
                         ViewProjection.M22 >= 0 && ViewProjection.M11 < 0;
-
-            // Calculate fustum bounds. We need all four corners to take rotation into account.
-            Vector2 c1 = Vector2.Transform(new Vector2(+1.0f, +1.0f), _inverseViewProjection);
-            Vector2 c2 = Vector2.Transform(new Vector2(+1.0f, -1.0f), _inverseViewProjection);
-            Vector2 c3 = Vector2.Transform(new Vector2(-1.0f, -1.0f), _inverseViewProjection);
-            Vector2 c4 = Vector2.Transform(new Vector2(-1.0f, +1.0f), _inverseViewProjection);
-
-            Vector2 min, max;
-
-            Vector2.Min(ref c1, ref c2, out min);
-            Vector2.Min(ref min, ref c3, out min);
-            Vector2.Min(ref min, ref c4, out min);
-
-            Vector2.Max(ref c1, ref c2, out max);
-            Vector2.Max(ref max, ref c3, out max);
-            Vector2.Max(ref max, ref c4, out max);
-
-            Bounds = new BoundingRectangle(min, max);
+            
+            var size = new Vector2(1.0f);
+            var bounds = new BoundingRectangle(-size, size);
+            BoundingRectangle.Transform(ref bounds, ref _inverseViewProjection, out Bounds);            
         }
 
         private void LogViewProjection()

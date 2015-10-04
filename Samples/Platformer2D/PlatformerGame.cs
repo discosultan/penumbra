@@ -64,10 +64,10 @@ namespace Platformer2D
 
         private VirtualGamePad virtualGamePad;
 
-        private PointLight pointLight = new PointLight { Range = 500, Color = Color.Indigo };
+        private PointLight pointLight = new PointLight { Scale = new Vector2(1000), Color = Color.Indigo };
         private Spotlight spotlight = new Spotlight
         {
-            Range = 500, ConeAngle = MathHelper.PiOver2 * 0.75f, Color = new Color(150, 255, 150, 255), Intensity = 1f, ConeDecay = 1.5f
+            Scale = new Vector2(1000), ConeAngle = MathHelper.PiOver2 * 0.75f, Color = new Color(150, 255, 150, 255), Intensity = 1f, ConeDecay = 1.5f
         };
 
         // The number of levels in the Levels directory of our content. We assume that
@@ -190,7 +190,7 @@ namespace Platformer2D
             var mouseState = Mouse.GetState();
             Vector2 lookDir = Vector2.Normalize(mouseState.Position.ToVector2() - level.Player.Position);
             lookDir.Y *= -1;
-            spotlight.ConeDirection = lookDir;
+            spotlight.Rotation = (float)Math.Atan2(lookDir.Y, lookDir.X);
 
 #if !NETFX_CORE
             // Exit the game when back is pressed.

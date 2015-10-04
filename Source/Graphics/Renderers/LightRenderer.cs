@@ -20,7 +20,7 @@ namespace Penumbra.Graphics.Renderers
         internal EffectParameter _fxLightParamWvp;
         internal EffectParameter _fxLightParamColor;
         internal EffectParameter _fxLightParamIntensity;
-        internal EffectParameter _fxLightParamConeDirection;
+        //internal EffectParameter _fxLightParamConeDirection;
         internal EffectParameter _fxLightParamConeDecay;
         internal EffectParameter _fxLightParamConeAngle;
         private StaticVao _quadVao;
@@ -34,7 +34,7 @@ namespace Penumbra.Graphics.Renderers
 
             _fxLight = engine.Content.Load<Effect>("Light");
             _fxPointLightTech = _fxLight.Techniques["PointLight"];
-            _fxSpotLightTech = _fxLight.Techniques["SpotLight"];
+            _fxSpotLightTech = _fxLight.Techniques["Spotlight"];
             _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];
             _fxDebugLightTech = _fxLight.Techniques["DebugLight"];
             _fxLightParamTexture = _fxLight.Parameters["Texture"];
@@ -42,7 +42,7 @@ namespace Penumbra.Graphics.Renderers
             _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
             _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
-            _fxLightParamConeDirection = _fxLight.Parameters["ConeDirection"];
+            //_fxLightParamConeDirection = _fxLight.Parameters["ConeDirection"];
             _fxLightParamConeAngle = _fxLight.Parameters["ConeAngle"];
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
@@ -104,16 +104,20 @@ namespace Penumbra.Graphics.Renderers
         {            
             // We build the quad a little larger than required in order to be able to also properly clear the alpha
             // for the region. The reason we need larger quad is due to camera rotation.
-            float d1 = (float) (2 / Math.Sqrt(2));
-            float d2 = (float) (1 / Math.Sqrt(2));            
+            float d = (float) (1 / Math.Sqrt(2));            
 
             // Quad.
             VertexPosition2Texture[] quadVertices =
             {
-                new VertexPosition2Texture(new Vector2(-1 - d1, +1 + d1), new Vector2(0 - d2, 0 - d2)),
-                new VertexPosition2Texture(new Vector2(+1 + d1, +1 + d1), new Vector2(1 + d2, 0 - d2)),
-                new VertexPosition2Texture(new Vector2(-1 - d1, -1 - d1), new Vector2(0 - d2, 1 + d2)),
-                new VertexPosition2Texture(new Vector2(+1 + d1, -1 - d1), new Vector2(1 + d2, 1 + d2))
+                //new VertexPosition2Texture(new Vector2(-0.5f - d, +0.5f + d), new Vector2(0 - d, 0 - d)),
+                //new VertexPosition2Texture(new Vector2(+0.5f + d, +0.5f + d), new Vector2(1 + d, 0 - d)),
+                //new VertexPosition2Texture(new Vector2(-0.5f - d, -0.5f - d), new Vector2(0 - d, 1 + d)),
+                //new VertexPosition2Texture(new Vector2(+0.5f + d, -0.5f - d), new Vector2(1 + d, 1 + d))
+
+                new VertexPosition2Texture(new Vector2(0.0f - d, 1.0f + d), new Vector2(0 - d, 0 - d)),
+                new VertexPosition2Texture(new Vector2(1.0f + d, 1.0f + d), new Vector2(1 + d, 0 - d)),
+                new VertexPosition2Texture(new Vector2(0.0f - d, 0.0f - d), new Vector2(0 - d, 1 + d)),
+                new VertexPosition2Texture(new Vector2(1.0f + d, 0.0f - d), new Vector2(1 + d, 1 + d))
             };            
           
 

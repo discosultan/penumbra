@@ -307,7 +307,7 @@ namespace Platformer2D.Game
                 throw new NotSupportedException("A level may only have one exit.");
 
             exit = GetBounds(x, y).Center;
-            Penumbra.Lights.Add(new PointLight { Position = exit.ToVector2(), Range = 50, Color = Color.Red, CastsShadows = false });
+            Penumbra.Lights.Add(new PointLight { Position = exit.ToVector2(), Scale = new Vector2(100), Color = Color.Red, CastsShadows = false });
 
             return LoadTile("Exit", TileCollision.Passable);
         }

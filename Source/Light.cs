@@ -4,13 +4,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
 using Penumbra.Graphics.Providers;
 using Penumbra.Graphics.Renderers;
+using Penumbra.Utilities;
 
 namespace Penumbra
 {
     /// <summary>
     /// A concept of light source casting shadows from shadow <see cref="Hull"/>s.
     /// </summary>
-    public abstract class Light
+    public class Light
     {
         private const float Epsilon = 1e-5f;
 
@@ -38,23 +39,6 @@ namespace Penumbra
                 if (_position != value)
                 {
                     _position = value;
-                    _worldDirty = true;
-                }
-            }
-        }
-
-        private float _range = 100.0f;
-        /// <summary>
-        /// Gets or sets how far from the position the light reaches (falls off).
-        /// </summary>
-        public float Range
-        {
-            get { return _range; }
-            set
-            {
-                if (_range != value)
-                {
-                    _range = value;
                     _worldDirty = true;
                 }
             }
@@ -107,7 +91,51 @@ namespace Penumbra
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
         internal bool Dirty;
-        
+
+        private Vector2 _scale = new Vector2(100.0f);
+
+        public Vector2 Scale
+        {
+            get { return _scale; }
+            set
+            {
+                if (_scale != value)
+                {
+                    _scale = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
+        private float _rotation;
+
+        public float Rotation
+        {
+            get { return _rotation; }
+            set
+            {
+                if (_rotation != value)
+                {
+                    _rotation = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
+        private Vector2 _origin = new Vector2(0.5f);
+        public Vector2 Origin
+        {
+            get { return _origin; }
+            set
+            {
+                if (_origin != value)
+                {
+                    _origin = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
         internal BoundingRectangle Bounds;
 
         internal Matrix LocalToWorld;              
@@ -123,16 +151,14 @@ namespace Penumbra
         {
             if (_worldDirty)
             {
-                CalculateLocalToWorld(out LocalToWorld);
-                CalculateBounds(out Bounds);
+                // Calculate local to world.
+                Calc.CreateTransform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
+                CalculateBounds();
 
                 _worldDirty = false;
                 Dirty = true;
             }
-        }
-
-        internal abstract void CalculateBounds(out BoundingRectangle bounds);
-        internal abstract void CalculateLocalToWorld(out Matrix transform);
+        }     
 
         internal bool Intersects(CameraProvider camera)
         {
@@ -142,8 +168,29 @@ namespace Penumbra
         internal bool Intersects(Hull hull)
         {
             return Bounds.Intersects(ref hull.Bounds);
-        }        
-    }
+        }
+
+        private void CalculateBounds()
+        {
+            if (_rotation == 0.0f)
+            {
+                Vector2 halfScale;
+                Vector2.Multiply(ref _scale, 0.5f, out halfScale);
+                Vector2 center;
+                Vector2.Subtract(ref _position, ref _origin, out center);
+                Vector2 min, max;
+                Vector2.Subtract(ref center, ref halfScale, out min);
+                Vector2.Add(ref center, ref halfScale, out max);
+                Bounds = new BoundingRectangle(min, max);
+            }
+            else
+            {
+                var halfLocalSize = new Vector2(0.5f);
+                var bounds = new BoundingRectangle(-halfLocalSize, halfLocalSize);
+                BoundingRectangle.Transform(ref bounds, ref LocalToWorld, out Bounds);
+            }
+        }
+    }  
 
     /// <summary>
     /// Determines how the shadows cast by the light affect shadow <see cref="Hull"/>s.

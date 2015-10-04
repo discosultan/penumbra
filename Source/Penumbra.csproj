@@ -13,7 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <MonoGamePlatform>Windows</MonoGamePlatform>
-    <MonoGameContentBuilderExe></MonoGameContentBuilderExe>
+    <MonoGameContentBuilderExe>
+    </MonoGameContentBuilderExe>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,7 +72,7 @@
     <Compile Include="Utilities\FastList.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Graphics\StaticVao.cs" />
-    <Compile Include="Utilities\VectorUtil.cs" />
+    <Compile Include="Utilities\Calc.cs" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />

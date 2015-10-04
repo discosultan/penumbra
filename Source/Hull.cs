@@ -166,18 +166,8 @@ namespace Penumbra
             {
                 UpdatePoints();
 
-                // Calculate local to world transform.
-                LocalToWorld = Matrix.Identity;
-                
-                var cos = (float)Math.Cos(Rotation);
-                var sin = (float)Math.Sin(Rotation);
-                
-                LocalToWorld.M11 = _scale.X * cos;
-                LocalToWorld.M12 = _scale.X * sin;
-                LocalToWorld.M21 = _scale.Y * -sin;
-                LocalToWorld.M22 = _scale.Y * cos;
-                LocalToWorld.M41 = _position.X - _origin.X;
-                LocalToWorld.M42 = _position.Y - _origin.Y;
+                // Calculate local to world transform.                
+                Calc.CreateTransform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
 
                 // Calculate points in world space.
                 WorldPoints.Clear();

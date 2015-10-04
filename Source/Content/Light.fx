@@ -15,15 +15,14 @@ cbuffer cbPerLight : register(c1)
 
 cbuffer cbPerSpotlight : register(c6)
 {
-	float2 ConeDirection;
 	float ConeAngle;
 	float ConeDecay;
 };
 
-cbuffer cbPerTexturedLight : register(c7)
-{
-	float4x4 TextureTransform;
-};
+//cbuffer cbPerTexturedLight : register(c7)
+//{
+//	float4x4 TextureTransform;
+//};
 
 struct VertexIn
 {
@@ -47,15 +46,15 @@ VertexOut VSLight(VertexIn vin)
 	return vout;
 }
 
-VertexOut VSTexturedLight(VertexIn vin)
-{
-	VertexOut vout;
-
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldViewProjection);	
-	vout.TexCoord = mul(float4(vin.TexCoord, 0.0f, 1.0f), TextureTransform).xy;
-
-	return vout;
-}
+//VertexOut VSTexturedLight(VertexIn vin)
+//{
+//	VertexOut vout;
+//
+//	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldViewProjection);	
+//	vout.TexCoord = mul(float4(vin.TexCoord, 0.0f, 1.0f), TextureTransform).xy;
+//
+//	return vout;
+//}
 
 float4 GetComputedColor(float alpha)
 {
@@ -74,12 +73,13 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 
 float4 PSSpotLight(VertexOut pin) : SV_TARGET
 {
-	float2 lightVector = (pin.TexCoord - float2(0.5f, 0.5f));
+	float2 lightVector = (pin.TexCoord - float2(0.5f, 1.0f));
 	float halfMagnitude = length(lightVector);
 	float2 lightDir = lightVector / halfMagnitude;
 
 	float halfConeAngle = ConeAngle * 0.5f;
-	float halfAngle = acos(dot(ConeDirection, lightDir));
+	float2 coneDir = float2(1, 0);
+	float halfAngle = acos(dot(coneDir, lightDir));
 
 	float occlusion = step(halfAngle, halfConeAngle);
 
@@ -118,7 +118,7 @@ technique PointLight
 	}
 }
 
-technique SpotLight
+technique Spotlight
 {
 	pass P0
 	{		
@@ -131,7 +131,7 @@ technique TexturedLight
 {
 	pass P0
 	{
-		VertexShader = compile vs_4_0_level_9_1 VSTexturedLight();
+		VertexShader = compile vs_4_0_level_9_1 VSLight();
 		PixelShader = compile ps_4_0_level_9_1 PSTexturedLight();
 	}
 }

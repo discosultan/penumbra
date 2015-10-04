@@ -24,11 +24,10 @@ namespace Sandbox.Scenarios
             {           
 				Position = new Vector2(-tex.Height / 2f, 0),
 				Origin = new Vector2(-tex.Height / 2f, 0),
-                Color = Color.White,                
-                Width = tex.Height,
-                Height = tex.Width,
+                Color = Color.White,                                
                 Radius = 150,
-                TextureTransform = Matrix.CreateTranslation(0, -1, 0) * Matrix.CreateRotationZ(MathHelper.PiOver2)
+                Rotation = MathHelper.PiOver2
+                //TextureTransform = Matrix.CreateTranslation(0, -1, 0) * Matrix.CreateRotationZ(MathHelper.PiOver2)
             };
             penumbra.Lights.Add(_light);
 			_hull = new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })

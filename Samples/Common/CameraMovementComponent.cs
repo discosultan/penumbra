@@ -102,9 +102,9 @@ namespace Common
                 if (keyState.IsKeyDown(ZoomOut))
                     zoomDir -= 1;
                 if (keyState.IsKeyDown(RotateLeft))
-                    rotationDir -= 1;
-                if (keyState.IsKeyDown(RotateRight))
                     rotationDir += 1;
+                if (keyState.IsKeyDown(RotateRight))
+                    rotationDir -= 1;
 
                 if (moveDirection != Vector2.Zero)
                 {
@@ -133,7 +133,7 @@ namespace Common
         {
             Transform =
                 Matrix.CreateTranslation(new Vector3(-Position, 0)) *
-                Matrix.CreateRotationZ(Rotation) *                
+                Matrix.CreateRotationZ(-Rotation) *                
                 Matrix.CreateScale(Scale) *
                 Matrix.CreateTranslation(new Vector3(Origin, 0));
         }

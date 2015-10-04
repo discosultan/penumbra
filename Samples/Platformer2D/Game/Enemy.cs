@@ -49,7 +49,7 @@ namespace Platformer2D.Game
             }
         }
 
-        public Light Light { get; } = new PointLight { Color = new Color(255, 100, 100), Range = 200, Intensity = 1.5f };
+        public Light Light { get; } = new PointLight { Color = new Color(255, 100, 100), Scale = new Vector2(400), Intensity = 1.5f };
 
         private Rectangle localBounds;
         /// <summary>

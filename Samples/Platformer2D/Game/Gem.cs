@@ -33,10 +33,10 @@ namespace Platformer2D.Game
         private Vector2 basePosition;
         private float bounce;        
 
-        private const float LightRange = 40;
+        private static readonly Vector2 LightScale = new Vector2(80);
         private const float LightOscillationSpeed = 1.5f;
         private float oscillationProgress = (float)random.NextDouble();
-        public PointLight Light { get; } = new PointLight { Range = LightRange, Color = Color.Yellow, CastsShadows = false };
+        public PointLight Light { get; } = new PointLight { Scale = LightScale, Color = Color.Yellow, CastsShadows = false };
 
         public Level Level
         {
@@ -108,7 +108,7 @@ namespace Platformer2D.Game
             {
                 oscillationProgress -= 1;
             }
-            Light.Range = (float)Math.Sin(oscillationProgress * Math.PI) * LightRange * 0.3f + LightRange * 0.7f;
+            Light.Scale = (float)Math.Sin(oscillationProgress * Math.PI) * LightScale * 0.3f + LightScale * 0.7f;
         }
 
         /// <summary>

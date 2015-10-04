@@ -39,5 +39,30 @@ namespace Penumbra.Geometry
         {
             return $"{nameof(Min)}:{Min} {nameof(Max)}:{Max}";
         }
+
+        public static void Transform(ref BoundingRectangle bounds, ref Matrix transform, out BoundingRectangle result)
+        {
+            var c1 = new Vector2(bounds.Min.X, bounds.Max.Y);
+            var c2 = bounds.Max;
+            var c3 = new Vector2(bounds.Max.X, bounds.Min.Y);
+            var c4 = bounds.Min;            
+
+            Vector2.Transform(ref c1, ref transform, out c1);
+            Vector2.Transform(ref c2, ref transform, out c2);
+            Vector2.Transform(ref c3, ref transform, out c3);
+            Vector2.Transform(ref c4, ref transform, out c4);
+
+            Vector2 min, max;
+
+            Vector2.Min(ref c1, ref c2, out min);
+            Vector2.Min(ref min, ref c3, out min);
+            Vector2.Min(ref min, ref c4, out min);
+
+            Vector2.Max(ref c1, ref c2, out max);
+            Vector2.Max(ref max, ref c3, out max);
+            Vector2.Max(ref max, ref c4, out max);
+
+            result = new BoundingRectangle(min, max);
+        }
     }
 }
