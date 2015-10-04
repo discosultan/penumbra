@@ -43,7 +43,7 @@ namespace Penumbra.Graphics.Renderers
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
             _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
             //_fxLightParamConeDirection = _fxLight.Parameters["ConeDirection"];
-            _fxLightParamConeAngle = _fxLight.Parameters["ConeAngle"];
+            _fxLightParamConeAngle = _fxLight.Parameters["ConeHalfAngle"];
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
             // Constant shader param.
@@ -114,10 +114,10 @@ namespace Penumbra.Graphics.Renderers
                 //new VertexPosition2Texture(new Vector2(-0.5f - d, -0.5f - d), new Vector2(0 - d, 1 + d)),
                 //new VertexPosition2Texture(new Vector2(+0.5f + d, -0.5f - d), new Vector2(1 + d, 1 + d))
 
-                new VertexPosition2Texture(new Vector2(0.0f - d, 1.0f + d), new Vector2(0 - d, 0 - d)),
-                new VertexPosition2Texture(new Vector2(1.0f + d, 1.0f + d), new Vector2(1 + d, 0 - d)),
-                new VertexPosition2Texture(new Vector2(0.0f - d, 0.0f - d), new Vector2(0 - d, 1 + d)),
-                new VertexPosition2Texture(new Vector2(1.0f + d, 0.0f - d), new Vector2(1 + d, 1 + d))
+                new VertexPosition2Texture(new Vector2(0.0f - d, 1.0f + d), new Vector2(0.0f - d, 0.0f - d)),
+                new VertexPosition2Texture(new Vector2(1.0f + d, 1.0f + d), new Vector2(1.0f + d, 0.0f - d)),
+                new VertexPosition2Texture(new Vector2(0.0f - d, 0.0f - d), new Vector2(0.0f - d, 1.0f + d)),
+                new VertexPosition2Texture(new Vector2(1.0f + d, 0.0f - d), new Vector2(1.0f + d, 1.0f + d))
             };            
           
 

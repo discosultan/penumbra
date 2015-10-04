@@ -15,7 +15,7 @@ cbuffer cbPerLight : register(c1)
 
 cbuffer cbPerSpotlight : register(c6)
 {
-	float ConeAngle;
+	float ConeHalfAngle;
 	float ConeDecay;
 };
 
@@ -73,18 +73,16 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 
 float4 PSSpotLight(VertexOut pin) : SV_TARGET
 {
-	float2 lightVector = (pin.TexCoord - float2(0.5f, 1.0f));
-	float halfMagnitude = length(lightVector);
-	float2 lightDir = lightVector / halfMagnitude;
+	float2 lightVector = (pin.TexCoord - float2(0.0f, 0.5f));
+	float magnitude = length(lightVector);
+	float2 lightDir = lightVector / magnitude;
+	
+	float halfAngle = acos(dot(lightDir, float2(1, 0)));
 
-	float halfConeAngle = ConeAngle * 0.5f;
-	float2 coneDir = float2(1, 0);
-	float halfAngle = acos(dot(coneDir, lightDir));
+	float occlusion = step(halfAngle, ConeHalfAngle);
 
-	float occlusion = step(halfAngle, halfConeAngle);
-
-	float distanceAttenuation = saturate(1.0f - halfMagnitude * 2.0f);
-	float coneAttenuation = 1.0f - pow(halfAngle / halfConeAngle, ConeDecay);
+	float distanceAttenuation = saturate(1.0f - magnitude);
+	float coneAttenuation = 1.0f - pow(halfAngle / ConeHalfAngle, ConeDecay);
 
 	float alpha = distanceAttenuation * coneAttenuation;
 

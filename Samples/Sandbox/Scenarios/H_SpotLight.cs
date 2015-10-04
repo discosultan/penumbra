@@ -23,27 +23,25 @@ namespace Sandbox.Scenarios
             _lights.Add(new Spotlight
             {                
                 Color = Color.YellowGreen,
-                Scale = new Vector2(400),                
-                Radius = 20,                
-                ConeAngle = MathHelper.PiOver2,                
+                Scale = new Vector2(400),
+                Radius = 20,
+                //ConeAngle = MathHelper.PiOver2,
                 ConeDecay = 1.5f 
             });
-            //_lights.Add(new Spotlight
-            //{
-            //    Color = Color.Wheat,
-            //    Range = 500,
-            //    ConeDirection = new Vector2(-1, -1),
-            //    ConeAngle = MathHelper.PiOver4 * 1.5f,
-            //    ConeDecay = 0.5f
-            //});
-            //_lights.Add(new Spotlight
-            //{
-            //    Color = Color.Turquoise,
-            //    Range = 450,
-            //    ConeDirection = new Vector2(+1, -1),
-            //    ConeAngle = MathHelper.PiOver4 * 1.5f,
-            //    ConeDecay = 1f
-            //});
+            _lights.Add(new Spotlight
+            {
+                Color = Color.Wheat,
+                Range = 500,
+                Rotation = MathHelper.Pi - MathHelper.PiOver2 * 0.75f,                                
+                ConeDecay = 0.5f
+            });
+            _lights.Add(new Spotlight
+            {
+                Color = Color.Turquoise,
+                Range = 450,
+                Rotation = MathHelper.Pi + MathHelper.PiOver2 * 0.75f,
+                ConeDecay = 1f
+            });
             _lights.ForEach(penumbra.Lights.Add);            
 
             GenerateHulls(penumbra);
@@ -72,7 +70,7 @@ namespace Sandbox.Scenarios
 
             _lights.ForEach(x =>
             {
-                x.Rotation = MathHelper.WrapAngle(x.Rotation + angle);
+                x.Rotation = MathHelper.WrapAngle(x.Rotation - angle);
             });
 
             _hulls.ForEach(x =>

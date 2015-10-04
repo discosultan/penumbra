@@ -67,7 +67,7 @@ namespace Platformer2D
         private PointLight pointLight = new PointLight { Scale = new Vector2(1000), Color = Color.Indigo };
         private Spotlight spotlight = new Spotlight
         {
-            Scale = new Vector2(1000), ConeAngle = MathHelper.PiOver2 * 0.75f, Color = new Color(150, 255, 150, 255), Intensity = 1f, ConeDecay = 1.5f
+            Scale = new Vector2(1000), Color = new Color(150, 255, 150, 255), Intensity = 1f, ConeDecay = 1.5f
         };
 
         // The number of levels in the Levels directory of our content. We assume that

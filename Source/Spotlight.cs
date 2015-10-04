@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Graphics.Renderers;
 
@@ -17,14 +18,16 @@ namespace Penumbra
             set { Scale = new Vector2(value * 2.0f); }
         }
         
-        public float ConeAngle { get; set; } = MathHelper.PiOver2;
+        //public float ConeAngle { get; set; } = MathHelper.PiOver2;
         public float ConeDecay { get; set; } = 0.5f;
 
         internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
         {
             base.ApplyEffectParams(renderer);
+            
+            float halfAngle = MathHelper.PiOver2 - (float) Math.Atan(2 * Scale.X / Scale.Y); // MathHelper.Pi - 2 x ArcTan reduced.
 
-            renderer._fxLightParamConeAngle.SetValue(ConeAngle);
+            renderer._fxLightParamConeAngle.SetValue(halfAngle);
             renderer._fxLightParamConeDecay.SetValue(ConeDecay);
 
             return renderer._fxSpotLightTech;

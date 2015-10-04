@@ -93,7 +93,6 @@ namespace Penumbra
         internal bool Dirty;
 
         private Vector2 _scale = new Vector2(100.0f);
-
         public Vector2 Scale
         {
             get { return _scale; }
@@ -108,7 +107,6 @@ namespace Penumbra
         }
 
         private float _rotation;
-
         public float Rotation
         {
             get { return _rotation; }
@@ -174,19 +172,18 @@ namespace Penumbra
         {
             if (_rotation == 0.0f)
             {
-                Vector2 halfScale;
-                Vector2.Multiply(ref _scale, 0.5f, out halfScale);
-                Vector2 center;
-                Vector2.Subtract(ref _position, ref _origin, out center);
-                Vector2 min, max;
-                Vector2.Subtract(ref center, ref halfScale, out min);
-                Vector2.Add(ref center, ref halfScale, out max);
+                Vector2 min;
+                Vector2.Multiply(ref _origin, ref _scale, out min);
+                Vector2.Subtract(ref _position, ref min, out min);
+
+                Vector2 max;                
+                Vector2.Add(ref min, ref _scale, out max);
+
                 Bounds = new BoundingRectangle(min, max);
             }
             else
-            {
-                var halfLocalSize = new Vector2(0.5f);
-                var bounds = new BoundingRectangle(-halfLocalSize, halfLocalSize);
+            {                
+                var bounds = new BoundingRectangle(Vector2.Zero, Vector2.One);
                 BoundingRectangle.Transform(ref bounds, ref LocalToWorld, out Bounds);
             }
         }
