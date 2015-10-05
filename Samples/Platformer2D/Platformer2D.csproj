@@ -83,6 +83,7 @@
     <Content Include="Content\Sounds\PlayerKilled.wav" />
     <Content Include="Content\Sounds\Powerup.wav" />
     <Content Include="Content\Sprites\Gem.png" />
+    <Content Include="Content\Sprites\Light.jpg" />
     <Content Include="Content\Sprites\MonsterA\Idle.png" />
     <Content Include="Content\Sprites\MonsterA\Run.png" />
     <Content Include="Content\Sprites\MonsterB\Idle.png" />
@@ -160,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Content\Fonts\Console.spritefont" />
     <None Include="Content\Fonts\Hud.spritefont" />
     <MonoGameContentReference Include="Content\Platformer2D.mgcb" />
     <None Include="packages.config" />

@@ -56,7 +56,7 @@ namespace Platformer2D.Game
         // Sounds
         private SoundEffect killedSound;
 
-        private Light light = new PointLight { Scale = new Vector2(1000), Color = new Color(200, 200, 200) };
+        private Light light = new PointLight { Scale = new Vector2(800), Color = Color.White };
 
         private Rectangle localBounds;
 

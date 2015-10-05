@@ -43,7 +43,7 @@ namespace Platformer2D
         private readonly GraphicsDeviceManager graphics;
         private readonly PenumbraControllerComponent penumbraController;
 
-        private readonly PointLight pointLight = new PointLight { Scale = new Vector2(1000), Color = Color.Indigo };
+        private readonly PointLight pointLight = new PointLight { Scale = new Vector2(800), Color = Color.White };
 
         private readonly Spotlight spotlight = new Spotlight
         {
@@ -52,6 +52,8 @@ namespace Platformer2D
             Intensity = 1f,
             ConeDecay = 1.5f
         };
+
+        private TexturedLight texturedLight;
 
         private AccelerometerState accelerometerState;
         private Vector2 baseScreenSize = new Vector2(800, 480);
@@ -97,9 +99,8 @@ namespace Platformer2D
 
             Penumbra = new PenumbraComponent(this)
             {
-                //AmbientColor = new Color(40, 30, 15)
-                AmbientColor = new Color(40, 40, 40),
-                Visible = false,
+                AmbientColor = new Color(30, 20, 10),
+                Visible = true,
                 Debug = false
             };
 
@@ -107,10 +108,7 @@ namespace Platformer2D
             Components.Add(penumbraController);
 
             Console = new ConsoleComponent(this);
-            Components.Add(Console);
-
-            Interpreter.AddVariable("spotlight", spotlight);
-            Interpreter.AddVariable("pointLight", pointLight);
+            Components.Add(Console);            
         }
 
         public PenumbraComponent Penumbra { get; }
@@ -135,7 +133,11 @@ namespace Platformer2D
             diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
 
             Penumbra.Load();
-            Console.LoadContent(hudFont, Interpreter);
+            Console.LoadContent(Content.Load<SpriteFont>("Fonts/Console"), Interpreter);
+            texturedLight = new TexturedLight(Content.Load<Texture2D>("Sprites/Light"))
+            {
+                Origin = new Vector2(0.5f, 0.5f)
+            };
 
             //Work out how much we need to scale our graphics to fill the screen
             float horScaling = GraphicsDevice.PresentationParameters.BackBufferWidth / baseScreenSize.X;
@@ -160,6 +162,10 @@ namespace Platformer2D
             {
             }
 
+            Interpreter.AddVariable("spotlight", spotlight);
+            Interpreter.AddVariable("pointLight", pointLight);
+            Interpreter.AddVariable("texturedLight", texturedLight);
+
             LoadNextLevel();
         }
 
@@ -180,6 +186,8 @@ namespace Platformer2D
             if (level.Player.Velocity != Vector2.Zero)
                 virtualGamePad.NotifyPlayerIsMoving();
 
+            texturedLight.Rotation = MathHelper.WrapAngle((float)gameTime.TotalGameTime.TotalSeconds);
+
             base.Update(gameTime);
         }
 
@@ -195,7 +203,7 @@ namespace Platformer2D
 
             Vector2 playerPos = Vector2.Transform(level.Player.Position, globalTransformation);
             Vector2 lookDir = Vector2.Normalize(mouseState.Position.ToVector2() - playerPos);
-            spotlight.Rotation = (float) Math.Atan2(lookDir.Y, lookDir.X);
+            spotlight.Rotation = (float) Math.Atan2(lookDir.Y, lookDir.X);            
 
 #if !NETFX_CORE
             // Exit the game when back is pressed.
@@ -277,7 +285,7 @@ namespace Platformer2D
 
             Penumbra.Draw(gameTime);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, globalTransformation);
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, null);
             DrawHud();
             spriteBatch.End();
 
@@ -287,13 +295,17 @@ namespace Platformer2D
         private void DrawHud()
         {
             Rectangle titleSafeArea = GraphicsDevice.Viewport.TitleSafeArea;
-            var hudLocation = new Vector2(titleSafeArea.X, titleSafeArea.Y);
-            var center = new Vector2(baseScreenSize.X / 2, baseScreenSize.Y / 2);
+            var hudLocation = new Vector2(titleSafeArea.X + titleSafeArea.Width, titleSafeArea.Y);
+            //var center = new Vector2(baseScreenSize.X / 2, baseScreenSize.Y / 2);
+            var center = new Vector2(titleSafeArea.X + titleSafeArea.Width / 2, titleSafeArea.Y + titleSafeArea.Height / 2);
 
             // Draw time remaining. Uses modulo division to cause blinking when the
             // player is running out of time.
             string timeString = "TIME: " + level.TimeRemaining.Minutes.ToString("00") + ":" +
                                 level.TimeRemaining.Seconds.ToString("00");
+            string scoreString = "SCORE: " + level.Score;
+            Vector2 timeSize = hudFont.MeasureString(timeString);
+            Vector2 scoreSize = hudFont.MeasureString(scoreString);
             Color timeColor;
             if (level.TimeRemaining > WarningTime ||
                 level.ReachedExit ||
@@ -304,12 +316,11 @@ namespace Platformer2D
             else
             {
                 timeColor = Color.Red;
-            }
-            DrawShadowedString(hudFont, timeString, hudLocation, timeColor);
+            }            
+            DrawShadowedString(hudFont, timeString, hudLocation + new Vector2(-timeSize.X, 0), timeColor);
 
-            // Draw score
-            float timeHeight = hudFont.MeasureString(timeString).Y;
-            DrawShadowedString(hudFont, "SCORE: " + level.Score, hudLocation + new Vector2(0.0f, timeHeight * 1.2f),
+            // Draw score            
+            DrawShadowedString(hudFont, scoreString, hudLocation + new Vector2(-scoreSize.X, timeSize.Y * 1.2f),
                 Color.Yellow);
 
             // Determine the status overlay message to show.
