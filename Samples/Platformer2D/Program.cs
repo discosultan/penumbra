@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 #if MONOMAC
 using MonoMac.AppKit;
 using MonoMac.Foundation;
@@ -62,28 +62,27 @@ namespace Platformer2D
 		}
 	}
 #else
-	#if !WINDOWS_PHONE
-		/// <summary>
-		/// The main class.
-		/// </summary>
-		public static class Program
-		{
-			/// <summary>
-			/// The main entry point for the application.
-			/// </summary>
-			static void Main()
-			{
-	#if WINDOWS || LINUX || PSM
-				using (var game = new PlatformerGame())
-					game.Run();
+#if !WINDOWS_PHONE
+    /// <summary>
+    /// The main class.
+    /// </summary>
+    public static class Program
+    {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        private static void Main()
+        {
+#if WINDOWS || LINUX || PSM
+            using (var game = new PlatformerGame())
+                game.Run();
 
-	#else
+#else
 				var factory = new MonoGame.Framework.GameFrameworkViewSource<PlatformerGame>();
 				Windows.ApplicationModel.Core.CoreApplication.Run(factory);
 	#endif
-			}
-		}
-	#endif
+        }
+    }
 #endif
-
+#endif
 }

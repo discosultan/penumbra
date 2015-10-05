@@ -43,7 +43,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HullGenerationComponent.cs" />
-    <None Include="Scenarios\H_HullInsideLightRadius.cs_" />
     <Compile Include="Scenarios\I_TexturedLight.cs" />
     <Compile Include="Scenarios\H_Spotlight.cs" />
     <Compile Include="Scenarios\F_ConcaveHull.cs" />

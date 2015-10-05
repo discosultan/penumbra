@@ -1,10 +1,12 @@
 #region File Description
+
 //-----------------------------------------------------------------------------
 // Player.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using System;
@@ -21,65 +23,6 @@ namespace Platformer2D.Game
     /// </summary>
     public class Player
     {
-        // Animations
-        private Animation idleAnimation;
-        private Animation runAnimation;
-        private Animation jumpAnimation;
-        private Animation celebrateAnimation;
-        private Animation dieAnimation;
-        private SpriteEffects flip = SpriteEffects.None;
-        private AnimationPlayer sprite;        
-
-        // Sounds
-        private SoundEffect killedSound;
-        private SoundEffect jumpSound;
-        private SoundEffect fallSound;
-
-        private Light light = new PointLight { Scale = new Vector2(1000), Color = new Color(200, 200, 200) };
-        public Light Light
-        {
-            get { return light; }
-            set
-            {
-                level.Penumbra.Lights.Remove(light);                
-                light = value;
-                level.Penumbra.Lights.Add(light);
-            }
-        }
-
-        public Level Level
-        {
-            get { return level; }
-        }
-        Level level;
-
-        public bool IsAlive
-        {
-            get { return isAlive; }
-        }
-        bool isAlive;
-
-        // Physics state
-        public Vector2 Position
-        {
-            get { return position; }
-            set
-            {
-                position = value;
-                Light.Position = new Vector2(value.X, value.Y - 30);
-            }
-        }
-        Vector2 position;
-
-        private float previousBottom;
-
-        public Vector2 Velocity
-        {
-            get { return velocity; }
-            set { velocity = value; }
-        }
-        Vector2 velocity;
-
         // Constants for controling horizontal movement
         private const float MoveAcceleration = 13000.0f;
         private const float MaxMoveSpeed = 1750.0f;
@@ -91,33 +34,95 @@ namespace Platformer2D.Game
         private const float JumpLaunchVelocity = -3500.0f;
         private const float GravityAcceleration = 3400.0f;
         private const float MaxFallSpeed = 550.0f;
-        private const float JumpControlPower = 0.14f; 
+        private const float JumpControlPower = 0.14f;
 
         // Input configuration
         private const float MoveStickScale = 1.0f;
         private const float AccelerometerScale = 1.5f;
         private const Buttons JumpButton = Buttons.A;
+        private Animation celebrateAnimation;
+        private Animation dieAnimation;
+        private SoundEffect fallSound;
+        private SpriteEffects flip = SpriteEffects.None;
+        // Animations
+        private Animation idleAnimation;
 
-        /// <summary>
-        /// Gets whether or not the player's feet are on the ground.
-        /// </summary>
-        public bool IsOnGround
-        {
-            get { return isOnGround; }
-        }
-        bool isOnGround;
+        // Jumping state
+        private bool isJumping;
+        private Animation jumpAnimation;
+        private SoundEffect jumpSound;
+        private float jumpTime;
+
+        // Sounds
+        private SoundEffect killedSound;
+
+        private Light light = new PointLight { Scale = new Vector2(1000), Color = new Color(200, 200, 200) };
+
+        private Rectangle localBounds;
 
         /// <summary>
         /// Current user movement input.
         /// </summary>
         private float movement;
 
-        // Jumping state
-        private bool isJumping;
-        private bool wasJumping;
-        private float jumpTime;
+        private Vector2 position;
 
-        private Rectangle localBounds;
+        private float previousBottom;
+        private Animation runAnimation;
+        private AnimationPlayer sprite;
+
+        private Vector2 velocity;
+        private bool wasJumping;
+
+        /// <summary>
+        /// Constructors a new player.
+        /// </summary>
+        public Player(Level level, Vector2 position)
+        {
+            Level = level;
+
+            LoadContent();
+
+            Reset(position);
+        }
+
+        public Light Light
+        {
+            get { return light; }
+            set
+            {
+                Level.Game.Penumbra.Lights.Remove(light);
+                light = value;
+                Level.Game.Penumbra.Lights.Add(light);
+            }
+        }
+
+        public Level Level { get; }
+
+        public bool IsAlive { get; private set; }
+
+        // Physics state
+        public Vector2 Position
+        {
+            get { return position; }
+            set
+            {
+                position = value;
+                Light.Position = new Vector2(value.X, value.Y - 30);
+            }
+        }
+
+        public Vector2 Velocity
+        {
+            get { return velocity; }
+            set { velocity = value; }
+        }
+
+        /// <summary>
+        /// Gets whether or not the player's feet are on the ground.
+        /// </summary>
+        public bool IsOnGround { get; private set; }
+
         /// <summary>
         /// Gets a rectangle which bounds this player in world space.
         /// </summary>
@@ -125,23 +130,11 @@ namespace Platformer2D.Game
         {
             get
             {
-                int left = (int)Math.Round(Position.X - sprite.Origin.X) + localBounds.X;
-                int top = (int)Math.Round(Position.Y - sprite.Origin.Y) + localBounds.Y;
+                int left = (int) Math.Round(Position.X - sprite.Origin.X) + localBounds.X;
+                int top = (int) Math.Round(Position.Y - sprite.Origin.Y) + localBounds.Y;
 
                 return new Rectangle(left, top, localBounds.Width, localBounds.Height);
             }
-        }
-
-        /// <summary>
-        /// Constructors a new player.
-        /// </summary>
-        public Player(Level level, Vector2 position)
-        {
-            this.level = level;
-
-            LoadContent();
-
-            Reset(position);
         }
 
         /// <summary>
@@ -157,9 +150,9 @@ namespace Platformer2D.Game
             dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
 
             // Calculate bounds within texture size.            
-            int width = (int)(idleAnimation.FrameWidth * 0.4);
+            var width = (int) (idleAnimation.FrameWidth * 0.4);
             int left = (idleAnimation.FrameWidth - width) / 2;
-            int height = (int)(idleAnimation.FrameWidth * 0.8);
+            var height = (int) (idleAnimation.FrameWidth * 0.8);
             int top = idleAnimation.FrameHeight - height;
             localBounds = new Rectangle(left, top, width, height);
 
@@ -177,7 +170,7 @@ namespace Platformer2D.Game
         {
             Position = position;
             Velocity = Vector2.Zero;
-            isAlive = true;
+            IsAlive = true;
             sprite.PlayAnimation(idleAnimation);
         }
 
@@ -190,27 +183,20 @@ namespace Platformer2D.Game
         /// we need to reverse our motion when the orientation is in the LandscapeRight orientation.
         /// </remarks>
         public void Update(
-            GameTime gameTime, 
-            KeyboardState keyboardState, 
-            GamePadState gamePadState, 
+            GameTime gameTime,
+            KeyboardState keyboardState,
+            GamePadState gamePadState,
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {
-            if (!level.Console.IsAcceptingInput)
+            if (!Level.Game.Console.IsAcceptingInput)
                 GetInput(keyboardState, gamePadState, accelState, orientation);
 
             ApplyPhysics(gameTime);
 
             if (IsAlive && IsOnGround)
             {
-                if (Math.Abs(Velocity.X) - 0.02f > 0)
-                {
-                    sprite.PlayAnimation(runAnimation);
-                }
-                else
-                {
-                    sprite.PlayAnimation(idleAnimation);
-                }
+                sprite.PlayAnimation(Math.Abs(Velocity.X) - 0.02f > 0 ? runAnimation : idleAnimation);
             }
 
             // Clear input.
@@ -222,9 +208,9 @@ namespace Platformer2D.Game
         /// Gets player horizontal movement and jump commands from input.
         /// </summary>
         private void GetInput(
-            KeyboardState keyboardState, 
+            KeyboardState keyboardState,
             GamePadState gamePadState,
-            AccelerometerState accelState, 
+            AccelerometerState accelState,
             DisplayOrientation orientation)
         {
             // Get analog horizontal movement.
@@ -272,7 +258,7 @@ namespace Platformer2D.Game
         /// </summary>
         public void ApplyPhysics(GameTime gameTime)
         {
-            float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var elapsed = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
             Vector2 previousPosition = Position;
 
@@ -294,7 +280,7 @@ namespace Platformer2D.Game
 
             // Apply velocity.
             Position += velocity * elapsed;
-            Position = new Vector2((float)Math.Round(Position.X), (float)Math.Round(Position.Y));
+            Position = new Vector2((float) Math.Round(Position.X), (float) Math.Round(Position.Y));
 
             // If the player is now colliding with the level, separate them.
             HandleCollisions();
@@ -335,7 +321,7 @@ namespace Platformer2D.Game
                     if (jumpTime == 0.0f)
                         jumpSound.Play();
 
-                    jumpTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    jumpTime += (float) gameTime.ElapsedGameTime.TotalSeconds;
                     sprite.PlayAnimation(jumpAnimation);
                 }
 
@@ -343,7 +329,7 @@ namespace Platformer2D.Game
                 if (0.0f < jumpTime && jumpTime <= MaxJumpTime)
                 {
                     // Fully override the vertical velocity with a power curve that gives players more control over the top of the jump
-                    velocityY = JumpLaunchVelocity * (1.0f - (float)Math.Pow(jumpTime / MaxJumpTime, JumpControlPower));
+                    velocityY = JumpLaunchVelocity * (1.0f - (float) Math.Pow(jumpTime / MaxJumpTime, JumpControlPower));
                 }
                 else
                 {
@@ -371,13 +357,13 @@ namespace Platformer2D.Game
         {
             // Get the player's bounding rectangle and find neighboring tiles.
             Rectangle bounds = BoundingRectangle;
-            int leftTile = (int)Math.Floor((float)bounds.Left / Tile.Width);
-            int rightTile = (int)Math.Ceiling(((float)bounds.Right / Tile.Width)) - 1;
-            int topTile = (int)Math.Floor((float)bounds.Top / Tile.Height);
-            int bottomTile = (int)Math.Ceiling(((float)bounds.Bottom / Tile.Height)) - 1;
+            var leftTile = (int) Math.Floor((float) bounds.Left / Tile.Width);
+            int rightTile = (int) Math.Ceiling(((float) bounds.Right / Tile.Width)) - 1;
+            var topTile = (int) Math.Floor((float) bounds.Top / Tile.Height);
+            int bottomTile = (int) Math.Ceiling(((float) bounds.Bottom / Tile.Height)) - 1;
 
             // Reset flag to search for ground collision.
-            isOnGround = false;
+            IsOnGround = false;
 
             // For each potentially colliding tile,
             for (int y = topTile; y <= bottomTile; ++y)
@@ -390,7 +376,7 @@ namespace Platformer2D.Game
                     {
                         // Determine collision depth (with direction) and magnitude.
                         Rectangle tileBounds = Level.GetBounds(x, y);
-                        Vector2 depth = RectangleExtensions.GetIntersectionDepth(bounds, tileBounds);
+                        Vector2 depth = bounds.GetIntersectionDepth(tileBounds);
                         if (depth != Vector2.Zero)
                         {
                             float absDepthX = Math.Abs(depth.X);
@@ -401,7 +387,7 @@ namespace Platformer2D.Game
                             {
                                 // If we crossed the top of a tile, we are on the ground.
                                 if (previousBottom <= tileBounds.Top)
-                                    isOnGround = true;
+                                    IsOnGround = true;
 
                                 // Ignore platforms, unless we are on the ground.
                                 if (collision == TileCollision.Impassable || IsOnGround)
@@ -439,7 +425,7 @@ namespace Platformer2D.Game
         /// </param>
         public void OnKilled(Enemy killedBy)
         {
-            isAlive = false;
+            IsAlive = false;
 
             if (killedBy != null)
                 killedSound.Play();

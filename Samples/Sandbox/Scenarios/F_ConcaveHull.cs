@@ -16,7 +16,7 @@ namespace Sandbox.Scenarios
             {
                 Position = new Vector2(-100, 0),
                 Color = Color.White,
-                Range = 300,
+                Scale = new Vector2(600),
                 Radius = 20
             };
             penumbra.Lights.Add(_light);
@@ -38,18 +38,7 @@ namespace Sandbox.Scenarios
             penumbra.Hulls.Add(new Hull(hullVertices)
             {
                 Position = new Vector2(0, 0),
-                //Scale = new Vector2(50f)
             });
-
-            //penumbra.Hulls.Add(new Hull(new Vector2[] { new Vector2(0, 0), new Vector2(-1, 0), new Vector2(0, 1) })
-            //{
-            //    Scale = new Vector2(50f)
-            //});
-
-            //penumbra.Hulls.Add(new Hull(new Vector2[] { new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1) })
-            //{
-            //    Scale = new Vector2(50f)
-            //});
         }
 
         public override void Update(float deltaSeconds)
@@ -62,7 +51,6 @@ namespace Sandbox.Scenarios
                 _light.Position.X * c - _light.Position.Y * s,
                 _light.Position.X * s + _light.Position.Y * c
             );
-            //_light.Position = new Vector2(-10, -55);
         }
     }
 }

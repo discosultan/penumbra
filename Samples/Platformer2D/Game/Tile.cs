@@ -1,10 +1,12 @@
 ﻿#region File Description
+
 //-----------------------------------------------------------------------------
 // Tile.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.Xna.Framework;
@@ -33,7 +35,7 @@ namespace Platformer2D.Game
         /// player is above it. A player can jump up through a platform as well as move
         /// past it to the left and right, but can not fall down through the top of it.
         /// </summary>
-        Platform = 2,
+        Platform = 2
     }
 
     /// <summary>

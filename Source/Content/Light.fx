@@ -19,11 +19,6 @@ cbuffer cbPerSpotlight : register(c6)
 	float ConeDecay;
 };
 
-//cbuffer cbPerTexturedLight : register(c7)
-//{
-//	float4x4 TextureTransform;
-//};
-
 struct VertexIn
 {
 	float2 Position : SV_POSITION0;
@@ -45,16 +40,6 @@ VertexOut VSLight(VertexIn vin)
 
 	return vout;
 }
-
-//VertexOut VSTexturedLight(VertexIn vin)
-//{
-//	VertexOut vout;
-//
-//	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldViewProjection);	
-//	vout.TexCoord = mul(float4(vin.TexCoord, 0.0f, 1.0f), TextureTransform).xy;
-//
-//	return vout;
-//}
 
 float4 GetComputedColor(float alpha)
 {

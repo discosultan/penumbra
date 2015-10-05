@@ -16,7 +16,7 @@ namespace Sandbox.Scenarios
             {
                 Position = new Vector2(-100, 0),
                 Color = Color.White,
-                Scale = new Vector2(300),
+                Scale = new Vector2(600),
                 Radius = 20                
             };
             penumbra.Lights.Add(_light);

@@ -15,7 +15,6 @@ namespace Sandbox.Scenarios
         private static readonly Color[] LightColors =
         {
             //Color.LightBlue, Color.Violet, Color.LimeGreen,
-
             Color.Red, Color.Orange, Color.Yellow
         };
 
@@ -38,7 +37,7 @@ namespace Sandbox.Scenarios
                 Position = new Vector2(-250, 0),
                 Color = LightColors[0],
                 Intensity = 1f,
-                Range = 400,
+                Scale = new Vector2(800),
                 Radius = 20                
             };
             _light2 = new PointLight
@@ -46,14 +45,14 @@ namespace Sandbox.Scenarios
                 Position = new Vector2(0, 150),
                 Color = LightColors[1],
                 Intensity = 1.2f,
-                Range = 200,
+                Scale = new Vector2(400),
                 Radius = 30
             };
             _light3 = new PointLight
             {
                 Position = new Vector2(0, -50),
                 Color = LightColors[2],
-                Range = 300,
+                Scale = new Vector2(600),
                 Radius = 25,
                 Intensity = 0.8f
             };

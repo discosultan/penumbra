@@ -1,10 +1,12 @@
 ﻿#region File Description
+
 //-----------------------------------------------------------------------------
 // Gem.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using System;
@@ -18,41 +20,50 @@ namespace Platformer2D.Game
     /// <summary>
     /// A valuable item the player can collect.
     /// </summary>
-    class Gem
+    internal class Gem
     {
+        public const int PointValue = 30;
+        private const float LightOscillationSpeed = 1.5f;
         private static readonly Random random = new Random();
 
-        private Texture2D texture;
-        private Vector2 origin;
-        private SoundEffect collectedSound;
-
-        public const int PointValue = 30;
+        private static readonly Vector2 LightScale = new Vector2(80);
         public readonly Color Color = Color.Yellow;
 
         // The gem is animated from a base position along the Y axis.
-        private Vector2 basePosition;
-        private float bounce;        
+        private readonly Vector2 basePosition;
+        private float bounce;
+        private SoundEffect collectedSound;
+        private Vector2 origin;
+        private float oscillationProgress = (float) random.NextDouble();
 
-        private static readonly Vector2 LightScale = new Vector2(80);
-        private const float LightOscillationSpeed = 1.5f;
-        private float oscillationProgress = (float)random.NextDouble();
-        public PointLight Light { get; } = new PointLight { Scale = LightScale, Color = Color.Yellow, CastsShadows = false };
+        private Texture2D texture;
 
-        public Level Level
+        /// <summary>
+        /// Constructs a new gem.
+        /// </summary>
+        public Gem(Level level, Vector2 position)
         {
-            get { return level; }
+            Level = level;
+            basePosition = position;
+
+            LoadContent();
         }
-        Level level;
+
+        public PointLight Light { get; } = new PointLight
+        {
+            Scale = LightScale,
+            Color = Color.Yellow,
+            CastsShadows = false
+        };
+
+        public Level Level { get; }
 
         /// <summary>
         /// Gets the current position of this gem in world space.
         /// </summary>
         public Vector2 Position
         {
-            get
-            {
-                return basePosition + new Vector2(0.0f, bounce);
-            }
+            get { return basePosition + new Vector2(0.0f, bounce); }
         }
 
         /// <summary>
@@ -60,21 +71,7 @@ namespace Platformer2D.Game
         /// </summary>
         public Circle BoundingCircle
         {
-            get
-            {
-                return new Circle(Position, Tile.Width / 3.0f);
-            }
-        }
-
-        /// <summary>
-        /// Constructs a new gem.
-        /// </summary>
-        public Gem(Level level, Vector2 position)
-        {
-            this.level = level;
-            this.basePosition = position;
-
-            LoadContent();
+            get { return new Circle(Position, Tile.Width / 3.0f); }
         }
 
         /// <summary>
@@ -100,15 +97,15 @@ namespace Platformer2D.Game
             // Bounce along a sine curve over time.
             // Include the X coordinate so that neighboring gems bounce in a nice wave pattern.            
             double t = gameTime.TotalGameTime.TotalSeconds * BounceRate + Position.X * BounceSync;
-            bounce = (float)Math.Sin(t) * BounceHeight * texture.Height;
+            bounce = (float) Math.Sin(t) * BounceHeight * texture.Height;
 
             Light.Position = Position;
-            oscillationProgress += (float)gameTime.ElapsedGameTime.TotalSeconds / LightOscillationSpeed;
+            oscillationProgress += (float) gameTime.ElapsedGameTime.TotalSeconds / LightOscillationSpeed;
             if (oscillationProgress >= 1)
             {
                 oscillationProgress -= 1;
             }
-            Light.Scale = (float)Math.Sin(oscillationProgress * Math.PI) * LightScale * 0.3f + LightScale * 0.7f;
+            Light.Scale = (float) Math.Sin(oscillationProgress * Math.PI) * LightScale * 0.3f + LightScale * 0.7f;
         }
 
         /// <summary>

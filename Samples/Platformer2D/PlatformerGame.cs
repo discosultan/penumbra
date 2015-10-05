@@ -1,10 +1,12 @@
 #region File Description
+
 //-----------------------------------------------------------------------------
 // PlatformerGame.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using System;
@@ -13,12 +15,11 @@ using Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Input.Touch;
+using Microsoft.Xna.Framework.Media;
 using Penumbra;
 using Platformer2D.Game;
 using QuakeConsole;
-
 
 namespace Platformer2D
 {
@@ -29,52 +30,54 @@ namespace Platformer2D
     {
         private const Keys ConsoleToggleOpenKey = Keys.OemTilde;
 
-        // Resources for drawing.
-        private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-        Vector2 baseScreenSize = new Vector2(800, 480);
-        private Matrix globalTransformation;
-        private PenumbraComponent penumbra;
-        private PenumbraControllerComponent penumbraController;
-        private ConsoleComponent console;
-        private PythonInterpreter consoleInterpreter = new PythonInterpreter();
-
-        // Global content.
-        private SpriteFont hudFont;
-
-        private Texture2D winOverlay;
-        private Texture2D loseOverlay;
-        private Texture2D diedOverlay;
-
-        // Meta-level game state.
-        private int levelIndex = -1;
-        private Level level;
-        private bool wasContinuePressed;
-
-        // When the time remaining is less than the warning time, it blinks on the hud
-        private static readonly TimeSpan WarningTime = TimeSpan.FromSeconds(15);
-
-        // We store our input states so that we only poll once per frame, 
-        // then we use the same input state wherever needed
-        private GamePadState gamePadState;
-        private KeyboardState previousKeyboardState;
-        private KeyboardState keyboardState;
-        private TouchCollection touchState;
-        private AccelerometerState accelerometerState;
-
-        private VirtualGamePad virtualGamePad;
-
-        private PointLight pointLight = new PointLight { Scale = new Vector2(1000), Color = Color.Indigo };
-        private Spotlight spotlight = new Spotlight
-        {
-            Scale = new Vector2(1000), Color = new Color(150, 255, 150, 255), Intensity = 1f, ConeDecay = 1.5f
-        };
-
         // The number of levels in the Levels directory of our content. We assume that
         // levels in our content are 0-based and that all numbers under this constant
         // have a level file present. This allows us to not need to check for the file
         // or handle exceptions, both of which can add unnecessary time to level loading.
         private const int numberOfLevels = 3;
+
+        // When the time remaining is less than the warning time, it blinks on the hud
+        private static readonly TimeSpan WarningTime = TimeSpan.FromSeconds(15);
+
+        // Resources for drawing.
+        private readonly GraphicsDeviceManager graphics;
+        private readonly PenumbraControllerComponent penumbraController;
+
+        private readonly PointLight pointLight = new PointLight { Scale = new Vector2(1000), Color = Color.Indigo };
+
+        private readonly Spotlight spotlight = new Spotlight
+        {
+            Scale = new Vector2(1000, 1200),
+            Color = new Color(150, 255, 150, 255),
+            Intensity = 1f,
+            ConeDecay = 1.5f
+        };
+
+        private AccelerometerState accelerometerState;
+        private Vector2 baseScreenSize = new Vector2(800, 480);
+        private Texture2D diedOverlay;
+
+        // We store our input states so that we only poll once per frame, 
+        // then we use the same input state wherever needed
+        private GamePadState gamePadState;
+        private Matrix globalTransformation;
+
+        // Global content.
+        private SpriteFont hudFont;
+        private KeyboardState keyboardState;
+        private Level level;
+
+        // Meta-level game state.
+        private int levelIndex = -1;
+        private Texture2D loseOverlay;
+        private KeyboardState previousKeyboardState;
+        private SpriteBatch spriteBatch;
+        private TouchCollection touchState;
+
+        private VirtualGamePad virtualGamePad;
+        private bool wasContinuePressed;
+
+        private Texture2D winOverlay;
 
         public PlatformerGame()
         {
@@ -84,16 +87,15 @@ namespace Platformer2D
 #if WINDOWS_PHONE
             TargetElapsedTime = TimeSpan.FromTicks(333333);
 #endif
-            //graphics.IsFullScreen = true;
 
-            //graphics.PreferredBackBufferWidth = 800;
-            //graphics.PreferredBackBufferHeight = 480;
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
             IsMouseVisible = true;
 
             Accelerometer.Initialize();
 
-            penumbra = new PenumbraComponent(this)
+            Penumbra = new PenumbraComponent(this)
             {
                 //AmbientColor = new Color(40, 30, 15)
                 AmbientColor = new Color(40, 40, 40),
@@ -101,20 +103,19 @@ namespace Platformer2D
                 Debug = false
             };
 
-            penumbraController = new PenumbraControllerComponent(this, penumbra);
+            penumbraController = new PenumbraControllerComponent(this, Penumbra);
             Components.Add(penumbraController);
 
-            console = new ConsoleComponent(this);
-            Components.Add(console);
+            Console = new ConsoleComponent(this);
+            Components.Add(Console);
 
-            consoleInterpreter.AddVariable("spotlight", spotlight);
-            consoleInterpreter.AddVariable("pointLight", pointLight);
-
-            //Components.Add(new CameraMovementComponent(this, penumbra) { InvertedY = true });
-
-            //We cannot disable fps limiter since movements seems to be fps dependant ... doh.
-            //Components.Add(new FpsGarbageComponent(this));
+            Interpreter.AddVariable("spotlight", spotlight);
+            Interpreter.AddVariable("pointLight", pointLight);
         }
+
+        public PenumbraComponent Penumbra { get; }
+        public ConsoleComponent Console { get; }
+        public PythonInterpreter Interpreter { get; } = new PythonInterpreter();
 
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
@@ -133,17 +134,18 @@ namespace Platformer2D
             loseOverlay = Content.Load<Texture2D>("Overlays/you_lose");
             diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
 
-            penumbra.Load();
-            console.LoadContent(hudFont, consoleInterpreter);
+            Penumbra.Load();
+            Console.LoadContent(hudFont, Interpreter);
 
             //Work out how much we need to scale our graphics to fill the screen
             float horScaling = GraphicsDevice.PresentationParameters.BackBufferWidth / baseScreenSize.X;
             float verScaling = GraphicsDevice.PresentationParameters.BackBufferHeight / baseScreenSize.Y;
-            Vector3 screenScalingFactor = new Vector3(horScaling, verScaling, 1);
+            var screenScalingFactor = new Vector3(horScaling, verScaling, 1);
             globalTransformation = Matrix.CreateScale(screenScalingFactor);
-            penumbra.Transform = globalTransformation;
+            Penumbra.Transform = globalTransformation;
 
-            virtualGamePad = new VirtualGamePad(baseScreenSize, globalTransformation, Content.Load<Texture2D>("Sprites/VirtualControlArrow"));
+            virtualGamePad = new VirtualGamePad(baseScreenSize, globalTransformation,
+                Content.Load<Texture2D>("Sprites/VirtualControlArrow"));
 
             //Known issue that you get exceptions if you use Media PLayer while connected to your PC
             //See http://social.msdn.microsoft.com/Forums/en/windowsphone7series/thread/c8a243d2-d360-46b1-96bd-62b1ef268c66
@@ -154,7 +156,9 @@ namespace Platformer2D
                 MediaPlayer.IsRepeating = true;
                 MediaPlayer.Play(Content.Load<Song>("Sounds/Music"));
             }
-            catch { }
+            catch
+            {
+            }
 
             LoadNextLevel();
         }
@@ -167,11 +171,11 @@ namespace Platformer2D
         protected override void Update(GameTime gameTime)
         {
             // Handle polling for our input and handling high-level input            
-            HandleInput(gameTime);                            
+            HandleInput(gameTime);
 
             // update our level, passing down the GameTime along with all of our input states
-            level.Update(gameTime, keyboardState, gamePadState, 
-                         accelerometerState, Window.CurrentOrientation);
+            level.Update(gameTime, keyboardState, gamePadState,
+                accelerometerState, Window.CurrentOrientation);
 
             if (level.Player.Velocity != Vector2.Zero)
                 virtualGamePad.NotifyPlayerIsMoving();
@@ -183,14 +187,15 @@ namespace Platformer2D
         {
             // get all of our input states
             previousKeyboardState = keyboardState;
-            keyboardState = Keyboard.GetState();            
+            keyboardState = Keyboard.GetState();
             touchState = TouchPanel.GetState();
             gamePadState = virtualGamePad.GetState(touchState, GamePad.GetState(PlayerIndex.One));
             accelerometerState = Accelerometer.GetState();
-            var mouseState = Mouse.GetState();
-            Vector2 lookDir = Vector2.Normalize(mouseState.Position.ToVector2() - level.Player.Position);
-            lookDir.Y *= -1;
-            spotlight.Rotation = (float)Math.Atan2(lookDir.Y, lookDir.X);
+            MouseState mouseState = Mouse.GetState();
+
+            Vector2 playerPos = Vector2.Transform(level.Player.Position, globalTransformation);
+            Vector2 lookDir = Vector2.Normalize(mouseState.Position.ToVector2() - playerPos);
+            spotlight.Rotation = (float) Math.Atan2(lookDir.Y, lookDir.X);
 
 #if !NETFX_CORE
             // Exit the game when back is pressed.
@@ -198,10 +203,10 @@ namespace Platformer2D
                 Exit();
 #endif
             if (keyboardState.IsKeyDown(ConsoleToggleOpenKey) && !previousKeyboardState.IsKeyDown(ConsoleToggleOpenKey))
-                console.ToggleOpenClose();
+                Console.ToggleOpenClose();
 
-            bool continuePressed = false;
-            if (!console.IsAcceptingInput)
+            var continuePressed = false;
+            if (!Console.IsAcceptingInput)
             {
                 penumbraController.InputEnabled = true;
 
@@ -217,7 +222,8 @@ namespace Platformer2D
                     if (!level.Player.IsAlive)
                     {
                         level.StartNewLife();
-                    } else if (level.TimeRemaining == TimeSpan.Zero)
+                    }
+                    else if (level.TimeRemaining == TimeSpan.Zero)
                     {
                         if (level.ReachedExit)
                             LoadNextLevel();
@@ -228,7 +234,7 @@ namespace Platformer2D
             }
             else
             {
-                penumbraController.InputEnabled = false;    
+                penumbraController.InputEnabled = false;
             }
             wasContinuePressed = continuePressed;
 
@@ -241,19 +247,12 @@ namespace Platformer2D
             levelIndex = (levelIndex + 1) % numberOfLevels;
 
             // Unloads the content for the current level before loading the next one.
-            if (level != null)
-                level.Dispose();
-
-            penumbra.Lights.Clear();
-            penumbra.Hulls.Clear();
+            level?.Dispose();            
 
             // Load the level.
-            string levelPath = string.Format("Content/Levels/{0}.txt", levelIndex);
+            string levelPath = $"Content/Levels/{levelIndex}.txt";
             using (Stream fileStream = TitleContainer.OpenStream(levelPath))
-                level = new Level(Services, fileStream, levelIndex, penumbra, console);
-
-            consoleInterpreter.RemoveVariable("level");
-            consoleInterpreter.AddVariable("level", level);
+                level = new Level(Services, fileStream, levelIndex, this);            
         }
 
         private void ReloadCurrentLevel()
@@ -268,22 +267,18 @@ namespace Platformer2D
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            penumbra.BeginDraw();
+            Penumbra.BeginDraw();
 
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,null, globalTransformation);
-
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, globalTransformation);
             level.Draw(gameTime, spriteBatch);
-
             spriteBatch.End();
 
-            penumbra.Draw(gameTime);
-            
+            Penumbra.Draw(gameTime);
+
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, globalTransformation);
-
             DrawHud();
-
             spriteBatch.End();
 
             base.Draw(gameTime);
@@ -292,19 +287,17 @@ namespace Platformer2D
         private void DrawHud()
         {
             Rectangle titleSafeArea = GraphicsDevice.Viewport.TitleSafeArea;
-            Vector2 hudLocation = new Vector2(titleSafeArea.X, titleSafeArea.Y);
-            //Vector2 center = new Vector2(titleSafeArea.X + titleSafeArea.Width / 2.0f,
-            //                             titleSafeArea.Y + titleSafeArea.Height / 2.0f);
-
-            Vector2 center = new Vector2(baseScreenSize.X / 2, baseScreenSize.Y / 2);
+            var hudLocation = new Vector2(titleSafeArea.X, titleSafeArea.Y);
+            var center = new Vector2(baseScreenSize.X / 2, baseScreenSize.Y / 2);
 
             // Draw time remaining. Uses modulo division to cause blinking when the
             // player is running out of time.
-            string timeString = "TIME: " + level.TimeRemaining.Minutes.ToString("00") + ":" + level.TimeRemaining.Seconds.ToString("00");
+            string timeString = "TIME: " + level.TimeRemaining.Minutes.ToString("00") + ":" +
+                                level.TimeRemaining.Seconds.ToString("00");
             Color timeColor;
             if (level.TimeRemaining > WarningTime ||
                 level.ReachedExit ||
-                (int)level.TimeRemaining.TotalSeconds % 2 == 0)
+                (int) level.TimeRemaining.TotalSeconds % 2 == 0)
             {
                 timeColor = Color.Yellow;
             }
@@ -316,20 +309,14 @@ namespace Platformer2D
 
             // Draw score
             float timeHeight = hudFont.MeasureString(timeString).Y;
-            DrawShadowedString(hudFont, "SCORE: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, timeHeight * 1.2f), Color.Yellow);
-           
+            DrawShadowedString(hudFont, "SCORE: " + level.Score, hudLocation + new Vector2(0.0f, timeHeight * 1.2f),
+                Color.Yellow);
+
             // Determine the status overlay message to show.
             Texture2D status = null;
             if (level.TimeRemaining == TimeSpan.Zero)
             {
-                if (level.ReachedExit)
-                {
-                    status = winOverlay;
-                }
-                else
-                {
-                    status = loseOverlay;
-                }
+                status = level.ReachedExit ? winOverlay : loseOverlay;
             }
             else if (!level.Player.IsAlive)
             {
@@ -339,7 +326,7 @@ namespace Platformer2D
             if (status != null)
             {
                 // Draw status message.
-                Vector2 statusSize = new Vector2(status.Width, status.Height);
+                var statusSize = new Vector2(status.Width, status.Height);
                 spriteBatch.Draw(status, center - statusSize / 2, Color.White);
             }
 
@@ -351,6 +338,6 @@ namespace Platformer2D
         {
             spriteBatch.DrawString(font, value, position + new Vector2(1.0f, 1.0f), Color.Black);
             spriteBatch.DrawString(font, value, position, color);
-        }           
+        }
     }
 }

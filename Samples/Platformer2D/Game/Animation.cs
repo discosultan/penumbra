@@ -1,10 +1,12 @@
 ﻿#region File Description
+
 //-----------------------------------------------------------------------------
 // Animation.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.Xna.Framework.Graphics;
@@ -19,35 +21,33 @@ namespace Platformer2D.Game
     /// as wide as each animation is tall. The number of frames in the
     /// animation are inferred from this.
     /// </remarks>
-    class Animation
+    internal class Animation
     {
+        /// <summary>
+        /// Constructors a new animation.
+        /// </summary>
+        public Animation(Texture2D texture, float frameTime, bool isLooping)
+        {
+            Texture = texture;
+            FrameTime = frameTime;
+            IsLooping = isLooping;
+        }
+
         /// <summary>
         /// All frames in the animation arranged horizontally.
         /// </summary>
-        public Texture2D Texture
-        {
-            get { return texture; }
-        }
-        Texture2D texture;
+        public Texture2D Texture { get; }
 
         /// <summary>
         /// Duration of time to show each frame.
         /// </summary>
-        public float FrameTime
-        {
-            get { return frameTime; }
-        }
-        float frameTime;
+        public float FrameTime { get; }
 
         /// <summary>
         /// When the end of the animation is reached, should it
         /// continue playing from the beginning?
         /// </summary>
-        public bool IsLooping
-        {
-            get { return isLooping; }
-        }
-        bool isLooping;
+        public bool IsLooping { get; }
 
         /// <summary>
         /// Gets the number of frames in the animation.
@@ -72,16 +72,6 @@ namespace Platformer2D.Game
         public int FrameHeight
         {
             get { return Texture.Height; }
-        }
-
-        /// <summary>
-        /// Constructors a new animation.
-        /// </summary>        
-        public Animation(Texture2D texture, float frameTime, bool isLooping)
-        {
-            this.texture = texture;
-            this.frameTime = frameTime;
-            this.isLooping = isLooping;
         }
     }
 }

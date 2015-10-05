@@ -57,8 +57,8 @@ namespace Sandbox
 
             // There's a bug when trying to change resolution during window resize.
             // https://github.com/mono/MonoGame/issues/3572
-            _deviceManager.PreferredBackBufferWidth = 1240;
-            _deviceManager.PreferredBackBufferHeight = 768;
+            _deviceManager.PreferredBackBufferWidth = 1280;
+            _deviceManager.PreferredBackBufferHeight = 720;
             Window.AllowUserResizing = false;            
             IsMouseVisible = true;            
         }

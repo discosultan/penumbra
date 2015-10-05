@@ -32,7 +32,7 @@ namespace Sandbox.Scenarios
             {
                 Position = new Vector2(0, -100),
                 Color = Color.White,
-                Range = 300,
+                Scale = new Vector2(600),
                 Radius = 20                
             });
 

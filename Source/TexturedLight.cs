@@ -19,15 +19,12 @@ namespace Penumbra
         /// uses a linear falloff equation to render a point light shaped light. 
         /// </summary>
         public Texture2D Texture { get; set; }
-        
-        //public Matrix TextureTransform { get; set; } = Matrix.Identity;
 
         internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
         {
             base.ApplyEffectParams(renderer);
 
             renderer._fxLightParamTexture.SetValue(Texture);
-            //renderer._fxLightParamTextureTransform.SetValue(TextureTransform);
 
             return renderer._fxTexturedLightTech;
         }

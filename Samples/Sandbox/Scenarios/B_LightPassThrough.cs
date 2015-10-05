@@ -34,7 +34,7 @@ namespace Sandbox.Scenarios
             {
                 //Color = Color.OrangeRed,
                 Color = Color.White,
-                Range = 350,
+                Scale = new Vector2(700),
                 //Radius = 20,
                 Radius = 40,
                 ShadowType = ShadowType.Illuminated

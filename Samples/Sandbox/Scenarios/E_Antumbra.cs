@@ -22,11 +22,10 @@ namespace Sandbox.Scenarios
 
             _light = new PointLight
             {
-                //Position = new Vector2(-100, 50),
                 Position = new Vector2(-100, 0),
                 Color = Color.White,
-                Intensity = 2.25f,
-                Range = 600,
+                Intensity = 1.5f,
+                Scale = new Vector2(1200),
                 Radius = MinLightRadius                
             };
             penumbra.Lights.Add(_light);
@@ -40,11 +39,6 @@ namespace Sandbox.Scenarios
                 Position = new Vector2(100, 0),
                 Scale = new Vector2(50f)
             });
-            //penumbra.Hulls.Add(new Hull(hullVertices)
-            //{
-            //    Position = new Vector2(250, 0),
-            //    Scale = new Vector2(50f)
-            //});
         }
 
         public override void Update(float deltaSeconds)

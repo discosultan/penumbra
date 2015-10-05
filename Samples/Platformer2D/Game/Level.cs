@@ -1,10 +1,12 @@
 ﻿#region File Description
+
 //-----------------------------------------------------------------------------
 // Level.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using System;
@@ -16,7 +18,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
-using QuakeConsole;
 
 namespace Platformer2D.Game
 {
@@ -27,61 +28,55 @@ namespace Platformer2D.Game
     /// </summary>
     public class Level : IDisposable
     {
-        // Physical structure of the level.
-        private Tile[,] tiles;
-        private Texture2D[] layers;
         // The layer which entities are drawn on top of.
         private const int EntityLayer = 2;
 
-        // Entities in the level.
-        public Player Player
-        {
-            get { return player; }
-        }
-        Player player;
+        private const int PointsPerSecond = 5;
+        private static readonly Point InvalidPosition = new Point(-1, -1);
 
-        private List<Gem> gems = new List<Gem>();
-        private List<Enemy> enemies = new List<Enemy>();
+        private static readonly Vector2[] tilePoints =
+        {
+            new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
+        };
+
+        private readonly List<Enemy> enemies = new List<Enemy>();
+
+        private readonly SoundEffect exitReachedSound;
+
+        private readonly List<Gem> gems = new List<Gem>();
+        private readonly Texture2D[] layers;
+
+        // Level game state.
+        private readonly Random random = new Random(354668); // Arbitrary, but constant seed
+        private Point exit = InvalidPosition;
 
         // Key locations in the level.        
         private Vector2 start;
-        private Point exit = InvalidPosition;
-        private static readonly Point InvalidPosition = new Point(-1, -1);
+        // Physical structure of the level.
+        private Tile[,] tiles;
 
-        // Level game state.
-        private Random random = new Random(354668); // Arbitrary, but constant seed
+        // Entities in the level.
+        public Player Player { get; private set; }
 
-        public int Score
-        {
-            get { return score; }
-        }
-        int score;
+        public int Score { get; private set; }
 
-        public bool ReachedExit
-        {
-            get { return reachedExit; }
-        }
-        bool reachedExit;
+        public bool ReachedExit { get; private set; }
 
-        public TimeSpan TimeRemaining
-        {
-            get { return timeRemaining; }
-        }
-        TimeSpan timeRemaining;
-
-        private const int PointsPerSecond = 5;
+        public TimeSpan TimeRemaining { get; private set; }
 
         // Level content.        
-        public ContentManager Content
+        public ContentManager Content { get; }
+
+        public PlatformerGame Game { get; }
+
+        private static Hull HullFromRectangle(Rectangle bounds, int width)
         {
-            get { return content; }
+            return new Hull(tilePoints)
+            {
+                Position = new Vector2(bounds.X, bounds.Y),
+                Scale = new Vector2(bounds.Width * width, bounds.Height)
+            };
         }
-        ContentManager content;
-
-        private SoundEffect exitReachedSound;
-
-        public ConsoleComponent Console { get; private set; }
-        public PenumbraComponent Penumbra { get; private set; }
 
         #region Loading
 
@@ -94,22 +89,25 @@ namespace Platformer2D.Game
         /// <param name="fileStream">
         /// A stream containing the tile data.
         /// </param>
-        public Level(IServiceProvider serviceProvider, Stream fileStream, int levelIndex, 
-            PenumbraComponent penumbra, ConsoleComponent console)
+        public Level(IServiceProvider serviceProvider, Stream fileStream, int levelIndex,
+            PlatformerGame game)
         {
-            Penumbra = penumbra;
-            Console = console;
-            // Create a new content manager to load content used just by this level.
-            content = new ContentManager(serviceProvider, "Content");
+            Game = game;
 
-            timeRemaining = TimeSpan.FromMinutes(2.0);
+            Game.Penumbra.Lights.Clear();
+            Game.Penumbra.Hulls.Clear();
+
+            // Create a new content manager to load content used just by this level.
+            Content = new ContentManager(serviceProvider, "Content");
+
+            TimeRemaining = TimeSpan.FromMinutes(2.0);
 
             LoadTiles(fileStream);
 
             // Load background layer textures. For now, all levels must
             // use the same backgrounds and only use the left-most part of them.
             layers = new Texture2D[3];
-            for (int i = 0; i < layers.Length; ++i)
+            for (var i = 0; i < layers.Length; ++i)
             {
                 // Choose a random segment if each background layer for level variety.
                 int segmentIndex = levelIndex;
@@ -118,6 +116,9 @@ namespace Platformer2D.Game
 
             // Load sounds.
             exitReachedSound = Content.Load<SoundEffect>("Sounds/ExitReached");
+
+            Game.Interpreter.RemoveVariable("level");
+            Game.Interpreter.AddVariable("level", this);
         }
 
         /// <summary>
@@ -132,8 +133,8 @@ namespace Platformer2D.Game
         {
             // Load the level and ensure all of the lines are the same length.
             int width;
-            List<string> lines = new List<string>();
-            using (StreamReader reader = new StreamReader(fileStream))
+            var lines = new List<string>();
+            using (var reader = new StreamReader(fileStream))
             {
                 string line = reader.ReadLine();
                 width = line.Length;
@@ -141,7 +142,8 @@ namespace Platformer2D.Game
                 {
                     lines.Add(line);
                     if (line.Length != width)
-                        throw new Exception(String.Format("The length of line {0} is different from all preceeding lines.", lines.Count));
+                        throw new Exception(
+                            $"The length of line {lines.Count} is different from all preceeding lines.");
                     line = reader.ReadLine();
                 }
             }
@@ -150,27 +152,28 @@ namespace Platformer2D.Game
             tiles = new Tile[width, lines.Count];
 
             // Loop over every tile position,
-            for (int y = 0; y < Height; ++y)
-            {                
+            for (var y = 0; y < Height; ++y)
+            {
                 int hullStartX = -1;
-                for (int x = 0; x < Width; ++x)
+                for (var x = 0; x < Width; ++x)
                 {
                     // to load each tile.
                     char tileType = lines[y][x];
                     Tile tile = LoadTile(tileType, x, y);
                     tiles[x, y] = tile;
-                    if ((tile.Collision == TileCollision.Impassable || tile.Collision == TileCollision.Platform) && hullStartX == -1)
+                    if ((tile.Collision == TileCollision.Impassable || tile.Collision == TileCollision.Platform) &&
+                        hullStartX == -1)
                     {
-                        hullStartX = x;                        
+                        hullStartX = x;
                     }
                     else if (tile.Collision == TileCollision.Passable && hullStartX != -1)
                     {
-                        Penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX));                
+                        Game.Penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX));
                         hullStartX = -1;
                     }
                     else if (x == width - 1 && hullStartX != -1)
                     {
-                        Penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX + 1));
+                        Game.Penumbra.Hulls.Add(HullFromRectangle(GetBounds(hullStartX, y), x - hullStartX + 1));
                         hullStartX = -1;
                     }
                 }
@@ -180,7 +183,7 @@ namespace Platformer2D.Game
             if (Player == null)
                 throw new NotSupportedException("A level must have a starting point.");
             if (exit == InvalidPosition)
-                throw new NotSupportedException("A level must have an exit.");            
+                throw new NotSupportedException("A level must have an exit.");
         }
 
         /// <summary>
@@ -245,7 +248,8 @@ namespace Platformer2D.Game
 
                 // Unknown tile type character
                 default:
-                    throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
+                    throw new NotSupportedException(
+                        $"Unsupported tile type character '{tileType}' at position {x}, {y}.");
             }
         }
 
@@ -291,9 +295,11 @@ namespace Platformer2D.Game
             if (Player != null)
                 throw new NotSupportedException("A level may only have one starting point.");
 
-            start = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
-            player = new Player(this, start);
-            Penumbra.Lights.Add(player.Light);
+            start = GetBounds(x, y).GetBottomCenter();
+            Player = new Player(this, start);
+            Game.Penumbra.Lights.Add(Player.Light);
+            Game.Interpreter.RemoveVariable("player");
+            Game.Interpreter.AddVariable("player", Player);
 
             return new Tile(null, TileCollision.Passable);
         }
@@ -307,7 +313,13 @@ namespace Platformer2D.Game
                 throw new NotSupportedException("A level may only have one exit.");
 
             exit = GetBounds(x, y).Center;
-            Penumbra.Lights.Add(new PointLight { Position = exit.ToVector2(), Scale = new Vector2(100), Color = Color.Red, CastsShadows = false });
+            Game.Penumbra.Lights.Add(new PointLight
+            {
+                Position = exit.ToVector2(),
+                Scale = new Vector2(100),
+                Color = Color.Red,
+                CastsShadows = false
+            });
 
             return LoadTile("Exit", TileCollision.Passable);
         }
@@ -317,10 +329,10 @@ namespace Platformer2D.Game
         /// </summary>
         private Tile LoadEnemyTile(int x, int y, string spriteSet)
         {
-            Vector2 position = RectangleExtensions.GetBottomCenter(GetBounds(x, y));
+            Vector2 position = GetBounds(x, y).GetBottomCenter();
             var enemy = new Enemy(this, position, spriteSet);
             enemies.Add(enemy);
-            Penumbra.Lights.Add(enemy.Light);
+            Game.Penumbra.Lights.Add(enemy.Light);
 
             return new Tile(null, TileCollision.Passable);
         }
@@ -333,7 +345,7 @@ namespace Platformer2D.Game
             Point position = GetBounds(x, y).Center;
             var gem = new Gem(this, new Vector2(position.X, position.Y));
             gems.Add(gem);
-            Penumbra.Lights.Add(gem.Light);
+            Game.Penumbra.Lights.Add(gem.Light);
 
             return new Tile(null, TileCollision.Passable);
         }
@@ -370,27 +382,19 @@ namespace Platformer2D.Game
 
         /// <summary>
         /// Gets the bounding rectangle of a tile in world space.
-        /// </summary>        
+        /// </summary>
         public Rectangle GetBounds(int x, int y)
-        {
-            return new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
-        }
+            => new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
 
         /// <summary>
         /// Width of level measured in tiles.
         /// </summary>
-        public int Width
-        {
-            get { return tiles.GetLength(0); }
-        }
+        public int Width => tiles.GetLength(0);
 
         /// <summary>
         /// Height of the level measured in tiles.
         /// </summary>
-        public int Height
-        {
-            get { return tiles.GetLength(1); }
-        }
+        public int Height => tiles.GetLength(1);
 
         #endregion
 
@@ -401,9 +405,9 @@ namespace Platformer2D.Game
         /// and handles the time limit with scoring.
         /// </summary>
         public void Update(
-            GameTime gameTime, 
-            KeyboardState keyboardState, 
-            GamePadState gamePadState, 
+            GameTime gameTime,
+            KeyboardState keyboardState,
+            GamePadState gamePadState,
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {
@@ -416,14 +420,14 @@ namespace Platformer2D.Game
             else if (ReachedExit)
             {
                 // Animate the time being converted into points.
-                int seconds = (int)Math.Round(gameTime.ElapsedGameTime.TotalSeconds * 100.0f);
-                seconds = Math.Min(seconds, (int)Math.Ceiling(TimeRemaining.TotalSeconds));
-                timeRemaining -= TimeSpan.FromSeconds(seconds);
-                score += seconds * PointsPerSecond;
+                var seconds = (int) Math.Round(gameTime.ElapsedGameTime.TotalSeconds * 100.0f);
+                seconds = Math.Min(seconds, (int) Math.Ceiling(TimeRemaining.TotalSeconds));
+                TimeRemaining -= TimeSpan.FromSeconds(seconds);
+                Score += seconds * PointsPerSecond;
             }
             else
             {
-                timeRemaining -= gameTime.ElapsedGameTime;
+                TimeRemaining -= gameTime.ElapsedGameTime;
                 Player.Update(gameTime, keyboardState, gamePadState, accelState, orientation);
                 UpdateGems(gameTime);
 
@@ -445,8 +449,8 @@ namespace Platformer2D.Game
             }
 
             // Clamp the time remaining at zero.
-            if (timeRemaining < TimeSpan.Zero)
-                timeRemaining = TimeSpan.Zero;
+            if (TimeRemaining < TimeSpan.Zero)
+                TimeRemaining = TimeSpan.Zero;
         }
 
         /// <summary>
@@ -454,7 +458,7 @@ namespace Platformer2D.Game
         /// </summary>
         private void UpdateGems(GameTime gameTime)
         {
-            for (int i = 0; i < gems.Count; ++i)
+            for (var i = 0; i < gems.Count; ++i)
             {
                 Gem gem = gems[i];
 
@@ -464,7 +468,7 @@ namespace Platformer2D.Game
                 {
                     gems.RemoveAt(i--);
                     OnGemCollected(gem, Player);
-                    Penumbra.Lights.Remove(gem.Light);
+                    Game.Penumbra.Lights.Remove(gem.Light);
                 }
             }
         }
@@ -493,7 +497,7 @@ namespace Platformer2D.Game
         /// <param name="collectedBy">The player who collected this gem.</param>
         private void OnGemCollected(Gem gem, Player collectedBy)
         {
-            score += Gem.PointValue;
+            Score += Gem.PointValue;
 
             gem.OnCollected(collectedBy);
         }
@@ -517,7 +521,7 @@ namespace Platformer2D.Game
         {
             Player.OnReachedExit();
             exitReachedSound.Play();
-            reachedExit = true;
+            ReachedExit = true;
         }
 
         /// <summary>
@@ -537,7 +541,7 @@ namespace Platformer2D.Game
         /// </summary>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            for (int i = 0; i <= EntityLayer; ++i)
+            for (var i = 0; i <= EntityLayer; ++i)
                 spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
 
             DrawTiles(spriteBatch);
@@ -560,9 +564,9 @@ namespace Platformer2D.Game
         private void DrawTiles(SpriteBatch spriteBatch)
         {
             // For each tile position
-            for (int y = 0; y < Height; ++y)
+            for (var y = 0; y < Height; ++y)
             {
-                for (int x = 0; x < Width; ++x)
+                for (var x = 0; x < Width; ++x)
                 {
                     // If there is a visible tile in that position
                     Texture2D texture = tiles[x, y].Texture;
@@ -577,18 +581,5 @@ namespace Platformer2D.Game
         }
 
         #endregion
-
-        private static readonly Vector2[] tilePoints =
-        {
-            new Vector2(0,0), new Vector2(0, 1), new Vector2(1, 1), new Vector2(1, 0)
-        };
-        private Hull HullFromRectangle(Rectangle bounds, int width)
-        {            
-            return new Hull(tilePoints)
-            {
-                Position = new Vector2(bounds.X, bounds.Y),
-                Scale = new Vector2(bounds.Width * width, bounds.Height)
-            };
-        }
     }
 }

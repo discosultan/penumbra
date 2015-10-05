@@ -1,10 +1,12 @@
 ﻿#region File Description
+
 //-----------------------------------------------------------------------------
 // Circle.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using Microsoft.Xna.Framework;
@@ -14,7 +16,7 @@ namespace Platformer2D.Game
     /// <summary>
     /// Represents a 2D circle.
     /// </summary>
-    struct Circle
+    internal struct Circle
     {
         /// <summary>
         /// Center position of the circle.
@@ -41,8 +43,8 @@ namespace Platformer2D.Game
         /// <returns>True if the circle and rectangle overlap. False otherwise.</returns>
         public bool Intersects(Rectangle rectangle)
         {
-            Vector2 v = new Vector2(MathHelper.Clamp(Center.X, rectangle.Left, rectangle.Right),
-                                    MathHelper.Clamp(Center.Y, rectangle.Top, rectangle.Bottom));
+            var v = new Vector2(MathHelper.Clamp(Center.X, rectangle.Left, rectangle.Right),
+                MathHelper.Clamp(Center.Y, rectangle.Top, rectangle.Bottom));
 
             Vector2 direction = Center - v;
             float distanceSquared = direction.LengthSquared();

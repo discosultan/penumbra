@@ -25,20 +25,19 @@ namespace Sandbox.Scenarios
                 Color = Color.YellowGreen,
                 Scale = new Vector2(400),
                 Radius = 20,
-                //ConeAngle = MathHelper.PiOver2,
-                ConeDecay = 1.5f 
+                ConeDecay = 1.5f
             });
             _lights.Add(new Spotlight
             {
                 Color = Color.Wheat,
-                Range = 500,
+                Scale = new Vector2(1000),
                 Rotation = MathHelper.Pi - MathHelper.PiOver2 * 0.75f,                                
                 ConeDecay = 0.5f
             });
             _lights.Add(new Spotlight
             {
                 Color = Color.Turquoise,
-                Range = 450,
+                Scale = new Vector2(900),
                 Rotation = MathHelper.Pi + MathHelper.PiOver2 * 0.75f,
                 ConeDecay = 1f
             });
@@ -49,7 +48,7 @@ namespace Sandbox.Scenarios
 
         private void GenerateHulls(PenumbraComponent penumbra)
         {
-            float increment = MathHelper.TwoPi / NumHulls;
+            const float increment = MathHelper.TwoPi / NumHulls;
             const float distance = 185;
             for (int i = 0; i < NumHulls; i++)
             {

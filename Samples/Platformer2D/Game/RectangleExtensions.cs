@@ -1,10 +1,12 @@
 ﻿#region File Description
+
 //-----------------------------------------------------------------------------
 // RectangleExtensions.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
+
 #endregion
 
 using System;
@@ -36,8 +38,8 @@ namespace Platformer2D.Game
             float halfHeightB = rectB.Height / 2.0f;
 
             // Calculate centers.
-            Vector2 centerA = new Vector2(rectA.Left + halfWidthA, rectA.Top + halfHeightA);
-            Vector2 centerB = new Vector2(rectB.Left + halfWidthB, rectB.Top + halfHeightB);
+            var centerA = new Vector2(rectA.Left + halfWidthA, rectA.Top + halfHeightA);
+            var centerB = new Vector2(rectB.Left + halfWidthB, rectB.Top + halfHeightB);
 
             // Calculate current and minimum-non-intersecting distances between centers.
             float distanceX = centerA.X - centerB.X;

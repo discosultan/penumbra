@@ -69,9 +69,8 @@
     <Content Include="Content\Backgrounds\Layer2_1.png" />
     <Content Include="Content\Backgrounds\Layer2_2.png" />
     <Content Include="Content\Levels\0.txt" />
-    <Content Include="Content\Levels\2.txt" />
     <Content Include="Content\Levels\1.txt" />
-    <None Include="Content\Levels\2.txt_" />
+    <Content Include="Content\Levels\2.txt" />
     <Content Include="Content\Overlays\you_died.png" />
     <Content Include="Content\Overlays\you_lose.png" />
     <Content Include="Content\Overlays\you_win.png" />
