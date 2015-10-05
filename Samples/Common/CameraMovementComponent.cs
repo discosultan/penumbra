@@ -109,7 +109,7 @@ namespace Common
                 if (moveDirection != Vector2.Zero)
                 {
                     moveDirection.Normalize();
-                    moveDirection = Vector2.TransformNormal(moveDirection, Matrix.CreateRotationZ(-Rotation));
+                    moveDirection = Vector2.TransformNormal(moveDirection, Matrix.CreateRotationZ(Rotation));
                     Position += moveDirection*MoveSpeed*deltaSeconds;
                     _dirty = true;
                 }
