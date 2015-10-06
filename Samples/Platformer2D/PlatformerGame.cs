@@ -11,6 +11,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -65,6 +66,7 @@ namespace Platformer2D
         private Matrix globalTransformation;
 
         // Global content.
+        private SpriteFont consoleFont;
         private SpriteFont hudFont;
         private KeyboardState keyboardState;
         private Level level;
@@ -125,6 +127,7 @@ namespace Platformer2D
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Load fonts
+            consoleFont = Content.Load<SpriteFont>("Fonts/Console");
             hudFont = Content.Load<SpriteFont>("Fonts/Hud");
 
             // Load overlay textures
@@ -133,7 +136,7 @@ namespace Platformer2D
             diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
 
             Penumbra.Load();
-            Console.LoadContent(Content.Load<SpriteFont>("Fonts/Console"), Interpreter);
+            Console.LoadContent(consoleFont, Interpreter);
             texturedLight = new TexturedLight(Content.Load<Texture2D>("Sprites/Light"))
             {
                 Origin = new Vector2(0.5f, 0.5f)
@@ -323,6 +326,18 @@ namespace Platformer2D
             DrawShadowedString(hudFont, scoreString, hudLocation + new Vector2(-scoreSize.X, timeSize.Y * 1.2f),
                 Color.Yellow);
 
+            // Draw info/instructions
+            string infoString = $"Lighting enabled: {Penumbra.Visible} ({penumbraController.EnabledKey})\n" +
+                                $"Shadow type: {penumbraController.ActiveShadowType} ({penumbraController.ShadowTypeKey})\n" +
+                                $"Debug mode: {Penumbra.Debug} ({penumbraController.DebugKey})\n" +
+                                $"Console open: {Console.IsVisible} ({ConsoleToggleOpenKey})";
+            Vector2 infoSize = consoleFont.MeasureString(infoString);
+            DrawShadowedString(
+                consoleFont, 
+                infoString, 
+                new Vector2(titleSafeArea.X, titleSafeArea.Y + titleSafeArea.Height - infoSize.Y) + new Vector2(10, -10), 
+                Color.Yellow);
+
             // Determine the status overlay message to show.
             Texture2D status = null;
             if (level.TimeRemaining == TimeSpan.Zero)
@@ -341,8 +356,8 @@ namespace Platformer2D
                 spriteBatch.Draw(status, center - statusSize / 2, Color.White);
             }
 
-            if (touchState.IsConnected)
-                virtualGamePad.Draw(spriteBatch);
+            //if (touchState.IsConnected)
+            //    virtualGamePad.Draw(spriteBatch);
         }
 
         private void DrawShadowedString(SpriteFont font, string value, Vector2 position, Color color)
