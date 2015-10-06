@@ -48,7 +48,7 @@ VertexOut VS(VertexIn vin)
 	float2 lightOffsetA = LightPosition + toLightOffsetA; // 90 CCW.
 	float2 lightOffsetB = LightPosition + toLightOffsetB; // 90 CW.
 
-	// From each edge, project a quad. 4 vertices per edge.	
+	// From each edge, project a quad. We have 4 vertices per edge.	
 	float2 position = lerp(vin.SegmentA, vin.SegmentB, vin.Occlusion.x);
 	float2 projectionOffset = lerp(lightOffsetA, lightOffsetB, vin.Occlusion.x);
 	float4 projected = float4(position - projectionOffset*vin.Occlusion.y, 0.0, 1.0 - vin.Occlusion.y);

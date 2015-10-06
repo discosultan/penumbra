@@ -22,6 +22,7 @@ namespace Penumbra
         /// Gets or sets if the light is enabled and should be rendered.
         /// </summary>
         public bool Enabled { get; set; } = true;
+
         /// <summary>
         /// Gets or sets if the light casts shadows.
         /// </summary>
@@ -45,7 +46,6 @@ namespace Penumbra
         }
 
         private float _radius = 20.0f;
-
         /// <summary>
         /// Gets or sets the radius of the light source (the area emitting light). 
         /// This determines the shape of the cast shadow umbra and penumbra regions.
@@ -84,6 +84,7 @@ namespace Penumbra
         /// <see cref="ShadowType"/> for more information.
         /// </summary>
         public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
+
         /// <summary>
         /// Gets or sets the color emitted by the light.
         /// </summary>
@@ -93,6 +94,9 @@ namespace Penumbra
         internal bool Dirty;
 
         private Vector2 _scale = new Vector2(100.0f);
+        /// <summary>
+        /// Gets or sets the scale (width and height) of the light.
+        /// </summary>
         public Vector2 Scale
         {
             get { return _scale; }
@@ -106,6 +110,9 @@ namespace Penumbra
             }
         }
 
+        /// <summary>
+        /// Gets or sets the rotation of the light in radians.
+        /// </summary>
         private float _rotation;
         public float Rotation
         {
@@ -119,8 +126,15 @@ namespace Penumbra
                 }
             }
         }
-
+        
         private Vector2 _origin = new Vector2(0.5f);
+        /// <summary>
+        /// Gets or sets the origin (anchor) of the light. This is used for both positioning and
+        /// rotating. Normalized to the range [0..1].        
+        /// </summary>
+        /// <remarks>
+        /// For example, origin (0.5, 0.5) corresponds to the center of the light.
+        /// </remarks>
         public Vector2 Origin
         {
             get { return _origin; }

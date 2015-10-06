@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Microsoft.Xna.Framework;
@@ -170,8 +169,7 @@ namespace Penumbra
                 Calc.CreateTransform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
 
                 // Calculate points in world space.
-                WorldPoints.Clear();
-                
+                WorldPoints.Clear();                
                 int pointCount = LocalPoints.Count;
                 for (int i = 0; i < pointCount; i++)
                 {
@@ -182,7 +180,7 @@ namespace Penumbra
                 }
 
                 // Calculate bounds.
-                Bounds = WorldPoints.GetBounds();
+                WorldPoints.GetBounds(out Bounds);
 
                 _worldDirty = false;
                 Dirty = true;

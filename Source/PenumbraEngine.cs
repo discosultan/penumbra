@@ -1,6 +1,4 @@
-﻿// TODO: Performance improvements:
-// TODO:    1.  Update constant buffers based on their usage frequency (ie per frame / per object etc).
-// TODO: Usability improvements:
+﻿// TODO: Usability improvements:
 // TODO:    1.  Instead of relying on default backbuffer, query and store active rendertarget before 
 // TODO:        rendering lightmap and restore it after. 
 // TODO: Features:
@@ -19,6 +17,7 @@ using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Penumbra.Geometry;
 using Penumbra.Graphics;
 using Penumbra.Graphics.Providers;
 using Penumbra.Graphics.Renderers;
@@ -53,6 +52,7 @@ namespace Penumbra
                 }                
             }
         }
+
         public ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
         public HullList Hulls { get; } = new HullList();
         public CameraProvider Camera { get; } = new CameraProvider();
@@ -129,7 +129,9 @@ namespace Penumbra
                     continue;
 
                 // Set scissor rectangle to clip any shadows outside of light's range.
-                Device.SetScissorRectangle(Camera.GetScissorRectangle(light));
+                BoundingRectangle scissor;
+                Camera.GetScissorRectangle(light, out scissor);
+                Device.SetScissorRectangle(ref scissor);
 
                 // Mask shadowed areas by reducing alpha.                
                 ShadowRenderer.Render(light);
@@ -173,7 +175,7 @@ namespace Penumbra
     }
 
     /// <summary>
-    /// Camera projection types to determine the final view projection matrix used to generate lightmap.
+    /// Camera transform types to determine the final view projection matrix used to generate lightmap.
     /// More than one can be applied.     
     /// </summary>
     /// <remarks>
@@ -185,7 +187,7 @@ namespace Penumbra
     ///     To take full control of the projections, specify only <c>Projections.Custom</c>.
     /// </remarks>
     [Flags]
-    public enum Projections
+    public enum Transforms
     {
         /// <summary>
         /// Provides the same projection used by SpriteBatch.

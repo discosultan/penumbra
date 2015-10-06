@@ -35,7 +35,7 @@ namespace Sandbox
         {            
             _deviceManager = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            _penumbra = new PenumbraComponent(this, Projections.OriginCenter_XRight_YUp | Projections.Custom)
+            _penumbra = new PenumbraComponent(this, Transforms.OriginCenter_XRight_YUp | Transforms.Custom)
             {
                 AmbientColor = Color.Black
             };

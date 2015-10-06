@@ -35,7 +35,7 @@ VertexOut VSLight(VertexIn vin)
 {
 	VertexOut vout;
 	
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), WorldViewProjection);	
+	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), WorldViewProjection);	
 	vout.TexCoord = vin.TexCoord;
 
 	return vout;
@@ -51,14 +51,14 @@ float4 GetComputedColor(float alpha)
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET
 {	
-	float halfMagnitude = length(pin.TexCoord - float2(0.5f, 0.5f));
-	float alpha = saturate(1 - halfMagnitude * 2.0f);
+	float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
+	float alpha = saturate(1.0 - halfMagnitude * 2.0);
 	return GetComputedColor(alpha);
 }
 
 float4 PSSpotLight(VertexOut pin) : SV_TARGET
 {
-	float2 lightVector = (pin.TexCoord - float2(0.0f, 0.5f));
+	float2 lightVector = (pin.TexCoord - float2(0.0, 0.5));
 	float magnitude = length(lightVector);
 	float2 lightDir = lightVector / magnitude;
 	
@@ -66,8 +66,8 @@ float4 PSSpotLight(VertexOut pin) : SV_TARGET
 
 	float occlusion = step(halfAngle, ConeHalfAngle);
 
-	float distanceAttenuation = saturate(1.0f - magnitude);
-	float coneAttenuation = 1.0f - pow(halfAngle / ConeHalfAngle, ConeDecay);
+	float distanceAttenuation = saturate(1.0 - magnitude);
+	float coneAttenuation = 1.0 - pow(halfAngle / ConeHalfAngle, ConeDecay);
 
 	float alpha = distanceAttenuation * coneAttenuation;
 
@@ -79,10 +79,10 @@ float4 PSTexturedLight(VertexOut pin) : SV_TARGET
 	float alpha = Texture.Sample(TextureSampler, pin.TexCoord).x;
 	
 	// Shift tex coord to range [-0.5...0.5] and take absolute value.
-	float2 tc = abs(pin.TexCoord - float2(0.5f, 0.5f));
+	float2 tc = abs(pin.TexCoord - float2(0.5, 0.5));
 
 	// If tex coord is outside its normal range, don't lit the pixel.
-	alpha = alpha * step(tc.x, 0.5f) * step(tc.y, 0.5f);
+	alpha = alpha * step(tc.x, 0.5) * step(tc.y, 0.5);
 
 	return GetComputedColor(alpha);	
 }

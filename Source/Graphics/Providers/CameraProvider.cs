@@ -10,7 +10,7 @@ namespace Penumbra.Graphics.Providers
         public Matrix ViewProjection = Matrix.Identity;
         public BoundingRectangle Bounds = new BoundingRectangle(new Vector2(float.MinValue), new Vector2(float.MaxValue));
 
-        private Projections _projections = Projections.OriginCenter_XRight_YUp | Projections.Custom;
+        private Transforms _transforms = Transforms.OriginCenter_XRight_YUp | Transforms.Custom;
         private Matrix _inverseViewProjection = Matrix.Identity;        
         private Matrix _ndcToScreen = Matrix.Identity;
         private Matrix _custom = Matrix.Identity;
@@ -18,12 +18,12 @@ namespace Penumbra.Graphics.Providers
 
         public bool InvertedY { get; private set; }
 
-        public Projections Projections
+        public Transforms Transforms
         {
-            get { return _projections; }
+            get { return _transforms; }
             set
             {
-                _projections = value;
+                _transforms = value;
                 if (_loaded)
                     CalculateViewProjectionAndBounds();
             }
@@ -35,7 +35,7 @@ namespace Penumbra.Graphics.Providers
             set
             {
                 _custom = value;
-                if ((_projections & Projections.Custom) != 0 && _loaded)
+                if ((_transforms & Transforms.Custom) != 0 && _loaded)
                     CalculateViewProjectionAndBounds();
             }
         }
@@ -53,15 +53,12 @@ namespace Penumbra.Graphics.Providers
         /// <summary>
         /// Calculates a screen space rectangle based on world space bounds.
         /// </summary>        
-        public BoundingRectangle GetScissorRectangle(Light light)
+        public void GetScissorRectangle(Light light, out BoundingRectangle scissor)
         {
             Matrix transform;
             Matrix.Multiply(ref ViewProjection, ref _ndcToScreen, out transform);
-
-            BoundingRectangle result;
-            BoundingRectangle.Transform(ref light.Bounds, ref transform, out result);
-
-            return result;
+            
+            BoundingRectangle.Transform(ref light.Bounds, ref transform, out scissor);
         }        
 
         protected override void OnSizeChanged()
@@ -83,23 +80,23 @@ namespace Penumbra.Graphics.Providers
             PresentationParameters pp = Engine.Device.PresentationParameters;
 
             ViewProjection = Matrix.Identity;
-            if ((_projections & Projections.Custom) != 0)
+            if ((_transforms & Transforms.Custom) != 0)
                 ViewProjection *= Custom;
-            if ((_projections & Projections.SpriteBatch) != 0)
+            if ((_transforms & Transforms.SpriteBatch) != 0)
                 ViewProjection *= Matrix.CreateOrthographicOffCenter(
                     0,
                     pp.BackBufferWidth,
                     pp.BackBufferHeight,
                     0,
                     0.0f, 1.0f);
-            if ((_projections & Projections.OriginCenter_XRight_YUp) != 0)
+            if ((_transforms & Transforms.OriginCenter_XRight_YUp) != 0)
                 ViewProjection *= Matrix.CreateOrthographicOffCenter(
-                    -pp.BackBufferWidth / 2f,
-                    pp.BackBufferWidth / 2f,
-                    -pp.BackBufferHeight / 2f,
-                    pp.BackBufferHeight / 2f,
+                    -pp.BackBufferWidth / 2.0f,
+                    pp.BackBufferWidth / 2.0f,
+                    -pp.BackBufferHeight / 2.0f,
+                    pp.BackBufferHeight / 2.0f,
                     0.0f, 1.0f);
-            if ((_projections & Projections.OriginBottomLeft_XRight_YUp) != 0)
+            if ((_transforms & Transforms.OriginBottomLeft_XRight_YUp) != 0)
                 ViewProjection *= Matrix.CreateOrthographicOffCenter(
                     0,
                     pp.BackBufferWidth,

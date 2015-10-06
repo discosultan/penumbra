@@ -23,8 +23,9 @@ namespace Penumbra.Geometry
 
         public bool Intersects(ref BoundingRectangle other)
         {
-            Vector2 d1 = other.Min - Max;
-            Vector2 d2 = Min - other.Max;
+            Vector2 d1, d2;
+            Vector2.Subtract(ref other.Min, ref Max, out d1);
+            Vector2.Subtract(ref Min, ref other.Max, out d2);            
 
             if (d1.X > 0.0f || d1.Y > 0.0f)
                 return false;
@@ -45,7 +46,7 @@ namespace Penumbra.Geometry
             var c1 = new Vector2(bounds.Min.X, bounds.Max.Y);
             var c2 = bounds.Max;
             var c3 = new Vector2(bounds.Max.X, bounds.Min.Y);
-            var c4 = bounds.Min;            
+            var c4 = bounds.Min;
 
             Vector2.Transform(ref c1, ref transform, out c1);
             Vector2.Transform(ref c2, ref transform, out c2);

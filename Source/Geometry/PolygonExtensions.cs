@@ -121,7 +121,7 @@ namespace Penumbra.Geometry
             return contains;
         }
 
-        public static BoundingRectangle GetBounds(this Polygon polygon)
+        public static void GetBounds(this Polygon polygon, out BoundingRectangle bounds)
         {
             Vector2 lowerBound = new Vector2(float.MaxValue, float.MaxValue);
             Vector2 upperBound = new Vector2(float.MinValue, float.MinValue);
@@ -140,7 +140,7 @@ namespace Penumbra.Geometry
                     upperBound.Y = polygon[i].Y;
             }
 
-            return new BoundingRectangle(lowerBound, upperBound);
+            bounds = new BoundingRectangle(lowerBound, upperBound);
         }
     }
 }

@@ -20,7 +20,6 @@ namespace Penumbra.Graphics.Renderers
         internal EffectParameter _fxLightParamWvp;
         internal EffectParameter _fxLightParamColor;
         internal EffectParameter _fxLightParamIntensity;
-        //internal EffectParameter _fxLightParamConeDirection;
         internal EffectParameter _fxLightParamConeDecay;
         internal EffectParameter _fxLightParamConeAngle;
         private StaticVao _quadVao;
@@ -42,7 +41,6 @@ namespace Penumbra.Graphics.Renderers
             _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
             _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
-            //_fxLightParamConeDirection = _fxLight.Parameters["ConeDirection"];
             _fxLightParamConeAngle = _fxLight.Parameters["ConeHalfAngle"];
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
@@ -109,11 +107,6 @@ namespace Penumbra.Graphics.Renderers
             // Quad.
             VertexPosition2Texture[] quadVertices =
             {
-                //new VertexPosition2Texture(new Vector2(-0.5f - d, +0.5f + d), new Vector2(0 - d, 0 - d)),
-                //new VertexPosition2Texture(new Vector2(+0.5f + d, +0.5f + d), new Vector2(1 + d, 0 - d)),
-                //new VertexPosition2Texture(new Vector2(-0.5f - d, -0.5f - d), new Vector2(0 - d, 1 + d)),
-                //new VertexPosition2Texture(new Vector2(+0.5f + d, -0.5f - d), new Vector2(1 + d, 1 + d))
-
                 new VertexPosition2Texture(new Vector2(0.0f - d, 1.0f + d), new Vector2(0.0f - d, 0.0f - d)),
                 new VertexPosition2Texture(new Vector2(1.0f + d, 1.0f + d), new Vector2(1.0f + d, 0.0f - d)),
                 new VertexPosition2Texture(new Vector2(0.0f - d, 0.0f - d), new Vector2(0.0f - d, 1.0f + d)),

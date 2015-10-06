@@ -1,4 +1,4 @@
-﻿Texture2D Texture;
+﻿Texture2D Texture : register(t0);
 SamplerState TextureSampler;
 
 struct VertexIn
@@ -17,7 +17,7 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 
-	vout.Position = float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f);
+	vout.Position = float4(vin.Position.x, vin.Position.y, 0.0, 1.0);
 	vout.TexCoord = vin.TexCoord;
 
 	return vout;

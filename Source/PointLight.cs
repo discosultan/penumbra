@@ -3,6 +3,7 @@ using Penumbra.Graphics.Renderers;
 
 namespace Penumbra
 {
+    /// <inheritdoc />
     public sealed class PointLight : Light
     {
         internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)

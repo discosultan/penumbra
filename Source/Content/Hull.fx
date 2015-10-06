@@ -1,9 +1,9 @@
-﻿cbuffer cbPerObject
+﻿cbuffer cbPerObject : register(c0)
 {
 	float4 Color;
 };
 
-cbuffer cbPerFrame
+cbuffer cbPerFrame : register(c1)
 {
 	float4x4 ViewProjection;
 };
@@ -22,7 +22,7 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0f, 1.0f), ViewProjection);
+	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), ViewProjection);
 
 	return vout;
 }

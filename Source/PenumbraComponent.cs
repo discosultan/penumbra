@@ -21,14 +21,14 @@ namespace Penumbra
         /// Constructs a new instance of <see cref="PenumbraComponent"/>.
         /// </summary>
         /// <param name="game">Game object to associate the engine with.</param>
-        /// <param name="projections">
-        /// Projections used to determined view projection matrix. These should be the same as used
-        /// for the scene. See <see cref="Projections"/> for more info.
+        /// <param name="transforms">
+        /// Transforms used to calculate view projection matrix. These should be the same as used
+        /// for the scene. See <see cref="Transforms"/> for more info.
         /// </param>
-        public PenumbraComponent(Game game, Projections projections = Projections.SpriteBatch | Projections.Custom) 
+        public PenumbraComponent(Game game, Transforms transforms = Transforms.SpriteBatch | Transforms.Custom) 
             : base(game)
         {
-            _engine.Camera.Projections = projections;            
+            _engine.Camera.Transforms = transforms;            
 
             Enabled = false;
             Visible = true;
@@ -36,13 +36,15 @@ namespace Penumbra
         }
 
         /// <summary>
-        /// Gets or sets if debug outlines should be drawn for shadows and light sources.
+        /// Gets or sets if debug outlines should be drawn for shadows and light sources and
+        /// if logging is enabled.
         /// </summary>
         public bool Debug
         {
             get { return _engine.Debug; }
             set { _engine.Debug = value; }
         }
+
         /// <summary>
         /// Gets or sets the ambient color of the scene. Note that alpha value will be ignored.
         /// </summary>
@@ -51,9 +53,10 @@ namespace Penumbra
             get { return _engine.AmbientColor; }
             set { _engine.AmbientColor = value; }
         }
+
         /// <summary>
         /// Gets or sets the custom transformation matrix used for view projection transform
-        /// if <c>Projections.Custom</c> is set for the engine.
+        /// if <c>Transforms.Custom</c> is set for the engine.
         /// </summary>
         public Matrix Transform
         {
@@ -64,6 +67,7 @@ namespace Penumbra
         /// Gets the list of lights registered with the engine.
         /// </summary>
         public ObservableCollection<Light> Lights => _engine.Lights;
+
         /// <summary>
         /// Gets the list of shadow hulls registered with the engine.
         /// </summary>
@@ -77,6 +81,7 @@ namespace Penumbra
         {
             LoadContent();
         }       
+
         /// <summary>
         /// Sets up the lightmap generation sequence. This should be called before Draw.
         /// </summary>
@@ -85,6 +90,7 @@ namespace Penumbra
             if (Visible)
                 _engine.PreRender();
         }
+
         /// <summary>
         /// Generates the lightmap, blends it with whatever was drawn to the scene between the
         /// calls to BeginDraw and this and presents the result to the backbuffer.

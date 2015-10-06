@@ -5,13 +5,20 @@ using Penumbra.Graphics.Renderers;
 
 namespace Penumbra
 {
+    /// <inheritdoc />
     public sealed class Spotlight : Light
     {
+        /// <summary>
+        /// Constructs a new instance of <see cref="Spotlight"/>.
+        /// </summary>
         public Spotlight()
         {
             Origin = new Vector2(0.0f, 0.5f);
         }
 
+        /// <summary>
+        /// Gets or sets the rate of cone attenuation to the sides.
+        /// </summary>
         public float ConeDecay { get; set; } = 0.5f;
 
         internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)

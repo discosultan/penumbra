@@ -89,12 +89,13 @@ namespace Penumbra.Geometry
                 Vector2 w2 = S1.PointB - S2.PointA;
                 if (v.X != 0)
                 {
-                    t0 = w.X / v.X;
-                    t1 = w2.X / v.X;
-                } else
+                    t0 = w.X/v.X;
+                    t1 = w2.X/v.X;
+                }
+                else
                 {
-                    t0 = w.Y / v.Y;
-                    t1 = w2.Y / v.Y;
+                    t0 = w.Y/v.Y;
+                    t1 = w2.Y/v.Y;
                 }
                 if (t0 > t1)
                 {
@@ -112,28 +113,28 @@ namespace Penumbra.Geometry
                 if (t0 == t1)
                 {
                     // intersect is a point
-                    I0 = S2.PointA + t0 * v;
+                    I0 = S2.PointA + t0*v;
                     return 1;
                 }
 
                 // they overlap in a valid subsegment
-                I0 = S2.PointA + t0 * v;
-                I1 = S2.PointA + t1 * v;
+                I0 = S2.PointA + t0*v;
+                I1 = S2.PointA + t1*v;
                 return 2;
             }
 
             // the segments are skew and may intersect in a point
             // get the intersect parameter for S1
-            float sI = Calc.Cross(ref v, ref w) / D;
+            float sI = Calc.Cross(ref v, ref w)/D;
             if (sI < 0 || sI > 1) // no intersect with S1
                 return 0;
 
             // get the intersect parameter for S2
-            float tI = Calc.Cross(ref u, ref w) / D;
+            float tI = Calc.Cross(ref u, ref w)/D;
             if (tI < 0 || tI > 1) // no intersect with S2
                 return 0;
 
-            I0 = S1.PointA + sI * u; // compute S1 intersect point
+            I0 = S1.PointA + sI*u; // compute S1 intersect point
             return 1;
         }
 
@@ -151,7 +152,8 @@ namespace Penumbra.Geometry
                     return 1;
                 if (S.PointA.X >= P.X && P.X >= S.PointB.X)
                     return 1;
-            } else
+            }
+            else
             {
                 // S is vertical, so test y coordinate
                 if (S.PointA.Y <= P.Y && P.Y <= S.PointB.Y)

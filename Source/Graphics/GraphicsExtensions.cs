@@ -6,7 +6,7 @@ namespace Penumbra.Graphics
 {
     internal static class GraphicsExtensions
     {
-        public static void SetScissorRectangle(this GraphicsDevice device, BoundingRectangle bounds)
+        public static void SetScissorRectangle(this GraphicsDevice device, ref BoundingRectangle bounds)
         {
             device.ScissorRectangle = new Rectangle(
                 (int)bounds.Min.X,
