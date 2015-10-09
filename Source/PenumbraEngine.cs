@@ -15,7 +15,6 @@
 using System;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
 using Penumbra.Graphics;
@@ -62,17 +61,15 @@ namespace Penumbra
         public LightMapRenderer LightMapRenderer { get; } = new LightMapRenderer();
         public GraphicsDevice Device { get; private set; }
         public GraphicsDeviceManager DeviceManager { get; private set; }
-        public ContentManager Content { get; private set; }
         public RasterizerState RsDebug { get; private set;}
         private RasterizerState _rsCcw;
         private RasterizerState _rsCw;
         public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
 
-        public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, ContentManager content)
+        public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager)
         {
             Device = device;
             DeviceManager = deviceManager;
-            Content = content;
 
             BuildGraphicsResources();
 

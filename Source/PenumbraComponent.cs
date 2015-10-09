@@ -21,18 +21,17 @@ namespace Penumbra
         /// Constructs a new instance of <see cref="PenumbraComponent"/>.
         /// </summary>
         /// <param name="game">Game object to associate the engine with.</param>
-        /// <param name="transforms">
+        /// <param name="transformTypes">
         /// Transforms used to calculate view projection matrix. These should be the same as used
         /// for the scene. See <see cref="Transforms"/> for more info.
         /// </param>
-        public PenumbraComponent(Game game, Transforms transforms = Transforms.SpriteBatch | Transforms.Custom) 
+        public PenumbraComponent(Game game, Transforms transformTypes = Transforms.SpriteBatch | Transforms.Custom) 
             : base(game)
         {
-            _engine.Camera.Transforms = transforms;            
+            _engine.Camera.Transforms = transformTypes;            
 
             Enabled = false;
-            Visible = true;
-            Debug = true;
+            Visible = true;            
         }
 
         /// <summary>
@@ -62,7 +61,18 @@ namespace Penumbra
         {
             get { return _engine.Camera.Custom; }
             set { _engine.Camera.Custom = value; }
-        }        
+        }
+
+        /// <summary>
+        /// Gets or sets the transforms used to calculate view projection matrix. These should be the same as used
+        /// for the scene. See <see cref="Transforms"/> for more info.
+        /// </summary>
+        public Transforms TransformTypes
+        {
+            get { return _engine.Camera.Transforms; }
+            set { _engine.Camera.Transforms = value; }
+        }
+
         /// <summary>
         /// Gets the list of lights registered with the engine.
         /// </summary>
@@ -74,13 +84,15 @@ namespace Penumbra
         public ObservableCollection<Hull> Hulls => _engine.Hulls;
 
         /// <summary>
-        /// Explicitly loads the content for the engine. This should only be called if the
+        /// Explicitly initializes the engine. This should only be called if the
         /// component was not added to the game's components list through <c>Components.Add</c>.
         /// </summary>
-        public void Load()
-        {
-            LoadContent();
-        }       
+        public override void Initialize()
+        {            
+            base.Initialize();
+            var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
+            _engine.Load(GraphicsDevice, deviceManager);
+        }
 
         /// <summary>
         /// Sets up the lightmap generation sequence. This should be called before Draw.
@@ -100,12 +112,6 @@ namespace Penumbra
         {
             if (Visible)
                 _engine.Render();
-        }
-
-        protected override void LoadContent()
-        {
-            var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
-            _engine.Load(GraphicsDevice, deviceManager, Game.Content);
         }
     }
 }

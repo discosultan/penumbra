@@ -40,11 +40,6 @@ namespace Penumbra.Utilities
     {        
         private static readonly List<ILogger> Loggers = new List<ILogger>();
         
-        public static void Write(object message, [CallerMemberName]string caller = "")
-        {
-            Write(message.ToString(), caller);
-        }
-        
         public static void Write(string message, [CallerMemberName]string caller = "")
         {
             foreach (ILogger logger in Loggers)

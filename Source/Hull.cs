@@ -33,6 +33,19 @@ namespace Penumbra
         /// 2. A simple polygon (no two edges intersect with each other).
         /// Points can be defined in either clockwise or counter-clockwise order.
         /// </param>
+        public Hull(params Vector2[] points) : this((IEnumerable<Vector2>)points)
+        {
+        }
+
+        /// <summary>
+        /// Constructs a new instance of <see cref="Hull"/>.
+        /// </summary>
+        /// <param name="points">
+        /// Points of the hull polygon. In order for the hull to be valid, the points must form:
+        /// 1. A polygon with atleast 3 points.
+        /// 2. A simple polygon (no two edges intersect with each other).
+        /// Points can be defined in either clockwise or counter-clockwise order.
+        /// </param>        
         public Hull(IEnumerable<Vector2> points = null)            
         {
             if (points != null)

@@ -31,7 +31,7 @@ namespace Penumbra.Graphics.Renderers
         {            
             _engine = engine;
 
-            _fxLight = engine.Content.Load<Effect>("Light");
+            _fxLight = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Light");
             _fxPointLightTech = _fxLight.Techniques["PointLight"];
             _fxSpotLightTech = _fxLight.Techniques["Spotlight"];
             _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];
@@ -102,7 +102,7 @@ namespace Penumbra.Graphics.Renderers
         {            
             // We build the quad a little larger than required in order to be able to also properly clear the alpha
             // for the region. The reason we need larger quad is due to camera rotation.
-            float d = (float) (1 / Math.Sqrt(2));            
+            var d = (float) (1 / Math.Sqrt(2));            
 
             // Quad.
             VertexPosition2Texture[] quadVertices =
@@ -118,13 +118,13 @@ namespace Penumbra.Graphics.Renderers
 
             // Circle.
             const int circlePoints = 12;
-            const float radius = 1f;
+            const float radius = 1.0f;
             const float rotationIncrement = MathHelper.TwoPi / circlePoints;
 
             var vertices = new VertexPosition2Texture[circlePoints + 1];
             var indices = new int[circlePoints * 3];
 
-            var center = new VertexPosition2Texture(new Vector2(0, 0), new Vector2(1, 1));
+            var center = new VertexPosition2Texture(Vector2.Zero, Vector2.One);
             vertices[0] = center;
             for (int i = 1; i <= circlePoints; i++)
             {

@@ -17,7 +17,7 @@ namespace Penumbra.Graphics.Renderers
         {                        
             _engine = engine;
 
-            _fxTexture = engine.Content.Load<Effect>("Texture");
+            _fxTexture = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Texture");
             _fxTextureParamTexture = _fxTexture.Parameters["Texture"];
 
             BuildGraphicsResources();
@@ -53,20 +53,22 @@ namespace Penumbra.Graphics.Renderers
         {
             VertexPosition2Texture[] fullscreenQuadVertices =
             {
-                new VertexPosition2Texture(new Vector2(-1f, 1f),  new Vector2(0.0f, 0.0f)),
-                new VertexPosition2Texture(new Vector2(3f, 1f), new Vector2(2f, 0.0f)),
-                new VertexPosition2Texture(new Vector2(-1f, -3f), new Vector2(0.0f, 2f))
+                new VertexPosition2Texture(new Vector2(-1.0f, 1.0f),  new Vector2(0.0f, 0.0f)),
+                new VertexPosition2Texture(new Vector2(3.0f, 1.0f), new Vector2(2.0f, 0.0f)),
+                new VertexPosition2Texture(new Vector2(-1.0f, -3.0f), new Vector2(0.0f, 2.0f))
             };            
             _fullscreenQuadVao = StaticVao.New(_engine.Device, fullscreenQuadVertices, VertexPosition2Texture.Layout);            
 
             _bsLightMap = new BlendState
             {
                 ColorBlendFunction = BlendFunction.Add,
-                ColorDestinationBlend = Blend.SourceColor,
                 ColorSourceBlend = Blend.Zero,
+                ColorDestinationBlend = Blend.SourceColor,
+
                 AlphaBlendFunction = BlendFunction.Add,
-                AlphaDestinationBlend = Blend.SourceAlpha,
                 AlphaSourceBlend = Blend.Zero,
+                AlphaDestinationBlend = Blend.SourceAlpha,                
+
                 ColorWriteChannels = ColorWriteChannels.All
             };
         }

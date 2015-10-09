@@ -39,7 +39,7 @@ namespace Penumbra.Graphics.Renderers
         {            
             _engine = engine;
 
-            _fxShadow = engine.Content.Load<Effect>("Shadow");
+            _fxShadow = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Shadow");
             _fxShadowTech = _fxShadow.Techniques["Main"];
             _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
             _fxShadowParamLightPosition = _fxShadow.Parameters["LightPosition"];
@@ -48,7 +48,7 @@ namespace Penumbra.Graphics.Renderers
 
             _fxShadow.Parameters["Color"].SetValue(DebugColor.ToVector4());
 
-            _fxHull = engine.Content.Load<Effect>("Hull");
+            _fxHull = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Hull");
             _fxHullTech = _fxHull.Techniques["Main"];
             _fxHullParamVp = _fxHull.Parameters["ViewProjection"];
             _fxHullParamColor = _fxHull.Parameters["Color"];

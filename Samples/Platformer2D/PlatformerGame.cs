@@ -101,7 +101,7 @@ namespace Platformer2D
 
             Penumbra = new PenumbraComponent(this)
             {
-                AmbientColor = new Color(30, 20, 10),
+                AmbientColor = new Color(30, 20, 10),                
                 Visible = true,
                 Debug = false
             };
@@ -135,7 +135,7 @@ namespace Platformer2D
             loseOverlay = Content.Load<Texture2D>("Overlays/you_lose");
             diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
 
-            Penumbra.Load();
+            Penumbra.Initialize();
             Console.LoadContent(consoleFont, Interpreter);
             texturedLight = new TexturedLight(Content.Load<Texture2D>("Sprites/Light"))
             {
