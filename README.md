@@ -4,6 +4,8 @@ Penumbra allows users to easily add 2D lighting with shadowing effects (for both
 
 ![Platformer2D sample](https://jvcontent.blob.core.windows.net/images/screen_09.jpg)
 
+- https://www.youtube.com/watch?v=L9w9mEAb9gk&feature=youtu.be
+
 ## Getting Started
 
 > Currently available only for MonoGame WindowsDX platform targeting .NET 4.0!

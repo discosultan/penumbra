@@ -164,6 +164,7 @@ namespace Platformer2D
             {
             }
 
+            Interpreter.AddVariable("penumbra", Penumbra);
             Interpreter.AddVariable("spotlight", spotlight);
             Interpreter.AddVariable("pointLight", pointLight);
             Interpreter.AddVariable("texturedLight", texturedLight);

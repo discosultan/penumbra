@@ -98,7 +98,10 @@ namespace Platformer2D.Game
             Game.Penumbra.Hulls.Clear();
 
             // Create a new content manager to load content used just by this level.
-            Content = new ContentManager(serviceProvider, "Content");
+            // Disabled due to an occasional crash in XAudio2_7.dll
+            //Content = new ContentManager(serviceProvider, "Content");
+
+            Content = game.Content;
 
             TimeRemaining = TimeSpan.FromMinutes(2.0);
 
@@ -355,7 +358,8 @@ namespace Platformer2D.Game
         /// </summary>
         public void Dispose()
         {
-            Content.Unload();
+            // Disabled due to an occasional crash in XAudio2_7.dll
+            //Content.Unload();
         }
 
         #endregion
