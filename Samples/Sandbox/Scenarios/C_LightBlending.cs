@@ -25,7 +25,7 @@ namespace Sandbox.Scenarios
 
         public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
-            _hull = new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })
+            _hull = new Hull(new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f))
             {
                 Position = new Vector2(0, 0),
                 Scale = new Vector2(50f)

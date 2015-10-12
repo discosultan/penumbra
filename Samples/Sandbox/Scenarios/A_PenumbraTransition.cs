@@ -20,7 +20,7 @@ namespace Sandbox.Scenarios
                 Radius = 20                
             };
             penumbra.Lights.Add(_light);
-            penumbra.Hulls.Add(new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })
+            penumbra.Hulls.Add(new Hull(new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f))
             {
                 Position = new Vector2(0, 0),
                 Scale = new Vector2(50f)

@@ -53,7 +53,7 @@ namespace Sandbox.Scenarios
             for (int i = 0; i < NumHulls; i++)
             {
                 float angle = increment * i;                
-                var hull = new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })
+                var hull = new Hull(new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f))
                 {
                     Position = Rotate(new Vector2(0, distance), angle),
                     Scale = new Vector2(50f)

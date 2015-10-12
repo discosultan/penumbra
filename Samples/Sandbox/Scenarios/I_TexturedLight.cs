@@ -28,7 +28,7 @@ namespace Sandbox.Scenarios
                 Rotation = MathHelper.PiOver2                
             };
             penumbra.Lights.Add(_light);
-			_hull = new Hull(new[] { new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f) })
+			_hull = new Hull(new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f))
 			{
 				Position = Vector2.Zero,
 				Scale = new Vector2(50)
