@@ -11,7 +11,6 @@
 
 using System;
 using System.IO;
-using System.Text;
 using Common;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

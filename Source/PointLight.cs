@@ -4,9 +4,9 @@ using Penumbra.Graphics.Renderers;
 namespace Penumbra
 {
     /// <inheritdoc />
-    public sealed class PointLight : Light
+    public class PointLight : Light
     {
-        internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer)
         {
             base.ApplyEffectParams(renderer);
             return renderer._fxPointLightTech;

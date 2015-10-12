@@ -5,7 +5,7 @@ using Penumbra.Graphics.Renderers;
 namespace Penumbra
 {
     /// <inheritdoc />
-    public sealed class TexturedLight : Light
+    public class TexturedLight : Light
     {
         /// <summary>
         /// Constructs a new instance of <see cref="TexturedLight"/>.
@@ -28,7 +28,7 @@ namespace Penumbra
         /// </summary>
         public Texture2D Texture { get; set; }
 
-        internal override EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer)
         {
             base.ApplyEffectParams(renderer);
 

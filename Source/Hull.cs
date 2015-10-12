@@ -14,7 +14,7 @@ namespace Penumbra
     /// Represents a shadow hull in the scene. A simple convex or concave polygon impassable by light
     /// from which shadows are cast.
     /// </summary>
-    public sealed class Hull
+    public class Hull
     {                                                        
         private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints = 
             new ExtendedObservableCollection<Vector2>();        
@@ -34,8 +34,7 @@ namespace Penumbra
         /// Points can be defined in either clockwise or counter-clockwise order.
         /// </param>
         public Hull(params Vector2[] points) : this((IEnumerable<Vector2>)points)
-        {
-        }
+        { }
 
         /// <summary>
         /// Constructs a new instance of <see cref="Hull"/>.
