@@ -150,11 +150,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PythonInterpreter.MonoGame, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuakeConsole.PythonInterpreter.MonoGame.WindowsDX.0.1.6-alpha\lib\net4\PythonInterpreter.MonoGame.dll</HintPath>
+      <HintPath>..\..\packages\QuakeConsole.PythonInterpreter.MonoGame.WindowsDX.0.1.7-alpha\lib\net4\PythonInterpreter.MonoGame.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QuakeConsole.MonoGame, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuakeConsole.MonoGame.WindowsDX.0.1.6-alpha\lib\net4\QuakeConsole.MonoGame.dll</HintPath>
+      <HintPath>..\..\packages\QuakeConsole.MonoGame.WindowsDX.0.1.7-alpha\lib\net4\QuakeConsole.MonoGame.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -167,7 +167,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Penumbra.csproj">
+    <ProjectReference Include="..\..\Source\Penumbra.MonoGame.csproj">
       <Project>{b021f95c-38bc-493a-bb92-c3c575e4b50f}</Project>
       <Name>Penumbra</Name>
     </ProjectReference>

@@ -1,6 +1,6 @@
 ## What is this?
 
-Penumbra allows users to easily add 2D lighting with shadowing effects (for both umbra and penumbra regions) to their games.
+Penumbra allows users to easily add 2D lighting with shadowing effects to their games.
 
 ![Platformer2D sample](https://jvcontent.blob.core.windows.net/images/screen_09.jpg)
 
@@ -18,7 +18,7 @@ Install through NuGet:
 Install-Package Penumbra.MonoGame.WindowsDX -Pre
 ```
 
-In the game constructor, create the penumbra component and add to components:
+In the game constructor, create the Penumbra component and add to components:
 ```cs
 penumbra = new PenumbraComponent(this);
 Components.Add(penumbra);
@@ -34,7 +34,15 @@ GraphicsDevice.Clear(Color.CornflowerBlue);
 ...
 ```
 
-This will swap the render target to a custom texture so that the generated lightmap can be blended atop of it once PenumbraComponent is drawn.
+This will swap the render target to a custom texture so that the generated lightmap can be blended atop of it once `PenumbraComponent` is drawn.
+
+By default, Penumbra operates in the same coordinate space as `SpriteBatch`. Custom coordinate space can be configured by setting:
+
+```cs
+penumbra.SpriteBatchTransformEnabled = false;
+```
+
+ Custom transform matrix is set through the `Transform` property.
 
 ### Adding lights
 
