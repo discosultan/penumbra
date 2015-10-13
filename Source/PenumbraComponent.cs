@@ -49,8 +49,7 @@ namespace Penumbra
         }
 
         /// <summary>
-        /// Gets or sets the custom transformation matrix used for view projection transform
-        /// if <c>Transforms.Custom</c> is set for the engine.
+        /// Gets or sets the custom transformation matrix used by the component.
         /// </summary>
         public Matrix Transform
         {
