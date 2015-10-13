@@ -15,8 +15,6 @@ namespace Common
         private const Keys RotateLeft = Keys.Q;
         private const Keys RotateRight = Keys.E;
 
-        private readonly PenumbraComponent _penumbra;
-
         private bool _dirty = true;
         private Vector2 _position;
         private float _scale = 1.0f;
@@ -54,29 +52,12 @@ namespace Common
         public float RotationSpeed { get; set; } = MathHelper.TwoPi * 0.25f;
         public bool InvertedY { get; set; }
 
-        private Matrix _transform;
-
-        public Matrix Transform
-        {
-            get { return _transform; }
-            set
-            {
-                _transform = value;
-                _penumbra.Transform = value;
-                InverseTransform = Matrix.Invert(value);
-            }
-        }
-
-        public Matrix InverseTransform { get; private set; }
+        public Matrix Transform { get; private set; }
 
         public bool InputEnabled { get; set; } = true;
 
-        public CameraMovementComponent(Game game, PenumbraComponent penumbra) : base(game)
-        {
-            _penumbra = penumbra;
-
-            Enabled = true;
-        }        
+        public CameraMovementComponent(Game game) : base(game)
+        { }        
 
         public override void Update(GameTime gameTime)
         {

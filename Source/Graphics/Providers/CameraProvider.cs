@@ -10,24 +10,14 @@ namespace Penumbra.Graphics.Providers
         public Matrix ViewProjection = Matrix.Identity;
         public BoundingRectangle Bounds = new BoundingRectangle(new Vector2(float.MinValue), new Vector2(float.MaxValue));
 
-        private Transforms _transforms = Transforms.OriginCenter_XRight_YUp | Transforms.Custom;
         private Matrix _inverseViewProjection = Matrix.Identity;        
         private Matrix _ndcToScreen = Matrix.Identity;
+        private Matrix _spriteBatchTransform = Matrix.Identity;
         private Matrix _custom = Matrix.Identity;
         private bool _loaded;
 
         public bool InvertedY { get; private set; }
-
-        public Transforms Transforms
-        {
-            get { return _transforms; }
-            set
-            {
-                _transforms = value;
-                if (_loaded)
-                    CalculateViewProjectionAndBounds();
-            }
-        }
+        public bool SpriteBatchTransformEnabled { get; set; } = true;
 
         public Matrix Custom
         {
@@ -35,7 +25,7 @@ namespace Penumbra.Graphics.Providers
             set
             {
                 _custom = value;
-                if ((_transforms & Transforms.Custom) != 0 && _loaded)
+                if (_loaded)
                     CalculateViewProjectionAndBounds();
             }
         }
@@ -44,6 +34,7 @@ namespace Penumbra.Graphics.Providers
         {
             base.Load(engine);
 
+            CalculateSpriteBatchTransform();
             CalculateNdcToScreen();
             CalculateViewProjectionAndBounds();
 
@@ -64,8 +55,20 @@ namespace Penumbra.Graphics.Providers
         protected override void OnSizeChanged()
         {
             Logger.Write($"Screen size changed to {BackBufferWidth}x{BackBufferHeight}.");
+            CalculateSpriteBatchTransform();
             CalculateNdcToScreen();
-            CalculateViewProjectionAndBounds();            
+            CalculateViewProjectionAndBounds();                        
+        }
+
+        private void CalculateSpriteBatchTransform()
+        {
+            PresentationParameters pp = Engine.Device.PresentationParameters;
+            Matrix.CreateOrthographicOffCenter(
+                0,
+                pp.BackBufferWidth,
+                pp.BackBufferHeight,
+                0,
+                0.0f, 1.0f, out _spriteBatchTransform);
         }
 
         private void CalculateNdcToScreen()
@@ -76,33 +79,11 @@ namespace Penumbra.Graphics.Providers
 
         private void CalculateViewProjectionAndBounds()
         {
-            // Calculate view projection transform.
-            PresentationParameters pp = Engine.Device.PresentationParameters;
-
-            ViewProjection = Matrix.Identity;
-            if ((_transforms & Transforms.Custom) != 0)
-                ViewProjection *= Custom;
-            if ((_transforms & Transforms.SpriteBatch) != 0)
-                ViewProjection *= Matrix.CreateOrthographicOffCenter(
-                    0,
-                    pp.BackBufferWidth,
-                    pp.BackBufferHeight,
-                    0,
-                    0.0f, 1.0f);
-            if ((_transforms & Transforms.OriginCenter_XRight_YUp) != 0)
-                ViewProjection *= Matrix.CreateOrthographicOffCenter(
-                    -pp.BackBufferWidth / 2.0f,
-                    pp.BackBufferWidth / 2.0f,
-                    -pp.BackBufferHeight / 2.0f,
-                    pp.BackBufferHeight / 2.0f,
-                    0.0f, 1.0f);
-            if ((_transforms & Transforms.OriginBottomLeft_XRight_YUp) != 0)
-                ViewProjection *= Matrix.CreateOrthographicOffCenter(
-                    0,
-                    pp.BackBufferWidth,
-                    0,
-                    pp.BackBufferHeight,
-                    0.0f, 1.0f);
+            if (SpriteBatchTransformEnabled)
+                Matrix.Multiply(ref _custom, ref _spriteBatchTransform, out ViewProjection);
+            else
+                ViewProjection = _custom;
+            
             //LogViewProjection();
 
             // Calculate inversion of viewprojection.

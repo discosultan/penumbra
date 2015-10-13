@@ -108,7 +108,7 @@ namespace Platformer2D
             penumbraController = new PenumbraControllerComponent(this, Penumbra);
             Components.Add(penumbraController);
 
-            Console = new ConsoleComponent(this);
+            Console = new ConsoleComponent(this);            
             Components.Add(Console);            
         }
 

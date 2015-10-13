@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra
 {
@@ -15,23 +16,17 @@ namespace Penumbra
     /// </remarks>
     public class PenumbraComponent : DrawableGameComponent
     {        
-        private readonly PenumbraEngine _engine = new PenumbraEngine();        
+        private readonly PenumbraEngine _engine = new PenumbraEngine();
 
         /// <summary>
         /// Constructs a new instance of <see cref="PenumbraComponent"/>.
         /// </summary>
         /// <param name="game">Game object to associate the engine with.</param>
-        /// <param name="transformTypes">
-        /// Transforms used to calculate view projection matrix. These should be the same as used
-        /// for the scene. See <see cref="Transforms"/> for more info.
-        /// </param>
-        public PenumbraComponent(Game game, Transforms transformTypes = Transforms.SpriteBatch | Transforms.Custom) 
+        public PenumbraComponent(Game game) 
             : base(game)
         {
-            _engine.Camera.Transforms = transformTypes;            
-
+            // We only need to draw this component.
             Enabled = false;
-            Visible = true;            
         }
 
         /// <summary>
@@ -64,13 +59,13 @@ namespace Penumbra
         }
 
         /// <summary>
-        /// Gets or sets the transforms used to calculate view projection matrix. These should be the same as used
-        /// for the scene. See <see cref="Transforms"/> for more info.
+        /// Gets or sets if this component is used with <see cref="SpriteBatch"/> and its transform should
+        /// be automatically applied. Default value is <c>true</c>.
         /// </summary>
-        public Transforms TransformTypes
+        public bool SpriteBatchTransformEnabled
         {
-            get { return _engine.Camera.Transforms; }
-            set { _engine.Camera.Transforms = value; }
+            get { return _engine.Camera.SpriteBatchTransformEnabled; }
+            set { _engine.Camera.SpriteBatchTransformEnabled = value; }
         }
 
         /// <summary>

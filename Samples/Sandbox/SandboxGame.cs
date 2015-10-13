@@ -18,38 +18,39 @@ namespace Sandbox
 
         private static readonly Color BackgroundColor = Color.White;
 
-        private readonly GraphicsDeviceManager _deviceManager;
         private readonly PenumbraControllerComponent _penumbraController;
         private readonly PenumbraComponent _penumbra;
         private readonly CameraMovementComponent _camera;
-        private readonly ScenariosComponent _scenarios;
         private readonly ConsoleComponent _console;
         private readonly PythonInterpreter _consoleInterpreter = new PythonInterpreter();
 
         private KeyboardState _currentKeyState;
         private KeyboardState _previousKeyState;
 
-        internal ScenariosComponent Scenarios => _scenarios;
+        private Matrix _projection;
+
+        internal ScenariosComponent Scenarios { get; }
 
         public SandboxGame()
-        {            
-            _deviceManager = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            _penumbra = new PenumbraComponent(this, Transforms.OriginCenter_XRight_YUp | Transforms.Custom)
+        {
+            var deviceManager = new GraphicsDeviceManager(this);
+            Content.RootDirectory = "Content";            
+            _penumbra = new PenumbraComponent(this)
             {
+                SpriteBatchTransformEnabled = false,
                 AmbientColor = Color.Black
             };
             Components.Add(_penumbra);
             _penumbraController = new PenumbraControllerComponent(this, _penumbra);
             Components.Add(_penumbraController);
-            _scenarios = new ScenariosComponent(this, _penumbra, _penumbraController, _consoleInterpreter);
-            Components.Add(_scenarios);
+            Scenarios = new ScenariosComponent(this, _penumbra, _penumbraController, _consoleInterpreter);
+            Components.Add(Scenarios);
             var ui = new UIComponent(this, _penumbraController)
             {
                 DrawOrder = int.MaxValue
             };
             Components.Add(ui);
-            _camera = new CameraMovementComponent(this, _penumbra);
+            _camera = new CameraMovementComponent(this);
             Components.Add(_camera);
             Components.Add(new FpsGarbageComponent(this));
             _console = new ConsoleComponent(this);
@@ -57,8 +58,8 @@ namespace Sandbox
 
             // There's a bug when trying to change resolution during window resize.
             // https://github.com/mono/MonoGame/issues/3572
-            _deviceManager.PreferredBackBufferWidth = 1280;
-            _deviceManager.PreferredBackBufferHeight = 720;
+            deviceManager.PreferredBackBufferWidth = 1280;
+            deviceManager.PreferredBackBufferHeight = 720;
             Window.AllowUserResizing = false;            
             IsMouseVisible = true;            
         }
@@ -66,6 +67,14 @@ namespace Sandbox
         protected override void LoadContent()
         {
             base.LoadContent();
+
+            var pp = GraphicsDevice.PresentationParameters;
+            _projection = Matrix.CreateOrthographicOffCenter(
+                -pp.BackBufferWidth / 2.0f,
+                pp.BackBufferWidth / 2.0f,
+                -pp.BackBufferHeight / 2.0f,
+                pp.BackBufferHeight / 2.0f,
+                0.0f, 1.0f);
 
             _console.LoadContent(Content.Load<SpriteFont>("Font"), _consoleInterpreter);
         }
@@ -96,19 +105,22 @@ namespace Sandbox
             if (!_console.IsAcceptingInput)
             {
                 if (IsKeyPressed(PauseKey))
-                    _scenarios.Enabled = !_scenarios.Enabled;
+                    Scenarios.Enabled = !Scenarios.Enabled;
 
                 if (IsKeyPressed(NextScenarioKey))
-                    _scenarios.NextScenario();
+                    Scenarios.NextScenario();
 
                 if (IsKeyPressed(PreviousScenarioKey))
-                    _scenarios.PreviousScenario();
+                    Scenarios.PreviousScenario();
             }
 
             if (IsKeyPressed(Keys.OemTilde))
                 _console.ToggleOpenClose();
 
             _previousKeyState = _currentKeyState;
+
+            // View * projection.
+            _penumbra.Transform = _camera.Transform * _projection;
 
             base.Update(gameTime);
         }

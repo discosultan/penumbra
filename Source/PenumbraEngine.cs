@@ -170,39 +170,4 @@ namespace Penumbra
             };
         }
     }
-
-    /// <summary>
-    /// Camera transform types to determine the final view projection matrix used to generate lightmap.
-    /// More than one can be applied.     
-    /// </summary>
-    /// <remarks>
-    /// Some examples: 
-    ///     To use the system with SpriteBatch, specify <c>Projections.SpriteBatch</c>.
-    ///     If custom transform is also applied to SpriteBatch, specify both
-    ///     <c>Projections.SpriteBatch | Projections.Custom</c> and apply the custom transform through the
-    ///     Transform porperty.
-    ///     To take full control of the projections, specify only <c>Projections.Custom</c>.
-    /// </remarks>
-    [Flags]
-    public enum Transforms
-    {
-        /// <summary>
-        /// Provides the same projection used by SpriteBatch.
-        /// </summary>
-        SpriteBatch = 1 << 0,
-        /// <summary>
-        /// Provides a projection where the world origin (0;0) is located at the center of the screen,
-        /// X axis runs from left to right and Y axis runs from bottom to top.
-        /// </summary>
-        OriginCenter_XRight_YUp = 1 << 1,
-        /// <summary>
-        /// Provides a projection where the world origin (0;0) is located at the left bottom corner of the screen,
-        /// X axis runs from left to right and Y axis runs from bottom to top.
-        /// </summary>
-        OriginBottomLeft_XRight_YUp = 1 << 2,
-        /// <summary>
-        /// Uses the custom transform supplied through the Transform property.
-        /// </summary>
-        Custom = 1 << 3
-    }
 }
