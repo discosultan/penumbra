@@ -1,4 +1,6 @@
-﻿Texture2D Texture : register(t0);
+﻿#include "Macros.fxh"
+
+Texture2D Texture : register(t0);
 SamplerState TextureSampler;
 
 struct VertexIn
@@ -28,11 +30,4 @@ float4 PS(VertexOut pin) : SV_TARGET
 	return Texture.Sample(TextureSampler, pin.TexCoord);
 }
 
-technique Main
-{
-	pass P0
-	{		
-		VertexShader = compile vs_4_0_level_9_1 VS();
-		PixelShader = compile ps_4_0_level_9_1 PS();
-	}
-}
+TECHNIQUE(Main, VS, PS);

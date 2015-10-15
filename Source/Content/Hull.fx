@@ -1,4 +1,6 @@
-﻿cbuffer cbPerObject : register(c0)
+﻿#include "Macros.fxh"
+
+cbuffer cbPerObject : register(c0)
 {
 	float4 Color;
 };
@@ -32,11 +34,4 @@ float4 PS(VertexOut pin) : SV_TARGET
 	return Color;
 }
 
-technique Main
-{
-	pass P0
-	{		
-		VertexShader = compile vs_4_0_level_9_1 VS();
-		PixelShader = compile ps_4_0_level_9_1 PS();
-	}
-}
+TECHNIQUE(Main, VS, PS);

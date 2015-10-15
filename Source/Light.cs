@@ -16,7 +16,7 @@ namespace Penumbra
         private const float Epsilon = 1e-5f;
 
         // Used privately to determine when to calculate world transform and bounds.
-        protected bool _worldDirty = true;
+        private bool _worldDirty = true;
 
         /// <summary>
         /// Gets or sets if the light is enabled and should be rendered.
@@ -109,11 +109,11 @@ namespace Penumbra
                 }
             }
         }
-
+        
+        private float _rotation;
         /// <summary>
         /// Gets or sets the rotation of the light in radians.
         /// </summary>
-        private float _rotation;
         public float Rotation
         {
             get { return _rotation; }

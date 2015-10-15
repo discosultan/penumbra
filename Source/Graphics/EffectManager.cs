@@ -6,8 +6,12 @@ namespace Penumbra.Graphics
 {
     internal static class EffectManager
     {
-        private const string Prefix = "Penumbra.Content.";
+        private const string Prefix = "Penumbra.Content.Compiled.";
+#if DIRECTX
         private const string Suffix = ".dx11.mgfxo";
+#else
+        private const string Suffix = ".ogl.mgfxo";
+#endif
 
         public static Effect LoadEffectFromEmbeddedResource(GraphicsDevice device, string name)
         {
@@ -15,7 +19,7 @@ namespace Penumbra.Graphics
             Assembly assembly = typeof(VertexShadow).GetTypeInfo().Assembly;
 #else
             Assembly assembly = typeof(VertexShadow).Assembly;
-#endif            
+#endif
             var stream = assembly.GetManifestResourceStream(Prefix + name + Suffix);
             using (var ms = new MemoryStream())
             {

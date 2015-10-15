@@ -22,7 +22,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\MonoGame\</OutputPath>
     <DocumentationFile>bin\Debug\MonoGame\Penumbra.MonoGame.xml</DocumentationFile>
-    <DefineConstants>TRACE;DEBUG;MONOGAME</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -34,7 +34,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>bin\Release\MonoGame\net40\</OutputPath>
     <DocumentationFile>bin\Release\MonoGame\net40\Penumbra.MonoGame.xml</DocumentationFile>
-    <DefineConstants>TRACE;MONOGAME</DefineConstants>
+    <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -45,7 +45,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <OutputPath>bin\Release\MonoGame\net45\</OutputPath>
     <DocumentationFile>bin\Release\MonoGame\net45\Penumbra.MonoGame.xml</DocumentationFile>
-    <DefineConstants>TRACE;MONOGAME</DefineConstants>
+    <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -59,9 +59,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Content\Hull.dx11.mgfxo" />
-    <EmbeddedResource Include="Content\Light.dx11.mgfxo" />
-    <EmbeddedResource Include="Content\Shadow.dx11.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\Hull.dx11.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\Light.dx11.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\Shadow.dx11.mgfxo" />
+    <None Include="Content\Macros.fxh" />
     <None Include="Content\Shadow.fx" />
     <Compile Include="Graphics\EffectManager.cs" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
@@ -95,7 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
-    <EmbeddedResource Include="Content\Texture.dx11.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\Texture.dx11.mgfxo" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -107,10 +108,15 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Hull.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Light.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Shadow.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Texture.dx11.mgfxo /Profile:DirectX_11</PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.dx11.mgfxo /Profile:DirectX_11 /Defines:SM4
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.dx11.mgfxo /Profile:DirectX_11 /Defines:SM4
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.dx11.mgfxo /Profile:DirectX_11 /Defines:SM4
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.dx11.mgfxo /Profile:DirectX_11 /Defines:SM4
+
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.ogl.mgfxo /Profile:OpenGL
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.ogl.mgfxo /Profile:OpenGL
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.ogl.mgfxo /Profile:OpenGL
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.ogl.mgfxo /Profile:OpenGL</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

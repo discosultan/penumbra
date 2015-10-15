@@ -1,4 +1,6 @@
-﻿Texture2D Texture : register(t0);
+﻿#include "Macros.fxh"
+
+Texture2D Texture : register(t0);
 SamplerState TextureSampler;
 
 cbuffer cbConstant : register(c0)
@@ -31,7 +33,7 @@ struct VertexOut
 	float2 TexCoord : TEXCOORD0;
 };
 
-VertexOut VSLight(VertexIn vin)
+VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 	
@@ -46,7 +48,7 @@ float4 GetComputedColor(float alpha)
 	alpha = abs(alpha);
 	float3 lightColor = LightColor * alpha;
 	lightColor = pow(lightColor, LightIntensity);
-	return float4(lightColor, 1.0f);
+	return float4(lightColor, 1.0);
 }
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET
@@ -62,7 +64,7 @@ float4 PSSpotLight(VertexOut pin) : SV_TARGET
 	float magnitude = length(lightVector);
 	float2 lightDir = lightVector / magnitude;
 	
-	float halfAngle = acos(dot(lightDir, float2(1, 0)));
+	float halfAngle = acos(dot(lightDir, float2(1.0, 0.0)));
 
 	float occlusion = step(halfAngle, ConeHalfAngle);
 
@@ -92,38 +94,7 @@ float4 PSDebugLight(VertexOut pin) : SV_TARGET
 	return Color;
 }
 
-technique PointLight
-{
-	pass P0
-	{		
-		VertexShader = compile vs_4_0_level_9_1 VSLight();
-		PixelShader = compile ps_4_0_level_9_1 PSPointLight();
-	}
-}
-
-technique Spotlight
-{
-	pass P0
-	{		
-		VertexShader = compile vs_4_0_level_9_1 VSLight();
-		PixelShader = compile ps_4_0_level_9_1 PSSpotLight();
-	}
-}
-
-technique TexturedLight
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0_level_9_1 VSLight();
-		PixelShader = compile ps_4_0_level_9_1 PSTexturedLight();
-	}
-}
-
-technique DebugLight
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0_level_9_1 VSLight();
-		PixelShader = compile ps_4_0_level_9_1 PSDebugLight();
-	}
-}
+TECHNIQUE(PointLight, VS, PSPointLight);
+TECHNIQUE(Spotlight, VS, PSSpotLight);
+TECHNIQUE(TexturedLight, VS, PSTexturedLight);
+TECHNIQUE(DebugLight, VS, PSDebugLight);

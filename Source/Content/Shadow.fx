@@ -1,4 +1,6 @@
-﻿cbuffer cbConstant : register(c0)
+﻿#include "Macros.fxh"
+
+cbuffer cbConstant : register(c0)
 {
 	float4 Color; // Used in debugging.
 };
@@ -89,20 +91,5 @@ float4 PSDebug(VertexOut pin) : SV_TARGET
 	return Color;
 }
 
-technique Main
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0_level_9_1 VS();
-		PixelShader = compile ps_4_0_level_9_1 PS();
-	}
-}
-
-technique Debug
-{
-	pass P0
-	{
-		VertexShader = compile vs_4_0_level_9_1 VS();
-		PixelShader = compile ps_4_0_level_9_1 PSDebug();
-	}
-}
+TECHNIQUE(Main, VS, PS);
+TECHNIQUE(Debug, VS, PSDebug);
