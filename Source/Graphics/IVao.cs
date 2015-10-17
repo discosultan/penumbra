@@ -1,8 +1,9 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics
 {
-    internal interface IVao
+    internal interface IVao : IDisposable
     {
         int VertexCount { get; }
         int IndexCount { get; }

@@ -107,5 +107,18 @@ namespace Penumbra
             if (Visible)
                 _engine.Render();
         }
+
+        /// <inheritdoc />
+        protected override void UnloadContent()
+        {
+            _engine.Dispose();
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                UnloadContent();
+        }
     }
 }

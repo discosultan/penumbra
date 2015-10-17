@@ -24,7 +24,7 @@ using Penumbra.Utilities;
 
 namespace Penumbra
 {
-    internal class PenumbraEngine
+    internal class PenumbraEngine : IDisposable
     {
         private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
 
@@ -150,6 +150,13 @@ namespace Penumbra
             Hulls.Dirty = false;
         }
 
+        public void Dispose()
+        {
+            RsDebug?.Dispose();
+            _rsCw?.Dispose();
+            _rsCcw?.Dispose();
+        }
+
         private void BuildGraphicsResources()
         {
             _rsCcw = new RasterizerState
@@ -168,6 +175,6 @@ namespace Penumbra
                 FillMode = FillMode.WireFrame,
                 ScissorTestEnable = true
             };
-        }
+        }        
     }
 }

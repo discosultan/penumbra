@@ -7,7 +7,7 @@ using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 
 namespace Penumbra.Graphics.Renderers
 {
-    internal class ShadowRenderer
+    internal class ShadowRenderer : IDisposable
     {
         private static readonly Color DebugColor = Color.Red;
 
@@ -111,6 +111,19 @@ namespace Penumbra.Graphics.Renderers
                 _engine.Device.SetVertexArrayObject(hullVao);
                 _fxHullTech.Passes[0].Apply();
                 _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, hullVao.VertexCount, 0, hullVao.IndexCount / 3);
+            }
+        }
+
+        public void Dispose()
+        {
+            _fxShadow.Dispose();
+            _fxHull.Dispose();
+            _bsShadow.Dispose();
+            _bsHull.Dispose();
+            foreach (var shadowAndHullTuple in _lightsVaos.Values)
+            {
+                shadowAndHullTuple.Item1.Dispose();
+                shadowAndHullTuple.Item2.Dispose();
             }
         }
 
@@ -234,6 +247,6 @@ namespace Penumbra.Graphics.Renderers
             //    StencilFail = StencilOperation.Keep,
             //    ReferenceStencil = 1
             //};
-        }
+        }        
     }        
 }

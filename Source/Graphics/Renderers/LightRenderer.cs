@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics.Renderers
 {
-    internal class LightRenderer
+    internal class LightRenderer : IDisposable
     {        
         private static readonly Color DebugColor = Color.Green;
 
@@ -98,6 +98,14 @@ namespace Penumbra.Graphics.Renderers
             }
         }
 
+        public void Dispose()
+        {
+            _fxLight.Dispose();
+            _quadVao.Dispose();
+            _circleVao.Dispose();
+            _bsLight.Dispose();
+        }
+
         private void BuildGraphicsResources()
         {            
             // We build the quad a little larger than required in order to be able to also properly clear the alpha
@@ -112,7 +120,6 @@ namespace Penumbra.Graphics.Renderers
                 new VertexPosition2Texture(new Vector2(0.0f - d, 0.0f - d), new Vector2(0.0f - d, 1.0f + d)),
                 new VertexPosition2Texture(new Vector2(1.0f + d, 0.0f - d), new Vector2(1.0f + d, 1.0f + d))
             };            
-          
 
             _quadVao = StaticVao.New(_engine.Device, quadVertices, VertexPosition2Texture.Layout);
 
@@ -162,6 +169,6 @@ namespace Penumbra.Graphics.Renderers
             //    StencilFunction = CompareFunction.Always,
             //    StencilPass = StencilOperation.Zero
             //};
-        }
+        }        
     }
 }

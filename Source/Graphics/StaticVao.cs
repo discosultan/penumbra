@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics
 {
-    internal sealed class StaticVao : IVao, IDisposable
+    internal sealed class StaticVao : IVao
     {        
         public VertexBuffer VertexBuffer { get; }
         public IndexBuffer IndexBuffer { get; }

@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Utilities;
 
 namespace Penumbra.Graphics
 {
-    internal class DynamicVao : IVao, IDisposable
+    internal class DynamicVao : IVao
     {
         private const int DefaultVertexCount = 32;
         
