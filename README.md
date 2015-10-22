@@ -1,4 +1,4 @@
-## What is this?
+## What is this sorcery?
 
 Penumbra allows users to easily add 2D lighting with shadowing effects to their games.
 
@@ -8,11 +8,18 @@ Penumbra allows users to easily add 2D lighting with shadowing effects to their 
 
 ## Getting Started
 
+### Building source and samples
+
+The following is required to successfully compile the Penumbra MonoGame solution:
+
+- Visual studio 2015+ (due to C# 6 syntax)
+- [DirectX End-User Runtimes (June 2010)](http://www.microsoft.com/en-us/download/details.aspx?id=8109) (to compile effect shaders)
+
+### Using Penumbra
+
 > Currently available only for MonoGame WindowsDX platform targeting .NET 4.0!
 
-### Basic setup
-
-Install through NuGet:
+Install the assembly through NuGet:
 
 ```powershell
 Install-Package Penumbra.MonoGame.WindowsDX -Pre
@@ -44,7 +51,7 @@ penumbra.SpriteBatchTransformEnabled = false;
 
  Custom transform matrix is set through the `Transform` property.
 
-### Adding lights
+### Working with lights
 
 Penumbra supports three types of lights: `PointLight`, `Spotlight`, `TexturedLight`
 
@@ -62,7 +69,7 @@ To add a light:
 penumbra.Lights.Add(light);
 ```
 
-### Adding shadow hulls
+### Working with shadow hulls
 
 Hulls are polygons from which shadows are cast. They are usually created using the same geometry as the scene and can be ordered both clockwise or counter-clockwise. Hull points can be manipulated though the `hull.Points` property.
 
