@@ -17,9 +17,7 @@ namespace Penumbra
     public class Hull
     {                                                        
         private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints = 
-            new ExtendedObservableCollection<Vector2>();        
-        // Used by the triangulator in order not to allocate on the heap.
-        private readonly Indices _intermediaryIndicesBuffer = new Indices();
+            new ExtendedObservableCollection<Vector2>();                
 
         private bool _worldDirty = true;
         private bool _pointsDirty = true;
@@ -218,8 +216,7 @@ namespace Penumbra
                 }
                 else
                 {
-                    _intermediaryIndicesBuffer.Clear();
-                    Triangulator.Process(LocalPoints, _intermediaryIndicesBuffer, Indices);
+                    Triangulator.Process(LocalPoints, Indices);
                 }
 
                 _pointsDirty = false;                

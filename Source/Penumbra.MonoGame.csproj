@@ -27,6 +27,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release 4.0|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -86,21 +87,21 @@
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Graphics\StaticVao.cs" />
     <Compile Include="Utilities\Calc.cs" />
-    <MonoGameContentReference Include="Content\Content.mgcb" />    
+    <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="packages.config" />
-	<None Include="Content\Macros.fxh" />
+    <None Include="Content\Macros.fxh" />
     <None Include="Content\Shadow.fx" />
     <None Include="Content\Hull.fx" />
     <None Include="Content\Light.fx" />
     <None Include="Content\Texture.fx" />
-	<EmbeddedResource Include="Content\Compiled\Hull.dx11.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\Hull.dx11.mgfxo" />
     <EmbeddedResource Include="Content\Compiled\Light.dx11.mgfxo" />
     <EmbeddedResource Include="Content\Compiled\Shadow.dx11.mgfxo" />
     <EmbeddedResource Include="Content\Compiled\Hull.ogl.mgfxo" />
     <EmbeddedResource Include="Content\Compiled\Light.ogl.mgfxo" />
     <EmbeddedResource Include="Content\Compiled\Shadow.ogl.mgfxo" />
-    <EmbeddedResource Include="Content\Compiled\Texture.ogl.mgfxo" /> 
-	<EmbeddedResource Include="Content\Compiled\Texture.dx11.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\Texture.ogl.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\Texture.dx11.mgfxo" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

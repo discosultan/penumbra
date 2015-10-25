@@ -5,16 +5,20 @@ using Indices = Penumbra.Utilities.FastList<int>;
 namespace Penumbra.Graphics
 {
     // ref: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
-    internal static class Triangulator
+    internal unsafe static class Triangulator
     {
         private const float Epsilon = 1e-5f;
 
-        public static bool Process(Polygon contour, Indices V, Indices resultIndices, bool clockwise = true)
+        public static bool Process(Polygon contour, Indices resultIndices, bool clockwise = true)
         {
             int n = contour.Count;
-            if (n < 3) return false;
+            if (n < 3)
+                return false;
 
-            for (var v = 0; v < n; v++) V.Add(v);
+            int* intermediaryIndices = stackalloc int[n];
+
+            for (var i = 0; i < n; i++)
+                intermediaryIndices[i] = i;
 
             int nv = n;
 
@@ -25,10 +29,8 @@ namespace Penumbra.Graphics
             {
                 /* if we loop, it is probably a non-simple polygon */
                 if (0 >= (count--))
-                {
                     //** Triangulate: ERROR - probably bad polygon!
                     return false;
-                }
 
                 /* three consecutive vertices in current polygon, <u,v,w> */
                 int u = v;
@@ -38,14 +40,14 @@ namespace Penumbra.Graphics
                 int w = v + 1;
                 if (nv <= w) w = 0; /* next     */
 
-                if (Snip(contour, u, v, w, nv, V))
+                if (Snip(contour, u, v, w, nv, intermediaryIndices))
                 {
                     int s, t;
 
                     /* true names of the vertices */
-                    int a = V[u];
-                    int b = V[v];
-                    int c = V[w];
+                    int a = intermediaryIndices[u];
+                    int b = intermediaryIndices[v];
+                    int c = intermediaryIndices[w];
 
                     /* output Triangle */
                     if (clockwise)
@@ -62,7 +64,8 @@ namespace Penumbra.Graphics
                     }
 
                     /* remove v from remaining polygon */
-                    for (s = v, t = v + 1; t < nv; s++, t++) V[s] = V[t];
+                    for (s = v, t = v + 1; t < nv; s++, t++)
+                        intermediaryIndices[s] = intermediaryIndices[t];
                     nv--;
 
                     /* resest error detection counter */
@@ -95,7 +98,7 @@ namespace Penumbra.Graphics
             return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
         }
 
-        private static bool Snip(Polygon contour, int u, int v, int w, int n, Indices indices)
+        private static bool Snip(Polygon contour, int u, int v, int w, int n, int* indices)
         {
             Vector2 a = contour[indices[u]];
             Vector2 b = contour[indices[v]];
