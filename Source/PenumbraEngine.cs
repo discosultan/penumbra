@@ -1,7 +1,4 @@
-﻿// TODO: Usability improvements:
-// TODO:    1.  Instead of relying on default backbuffer, query and store active rendertarget before 
-// TODO:        rendering lightmap and restore it after. 
-// TODO: Features:
+﻿// TODO: Features:
 // TODO:    1.  Provide similar transforming capabilities for camera as are for light and hull. Currently
 // TODO:        user must provide custom matrix for camera transformations.
 // TODO:    2.  Occluded shadow type which illuminates the first hull the light ray intersects, but any hull
@@ -85,8 +82,11 @@ namespace Penumbra
 
         public void PreRender()
         {
+            // Store currently active render targets so we can reset them once we are done blending the lightmap.
+            Device.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
+
             // Switch render target to custom scene texture.
-            Device.SetRenderTarget(Textures.Scene);
+            Device.SetRenderTargets(Textures.SceneBindings);            
         }
         
         public void Render()
@@ -100,7 +100,7 @@ namespace Penumbra
             Device.SamplerStates[0] = SamplerState.LinearClamp;
 
             // Switch render target to lightmap.
-            Device.SetRenderTarget(Textures.LightMap);
+            Device.SetRenderTargets(Textures.LightMapBindings);
 
             // Clear lightmap color, depth and stencil data.
             Device.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
@@ -141,7 +141,7 @@ namespace Penumbra
             }
 
             // Switch render target back to default.
-            Device.SetRenderTarget(null);
+            Device.SetRenderTargets(Textures.GetOriginalRenderTargetBindings());
 
             // Blend original scene and lightmap and present to backbuffer.
             LightMapRenderer.Present();
