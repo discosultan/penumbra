@@ -23,7 +23,7 @@ namespace Penumbra
 {
     internal class PenumbraEngine : IDisposable
     {
-        private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
+        private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));        
 
         private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
         public Color AmbientColor

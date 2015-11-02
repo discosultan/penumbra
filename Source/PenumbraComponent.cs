@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -17,6 +18,9 @@ namespace Penumbra
     public class PenumbraComponent : DrawableGameComponent
     {        
         private readonly PenumbraEngine _engine = new PenumbraEngine();
+
+        private bool _initialized;
+        private bool _beginDrawCalled;
 
         /// <summary>
         /// Constructs a new instance of <see cref="PenumbraComponent"/>.
@@ -82,10 +86,13 @@ namespace Penumbra
         /// component was not added to the game's components list through <c>Components.Add</c>.
         /// </summary>
         public override void Initialize()
-        {            
+        {
+            if (_initialized) return;
+
             base.Initialize();
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
             _engine.Load(GraphicsDevice, deviceManager);
+            _initialized = true;
         }
 
         /// <summary>
@@ -94,7 +101,14 @@ namespace Penumbra
         public void BeginDraw()
         {
             if (Visible)
+            {
+                if (!_initialized)
+                    throw new InvalidOperationException(
+                        $"{nameof(PenumbraComponent)} is not initialized. Make sure to call {nameof(PenumbraComponent.Initialize)} when setting up a game.");
+
                 _engine.PreRender();
+                _beginDrawCalled = true;
+            }
         }
 
         /// <summary>
@@ -105,7 +119,14 @@ namespace Penumbra
         public override void Draw(GameTime gameTime)
         {
             if (Visible)
+            {
+                if (!_beginDrawCalled)
+                    throw new InvalidOperationException(
+                        $"{nameof(PenumbraComponent.BeginDraw)} must be called before rendering a scene to be lit and calling {nameof(PenumbraComponent.Draw)}.");
+
                 _engine.Render();
+                _beginDrawCalled = false;
+            }
         }
 
         /// <inheritdoc />
