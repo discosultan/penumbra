@@ -45,88 +45,6 @@ namespace Penumbra
             }
         }
 
-        private float _radius = 20.0f;
-        /// <summary>
-        /// Gets or sets the radius of the light source (the area emitting light). 
-        /// This determines the shape of the cast shadow umbra and penumbra regions.
-        /// </summary>
-        public float Radius
-        {
-            get { return _radius; }
-            set
-            {
-                value = Math.Max(value, Epsilon);
-                if (_radius != value)
-                {
-                    _radius = value;
-                    Dirty = true;
-                }
-            }
-        }
-        
-        private float _intensity = 1.0f;
-        internal float IntensityFactor { get; private set; } = 1.0f;
-        /// <summary>
-        /// Gets or sets the intensity of the color applied to the final scene.
-        /// </summary>
-        public float Intensity
-        {
-            get { return _intensity; }
-            set
-            {
-                _intensity = Math.Max(value, Epsilon);
-                IntensityFactor = 1 / _intensity;
-            }
-        }        
-        
-        /// <summary>
-        /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
-        /// <see cref="ShadowType"/> for more information.
-        /// </summary>
-        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
-
-        /// <summary>
-        /// Gets or sets the color emitted by the light.
-        /// </summary>
-        public Color Color { get; set; } = Color.White;        
-
-        // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
-        internal bool Dirty;
-
-        private Vector2 _scale = new Vector2(100.0f);
-        /// <summary>
-        /// Gets or sets the scale (width and height) of the light.
-        /// </summary>
-        public Vector2 Scale
-        {
-            get { return _scale; }
-            set
-            {
-                if (_scale != value)
-                {
-                    _scale = value;
-                    _worldDirty = true;
-                }
-            }
-        }
-        
-        private float _rotation;
-        /// <summary>
-        /// Gets or sets the rotation of the light in radians.
-        /// </summary>
-        public float Rotation
-        {
-            get { return _rotation; }
-            set
-            {
-                if (_rotation != value)
-                {
-                    _rotation = value;
-                    _worldDirty = true;
-                }
-            }
-        }
-        
         private Vector2 _origin = new Vector2(0.5f);
         /// <summary>
         /// Gets or sets the origin (anchor) of the light. This is used for both positioning and
@@ -147,6 +65,88 @@ namespace Penumbra
                 }
             }
         }
+
+        private float _rotation;
+        /// <summary>
+        /// Gets or sets the rotation of the light in radians.
+        /// </summary>
+        public float Rotation
+        {
+            get { return _rotation; }
+            set
+            {
+                if (_rotation != value)
+                {
+                    _rotation = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
+        private Vector2 _scale = new Vector2(100.0f);
+        /// <summary>
+        /// Gets or sets the scale (width and height) of the light.
+        /// </summary>
+        public Vector2 Scale
+        {
+            get { return _scale; }
+            set
+            {
+                if (_scale != value)
+                {
+                    _scale = value;
+                    _worldDirty = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the color emitted by the light.
+        /// </summary>
+        public Color Color { get; set; } = Color.White;
+                
+        private float _intensity = 1.0f;
+        /// <summary>
+        /// Gets or sets the intensity of the color applied to the final scene.
+        /// </summary>        
+        public float Intensity
+        {
+            get { return _intensity; }
+            set
+            {
+                _intensity = Math.Max(value, Epsilon);
+                IntensityFactor = 1 / _intensity;
+            }
+        }
+        internal float IntensityFactor { get; private set; } = 1.0f;
+
+        private float _radius = 20.0f;
+        /// <summary>
+        /// Gets or sets the radius of the light source (the area emitting light). 
+        /// This determines the shape of the cast shadow umbra and penumbra regions.
+        /// </summary>
+        public float Radius
+        {
+            get { return _radius; }
+            set
+            {
+                value = Math.Max(value, Epsilon);
+                if (_radius != value)
+                {
+                    _radius = value;
+                    Dirty = true;
+                }
+            }
+        }                
+        
+        /// <summary>
+        /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
+        /// <see cref="ShadowType"/> for more information.
+        /// </summary>
+        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;               
+
+        // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
+        internal bool Dirty;
 
         internal BoundingRectangle Bounds;
 
@@ -170,17 +170,11 @@ namespace Penumbra
                 _worldDirty = false;
                 Dirty = true;
             }
-        }     
-
-        internal bool Intersects(CameraProvider camera)
-        {
-            return Bounds.Intersects(ref camera.Bounds);
         }
 
-        internal bool Intersects(Hull hull)
-        {
-            return Bounds.Intersects(ref hull.Bounds);
-        }
+        internal bool Intersects(CameraProvider camera) => Bounds.Intersects(ref camera.Bounds);        
+
+        internal bool Intersects(Hull hull) => Bounds.Intersects(ref hull.Bounds);
 
         private void CalculateBounds()
         {
