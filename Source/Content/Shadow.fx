@@ -53,9 +53,11 @@ VertexOut VS(VertexIn vin)
 	// From each edge, project a quad. We have 4 vertices per edge.	
 	float2 position = lerp(vin.SegmentA, vin.SegmentB, vin.Occlusion.x);
 	float2 projectionOffset = lerp(lightOffsetA, lightOffsetB, vin.Occlusion.x);
+	// Setting projected.w to 0 will cause the position to be projected (scaled) infinitely far away in the 
+	// perspective division phase. Instead of dividing by 0, the pipeline seems to divide by a very small positive number instead.
 	float4 projected = float4(position - projectionOffset*vin.Occlusion.y, 0.0, 1.0 - vin.Occlusion.y);
 
-	// Transform to ndc.
+	// Transform to clip space.
 	float4 clipPosition = mul(projected, ViewProjection);
 	
 	float2 penumbraA = mul(projected.xy - (vin.SegmentA)*projected.w, Invert(float2x2(toLightOffsetA, toSegmentA)));
@@ -69,7 +71,6 @@ VertexOut VS(VertexIn vin)
 	vout.Position = clipPosition;
 	vout.Penumbra = float4(penumbraA, penumbraB);
 	vout.ClipValue = clipValue;
-
 	return vout;
 }
 

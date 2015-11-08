@@ -11,7 +11,7 @@ namespace Penumbra.Graphics.Providers
         public BoundingRectangle Bounds = new BoundingRectangle(new Vector2(float.MinValue), new Vector2(float.MaxValue));
 
         private Matrix _inverseViewProjection = Matrix.Identity;        
-        private Matrix _ndcToScreen = Matrix.Identity;
+        private Matrix _clipToScreen = Matrix.Identity;
         private Matrix _spriteBatchTransform = Matrix.Identity;
         private Matrix _custom = Matrix.Identity;
         private bool _loaded;
@@ -35,7 +35,7 @@ namespace Penumbra.Graphics.Providers
             base.Load(engine);
 
             CalculateSpriteBatchTransform();
-            CalculateNdcToScreen();
+            CalculateClipToScreen();
             CalculateViewProjectionAndBounds();
 
             _loaded = true;
@@ -47,7 +47,7 @@ namespace Penumbra.Graphics.Providers
         public void GetScissorRectangle(Light light, out BoundingRectangle scissor)
         {
             Matrix transform;
-            Matrix.Multiply(ref ViewProjection, ref _ndcToScreen, out transform);
+            Matrix.Multiply(ref ViewProjection, ref _clipToScreen, out transform);
             
             BoundingRectangle.Transform(ref light.Bounds, ref transform, out scissor);
         }        
@@ -56,7 +56,7 @@ namespace Penumbra.Graphics.Providers
         {
             Logger.Write($"Screen size changed to {BackBufferWidth}x{BackBufferHeight}.");
             CalculateSpriteBatchTransform();
-            CalculateNdcToScreen();
+            CalculateClipToScreen();
             CalculateViewProjectionAndBounds();                        
         }
 
@@ -71,10 +71,10 @@ namespace Penumbra.Graphics.Providers
                 0.0f, 1.0f, out _spriteBatchTransform);
         }
 
-        private void CalculateNdcToScreen()
+        private void CalculateClipToScreen()
         {
             PresentationParameters pp = Engine.Device.PresentationParameters;
-            _ndcToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1));            
+            _clipToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1));            
         }
 
         private void CalculateViewProjectionAndBounds()
