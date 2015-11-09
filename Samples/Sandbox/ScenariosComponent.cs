@@ -19,7 +19,7 @@ namespace Sandbox
 
         public ScenariosComponent(SandboxGame game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController, PythonInterpreter interpreter) 
             : base(game)
-        {            
+        {
             _penumbra = penumbra;
             _penumbraController = penumbraController;
             _interpreter = interpreter;

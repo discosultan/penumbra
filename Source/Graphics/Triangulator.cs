@@ -5,7 +5,7 @@ using Indices = Penumbra.Utilities.FastList<int>;
 namespace Penumbra.Graphics
 {
     // ref: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
-    internal unsafe static class Triangulator
+    internal static unsafe class Triangulator
     {
         private const float Epsilon = 1e-5f;
 
@@ -95,7 +95,7 @@ namespace Penumbra.Graphics
             var cCROSSap = cx*apy - cy*apx;
             var bCROSScp = bx*cpy - by*cpx;
 
-            return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
+            return aCROSSbp >= 0.0f && bCROSScp >= 0.0f && cCROSSap >= 0.0f;
         }
 
         private static bool Snip(Polygon contour, int u, int v, int w, int n, int* indices)
@@ -104,11 +104,11 @@ namespace Penumbra.Graphics
             Vector2 b = contour[indices[v]];
             Vector2 c = contour[indices[w]];
 
-            if (Epsilon > (((b.X - a.X)*(c.Y - a.Y)) - ((b.Y - a.Y)*(c.X - a.X)))) return false;
+            if (Epsilon > (b.X - a.X)*(c.Y - a.Y) - (b.Y - a.Y)*(c.X - a.X)) return false;
 
             for (int i = 0; i < n; i++)
             {
-                if ((i == u) || (i == v) || (i == w)) continue;
+                if (i == u || i == v || i == w) continue;
                 Vector2 p = contour[indices[i]];
                 if (InsideTriangle(a, b, c, p)) return false;
             }

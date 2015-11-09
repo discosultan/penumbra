@@ -71,7 +71,7 @@ penumbra.Lights.Add(light);
 
 ### Working with shadow hulls
 
-Hulls are polygons from which shadows are cast. They are usually created using the same geometry as the scene and can be ordered both clockwise or counter-clockwise. Hull points can be manipulated though the `hull.Points` property.
+Hulls are polygons from which shadows are cast. They are usually created using the same geometry as the scene and can be ordered both clockwise or counter-clockwise. Hull points can be manipulated through the `hull.Points` property.
 
 For a hull to be valid and included in the shadow mask generation, it must conform to the following rules:
 

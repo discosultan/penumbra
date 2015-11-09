@@ -2,7 +2,7 @@
 
 cbuffer cbConstant : register(c0)
 {
-	float4 Color; // Used in debugging.
+	float4 Color; // Used for debugging.
 };
 
 cbuffer cbPerFrame : register(c1)
@@ -20,7 +20,7 @@ struct VertexIn
 {	
 	float2 SegmentA : TEXCOORD0;
 	float2 SegmentB : TEXCOORD1;
-	float2 Occlusion : SV_POSITION0;	
+	float2 Occlusion : SV_POSITION0;
 };
 
 struct VertexOut
@@ -38,8 +38,8 @@ float2x2 Invert(float2x2 m)
 VertexOut VS(VertexIn vin)
 {
 	// Segments are in CCW order.
-	// Occlusion.x determines if we are dealing with segment vertex A or vertex B.	
-	// Occlusion.y determines if we are projecting the vertex or not.	
+	// Occlusion.x=0: dealing with segment vertex A; X=1: dealing with segment vertex B.	
+	// Occlusion.y=0: not projecting the vertex; y=1: projecting the vertex.	
 	
 	float2 toSegmentA = vin.SegmentA - LightPosition;
 	float2 toSegmentB = vin.SegmentB - LightPosition;
@@ -59,12 +59,13 @@ VertexOut VS(VertexIn vin)
 
 	// Transform to clip space.
 	float4 clipPosition = mul(projected, ViewProjection);
-	
+		
 	float2 penumbraA = mul(projected.xy - (vin.SegmentA)*projected.w, Invert(float2x2(toLightOffsetA, toSegmentA)));
-	float2 penumbraB = mul(projected.xy - (vin.SegmentB)*projected.w, Invert(float2x2(toLightOffsetB, toSegmentB)));
+	float2 penumbraB = mul(projected.xy - (vin.SegmentB)*projected.w, Invert(float2x2(toLightOffsetB, toSegmentB)));	
 
-	float2 clipNormal = normalize(vin.SegmentB - vin.SegmentA).yx*float2(-1.0, 1.0);
-	// 90 CCW. ClipValue > 0 means the projection is pointing towards light => no shadow should be generated.
+	// Find the edge normal. A to B CW 90 deg.
+	// ClipValue < 0 means the projection is pointing towards light => no shadow should be generated.
+	float2 clipNormal = normalize(vin.SegmentB - vin.SegmentA).yx*float2(1.0, -1.0);	
 	float clipValue = dot(clipNormal, projected.xy - projected.w*position);
 	
 	VertexOut vout;
@@ -76,19 +77,19 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	// If clipvalue > 0, don't shadow. We are clipping shadows cast from edges which normals are pointing
+	// If clipvalue < 0, don't shadow. We are clipping shadows cast from edges which normals are pointing
 	// towards the light.
-	clip(-pin.ClipValue);
+	clip(pin.ClipValue);
 
 	float2 p = clamp(pin.Penumbra.xz / pin.Penumbra.yw, -1.0, 1.0);
-	float2 value = lerp(p*(3.0 - p*p)*0.25 + 0.5, 1.0, step(pin.Penumbra.yw, 0.0));	
-	float occlusion = (value.x + value.y - 1.0);
+	float2 value = lerp(p*(3.0 - p*p)*0.25 + 0.5, 1.0, step(pin.Penumbra.yw, 0.0));	// Step penumbra.yw < 0: 1; otherwise 0.	
+	float occlusion = value.x + value.y - 1.0;
 	return float4(0.0, 0.0, 0.0, occlusion);
 }
 
 float4 PSDebug(VertexOut pin) : SV_TARGET
 {
-	clip(-pin.ClipValue);
+	clip(pin.ClipValue);
 	return Color;
 }
 
