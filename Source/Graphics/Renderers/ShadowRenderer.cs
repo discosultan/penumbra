@@ -116,10 +116,10 @@ namespace Penumbra.Graphics.Renderers
 
         public void Dispose()
         {
-            _fxShadow.Dispose();
-            _fxHull.Dispose();
-            _bsShadow.Dispose();
-            _bsHull.Dispose();
+            _fxShadow?.Dispose();
+            _fxHull?.Dispose();
+            _bsShadow?.Dispose();
+            _bsHull?.Dispose();
             foreach (var shadowAndHullTuple in _lightsVaos.Values)
             {
                 shadowAndHullTuple.Item1.Dispose();

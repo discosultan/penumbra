@@ -100,10 +100,10 @@ namespace Penumbra.Graphics.Renderers
 
         public void Dispose()
         {
-            _fxLight.Dispose();
-            _quadVao.Dispose();
-            _circleVao.Dispose();
-            _bsLight.Dispose();
+            _fxLight?.Dispose();
+            _quadVao?.Dispose();
+            _circleVao?.Dispose();
+            _bsLight?.Dispose();
         }
 
         private void BuildGraphicsResources()

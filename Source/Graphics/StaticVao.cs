@@ -20,7 +20,7 @@ namespace Penumbra.Graphics
         public void Dispose()
         {
             VertexBuffer.Dispose();
-            IndexBuffer.Dispose();
+            IndexBuffer?.Dispose();
         }
 
         public static StaticVao New<T>(

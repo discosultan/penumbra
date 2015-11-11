@@ -155,6 +155,9 @@ namespace Penumbra
             RsDebug?.Dispose();
             _rsCw?.Dispose();
             _rsCcw?.Dispose();
+            LightRenderer.Dispose();
+            LightMapRenderer.Dispose();
+            ShadowRenderer.Dispose();
         }
 
         private void BuildGraphicsResources()
