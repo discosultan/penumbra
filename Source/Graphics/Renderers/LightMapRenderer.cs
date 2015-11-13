@@ -44,9 +44,9 @@ namespace Penumbra.Graphics.Renderers
          
         public void Dispose()
         {
-            _fxTexture.Dispose();
-            _bsLightMap.Dispose();
-            _fullscreenQuadVao.Dispose();            
+            _fxTexture?.Dispose();
+            _bsLightMap?.Dispose();
+            _fullscreenQuadVao?.Dispose();            
         }      
 
         private void BuildGraphicsResources()
@@ -61,15 +61,10 @@ namespace Penumbra.Graphics.Renderers
 
             _bsLightMap = new BlendState
             {
+                ColorWriteChannels = ColorWriteChannels.Red | ColorWriteChannels.Green | ColorWriteChannels.Blue,
                 ColorBlendFunction = BlendFunction.Add,
                 ColorSourceBlend = Blend.Zero,
-                ColorDestinationBlend = Blend.SourceColor,
-
-                AlphaBlendFunction = BlendFunction.Add,
-                AlphaSourceBlend = Blend.Zero,
-                AlphaDestinationBlend = Blend.SourceAlpha,                
-
-                ColorWriteChannels = ColorWriteChannels.All
+                ColorDestinationBlend = Blend.SourceColor
             };
         }
     }
