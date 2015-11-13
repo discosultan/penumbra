@@ -86,7 +86,7 @@
     <Compile Include="Utilities\FastList.cs" />
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Graphics\StaticVao.cs" />
-    <Compile Include="Utilities\Calc.cs" />
+    <Compile Include="Utilities\Calculate.cs" />
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="packages.config" />
     <None Include="Content\Macros.fxh" />

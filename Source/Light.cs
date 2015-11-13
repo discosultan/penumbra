@@ -164,7 +164,7 @@ namespace Penumbra
             if (_worldDirty)
             {
                 // Calculate local to world.
-                Calc.CreateTransform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
+                Calculate.Transform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
                 CalculateBounds();
 
                 _worldDirty = false;
@@ -210,6 +210,9 @@ namespace Penumbra
         /// Shadow hulls are not lit by the light.
         /// </summary>
         Solid,        
-        //Occluded
+        /// <summary>
+        /// Occluded shadow hulls (hulls behind other hulls) are not lit.
+        /// </summary>
+        Occluded
     }
 }

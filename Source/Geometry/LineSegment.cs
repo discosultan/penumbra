@@ -46,13 +46,13 @@ namespace Penumbra.Geometry
             Vector2 u = S1.PointB - S1.PointA;
             Vector2 v = S2.PointB - S2.PointA;
             Vector2 w = S1.PointA - S2.PointA;
-            float D = Calc.Cross(ref u, ref v);
+            float D = Calculate.Cross(ref u, ref v);
 
             // test if  they are parallel (includes either being a point)
             if (Math.Abs(D) < Epsilon)
             {
                 // S1 and S2 are parallel
-                if (Calc.Cross(ref u, ref w) != 0 || Calc.Cross(ref v, ref w) != 0)
+                if (Calculate.Cross(ref u, ref w) != 0 || Calculate.Cross(ref v, ref w) != 0)
                 {
                     return 0; // they are NOT collinear
                 }
@@ -125,12 +125,12 @@ namespace Penumbra.Geometry
 
             // the segments are skew and may intersect in a point
             // get the intersect parameter for S1
-            float sI = Calc.Cross(ref v, ref w)/D;
+            float sI = Calculate.Cross(ref v, ref w)/D;
             if (sI < 0 || sI > 1) // no intersect with S1
                 return 0;
 
             // get the intersect parameter for S2
-            float tI = Calc.Cross(ref u, ref w)/D;
+            float tI = Calculate.Cross(ref u, ref w)/D;
             if (tI < 0 || tI > 1) // no intersect with S2
                 return 0;
 

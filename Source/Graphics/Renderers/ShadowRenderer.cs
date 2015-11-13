@@ -32,8 +32,8 @@ namespace Penumbra.Graphics.Renderers
         private EffectParameter _fxHullParamColor;
         private BlendState _bsShadow;
         private BlendState _bsHull;
-        //private DepthStencilState _dsOccludedShadow;
-        //private DepthStencilState _dsOccludedHull;
+        private DepthStencilState _dsOccludedShadow;
+        private DepthStencilState _dsOccludedHull;
 
         public void Load(PenumbraEngine engine)
         {            
@@ -69,9 +69,9 @@ namespace Penumbra.Graphics.Renderers
 
             _engine.Device.RasterizerState = _engine.Rs;
             _engine.Device.DepthStencilState = DepthStencilState.None;
-            //_engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded 
-            //    ? _dsOccludedShadow 
-            //    : DepthStencilState.None;            
+            _engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded
+                ? _dsOccludedShadow
+                : DepthStencilState.None;
 
             if (light.CastsShadows)
             {
@@ -96,8 +96,8 @@ namespace Penumbra.Graphics.Renderers
             }
 
             // Draw hulls.            
-            //if (light.ShadowType == ShadowType.Occluded)
-            //    _engine.Device.DepthStencilState = _dsOccludedHull;
+            if (light.ShadowType == ShadowType.Occluded)
+                _engine.Device.DepthStencilState = _dsOccludedHull;
 
             if (light.CastsShadows || light.ShadowType == ShadowType.Solid)
             {
@@ -225,28 +225,29 @@ namespace Penumbra.Graphics.Renderers
                 AlphaSourceBlend = Blend.One,
                 AlphaDestinationBlend = Blend.Zero
             };
-            //_dsOccludedShadow = new DepthStencilState
-            //{
-            //    DepthBufferEnable = false,
+            _dsOccludedShadow = new DepthStencilState
+            {
+                DepthBufferEnable = false,
 
-            //    StencilEnable = true,
-            //    StencilWriteMask = 0xff,
-            //    StencilMask = 0x00,
-            //    StencilFunction = CompareFunction.Always,
-            //    StencilPass = StencilOperation.IncrementSaturation                           
-            //};
-            //_dsOccludedHull = new DepthStencilState
-            //{
-            //    DepthBufferEnable = false,
-
-            //    StencilEnable = true,
-            //    StencilWriteMask = 0x00,
-            //    StencilMask = 0xff,
-            //    StencilFunction = CompareFunction.Less,
-            //    StencilPass = StencilOperation.Keep,
-            //    StencilFail = StencilOperation.Keep,
-            //    ReferenceStencil = 1
-            //};
+                StencilEnable = true,
+                StencilWriteMask = 0xff,
+                StencilMask = 0x00,
+                StencilFunction = CompareFunction.Always,
+                StencilPass = StencilOperation.Replace,
+                ReferenceStencil = 1
+            };            
+            _dsOccludedHull = new DepthStencilState
+            {
+                DepthBufferEnable = false,
+                
+                StencilEnable = true,
+                StencilWriteMask = 0x00,
+                StencilMask = 0xff,
+                StencilFunction = CompareFunction.Less,
+                StencilPass = StencilOperation.Keep,
+                StencilFail = StencilOperation.Keep,
+                ReferenceStencil = 1
+            };
         }        
     }        
 }

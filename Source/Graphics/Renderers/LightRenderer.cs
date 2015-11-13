@@ -25,7 +25,7 @@ namespace Penumbra.Graphics.Renderers
         private StaticVao _quadVao;
         private StaticVao _circleVao;
         private BlendState _bsLight;
-        //private DepthStencilState _dssOccludedLight;       
+        private DepthStencilState _dssOccludedLight;
 
         public void Load(PenumbraEngine engine)
         {            
@@ -58,9 +58,9 @@ namespace Penumbra.Graphics.Renderers
             Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
 
             _engine.Device.DepthStencilState = DepthStencilState.None;
-            //_engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded 
-            //    ? _dssOccludedLight 
-            //    : DepthStencilState.None;
+            _engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded
+                ? _dssOccludedLight
+                : DepthStencilState.None;
             _engine.Device.BlendState = _bsLight;
             _engine.Device.RasterizerState = _engine.Rs;
             _engine.Device.SetVertexArrayObject(_quadVao);            
@@ -159,16 +159,16 @@ namespace Penumbra.Graphics.Renderers
                 AlphaSourceBlend = Blend.One,
                 AlphaDestinationBlend = Blend.Zero
             };
-            //_dssOccludedLight = new DepthStencilState
-            //{
-            //    DepthBufferEnable = false,
+            _dssOccludedLight = new DepthStencilState
+            {
+                DepthBufferEnable = false,
 
-            //    StencilEnable = true,
-            //    StencilWriteMask = 0xff,
-            //    StencilMask = 0x00,
-            //    StencilFunction = CompareFunction.Always,
-            //    StencilPass = StencilOperation.Zero
-            //};
+                StencilEnable = true,
+                StencilWriteMask = 0xff,
+                StencilMask = 0x00,
+                StencilFunction = CompareFunction.Always,
+                StencilPass = StencilOperation.Zero
+            };
         }        
     }
 }

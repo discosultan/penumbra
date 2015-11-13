@@ -176,7 +176,7 @@ namespace Penumbra
                 UpdatePoints();
 
                 // Calculate local to world transform.                
-                Calc.CreateTransform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
+                Calculate.Transform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
 
                 // Calculate points in world space.
                 WorldPoints.Clear();                
@@ -233,7 +233,7 @@ namespace Penumbra
         }
 
         private void ValidateRawLocalPoints()
-        {            
+        {
             if (_rawLocalPoints.Count < 3)
             {
                 Valid = false;
@@ -250,6 +250,19 @@ namespace Penumbra
                 Logger.Write("Hull valid.");
             }
         }
+
+        /// <summary>
+        /// Creates a square hull with sides of length one and origin at its center (0.5, 0.5).
+        /// </summary>
+        /// <returns>Square hull with sides of length one and origin at its center (0.5, 0.5)</returns>
+        public static Hull CreateRectangle(Vector2? position = null, Vector2? scale = null, float rotation = 0.0f, Vector2? origin = null) => 
+            new Hull(new Vector2(1.0f), new Vector2(0.0f, 1.0f), new Vector2(0.0f), new Vector2(1.0f, 0.0f))
+            {
+                Position = position ?? Vector2.Zero,                
+                Origin = origin ?? new Vector2(0.5f),
+                Scale = scale ?? new Vector2(1.0f),
+                Rotation = rotation
+            };
     }
 
     internal class HullList : ObservableCollection<Hull>

@@ -3,14 +3,14 @@ using Microsoft.Xna.Framework;
 
 namespace Penumbra.Utilities
 {
-    internal static class Calc
+    internal static class Calculate
     {
         public static float Cross(ref Vector2 a, ref Vector2 b)
         {
             return a.X * b.Y - a.Y * b.X;
         }
 
-        public static void CreateTransform(ref Vector2 position, ref Vector2 origin, ref Vector2 scale, float rotation,
+        public static void Transform(ref Vector2 position, ref Vector2 origin, ref Vector2 scale, float rotation,
             out Matrix transform)
         {
             var cos = (float)Math.Cos(rotation);
