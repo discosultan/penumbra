@@ -39,7 +39,7 @@ namespace Penumbra.Graphics.Renderers
         {            
             _engine = engine;
 
-            _fxShadow = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Shadow");
+            _fxShadow = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "Shadow");
             _fxShadowTech = _fxShadow.Techniques["Main"];
             _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
             _fxShadowParamLightPosition = _fxShadow.Parameters["LightPosition"];
@@ -48,7 +48,7 @@ namespace Penumbra.Graphics.Renderers
 
             _fxShadow.Parameters["Color"].SetValue(DebugColor.ToVector4());
 
-            _fxHull = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Hull");
+            _fxHull = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "Hull");
             _fxHullTech = _fxHull.Techniques["Main"];
             _fxHullParamVp = _fxHull.Parameters["ViewProjection"];
             _fxHullParamColor = _fxHull.Parameters["Color"];
@@ -67,9 +67,9 @@ namespace Penumbra.Graphics.Renderers
             if (vao == null)
                 return;
 
-            _engine.Device.RasterizerState = _engine.Rs;
-            _engine.Device.DepthStencilState = DepthStencilState.None;
-            _engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded
+            _engine.GraphicsDevice.RasterizerState = _engine.Rs;
+            _engine.GraphicsDevice.DepthStencilState = DepthStencilState.None;
+            _engine.GraphicsDevice.DepthStencilState = light.ShadowType == ShadowType.Occluded
                 ? _dsOccludedShadow
                 : DepthStencilState.None;
 
@@ -80,37 +80,37 @@ namespace Penumbra.Graphics.Renderers
 
                 // Draw shadows.
                 var shadowVao = vao.Item1;
-                _engine.Device.BlendState = _bsShadow;                                                
-                _engine.Device.SetVertexArrayObject(shadowVao);
+                _engine.GraphicsDevice.BlendState = _bsShadow;                                                
+                _engine.GraphicsDevice.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                
+                _engine.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                
 
                 // Draw shadows borders if debugging.
                 if (_engine.Debug)
                 {
-                    _engine.Device.RasterizerState = _engine.RsDebug;
-                    _engine.Device.BlendState = BlendState.Opaque;                                       
+                    _engine.GraphicsDevice.RasterizerState = _engine.RsDebug;
+                    _engine.GraphicsDevice.BlendState = BlendState.Opaque;                                       
                     _fxShadowTechDebug.Passes[0].Apply();                    
-                    _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                    
+                    _engine.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                    
                 }
             }
 
             // Draw hulls.            
             if (light.ShadowType == ShadowType.Occluded)
-                _engine.Device.DepthStencilState = _dsOccludedHull;
+                _engine.GraphicsDevice.DepthStencilState = _dsOccludedHull;
 
             if (light.CastsShadows || light.ShadowType == ShadowType.Solid)
             {
                 var hullVao = vao.Item2;
-                _engine.Device.RasterizerState = _engine.Rs;
-                _engine.Device.BlendState = _bsHull;
+                _engine.GraphicsDevice.RasterizerState = _engine.Rs;
+                _engine.GraphicsDevice.BlendState = _bsHull;
                 _fxHullParamVp.SetValue(_engine.Camera.ViewProjection);
                 _fxHullParamColor.SetValue(light.ShadowType == ShadowType.Solid
                     ? Color.Transparent.ToVector4()
                     : Color.White.ToVector4());
-                _engine.Device.SetVertexArrayObject(hullVao);
+                _engine.GraphicsDevice.SetVertexArrayObject(hullVao);
                 _fxHullTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, hullVao.VertexCount, 0, hullVao.IndexCount / 3);
+                _engine.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, hullVao.VertexCount, 0, hullVao.IndexCount / 3);
             }
         }
 
@@ -196,8 +196,8 @@ namespace Penumbra.Graphics.Renderers
             if (!_lightsVaos.TryGetValue(light, out lightVaos))
             {
                 lightVaos = Tuple.Create(
-                    DynamicVao.New(_engine.Device, VertexShadow.Layout, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
-                    DynamicVao.New(_engine.Device, VertexPosition2.Layout, _hullVertices.Count, _hullIndices.Count, useIndices: true));
+                    DynamicVao.New(_engine.GraphicsDevice, VertexShadow.Layout, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
+                    DynamicVao.New(_engine.GraphicsDevice, VertexPosition2.Layout, _hullVertices.Count, _hullIndices.Count, useIndices: true));
                 _lightsVaos.Add(light, lightVaos);
             }
 

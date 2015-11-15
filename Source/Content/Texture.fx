@@ -1,7 +1,10 @@
 ﻿#include "Macros.fxh"
 
-Texture2D Texture : register(t0);
+Texture2D Texture;
 SamplerState TextureSampler;
+
+Texture2D NormalMap1;
+Texture2D NormalMap2;
 
 struct VertexIn
 {
@@ -30,4 +33,13 @@ float4 PS(VertexOut pin) : SV_TARGET
 	return Texture.Sample(TextureSampler, pin.TexCoord);
 }
 
+float4 PSNormal(VertexOut pin) : SV_TARGET
+{
+	float4 normal1 = normalize(NormalMap1.Sample(TextureSampler, pin.TexCoord));
+	float4 normal2 = normalize(NormalMap2.Sample(TextureSampler, pin.TexCoord));
+	float dotProduct = dot(normal1, normal2);
+	return Texture.Sample(TextureSampler, pin.TexCoord) * dotProduct;	
+}
+
 TECHNIQUE(Main, VS, PS);
+TECHNIQUE(Normal, VS, PSNormal);

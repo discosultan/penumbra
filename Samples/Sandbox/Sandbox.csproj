@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HullGenerationComponent.cs" />
+    <Compile Include="Scenarios\J_NormalMappedLighting.cs" />
     <Compile Include="Scenarios\I_TexturedLight.cs" />
     <Compile Include="Scenarios\H_Spotlight.cs" />
     <Compile Include="Scenarios\F_ConcaveHull.cs" />
@@ -109,6 +110,8 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\face.jpg" />
+    <Content Include="Content\face_normals.jpg" />
     <Content Include="Content\LightTexture.jpg" />
     <Content Include="Icon.ico" />
   </ItemGroup>

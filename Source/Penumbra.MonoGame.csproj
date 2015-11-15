@@ -62,6 +62,7 @@
     <Compile Include="Graphics\GraphicsExtensions.cs" />
     <Compile Include="Graphics\IVao.cs" />
     <Compile Include="Graphics\Renderers\LightRenderer.cs" />
+    <Compile Include="Graphics\Renderers\RenderHelper.cs" />
     <Compile Include="Graphics\Renderers\ShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\LightMapRenderer.cs" />
     <Compile Include="Graphics\Providers\CameraProvider.cs" />
@@ -103,7 +104,6 @@
     <EmbeddedResource Include="Content\Compiled\Texture.ogl.mgfxo" />
     <EmbeddedResource Include="Content\Compiled\Texture.dx11.mgfxo" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <PropertyGroup>

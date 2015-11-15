@@ -15,10 +15,10 @@ namespace Penumbra.Graphics.Providers
             Engine = engine;
 
             // Not working due to https://github.com/mono/MonoGame/issues/3572
-            Engine.DeviceManager.PreparingDeviceSettings += SizeChanged;
+            Engine.GraphicsDeviceManager.PreparingDeviceSettings += SizeChanged;
 
-            BackBufferWidth = engine.Device.Viewport.Width;
-            BackBufferHeight = engine.Device.Viewport.Height;
+            BackBufferWidth = engine.GraphicsDevice.Viewport.Width;
+            BackBufferHeight = engine.GraphicsDevice.Viewport.Height;
         }
 
         public void Dispose()
@@ -30,7 +30,7 @@ namespace Penumbra.Graphics.Providers
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-                Engine.DeviceManager.PreparingDeviceSettings -= SizeChanged;
+                Engine.GraphicsDeviceManager.PreparingDeviceSettings -= SizeChanged;
         }
 
         protected virtual void OnSizeChanged() { }

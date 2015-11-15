@@ -24,5 +24,13 @@ namespace Sandbox
         public virtual void Update(float deltaSeconds)
         {            
         }
+
+        public virtual void DrawNormals(SpriteBatch spriteBatch)
+        {            
+        }
+
+        public virtual void DrawDiffuse(SpriteBatch spriteBatch)
+        {            
+        }
     }
 }

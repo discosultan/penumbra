@@ -137,13 +137,15 @@ namespace Penumbra
                     Dirty = true;
                 }
             }
-        }                
-        
+        }                        
+
         /// <summary>
         /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
         /// <see cref="ShadowType"/> for more information.
         /// </summary>
-        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;               
+        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
+
+        public float Height { get; set; } = 100.0f;
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
         internal bool Dirty;
@@ -152,8 +154,13 @@ namespace Penumbra
 
         internal Matrix LocalToWorld;              
 
-        internal virtual EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        internal virtual EffectTechnique ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
         {
+            if (isNormalMapped)
+            {
+                renderer._fxLightParamLightPosition.SetValue(new Vector3(Position, Height));
+                renderer._fxLight.Parameters["World"].SetValue(LocalToWorld);
+            }
             renderer._fxLightParamColor.SetValue(Color.ToVector3());
             renderer._fxLightParamIntensity.SetValue(IntensityFactor);
             return null; 

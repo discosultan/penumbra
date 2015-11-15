@@ -6,11 +6,15 @@ namespace Penumbra.Graphics.Providers
     internal class TextureProvider : GraphicsProvider
     {
         private const int MaxNumberOfRenderTargetBindings = 4;
-
+        
         public RenderTargetBinding[] SceneBindings { get; } = new RenderTargetBinding[1];
         public RenderTarget2D Scene { get; private set; }
+        public RenderTargetBinding[] NormalMapBindings { get; } = new RenderTargetBinding[1];
+        public RenderTarget2D NormalMap { get; private set; }
         public RenderTargetBinding[] LightMapBindings { get; } = new RenderTargetBinding[1];
+        public RenderTargetBinding[] LightMapBindingsNormal { get; } = new RenderTargetBinding[2];
         public RenderTarget2D LightMap { get; private set; }
+        public RenderTarget2D LightMapNormal { get; private set; }
 
         private int _numQueriedBindings;
         private RenderTargetBinding[] _originalBindings;
@@ -66,14 +70,22 @@ namespace Penumbra.Graphics.Providers
         {
             DestroyRenderTargets();
 
-            PresentationParameters pp = Engine.Device.PresentationParameters;
+            PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;
             
-            LightMap = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
+            LightMap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
             LightMapBindings[0] = LightMap;
-            Scene = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
+            LightMapNormal = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
-            SceneBindings[0] = Scene;
+            LightMapBindingsNormal[0] = LightMap;
+            LightMapBindingsNormal[1] = LightMapNormal;
+
+            NormalMap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+            NormalMapBindings[0] = NormalMap;
+            Scene = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+            SceneBindings[0] = Scene;            
 
             Logger.Write("New lightmap textures created");
         }
@@ -82,6 +94,8 @@ namespace Penumbra.Graphics.Providers
         {
             Scene?.Dispose();
             LightMap?.Dispose();
+            NormalMap?.Dispose();
+            LightMapNormal?.Dispose();
         }
     }
 }

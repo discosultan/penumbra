@@ -14,9 +14,7 @@ namespace Sandbox
     {
         public const Keys PreviousScenarioKey = Keys.Left;
         public const Keys NextScenarioKey = Keys.Right;
-        public const Keys PauseKey = Keys.Space;
-
-        private static readonly Color BackgroundColor = Color.White;
+        public const Keys PauseKey = Keys.Space;        
 
         private readonly PenumbraControllerComponent _penumbraController;
         private readonly PenumbraComponent _penumbra;
@@ -39,21 +37,22 @@ namespace Sandbox
             {
                 SpriteBatchTransformEnabled = false,
                 AmbientColor = Color.Black
-            };
-            Components.Add(_penumbra);
-            _penumbraController = new PenumbraControllerComponent(this, _penumbra);
-            Components.Add(_penumbraController);
+            };            
+            _penumbraController = new PenumbraControllerComponent(this, _penumbra);            
             Scenarios = new ScenariosComponent(this, _penumbra, _penumbraController, _consoleInterpreter);
-            Components.Add(Scenarios);
             var ui = new UIComponent(this, _penumbraController)
             {
                 DrawOrder = int.MaxValue
-            };
+            };            
+            _camera = new CameraMovementComponent(this);                        
+            _console = new ConsoleComponent(this);            
+
+            Components.Add(Scenarios);
+            Components.Add(_penumbra);
+            Components.Add(_penumbraController);
             Components.Add(ui);
-            _camera = new CameraMovementComponent(this);
             Components.Add(_camera);
             Components.Add(new FpsGarbageComponent(this));
-            _console = new ConsoleComponent(this);
             Components.Add(_console);
 
             // There's a bug when trying to change resolution during window resize.
@@ -131,10 +130,7 @@ namespace Sandbox
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            _penumbra.BeginDraw();
-
-            GraphicsDevice.Clear(BackgroundColor);
-
+            //GraphicsDevice.Clear(BackgroundColor);
             base.Draw(gameTime);
         }
 

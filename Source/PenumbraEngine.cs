@@ -49,6 +49,8 @@ namespace Penumbra
             }
         }
 
+        public bool NormalMappedLightingEnabled { get; set; }
+
         public ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
         public HullList Hulls { get; } = new HullList();
         public CameraProvider Camera { get; } = new CameraProvider();
@@ -56,8 +58,9 @@ namespace Penumbra
         public ShadowRenderer ShadowRenderer { get; } = new ShadowRenderer();
         public LightRenderer LightRenderer { get; } = new LightRenderer();
         public LightMapRenderer LightMapRenderer { get; } = new LightMapRenderer();
-        public GraphicsDevice Device { get; private set; }
-        public GraphicsDeviceManager DeviceManager { get; private set; }
+        public RenderHelper RenderHelper { get; set; } = new RenderHelper();
+        public GraphicsDevice GraphicsDevice { get; private set; }
+        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         public RasterizerState RsDebug { get; private set;}
         private RasterizerState _rsCcw;
         private RasterizerState _rsCw;
@@ -65,8 +68,8 @@ namespace Penumbra
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager)
         {
-            Device = device;
-            DeviceManager = deviceManager;
+            GraphicsDevice = device;
+            GraphicsDeviceManager = deviceManager;
 
             BuildGraphicsResources();
 
@@ -78,15 +81,25 @@ namespace Penumbra
             LightMapRenderer.Load(this);
             ShadowRenderer.Load(this);
             LightRenderer.Load(this);
+            RenderHelper.Initialize(this);
         }
 
         public void PreRender()
         {
             // Store currently active render targets so we can reset them once we are done blending the lightmap.
-            Device.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
+            GraphicsDevice.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
 
             // Switch render target to custom scene texture.
-            Device.SetRenderTargets(Textures.SceneBindings);            
+            GraphicsDevice.SetRenderTargets(Textures.SceneBindings);            
+        }
+
+        public void PreNormalMapped()
+        {
+            // Store currently active render targets so we can reset them once we are done blending the lightmap.
+            //Device.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
+
+            // Switch render target to custom scene texture.
+            GraphicsDevice.SetRenderTargets(Textures.NormalMap);
         }
         
         public void Render()
@@ -97,16 +110,17 @@ namespace Penumbra
             // We want to use clamping sampler state throughout the lightmap rendering process.
             // This is required when drawing lights. Since light rendering and alpha clearing is done 
             // in a single step, light is rendered with slightly larger quad where tex coords run out of the [0..1] range.
-            Device.SamplerStates[0] = SamplerState.LinearClamp;
+            GraphicsDevice.SamplerStates[0] = SamplerState.LinearClamp;
 
             // Switch render target to lightmap.
-            Device.SetRenderTargets(Textures.LightMapBindings);
+            GraphicsDevice.SetRenderTargets(NormalMappedLightingEnabled ? Textures.LightMapBindingsNormal : Textures.LightMapBindings);
 
             // Clear lightmap color, depth and stencil data.
-            Device.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
+            GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
 
-            // Set per frame shader data.
+            // Set per frame shader data.            
             ShadowRenderer.PreRender();
+            LightRenderer.PreRender();
 
             // Generate lightmap. For each light, mask the shadowed areas determined by hulls and render light.
             int lightCount = Lights.Count;
@@ -128,7 +142,7 @@ namespace Penumbra
                 // Set scissor rectangle to clip any shadows outside of light's range.
                 BoundingRectangle scissor;
                 Camera.GetScissorRectangle(light, out scissor);
-                Device.SetScissorRectangle(ref scissor);
+                GraphicsDevice.SetScissorRectangle(ref scissor);
 
                 // Mask shadowed areas by reducing alpha.                
                 ShadowRenderer.Render(light);
@@ -141,10 +155,15 @@ namespace Penumbra
             }
 
             // Switch render target back to default.
-            Device.SetRenderTargets(Textures.GetOriginalRenderTargetBindings());
+            GraphicsDevice.SetRenderTargets(Textures.GetOriginalRenderTargetBindings());
 
             // Blend original scene and lightmap and present to backbuffer.
             LightMapRenderer.Present();
+
+            const int width = 300;
+            float aspect = (float)Textures.NormalMap.Height/ Textures.NormalMap.Width;
+            RenderHelper.Render(Textures.LightMapNormal, new Rectangle(0, 0, width, (int)(width * aspect)));
+            RenderHelper.Render(Textures.NormalMap, new Rectangle(width, 0, width, (int)(width * aspect)));
 
             // Clear hulls dirty flag.
             Hulls.Dirty = false;

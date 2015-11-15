@@ -1,6 +1,7 @@
 ﻿#include "Macros.fxh"
 
 Texture2D Texture : register(t0);
+//Texture2D NormalMap : register(t1);
 SamplerState TextureSampler;
 
 cbuffer cbConstant : register(c0)
@@ -21,6 +22,12 @@ cbuffer cbPerSpotlight : register(c6)
 	float ConeDecay;
 };
 
+cbuffer cbPerNormalLight : register(c7)
+{
+	float3 LightPosition;
+	float4x4 World;
+};
+
 struct VertexIn
 {
 	float2 Position : SV_POSITION0;
@@ -33,12 +40,37 @@ struct VertexOut
 	float2 TexCoord : TEXCOORD0;
 };
 
+struct VertexOutNormal
+{
+	float4 Position : SV_POSITION;
+	float2 TexCoord : TEXCOORD0;	
+	float3 Normal : TEXCOORD1;	
+};
+
+struct PixelOut
+{
+	float4 Color : COLOR0;
+	float4 Normal : COLOR1;
+};
+
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
-	
+		
 	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), WorldViewProjection);	
+	vout.TexCoord = vin.TexCoord;	
+
+	return vout;
+}
+
+VertexOutNormal VSNormal(VertexIn vin)
+{
+	VertexOutNormal vout;
+
+	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), World);
+	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), WorldViewProjection);
 	vout.TexCoord = vin.TexCoord;
+	vout.Normal = normalize(LightPosition - float3(posW.xy, 0.0));	 // TODO: normalize only in ps
 
 	return vout;
 }
@@ -49,6 +81,21 @@ float4 GetComputedColor(float alpha)
 	float3 lightColor = LightColor * alpha;
 	lightColor = pow(lightColor, LightIntensity);
 	return float4(lightColor, 1.0);
+}
+
+PixelOut PSPointLightNormal(VertexOutNormal pin) : SV_TARGET
+{
+	float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
+	float alpha = saturate(1.0 - halfMagnitude * 2.0);
+
+	/*float3 normal = NormalMap.Sample(TextureSampler, pin.TexCoord);
+
+	float lol = max(dot(pin.Normal, normal), 0);*/
+
+	PixelOut pout;
+	pout.Color = GetComputedColor(alpha);
+	pout.Normal = normalize(float4(pin.Normal.xyz, 0));
+	return pout;
 }
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET
@@ -94,6 +141,7 @@ float4 PSDebugLight(VertexOut pin) : SV_TARGET
 	return Color;
 }
 
+TECHNIQUE(PointLightNormal, VSNormal, PSPointLightNormal);
 TECHNIQUE(PointLight, VS, PSPointLight);
 TECHNIQUE(Spotlight, VS, PSSpotLight);
 TECHNIQUE(TexturedLight, VS, PSTexturedLight);

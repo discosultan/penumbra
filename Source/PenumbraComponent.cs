@@ -21,6 +21,7 @@ namespace Penumbra
 
         private bool _initialized;
         private bool _beginDrawCalled;
+        private bool _beginNormalMappedCalled;
 
         /// <summary>
         /// Constructs a new instance of <see cref="PenumbraComponent"/>.
@@ -72,6 +73,16 @@ namespace Penumbra
         }
 
         /// <summary>
+        /// Gets or sets if normal-mapped lighting is enabled. With normal-mapped lighting, user is also responsible
+        /// of calling BeginNormalMapped() and rendering scene normals.
+        /// </summary>
+        public bool NormalMappedLightingEnabled
+        {
+            get { return _engine.NormalMappedLightingEnabled; }
+            set { _engine.NormalMappedLightingEnabled = value; }
+        }
+
+        /// <summary>
         /// Gets the list of lights registered with the engine.
         /// </summary>
         public ObservableCollection<Light> Lights => _engine.Lights;
@@ -102,13 +113,27 @@ namespace Penumbra
         {
             if (Visible)
             {
-                if (!_initialized)
-                    throw new InvalidOperationException(
-                        $"{nameof(PenumbraComponent)} is not initialized. Make sure to call {nameof(PenumbraComponent.Initialize)} when setting up a game.");
-
+                EnsureInitialized();
                 _engine.PreRender();
                 _beginDrawCalled = true;
             }
+        }
+
+        public void BeginNormalMapped()
+        {
+            if (Visible)
+            {
+                EnsureInitialized();
+                _engine.PreNormalMapped();
+                _beginNormalMappedCalled = true;   
+            }
+        }        
+
+        private void EnsureInitialized()
+        {
+            if (!_initialized)
+                throw new InvalidOperationException(
+                    $"{nameof(PenumbraComponent)} is not initialized. Make sure to call {nameof(Initialize)} when setting up a game.");
         }
 
         /// <summary>
@@ -122,10 +147,11 @@ namespace Penumbra
             {
                 if (!_beginDrawCalled)
                     throw new InvalidOperationException(
-                        $"{nameof(PenumbraComponent.BeginDraw)} must be called before rendering a scene to be lit and calling {nameof(PenumbraComponent.Draw)}.");
+                        $"{nameof(BeginDraw)} must be called before rendering a scene to be lit and calling {nameof(Draw)}.");
 
                 _engine.Render();
                 _beginDrawCalled = false;
+                _beginNormalMappedCalled = false;
             }
         }
 

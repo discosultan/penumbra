@@ -3,17 +3,21 @@ using System.Linq;
 using System.Reflection;
 using Common;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
 using QuakeConsole;
 
 namespace Sandbox
 {
-    class ScenariosComponent : GameComponent
+    class ScenariosComponent : DrawableGameComponent
     {
+        private static readonly Color BackgroundColor = Color.White;
+
         private readonly PenumbraComponent _penumbra;
         private readonly PenumbraControllerComponent _penumbraController;
         private readonly PythonInterpreter _interpreter;
 
+        private SpriteBatch _spriteBatch;
         private Scenario[] _scenarios;
         private int _currentScenarioIndex;        
 
@@ -30,7 +34,8 @@ namespace Sandbox
             base.Initialize();            
             LoadScenarios();
             SwitchScenario();
-        }
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+        }        
 
         public Scenario ActiveScenario { get; private set; }        
 
@@ -53,6 +58,21 @@ namespace Sandbox
             ActiveScenario.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
+        public override void Draw(GameTime gameTime)
+        {
+            _penumbra.BeginDraw();
+            GraphicsDevice.Clear(BackgroundColor);
+            _spriteBatch.Begin();
+            ActiveScenario.DrawDiffuse(_spriteBatch);
+            _spriteBatch.End();  
+                      
+            _penumbra.BeginNormalMapped();
+            GraphicsDevice.Clear(new Color(new Vector3(0, 0, 1)));
+            _spriteBatch.Begin();
+            ActiveScenario.DrawNormals(_spriteBatch);
+            _spriteBatch.End();
+        }
+
         private void LoadScenarios()
         {
             _scenarios = Assembly.GetExecutingAssembly()
@@ -70,6 +90,7 @@ namespace Sandbox
         {
             _penumbra.Lights.Clear();
             _penumbra.Hulls.Clear();
+            _penumbra.NormalMappedLightingEnabled = false;
             _interpreter.Reset();
             ActiveScenario = _scenarios[_currentScenarioIndex];
             ActiveScenario.Activate(_penumbra, Game.Content);
