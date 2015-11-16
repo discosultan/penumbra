@@ -5,8 +5,23 @@ namespace Penumbra.Utilities
 {
     internal static class Calculate
     {
-        public static float Cross(ref Vector2 a, ref Vector2 b)
+        public static void FromNonPremultiplied(Color nonPremultiplied, out Vector3 premultiplied)
         {
+            Vector4 intermediary;
+            FromNonPremultiplied(nonPremultiplied, out intermediary);
+            premultiplied = new Vector3(intermediary.X, intermediary.Y, intermediary.Z);
+        }
+
+        public static void FromNonPremultiplied(Color nonPremultiplied, out Vector4 premultiplied)
+        {
+            premultiplied = nonPremultiplied.ToVector4();
+            premultiplied.X *= premultiplied.W;
+            premultiplied.Y *= premultiplied.W;
+            premultiplied.Z *= premultiplied.W;
+        }
+                
+        public static float Cross(ref Vector2 a, ref Vector2 b)
+        {            
             return a.X * b.Y - a.Y * b.X;
         }
 

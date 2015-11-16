@@ -99,11 +99,21 @@ namespace Penumbra
                 }
             }
         }
-
+        
+        private Color _nonPremultipliedColor = Color.White;
+        private Vector3 _color = Vector3.One;
         /// <summary>
-        /// Gets or sets the color emitted by the light.
+        /// Gets or sets the color emitted by the light. Color is in non-premultiplied format.
         /// </summary>
-        public Color Color { get; set; } = Color.White;
+        public Color Color
+        {
+            get { return _nonPremultipliedColor; }
+            set
+            {
+                _nonPremultipliedColor = value;
+                Calculate.FromNonPremultiplied(value, out _color);
+            }
+        }
                 
         private float _intensity = 1.0f;
         /// <summary>
@@ -154,7 +164,7 @@ namespace Penumbra
 
         internal virtual EffectTechnique ApplyEffectParams(LightRenderer renderer)
         {
-            renderer._fxLightParamColor.SetValue(Color.ToVector3());
+            renderer._fxLightParamColor.SetValue(_color);
             renderer._fxLightParamIntensity.SetValue(IntensityFactor);
             return null; 
         }

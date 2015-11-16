@@ -44,7 +44,7 @@ namespace Penumbra
         }
 
         /// <summary>
-        /// Gets or sets the ambient color of the scene. Note that alpha value will be ignored.
+        /// Gets or sets the ambient color of the scene. Color is in non-premultiplied format.
         /// </summary>
         public Color AmbientColor
         {

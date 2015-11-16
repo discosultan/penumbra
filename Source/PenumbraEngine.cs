@@ -22,14 +22,20 @@ using Penumbra.Utilities;
 namespace Penumbra
 {
     internal class PenumbraEngine : IDisposable
-    {
-        private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));        
-
-        private Color _ambientColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+    {        
+        private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
+        
+        private Color _nonPremultipliedAmbient = Color.DarkSlateGray;
+        private Vector4 _ambientColor = Color.DarkSlateGray.ToVector4();
         public Color AmbientColor
         {
-            get { return new Color(_ambientColor.R, _ambientColor.G, _ambientColor.B); }
-            set { _ambientColor = new Color(value, 1f); }
+            get { return _nonPremultipliedAmbient; }
+            set
+            {                
+                _nonPremultipliedAmbient = value;
+                Calculate.FromNonPremultiplied(value, out _ambientColor);
+                _ambientColor.W = 1.0f;                
+            }
         }
 
         private bool _debug;

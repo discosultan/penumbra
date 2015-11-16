@@ -27,17 +27,25 @@ Install-Package Penumbra.MonoGame.WindowsDX -Pre
 
 In the game constructor, create the Penumbra component and add to components:
 ```cs
-penumbra = new PenumbraComponent(this);
-Components.Add(penumbra);
+PenumbraComponent penumbra;
+
+public Game1()
+{
+  // ...
+  penumbra = new PenumbraComponent(this);
+  Components.Add(penumbra);
+}
 ```
 
 In the game's `Draw` method, make sure to call `BeginDraw` before any other drawing takes place:
 
 ```cs
-penumbra.BeginDraw();
-
-GraphicsDevice.Clear(Color.CornflowerBlue);
-
+protected override void Draw(GameTime gameTime)
+{
+  penumbra.BeginDraw();
+  GraphicsDevice.Clear(Color.CornflowerBlue);
+  // Rest of the drawing calls to be affected by Penumbra ...
+}
 ...
 ```
 
