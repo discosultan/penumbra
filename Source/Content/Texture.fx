@@ -1,6 +1,7 @@
 ﻿#include "Macros.fxh"
 
-Texture2D Texture : register(t0);
+Texture2D DiffuseMap : register(t0);
+Texture2D Lightmap : register(t1);
 SamplerState TextureSampler;
 
 struct VertexIn
@@ -27,7 +28,9 @@ VertexOut VS(VertexIn vin)
 
 float4 PS(VertexOut pin) : SV_TARGET
 {
-	return Texture.Sample(TextureSampler, pin.TexCoord);
+	float4 diffuse = DiffuseMap.Sample(TextureSampler, pin.TexCoord);
+	float4 light = Lightmap.Sample(TextureSampler, pin.TexCoord);
+	return diffuse * light;
 }
 
 TECHNIQUE(Main, VS, PS);

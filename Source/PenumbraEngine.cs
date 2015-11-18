@@ -92,7 +92,7 @@ namespace Penumbra
             Device.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
 
             // Switch render target to custom scene texture.
-            Device.SetRenderTargets(Textures.SceneBindings);            
+            Device.SetRenderTargets(Textures.DiffuseMapBindings);            
         }
         
         public void Render()
@@ -106,7 +106,7 @@ namespace Penumbra
             Device.SamplerStates[0] = SamplerState.LinearClamp;
 
             // Switch render target to lightmap.
-            Device.SetRenderTargets(Textures.LightMapBindings);
+            Device.SetRenderTargets(Textures.LightmapBindings);
 
             // Clear lightmap color, depth and stencil data.
             Device.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);

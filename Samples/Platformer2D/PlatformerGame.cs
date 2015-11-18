@@ -108,7 +108,12 @@ namespace Platformer2D
             penumbraController = new PenumbraControllerComponent(this, Penumbra);
             Components.Add(penumbraController);
 
-            Console = new ConsoleComponent(this);           
+            Console = new ConsoleComponent(this);
+            Console.ActionMappings.Remove(ConsoleAction.Tab);
+            Console.ActionMappings.Remove(ConsoleAction.RemoveTab);
+            Console.ActionMappings.Add(Keys.Tab, ConsoleAction.AutocompleteForward);
+            Console.ActionMappings.Add(Keys.LeftShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
+            Console.ActionMappings.Add(Keys.RightShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
             Components.Add(Console);            
         }
 

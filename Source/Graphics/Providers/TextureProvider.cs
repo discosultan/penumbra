@@ -7,10 +7,10 @@ namespace Penumbra.Graphics.Providers
     {
         private const int MaxNumberOfRenderTargetBindings = 4;
 
-        public RenderTargetBinding[] SceneBindings { get; } = new RenderTargetBinding[1];
-        public RenderTarget2D Scene { get; private set; }
-        public RenderTargetBinding[] LightMapBindings { get; } = new RenderTargetBinding[1];
-        public RenderTarget2D LightMap { get; private set; }
+        public RenderTargetBinding[] DiffuseMapBindings { get; } = new RenderTargetBinding[1];
+        public RenderTarget2D DiffuseMap { get; private set; }
+        public RenderTargetBinding[] LightmapBindings { get; } = new RenderTargetBinding[1];
+        public RenderTarget2D Lightmap { get; private set; }
 
         private int _numQueriedBindings;
         private RenderTargetBinding[] _originalBindings;
@@ -68,20 +68,20 @@ namespace Penumbra.Graphics.Providers
 
             PresentationParameters pp = Engine.Device.PresentationParameters;
             
-            LightMap = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
+            Lightmap = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
-            LightMapBindings[0] = LightMap;
-            Scene = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
+            LightmapBindings[0] = Lightmap;
+            DiffuseMap = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
-            SceneBindings[0] = Scene;
+            DiffuseMapBindings[0] = DiffuseMap;
 
             Logger.Write("New lightmap textures created");
         }
 
         private void DestroyRenderTargets()
         {
-            Scene?.Dispose();
-            LightMap?.Dispose();
+            DiffuseMap?.Dispose();
+            Lightmap?.Dispose();
         }
     }
 }
