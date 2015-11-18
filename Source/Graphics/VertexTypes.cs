@@ -32,10 +32,8 @@ namespace Penumbra.Graphics
             TexCoord = texCoord;            
         }             
 
-        public override string ToString()
-        {
-            return $"{nameof(Position)}:{Position} {nameof(TexCoord)}:{TexCoord}";
-        }
+        public override string ToString() =>
+            $"{nameof(Position)}:{Position} {nameof(TexCoord)}:{TexCoord}";
     }
     
     [StructLayout(LayoutKind.Sequential)]
@@ -50,18 +48,16 @@ namespace Penumbra.Graphics
         
         public Vector2 SegmentA;
         public Vector2 SegmentB;
-        public Vector2 Occlusion;
+        public Vector2 Stencil;
 
-        public VertexShadow(Vector2 segA, Vector2 segB, Vector2 occlusion)
+        public VertexShadow(Vector2 segA, Vector2 segB, Vector2 stencil)
         {
             SegmentA = segA;
             SegmentB = segB;
-            Occlusion = occlusion;                        
+            Stencil = stencil;                        
         }
 
-        public override string ToString()
-        {
-            return $"{nameof(SegmentA)}:{SegmentA} {nameof(SegmentB)}:{SegmentB} {nameof(Occlusion)}:{Occlusion}";
-        }
+        public override string ToString() =>
+            $"{nameof(SegmentA)}:{SegmentA} {nameof(SegmentB)}:{SegmentB} {nameof(Stencil)}:{Stencil}";
     }
 }
