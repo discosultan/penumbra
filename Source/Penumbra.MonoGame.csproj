@@ -60,7 +60,7 @@
     <Reference Include="System.Core" />
     <Compile Include="Graphics\EffectManager.cs" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
-    <Compile Include="Graphics\IVao.cs" />
+    <Compile Include="Graphics\Vao.cs" />
     <Compile Include="Graphics\Renderers\LightRenderer.cs" />
     <Compile Include="Graphics\Renderers\ShadowRenderer.cs" />
     <Compile Include="Graphics\Renderers\LightMapRenderer.cs" />

@@ -34,7 +34,7 @@ namespace Penumbra.Graphics.Renderers
             _fxTextureParamDiffuseMap.SetValue(_engine.Textures.DiffuseMap);
             _fxTextureParamLightmap.SetValue(_engine.Textures.Lightmap);
             _fxTexture.CurrentTechnique.Passes[0].Apply();
-            _engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _fullscreenQuadVao.VertexCount - 2);
+            _engine.Device.DrawPrimitives(_fullscreenQuadVao.PrimitiveTopology, 0, _fullscreenQuadVao.PrimitiveCount);
         }
          
         public void Dispose()
@@ -51,7 +51,7 @@ namespace Penumbra.Graphics.Renderers
                 new VertexPosition2Texture(new Vector2(3.0f, 1.0f), new Vector2(2.0f, 0.0f)),
                 new VertexPosition2Texture(new Vector2(-1.0f, -3.0f), new Vector2(0.0f, 2.0f))
             };            
-            _fullscreenQuadVao = StaticVao.New(_engine.Device, fullscreenQuadVertices, VertexPosition2Texture.Layout);
+            _fullscreenQuadVao = StaticVao.New(_engine.Device, fullscreenQuadVertices, VertexPosition2Texture.Layout, PrimitiveType.TriangleStrip);
         }
     }
 }

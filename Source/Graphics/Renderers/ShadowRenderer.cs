@@ -9,7 +9,9 @@ namespace Penumbra.Graphics.Renderers
 {
     internal class ShadowRenderer : IDisposable
     {
-        private static readonly Color DebugColor = Color.Red;
+        private static readonly Vector4 DebugColor = Color.Red.ToVector4();
+        private static readonly Vector4 WhiteColor = Color.White.ToVector4();
+        private static readonly Vector4 TransparentColor = Color.Transparent.ToVector4();
 
         private readonly FastList<VertexShadow> _shadowVertices = new FastList<VertexShadow>();
         private readonly FastList<Vector2> _hullVertices = new FastList<Vector2>();
@@ -46,7 +48,7 @@ namespace Penumbra.Graphics.Renderers
             _fxShadowParamLightRadius = _fxShadow.Parameters["LightRadius"];
             _fxShadowParamVp = _fxShadow.Parameters["ViewProjection"];
 
-            _fxShadow.Parameters["Color"].SetValue(DebugColor.ToVector4());
+            _fxShadow.Parameters["Color"].SetValue(DebugColor);
 
             _fxHull = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Hull");
             _fxHullTech = _fxHull.Techniques["Main"];
@@ -79,11 +81,11 @@ namespace Penumbra.Graphics.Renderers
                 _fxShadowParamLightRadius.SetValue(light.Radius);
 
                 // Draw shadows.
-                var shadowVao = vao.Item1;
+                DynamicVao shadowVao = vao.Item1;
                 _engine.Device.BlendState = _bsShadow;                                                
                 _engine.Device.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                
+                _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.VertexCount, 0, shadowVao.PrimitiveCount);                
 
                 // Draw shadows borders if debugging.
                 if (_engine.Debug)
@@ -91,26 +93,25 @@ namespace Penumbra.Graphics.Renderers
                     _engine.Device.RasterizerState = _engine.RsDebug;
                     _engine.Device.BlendState = BlendState.Opaque;                                       
                     _fxShadowTechDebug.Passes[0].Apply();                    
-                    _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, shadowVao.VertexCount, 0, shadowVao.IndexCount / 3);                    
+                    _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.VertexCount, 0, shadowVao.PrimitiveCount);                    
                 }
             }
 
-            // Draw hulls.            
-            if (light.ShadowType == ShadowType.Occluded)
-                _engine.Device.DepthStencilState = _dsOccludedHull;
-
-            if (light.CastsShadows || light.ShadowType == ShadowType.Solid)
+            // Draw hulls.                  
+            bool isShadowTypeSolid = light.ShadowType == ShadowType.Solid;      
+            if (light.CastsShadows || isShadowTypeSolid)
             {
-                var hullVao = vao.Item2;
+                if (light.ShadowType == ShadowType.Occluded)
+                    _engine.Device.DepthStencilState = _dsOccludedHull;
+
+                DynamicVao hullVao = vao.Item2;
                 _engine.Device.RasterizerState = _engine.Rs;
                 _engine.Device.BlendState = _bsHull;
                 _fxHullParamVp.SetValue(_engine.Camera.ViewProjection);
-                _fxHullParamColor.SetValue(light.ShadowType == ShadowType.Solid
-                    ? Color.Transparent.ToVector4()
-                    : Color.White.ToVector4());
+                _fxHullParamColor.SetValue(isShadowTypeSolid ? TransparentColor : WhiteColor);
                 _engine.Device.SetVertexArrayObject(hullVao);
                 _fxHullTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, hullVao.VertexCount, 0, hullVao.IndexCount / 3);
+                _engine.Device.DrawIndexedPrimitives(hullVao.PrimitiveTopology, 0, 0, hullVao.VertexCount, 0, hullVao.PrimitiveCount);
             }
         }
 
@@ -196,8 +197,8 @@ namespace Penumbra.Graphics.Renderers
             if (!_lightsVaos.TryGetValue(light, out lightVaos))
             {
                 lightVaos = Tuple.Create(
-                    DynamicVao.New(_engine.Device, VertexShadow.Layout, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
-                    DynamicVao.New(_engine.Device, VertexPosition2.Layout, _hullVertices.Count, _hullIndices.Count, useIndices: true));
+                    DynamicVao.New(_engine.Device, VertexShadow.Layout, PrimitiveType.TriangleList, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
+                    DynamicVao.New(_engine.Device, VertexPosition2.Layout, PrimitiveType.TriangleList, _hullVertices.Count, _hullIndices.Count, useIndices: true));
                 _lightsVaos.Add(light, lightVaos);
             }
 

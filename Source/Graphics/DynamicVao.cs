@@ -3,39 +3,38 @@ using Penumbra.Utilities;
 
 namespace Penumbra.Graphics
 {
-    internal class DynamicVao : IVao
+    internal sealed class DynamicVao : Vao
     {
         private const int DefaultVertexCount = 32;
+
+        private readonly GraphicsDevice _graphicsDevice;        
         
-        private readonly GraphicsDevice _graphicsDevice;
-        private readonly VertexDeclaration _vertexDeclaration;
-        private readonly bool _useIndices;
-        public VertexBuffer VertexBuffer { get; private set; }
-        public IndexBuffer IndexBuffer { get; private set; }
         private int _currentVertexCount;
         private int _currentIndexCount;
+        private int _vertexCountInUse;
+        private int _indexCountInUse;
 
         private DynamicVao(
             GraphicsDevice graphicsDevice,            
             VertexDeclaration vertexDecl,
+            PrimitiveType primitiveTopology,
             int initialVertexCount,
             int initialIndexCount,            
-            bool useIndices)
+            bool useIndices) : base(vertexDecl, primitiveTopology)
         {
-            _graphicsDevice = graphicsDevice;                                    
-            _vertexDeclaration = vertexDecl;
-            _useIndices = useIndices;
+            _graphicsDevice = graphicsDevice;                        
 
             _currentVertexCount = initialVertexCount;
-            _currentIndexCount = initialIndexCount;            
+            _currentIndexCount = initialIndexCount;
 
             CreateVertexBuffer();
-            if (_useIndices)
+            if (useIndices)
                 CreateIndexBuffer();
         }
 
-        public int VertexCount { get; private set; }
-        public int IndexCount { get; private set; }
+        public override int VertexCount => _vertexCountInUse;
+
+        public override int IndexCount => _indexCountInUse;        
 
         public void SetVertices<T>(T[] fromData) where T : struct
         {
@@ -49,10 +48,12 @@ namespace Penumbra.Graphics
 
         public void SetVertices<T>(T[] fromData, int count) where T : struct
         {
-            VertexCount = count;
+            _vertexCountInUse = count;
             if (NeedToIncreaseBufferSize(ref _currentVertexCount, count))
                 CreateVertexBuffer();
             VertexBuffer.SetData(fromData, 0, count);
+            if (IndexBuffer == null)
+                CalculatePrimitiveCount();
         }
 
         public void SetIndices(int[] fromData)
@@ -67,22 +68,19 @@ namespace Penumbra.Graphics
 
         public void SetIndices(int[] fromData, int count)
         {
-            if (!_useIndices) return;
-            IndexCount = count;
+            if (!HasIndices)
+                return;
+
+            _indexCountInUse = count;
             if (NeedToIncreaseBufferSize(ref _currentIndexCount, count))
                 CreateIndexBuffer();
             IndexBuffer.SetData(fromData, 0, count);
-        }
-
-        public void Dispose()
-        {
-            VertexBuffer.Dispose();
-            IndexBuffer?.Dispose();
+            CalculatePrimitiveCount();
         }
 
         private void CreateVertexBuffer()
         {            
-            VertexBuffer = new DynamicVertexBuffer(_graphicsDevice, _vertexDeclaration, _currentVertexCount, BufferUsage.WriteOnly);                                        
+            VertexBuffer = new DynamicVertexBuffer(_graphicsDevice, VertexDeclaration, _currentVertexCount, BufferUsage.WriteOnly);                                        
             Logger.Write($"Created dynamic vao vertex buffer with size {_currentVertexCount}");
         }
 
@@ -108,11 +106,12 @@ namespace Penumbra.Graphics
         public static DynamicVao New(
             GraphicsDevice graphicsDevice,
             VertexDeclaration vertexDecl,
+            PrimitiveType primitiveTopology,
             int vertexCount = DefaultVertexCount,
             int indexCount = (DefaultVertexCount - 2) * 3,
             bool useIndices = false)
         {
-            return new DynamicVao(graphicsDevice, vertexDecl, vertexCount, indexCount, useIndices);
+            return new DynamicVao(graphicsDevice, vertexDecl, primitiveTopology, vertexCount, indexCount, useIndices);
         }        
     }
 }

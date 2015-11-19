@@ -6,7 +6,7 @@ namespace Penumbra.Graphics.Renderers
 {
     internal class LightRenderer : IDisposable
     {        
-        private static readonly Color DebugColor = Color.Green;
+        private static readonly Vector4 DebugColor = Color.Green.ToVector4();
 
         private PenumbraEngine _engine;        
 
@@ -45,7 +45,7 @@ namespace Penumbra.Graphics.Renderers
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
             // Constant shader param.
-            _fxLight.Parameters["Color"].SetValue(DebugColor.ToVector4());
+            _fxLight.Parameters["Color"].SetValue(DebugColor);
 
             BuildGraphicsResources();
         }        
@@ -66,7 +66,7 @@ namespace Penumbra.Graphics.Renderers
             _engine.Device.SetVertexArrayObject(_quadVao);            
             _fxLightParamWvp.SetValue(wvp);
             fxTech.Passes[0].Apply();
-            _engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
+            _engine.Device.DrawPrimitives(_quadVao.PrimitiveTopology, 0, _quadVao.PrimitiveCount);
 
             if (_engine.Debug)
             {
@@ -94,7 +94,7 @@ namespace Penumbra.Graphics.Renderers
                 _engine.Device.SetVertexArrayObject(_circleVao);                
                 _fxLightParamWvp.SetValue(wvp);                
                 _fxDebugLightTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, _circleVao.VertexCount, 0, _circleVao.IndexCount / 3);
+                _engine.Device.DrawIndexedPrimitives(_circleVao.PrimitiveTopology, 0, 0, _circleVao.VertexCount, 0, _circleVao.PrimitiveCount);
             }
         }
 
@@ -121,7 +121,7 @@ namespace Penumbra.Graphics.Renderers
                 new VertexPosition2Texture(new Vector2(1.0f + d, 0.0f - d), new Vector2(1.0f + d, 1.0f + d))
             };            
 
-            _quadVao = StaticVao.New(_engine.Device, quadVertices, VertexPosition2Texture.Layout);
+            _quadVao = StaticVao.New(_engine.Device, quadVertices, VertexPosition2Texture.Layout, PrimitiveType.TriangleStrip);
 
             // Circle.
             const int circlePoints = 12;
@@ -145,7 +145,7 @@ namespace Penumbra.Graphics.Renderers
             }
             indices[indices.Length - 1] = 1;
 
-            _circleVao = StaticVao.New(_engine.Device, vertices, VertexPosition2Texture.Layout, indices);
+            _circleVao = StaticVao.New(_engine.Device, vertices, VertexPosition2Texture.Layout, PrimitiveType.TriangleList, indices);
 
             // Render states.
             _bsLight = new BlendState
