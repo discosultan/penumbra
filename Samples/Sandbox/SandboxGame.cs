@@ -54,6 +54,11 @@ namespace Sandbox
             Components.Add(_camera);
             Components.Add(new FpsGarbageComponent(this));
             _console = new ConsoleComponent(this);
+            _console.ActionMappings.Remove(ConsoleAction.Tab);
+            _console.ActionMappings.Remove(ConsoleAction.RemoveTab);
+            _console.ActionMappings.Add(Keys.Tab, ConsoleAction.AutocompleteForward);
+            _console.ActionMappings.Add(Keys.LeftShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
+            _console.ActionMappings.Add(Keys.RightShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
             Components.Add(_console);
 
             // There's a bug when trying to change resolution during window resize.
