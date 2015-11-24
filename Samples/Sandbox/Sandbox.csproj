@@ -43,6 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="HullGenerationComponent.cs" />
+    <Compile Include="PrimitiveRenderer.cs" />
     <Compile Include="Scenarios\I_TexturedLight.cs" />
     <Compile Include="Scenarios\H_Spotlight.cs" />
     <Compile Include="Scenarios\F_ConcaveHull.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Scenario.cs" />
     <Compile Include="ScenariosComponent.cs" />
     <Compile Include="Scenarios\A_PenumbraTransition.cs" />
+    <Compile Include="Scenarios\J_NormalMappedLighting.cs" />
     <Compile Include="UIComponent.cs" />
     <Compile Include="Utilities\StringExtensions.cs" />
   </ItemGroup>
@@ -109,7 +111,14 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\176.JPG" />
+    <Content Include="Content\176_norm.JPG" />
+    <Content Include="Content\199.JPG" />
+    <Content Include="Content\199_norm.JPG" />
+    <Content Include="Content\floor.jpg" />
+    <Content Include="Content\floor_normal.jpg" />
     <Content Include="Content\LightTexture.jpg" />
+    <Content Include="Content\Primitive.fx" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

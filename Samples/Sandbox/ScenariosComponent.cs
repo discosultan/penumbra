@@ -3,26 +3,35 @@ using System.Linq;
 using System.Reflection;
 using Common;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
 using QuakeConsole;
 
 namespace Sandbox
 {
-    class ScenariosComponent : GameComponent
+    class ScenariosComponent : DrawableGameComponent
     {
+        private static readonly Color BackgroundColor = Color.White;
+
+        private readonly SandboxGame _game;
         private readonly PenumbraComponent _penumbra;
         private readonly PenumbraControllerComponent _penumbraController;
         private readonly PythonInterpreter _interpreter;
+        private readonly CameraMovementComponent _camera;
 
+        private PrimitiveRenderer _renderer;
         private Scenario[] _scenarios;
         private int _currentScenarioIndex;        
 
-        public ScenariosComponent(SandboxGame game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController, PythonInterpreter interpreter) 
+        public ScenariosComponent(SandboxGame game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController, 
+            PythonInterpreter interpreter, CameraMovementComponent camera) 
             : base(game)
-        {            
+        {
+            _game = game;
             _penumbra = penumbra;
             _penumbraController = penumbraController;
             _interpreter = interpreter;
+            _camera = camera;
         }
 
         public override void Initialize()
@@ -30,6 +39,7 @@ namespace Sandbox
             base.Initialize();            
             LoadScenarios();
             SwitchScenario();
+            _renderer = new PrimitiveRenderer(GraphicsDevice, Game.Content);
         }
 
         public Scenario ActiveScenario { get; private set; }        
@@ -53,6 +63,22 @@ namespace Sandbox
             ActiveScenario.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
+        public override void Draw(GameTime gameTime)
+        {
+            _renderer.Transform = _camera.Transform * _game.Projection;
+
+            if (_penumbra.NormalMappedLightingEnabled)
+            {
+                _penumbra.BeginNormalMapped();
+                GraphicsDevice.Clear(new Color(new Vector3(0.5f, 0.5f, 1.0f)));
+                ActiveScenario.DrawNormals(_renderer);
+            }
+
+            _penumbra.BeginDraw();
+            GraphicsDevice.Clear(BackgroundColor);
+            ActiveScenario.DrawDiffuse(_renderer);
+        }
+
         private void LoadScenarios()
         {
             _scenarios = Assembly.GetExecutingAssembly()
@@ -70,6 +96,7 @@ namespace Sandbox
         {
             _penumbra.Lights.Clear();
             _penumbra.Hulls.Clear();
+            _penumbra.NormalMappedLightingEnabled = false;
             _interpreter.Reset();
             ActiveScenario = _scenarios[_currentScenarioIndex];
             ActiveScenario.Activate(_penumbra, Game.Content);

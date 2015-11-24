@@ -17,7 +17,7 @@ namespace Penumbra.Graphics.Renderers
         {                        
             _engine = engine;
 
-            _fxTexture = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Texture");
+            _fxTexture = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "Texture");
             _fxTextureParamDiffuseMap = _fxTexture.Parameters["DiffuseMap"];
             _fxTextureParamLightmap = _fxTexture.Parameters["Lightmap"];
 
@@ -27,14 +27,14 @@ namespace Penumbra.Graphics.Renderers
         public void Present()
         {            
             // Blend diffuse map and lightmap together and present to original render target.
-            _engine.Device.DepthStencilState = DepthStencilState.None;
-            _engine.Device.RasterizerState = RasterizerState.CullCounterClockwise;            
-            _engine.Device.BlendState = BlendState.Opaque;
-            _engine.Device.SetVertexArrayObject(_fullscreenQuadVao);
+            _engine.GraphicsDevice.DepthStencilState = DepthStencilState.None;
+            _engine.GraphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;            
+            _engine.GraphicsDevice.BlendState = BlendState.Opaque;
+            _engine.GraphicsDevice.SetVertexArrayObject(_fullscreenQuadVao);
             _fxTextureParamDiffuseMap.SetValue(_engine.Textures.DiffuseMap);
             _fxTextureParamLightmap.SetValue(_engine.Textures.Lightmap);
             _fxTexture.CurrentTechnique.Passes[0].Apply();
-            _engine.Device.DrawPrimitives(_fullscreenQuadVao.PrimitiveTopology, 0, _fullscreenQuadVao.PrimitiveCount);
+            _engine.GraphicsDevice.DrawPrimitives(_fullscreenQuadVao.PrimitiveTopology, 0, _fullscreenQuadVao.PrimitiveCount);
         }
          
         public void Dispose()
@@ -51,7 +51,7 @@ namespace Penumbra.Graphics.Renderers
                 new VertexPosition2Texture(new Vector2(3.0f, 1.0f), new Vector2(2.0f, 0.0f)),
                 new VertexPosition2Texture(new Vector2(-1.0f, -3.0f), new Vector2(0.0f, 2.0f))
             };            
-            _fullscreenQuadVao = StaticVao.New(_engine.Device, fullscreenQuadVertices, VertexPosition2Texture.Layout, PrimitiveType.TriangleStrip);
+            _fullscreenQuadVao = StaticVao.New(_engine.GraphicsDevice, fullscreenQuadVertices, VertexPosition2Texture.Layout, PrimitiveType.TriangleStrip);
         }
     }
 }

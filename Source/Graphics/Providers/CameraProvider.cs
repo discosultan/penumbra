@@ -62,7 +62,7 @@ namespace Penumbra.Graphics.Providers
 
         private void CalculateSpriteBatchTransform()
         {
-            PresentationParameters pp = Engine.Device.PresentationParameters;
+            PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;
             Matrix.CreateOrthographicOffCenter(
                 0,
                 pp.BackBufferWidth,
@@ -73,7 +73,7 @@ namespace Penumbra.Graphics.Providers
 
         private void CalculateClipToScreen()
         {
-            PresentationParameters pp = Engine.Device.PresentationParameters;
+            PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;
             _clipToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1));            
         }
 

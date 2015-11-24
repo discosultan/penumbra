@@ -5,10 +5,12 @@ namespace Penumbra
 {
     /// <inheritdoc />
     public class PointLight : Light
-    {
-        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer)
+    {        
+        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
         {
-            base.ApplyEffectParams(renderer);
+            base.ApplyEffectParams(renderer, isNormalMapped);
+            if (isNormalMapped)
+                return renderer._fxLight.Techniques["PointLightNormalMapped"];
             return renderer._fxPointLightTech;
         }
     }

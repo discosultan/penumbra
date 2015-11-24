@@ -36,3 +36,4 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:Shadow.fx
+

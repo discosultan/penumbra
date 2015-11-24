@@ -21,9 +21,9 @@ namespace Penumbra
         /// </summary>
         public float ConeDecay { get; set; } = 1.5f;
 
-        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
         {
-            base.ApplyEffectParams(renderer);
+            base.ApplyEffectParams(renderer, isNormalMapped);
 
             // MathHelper.Pi - 2 x ArcTan reduced.
             float halfAngle = MathHelper.PiOver2 - (float) Math.Atan(2 * Scale.X / Scale.Y);

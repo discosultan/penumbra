@@ -114,21 +114,11 @@ namespace Penumbra
                 Calculate.FromNonPremultiplied(value, out _color);
             }
         }
-                
-        private float _intensity = 1.0f;
+
         /// <summary>
         /// Gets or sets the intensity of the color applied to the final scene.
         /// </summary>        
-        public float Intensity
-        {
-            get { return _intensity; }
-            set
-            {
-                _intensity = Math.Max(value, Epsilon);
-                IntensityFactor = 1 / _intensity;
-            }
-        }
-        internal float IntensityFactor { get; private set; } = 1.0f;
+        public float Intensity { get; set; } = 1.0f;        
 
         private float _radius = 20.0f;
         /// <summary>
@@ -153,7 +143,9 @@ namespace Penumbra
         /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
         /// <see cref="ShadowType"/> for more information.
         /// </summary>
-        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;               
+        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
+
+        public float Height { get; set; } = 100;
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
         internal bool Dirty;
@@ -162,10 +154,16 @@ namespace Penumbra
 
         internal Matrix LocalToWorld;              
 
-        internal virtual EffectTechnique ApplyEffectParams(LightRenderer renderer)
+        internal virtual EffectTechnique ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
         {
+            if (isNormalMapped)
+            {
+                renderer._fxLight.Parameters["LightPosition"].SetValue(new Vector3(Position, Height));
+                
+            }
+            renderer._fxLight.Parameters["World"].SetValue(LocalToWorld);
             renderer._fxLightParamColor.SetValue(_color);
-            renderer._fxLightParamIntensity.SetValue(IntensityFactor);
+            renderer._fxLightParamIntensity.SetValue(Intensity);            
             return null; 
         }
 

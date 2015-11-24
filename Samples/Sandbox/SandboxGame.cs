@@ -14,9 +14,7 @@ namespace Sandbox
     {
         public const Keys PreviousScenarioKey = Keys.Left;
         public const Keys NextScenarioKey = Keys.Right;
-        public const Keys PauseKey = Keys.Space;
-
-        private static readonly Color BackgroundColor = Color.White;
+        public const Keys PauseKey = Keys.Space;        
 
         private readonly PenumbraControllerComponent _penumbraController;
         private readonly PenumbraComponent _penumbra;
@@ -27,39 +25,40 @@ namespace Sandbox
         private KeyboardState _currentKeyState;
         private KeyboardState _previousKeyState;
 
-        private Matrix _projection;
+        public Matrix Projection { get; private set; }
 
         internal ScenariosComponent Scenarios { get; }
 
         public SandboxGame()
         {
             var deviceManager = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";            
+            Content.RootDirectory = "Content";
+            _camera = new CameraMovementComponent(this);
             _penumbra = new PenumbraComponent(this)
             {
                 SpriteBatchTransformEnabled = false,
                 AmbientColor = Color.Black
             };
-            Components.Add(_penumbra);
             _penumbraController = new PenumbraControllerComponent(this, _penumbra);
-            Components.Add(_penumbraController);
-            Scenarios = new ScenariosComponent(this, _penumbra, _penumbraController, _consoleInterpreter);
-            Components.Add(Scenarios);
+            Scenarios = new ScenariosComponent(this, _penumbra, _penumbraController, _consoleInterpreter, _camera);
             var ui = new UIComponent(this, _penumbraController)
             {
                 DrawOrder = int.MaxValue
-            };
-            Components.Add(ui);
-            _camera = new CameraMovementComponent(this);
-            Components.Add(_camera);
-            Components.Add(new FpsGarbageComponent(this));
+            };            
             _console = new ConsoleComponent(this);
             _console.ActionMappings.Remove(ConsoleAction.Tab);
             _console.ActionMappings.Remove(ConsoleAction.RemoveTab);
             _console.ActionMappings.Add(Keys.Tab, ConsoleAction.AutocompleteForward);
             _console.ActionMappings.Add(Keys.LeftShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
             _console.ActionMappings.Add(Keys.RightShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
+
+            Components.Add(Scenarios);            
+            Components.Add(_penumbra);            
+            Components.Add(_penumbraController);
+            Components.Add(ui);            
+            Components.Add(_camera);                        
             Components.Add(_console);
+            Components.Add(new FpsGarbageComponent(this));
 
             // There's a bug when trying to change resolution during window resize.
             // https://github.com/mono/MonoGame/issues/3572
@@ -74,7 +73,7 @@ namespace Sandbox
             base.LoadContent();
 
             var pp = GraphicsDevice.PresentationParameters;
-            _projection = Matrix.CreateOrthographicOffCenter(
+            Projection = Matrix.CreateOrthographicOffCenter(
                 -pp.BackBufferWidth / 2.0f,
                 pp.BackBufferWidth / 2.0f,
                 -pp.BackBufferHeight / 2.0f,
@@ -125,23 +124,10 @@ namespace Sandbox
             _previousKeyState = _currentKeyState;
 
             // View * projection.
-            _penumbra.Transform = _camera.Transform * _projection;
+            _penumbra.Transform = _camera.Transform * Projection;
 
             base.Update(gameTime);
-        }
-
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
-            _penumbra.BeginDraw();
-
-            GraphicsDevice.Clear(BackgroundColor);
-
-            base.Draw(gameTime);
-        }
+        }        
 
         private bool IsKeyPressed(Keys key)
         {

@@ -9,6 +9,8 @@ namespace Penumbra.Graphics.Providers
 
         public RenderTargetBinding[] DiffuseMapBindings { get; } = new RenderTargetBinding[1];
         public RenderTarget2D DiffuseMap { get; private set; }
+        public RenderTargetBinding[] NormalMapBindings { get; } = new RenderTargetBinding[1];
+        public RenderTarget2D NormalMap { get; private set; }
         public RenderTargetBinding[] LightmapBindings { get; } = new RenderTargetBinding[1];
         public RenderTarget2D Lightmap { get; private set; }
 
@@ -66,22 +68,26 @@ namespace Penumbra.Graphics.Providers
         {
             DestroyRenderTargets();
 
-            PresentationParameters pp = Engine.Device.PresentationParameters;
+            PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;
             
-            Lightmap = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
+            Lightmap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
             LightmapBindings[0] = Lightmap;
-            DiffuseMap = new RenderTarget2D(Engine.Device, BackBufferWidth, BackBufferHeight, false,
+            DiffuseMap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
             DiffuseMapBindings[0] = DiffuseMap;
+            NormalMap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+            NormalMapBindings[0] = NormalMap;
 
-            Logger.Write("New lightmap textures created");
+            Logger.Write("New textures created.");
         }
 
         private void DestroyRenderTargets()
         {
             DiffuseMap?.Dispose();
             Lightmap?.Dispose();
+            NormalMap?.Dispose();
         }
     }
 }

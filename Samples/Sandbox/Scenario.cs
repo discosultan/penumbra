@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Common;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
 using Sandbox.Utilities;
@@ -23,6 +24,14 @@ namespace Sandbox
 
         public virtual void Update(float deltaSeconds)
         {            
+        }
+
+        public virtual void DrawNormals(PrimitiveRenderer renderer)
+        {
+        }
+
+        public virtual void DrawDiffuse(PrimitiveRenderer renderer)
+        {
         }
     }
 }
