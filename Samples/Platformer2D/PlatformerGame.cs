@@ -102,7 +102,8 @@ namespace Platformer2D
             {
                 AmbientColor = new Color(30, 20, 10),
                 Visible = true,
-                Debug = false
+                Debug = false,
+                NormalMappedLightingEnabled = true
             };
 
             penumbraController = new PenumbraControllerComponent(this, Penumbra);
@@ -283,6 +284,14 @@ namespace Platformer2D
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            Penumbra.BeginNormalMapped();
+
+            GraphicsDevice.Clear(new Color(new Vector3(0.5f, 0.5f, 1.0f)));
+
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, globalTransformation);
+            level.DrawNormals(gameTime, spriteBatch);
+            spriteBatch.End();
+
             Penumbra.BeginDraw();
 
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);

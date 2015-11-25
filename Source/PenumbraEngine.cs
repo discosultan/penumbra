@@ -24,7 +24,9 @@ namespace Penumbra
     internal class PenumbraEngine : IDisposable
     {        
         private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
-        
+
+        private bool _renderTargetStored;
+
         private Color _nonPremultipliedAmbient = Color.DarkSlateGray;
         private Vector4 _ambientColor = Color.DarkSlateGray.ToVector4();
         public Color AmbientColor
@@ -87,25 +89,19 @@ namespace Penumbra
             ShadowRenderer.Load(this);
             LightRenderer.Load(this);
             RenderHelper.Initialize(this);
-        }
+        }                
 
-        private bool _renderTargetStored;
-
-        public void PreNormalMapped()
-        {            
-            // Store currently active render targets so we can reset them once we are done blending the lightmap.
-            GraphicsDevice.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
-            _renderTargetStored = true;
-
-            // Switch render target to custom scene texture.
-            GraphicsDevice.SetRenderTargets(Textures.NormalMap);
-        }
-
-        public void PreRender()
+        public void BeginNormalMap()
         {
-            if (!_renderTargetStored)
-                // Store currently active render targets so we can reset them once we are done blending the lightmap.
-                GraphicsDevice.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
+            StoreRenderTargetIfRequired();   
+
+            // Switch render target to a normal map.
+            GraphicsDevice.SetRenderTargets(Textures.NormalMapBindings);            
+        }
+
+        public void BeginDiffuseMap()
+        {
+            StoreRenderTargetIfRequired();
 
             // Switch render target to a diffuse map. This is where users will render content to be lit.
             GraphicsDevice.SetRenderTargets(Textures.DiffuseMapBindings);            
@@ -168,11 +164,14 @@ namespace Penumbra
             // Blend original scene and lightmap and present to backbuffer.
             LightMapRenderer.Present();
 
-            const int width = 300;
-            float aspect = (float)Textures.NormalMap.Height / Textures.NormalMap.Width;            
-            RenderHelper.Render(Textures.NormalMap, new Rectangle(0, 0, width, (int)(width * aspect)));
+            if (Debug) // TODO: Proper handling
+            {
+                const int width = 300;
+                float aspect = (float) Textures.NormalMap.Height/Textures.NormalMap.Width;
+                RenderHelper.Render(Textures.NormalMap, new Rectangle(0, 0, width, (int) (width*aspect)));
+            }
 
-            // Clear hulls dirty flag.
+            // Reset per frame flags.
             Hulls.Dirty = false;
             _renderTargetStored = false;
         }
@@ -205,6 +204,16 @@ namespace Penumbra
                 FillMode = FillMode.WireFrame,
                 ScissorTestEnable = true
             };
-        }        
+        }
+
+        private void StoreRenderTargetIfRequired()
+        {
+            if (!_renderTargetStored)
+            {
+                // Store currently active render targets so we can reset them once we are done blending the lightmap.
+                GraphicsDevice.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
+                _renderTargetStored = true;
+            }
+        }
     }
 }

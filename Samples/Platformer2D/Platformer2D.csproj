@@ -63,11 +63,15 @@
     <Content Include="Content\Backgrounds\Layer0_1.png" />
     <Content Include="Content\Backgrounds\Layer0_2.png" />
     <Content Include="Content\Backgrounds\Layer1_0.png" />
+    <Content Include="Content\Backgrounds\Layer1_0_norm.png" />
     <Content Include="Content\Backgrounds\Layer1_1.png" />
     <Content Include="Content\Backgrounds\Layer1_2.png" />
     <Content Include="Content\Backgrounds\Layer2_0.png" />
+    <Content Include="Content\Backgrounds\Layer2_0_norm.png" />
     <Content Include="Content\Backgrounds\Layer2_1.png" />
+    <Content Include="Content\Backgrounds\Layer2_1_norm.png" />
     <Content Include="Content\Backgrounds\Layer2_2.png" />
+    <Content Include="Content\Backgrounds\Layer2_2_norm.png" />
     <Content Include="Content\Levels\0.txt" />
     <Content Include="Content\Levels\1.txt" />
     <Content Include="Content\Levels\2.txt" />

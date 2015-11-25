@@ -45,6 +45,7 @@ namespace Platformer2D.Game
 
         private readonly List<Gem> gems = new List<Gem>();
         private readonly Texture2D[] layers;
+        private readonly Texture2D[] normalLayers;
 
         // Level game state.
         private readonly Random random = new Random(354668); // Arbitrary, but constant seed
@@ -110,12 +111,15 @@ namespace Platformer2D.Game
             // Load background layer textures. For now, all levels must
             // use the same backgrounds and only use the left-most part of them.
             layers = new Texture2D[3];
+            normalLayers = new Texture2D[2];
             for (var i = 0; i < layers.Length; ++i)
             {
                 // Choose a random segment if each background layer for level variety.
                 int segmentIndex = levelIndex;
-                layers[i] = Content.Load<Texture2D>("Backgrounds/Layer" + i + "_" + segmentIndex);
-            }
+                layers[i] = Content.Load<Texture2D>("Backgrounds/Layer" + i + "_" + segmentIndex);                
+            }            
+            normalLayers[0] = Content.Load<Texture2D>("Backgrounds/Layer1_" + levelIndex + "_norm");
+            normalLayers[1] = Content.Load<Texture2D>("Backgrounds/Layer2_" + levelIndex + "_norm");
 
             // Load sounds.
             exitReachedSound = Content.Load<SoundEffect>("Sounds/ExitReached");
@@ -539,6 +543,12 @@ namespace Platformer2D.Game
         #endregion
 
         #region Draw
+
+        public void DrawNormals(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            for (var i = 0; i < normalLayers.Length; ++i)
+                spriteBatch.Draw(normalLayers[i], Vector2.Zero, Color.White);
+        }
 
         /// <summary>
         /// Draw everything in the level from background to foreground.

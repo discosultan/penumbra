@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Common;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
 using QuakeConsole;
 
@@ -69,8 +68,7 @@ namespace Sandbox
 
             if (_penumbra.NormalMappedLightingEnabled)
             {
-                _penumbra.BeginNormalMapped();
-                GraphicsDevice.Clear(new Color(new Vector3(0.5f, 0.5f, 1.0f)));
+                _penumbra.BeginNormalMapped();                
                 ActiveScenario.DrawNormals(_renderer);
             }
 

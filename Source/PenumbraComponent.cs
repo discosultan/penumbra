@@ -12,7 +12,7 @@ namespace Penumbra
     /// geometry (polygons) impassable by light.
     /// </summary>
     /// <remarks>
-    /// Before rendering scene, ensure to call <c>PenumbraComponent.BeginDraw</c> to swap render target
+    /// Before rendering scene, ensure to call <see cref="BeginDraw"/> to swap render target
     /// in order for the component to be able to later apply generated lightmap.
     /// </remarks>
     public class PenumbraComponent : DrawableGameComponent
@@ -20,7 +20,8 @@ namespace Penumbra
         private readonly PenumbraEngine _engine = new PenumbraEngine();
 
         private bool _initialized;
-        private bool _beginDrawCalled;
+        private bool _beginDiffuseMapCalled;
+        private bool _beginNormalMapCalled;
 
         /// <summary>
         /// Constructs a new instance of <see cref="PenumbraComponent"/>.
@@ -54,6 +55,7 @@ namespace Penumbra
 
         /// <summary>
         /// Gets or sets the custom transformation matrix used by the component.
+        /// Default is an identity matrix.
         /// </summary>
         public Matrix Transform
         {
@@ -73,7 +75,7 @@ namespace Penumbra
 
         /// <summary>
         /// Gets or sets if normal-mapped lighting is enabled. With normal-mapped lighting, user is also responsible
-        /// of calling BeginNormalMapped() and rendering scene normals.
+        /// of calling <see cref="BeginNormalMapped"/> and rendering scene normals.
         /// </summary>
         public bool NormalMappedLightingEnabled
         {
@@ -106,49 +108,47 @@ namespace Penumbra
         }
 
         /// <summary>
-        /// Sets up the lightmap generation sequence. This should be called before Draw.
+        /// Sets up rendering to the diffuse map. Diffuse map will be used to blend lightmap on top of. 
+        /// This should be called before calling <see cref="Draw(GameTime)"/>.
         /// </summary>
         public void BeginDraw()
         {
             if (Visible)
             {
                 EnsureInitialized();
-                _engine.PreRender();
-                _beginDrawCalled = true;
+                _engine.BeginDiffuseMap();
+                _beginDiffuseMapCalled = true;
             }
         }
 
+        /// <summary>
+        /// Sets up rendering to the normal map. Normal map will be used to calculate lighting on the surface.
+        /// This should be called before calling <see cref="Draw(GameTime)"/> if <see cref="NormalMappedLightingEnabled"/> is true.
+        /// </summary>
         public void BeginNormalMapped()
         {
-            if (Visible)
+            if (Visible && NormalMappedLightingEnabled)
             {
                 EnsureInitialized();
-                _engine.PreNormalMapped();
+                //EnsureNormalMappedLightingEnabled();                
+                _engine.BeginNormalMap();
+                _beginNormalMapCalled = true;
             }
-        }
-
-        private void EnsureInitialized()
-        {
-            if (!_initialized)
-                throw new InvalidOperationException(
-                    $"{nameof(PenumbraComponent)} is not initialized. Make sure to call {nameof(Initialize)} when setting up a game.");
         }
 
         /// <summary>
         /// Generates the lightmap, blends it with whatever was drawn to the scene between the
-        /// calls to BeginDraw and this and presents the result to the backbuffer.
+        /// calls to <see cref="BeginDraw"/> and this and presents the result to the backbuffer.
         /// </summary>        
         /// <param name="gameTime">Time passed since the last call to Draw.</param>
         public override void Draw(GameTime gameTime)
         {
             if (Visible)
             {
-                if (!_beginDrawCalled)
-                    throw new InvalidOperationException(
-                        $"{nameof(BeginDraw)} must be called before rendering a scene to be lit and calling {nameof(Draw)}.");
-
+                EnsurePreRendered();
                 _engine.Render();
-                _beginDrawCalled = false;
+                _beginDiffuseMapCalled = false;
+                _beginNormalMapCalled = false;
             }
         }
 
@@ -163,6 +163,30 @@ namespace Penumbra
         {
             if (disposing)
                 UnloadContent();
+        }
+
+        private void EnsureInitialized()
+        {
+            if (!_initialized)
+                throw new InvalidOperationException(
+                    $"{nameof(PenumbraComponent)} is not initialized. Make sure to call {nameof(Initialize)} when setting up a game.");
+        }
+
+        private void EnsureNormalMappedLightingEnabled()
+        {
+            if (!_engine.NormalMappedLightingEnabled)
+                throw new InvalidOperationException(
+                    $"{nameof(NormalMappedLightingEnabled)} is false. Enable it before rendering normals.");
+        }
+
+        private void EnsurePreRendered()
+        {
+            if (!_beginDiffuseMapCalled)
+                throw new InvalidOperationException(
+                    $"{nameof(BeginDraw)} must be called before rendering a scene to be lit and calling {nameof(Draw)}.");
+            if (NormalMappedLightingEnabled && !_beginNormalMapCalled)
+                throw new InvalidOperationException(
+                    $"Since {nameof(NormalMappedLightingEnabled)} is true, {nameof(BeginNormalMapped)} must be called before rendering a scene to be lit and calling {nameof(Draw)}.");
         }
     }
 }
