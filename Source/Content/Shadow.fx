@@ -60,8 +60,8 @@ VertexOut VS(VertexIn vin)
 	// Transform to clip space.
 	float4 clipPosition = mul(projected, ViewProjection);
 		
-	float2 penumbraA = mul(projected.xy - (vin.SegmentA)*projected.w, Invert(float2x2(toLightOffsetA, toSegmentA)));
-	float2 penumbraB = mul(projected.xy - (vin.SegmentB)*projected.w, Invert(float2x2(toLightOffsetB, toSegmentB)));	
+	float2 penumbraA = mul(projected.xy - vin.SegmentA*projected.w, Invert(float2x2(toLightOffsetA, toSegmentA)));
+	float2 penumbraB = mul(projected.xy - vin.SegmentB*projected.w, Invert(float2x2(toLightOffsetB, toSegmentB)));	
 
 	// Find the edge normal. A to B CW 90 deg.
 	// ClipValue < 0 means the projection is pointing towards light => no shadow should be generated.
