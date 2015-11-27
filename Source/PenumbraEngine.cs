@@ -25,6 +25,11 @@ namespace Penumbra
     {        
         private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
 
+        private readonly DebugRenderer RenderHelper = new DebugRenderer();
+        private readonly ShadowRenderer ShadowRenderer = new ShadowRenderer();
+        private readonly LightRenderer LightRenderer = new LightRenderer();
+        private readonly LightmapRenderer LightMapRenderer = new LightmapRenderer();
+
         private bool _renderTargetStored;
 
         private Color _nonPremultipliedAmbient = Color.DarkSlateGray;
@@ -61,33 +66,30 @@ namespace Penumbra
         public ObservableCollection<Light> Lights { get; } = new ObservableCollection<Light>();
         public HullList Hulls { get; } = new HullList();
         public CameraProvider Camera { get; } = new CameraProvider();
-        public TextureProvider Textures { get; } = new TextureProvider();
-        public RenderHelper RenderHelper { get; } = new RenderHelper();
-        public ShadowRenderer ShadowRenderer { get; } = new ShadowRenderer();
-        public LightRenderer LightRenderer { get; } = new LightRenderer();
-        public LightMapRenderer LightMapRenderer { get; } = new LightMapRenderer();
+        public TextureProvider Textures { get; } = new TextureProvider();        
         public GraphicsDevice GraphicsDevice { get; private set; }
-        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        public RasterizerState RsDebug { get; private set;}
-        private RasterizerState _rsCcw;
-        private RasterizerState _rsCw;
-        public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
+        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }        
 
-        public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager)
+        private RasterizerState _rasterizerStateCcw;
+        private RasterizerState _rasterizerStateCw;
+        public RasterizerState RasterizerState => Camera.InvertedY ? _rasterizerStateCw : _rasterizerStateCcw;
+        public RasterizerState RasterizerStateDebug { get; private set; }
+
+        public void Initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphicsDeviceManager)
         {
-            GraphicsDevice = device;
-            GraphicsDeviceManager = deviceManager;
+            GraphicsDevice = graphicsDevice;
+            GraphicsDeviceManager = graphicsDeviceManager;
 
             BuildGraphicsResources();
 
-            // Load providers.
-            Camera.Load(this);
-            Textures.Load(this);
+            // Initialize graphics providers.
+            Camera.Initialize(this);
+            Textures.Initialize(this);
 
-            // Load renderers.
-            LightMapRenderer.Load(this);
-            ShadowRenderer.Load(this);
-            LightRenderer.Load(this);
+            // Initialize renderers.
+            LightMapRenderer.Initialize(this);
+            ShadowRenderer.Initialize(this);
+            LightRenderer.Initialize(this);
             RenderHelper.Initialize(this);
         }                
 
@@ -95,7 +97,7 @@ namespace Penumbra
         {
             StoreRenderTargetIfRequired();   
 
-            // Switch render target to a normal map.
+            // Switch render target to a normal map. Users will render scene normals on it.
             GraphicsDevice.SetRenderTargets(Textures.NormalMapBindings);            
         }
 
@@ -103,7 +105,7 @@ namespace Penumbra
         {
             StoreRenderTargetIfRequired();
 
-            // Switch render target to a diffuse map. This is where users will render content to be lit.
+            // Switch render target to a diffuse map. Users will render scene content to be lit on it.
             GraphicsDevice.SetRenderTargets(Textures.DiffuseMapBindings);            
         }
         
@@ -124,6 +126,7 @@ namespace Penumbra
             GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
 
             // Set per frame shader data.
+            LightRenderer.PreRender();
             ShadowRenderer.PreRender();
 
             // Generate lightmap. For each light, mask the shadowed areas determined by hulls and render light.
@@ -162,7 +165,7 @@ namespace Penumbra
             GraphicsDevice.SetRenderTargets(Textures.GetOriginalRenderTargetBindings());
 
             // Blend original scene and lightmap and present to backbuffer.
-            LightMapRenderer.Present();
+            LightMapRenderer.Render();
 
             if (Debug) // TODO: Proper handling
             {
@@ -178,9 +181,9 @@ namespace Penumbra
 
         public void Dispose()
         {
-            RsDebug?.Dispose();
-            _rsCw?.Dispose();
-            _rsCcw?.Dispose();
+            RasterizerStateDebug?.Dispose();
+            _rasterizerStateCw?.Dispose();
+            _rasterizerStateCcw?.Dispose();
             LightRenderer.Dispose();
             LightMapRenderer.Dispose();
             ShadowRenderer.Dispose();
@@ -188,17 +191,17 @@ namespace Penumbra
 
         private void BuildGraphicsResources()
         {
-            _rsCcw = new RasterizerState
+            _rasterizerStateCcw = new RasterizerState
             {
                 CullMode = CullMode.CullCounterClockwiseFace,
                 ScissorTestEnable = true
             };
-            _rsCw = new RasterizerState
+            _rasterizerStateCw = new RasterizerState
             {
                 CullMode = CullMode.CullClockwiseFace,
                 ScissorTestEnable = true
             };
-            RsDebug = new RasterizerState
+            RasterizerStateDebug = new RasterizerState
             {
                 CullMode = CullMode.None,
                 FillMode = FillMode.WireFrame,

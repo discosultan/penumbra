@@ -59,8 +59,8 @@ namespace Penumbra
         /// </summary>
         public Matrix Transform
         {
-            get { return _engine.Camera.Custom; }
-            set { _engine.Camera.Custom = value; }
+            get { return _engine.Camera.CustomTransform; }
+            set { _engine.Camera.CustomTransform = value; }
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Penumbra
 
             base.Initialize();
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
-            _engine.Load(GraphicsDevice, deviceManager);
+            _engine.Initialize(GraphicsDevice, deviceManager);
             _initialized = true;
         }
 

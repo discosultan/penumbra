@@ -10,7 +10,7 @@ namespace Penumbra.Graphics.Providers
         protected int BackBufferWidth { get; private set; }
         protected int BackBufferHeight { get; private set; }
 
-        public virtual void Load(PenumbraEngine engine)
+        public virtual void Initialize(PenumbraEngine engine)
         {
             Engine = engine;
 

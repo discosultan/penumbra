@@ -46,9 +46,9 @@ namespace Penumbra.Graphics.Providers
             return _numQueriedBindings == 0 ? null : _originalBindings;
         }
 
-        public override void Load(PenumbraEngine engine)
+        public override void Initialize(PenumbraEngine engine)
         {
-            base.Load(engine);
+            base.Initialize(engine);
             BuildRenderTargets();
         }
 

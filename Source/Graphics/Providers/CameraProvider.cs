@@ -19,7 +19,7 @@ namespace Penumbra.Graphics.Providers
         public bool InvertedY { get; private set; }
         public bool SpriteBatchTransformEnabled { get; set; } = true;
 
-        public Matrix Custom
+        public Matrix CustomTransform
         {
             get { return _custom; }
             set
@@ -30,9 +30,9 @@ namespace Penumbra.Graphics.Providers
             }
         }
 
-        public override void Load(PenumbraEngine engine)
+        public override void Initialize(PenumbraEngine engine)
         {
-            base.Load(engine);
+            base.Initialize(engine);
 
             CalculateSpriteBatchTransform();
             CalculateClipToScreen();
@@ -74,7 +74,9 @@ namespace Penumbra.Graphics.Providers
         private void CalculateClipToScreen()
         {
             PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;
-            _clipToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1));            
+            Matrix screenToClip;
+            Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1, out screenToClip);
+            Matrix.Invert(ref screenToClip, out _clipToScreen);
         }
 
         private void CalculateViewProjectionAndBounds()

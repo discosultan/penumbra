@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics.Renderers
 {
-    internal sealed class LightMapRenderer : IDisposable
+    internal sealed class LightmapRenderer : IDisposable
     {                
         private PenumbraEngine _engine;
 
@@ -13,7 +13,7 @@ namespace Penumbra.Graphics.Renderers
         private EffectParameter _fxTextureParamLightmap;
         private StaticVao _fullscreenQuadVao;
 
-        public void Load(PenumbraEngine engine)
+        public void Initialize(PenumbraEngine engine)
         {                        
             _engine = engine;
 
@@ -24,7 +24,7 @@ namespace Penumbra.Graphics.Renderers
             BuildGraphicsResources();
         }
 
-        public void Present()
+        public void Render()
         {            
             // Blend diffuse map and lightmap together and present to original render target.
             _engine.GraphicsDevice.DepthStencilState = DepthStencilState.None;

@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Penumbra.Graphics.Renderers
 {
-    internal class RenderHelper : IDisposable
+    internal class DebugRenderer : IDisposable
     {
         private PenumbraEngine _engine;
         private SpriteBatch _spriteBatch;

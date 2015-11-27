@@ -37,7 +37,7 @@ namespace Penumbra.Graphics.Renderers
         private DepthStencilState _dsOccludedShadow;
         private DepthStencilState _dsOccludedHull;
 
-        public void Load(PenumbraEngine engine)
+        public void Initialize(PenumbraEngine engine)
         {            
             _engine = engine;
 
@@ -69,7 +69,7 @@ namespace Penumbra.Graphics.Renderers
             if (vao == null)
                 return;
 
-            _engine.GraphicsDevice.RasterizerState = _engine.Rs;
+            _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
             _engine.GraphicsDevice.DepthStencilState = DepthStencilState.None;
             _engine.GraphicsDevice.DepthStencilState = light.ShadowType == ShadowType.Occluded
                 ? _dsOccludedShadow
@@ -90,7 +90,7 @@ namespace Penumbra.Graphics.Renderers
                 // Draw shadows borders if debugging.
                 if (_engine.Debug)
                 {
-                    _engine.GraphicsDevice.RasterizerState = _engine.RsDebug;
+                    _engine.GraphicsDevice.RasterizerState = _engine.RasterizerStateDebug;
                     _engine.GraphicsDevice.BlendState = BlendState.Opaque;                                       
                     _fxShadowTechDebug.Passes[0].Apply();                    
                     _engine.GraphicsDevice.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.VertexCount, 0, shadowVao.PrimitiveCount);                    
@@ -105,7 +105,7 @@ namespace Penumbra.Graphics.Renderers
                     _engine.GraphicsDevice.DepthStencilState = _dsOccludedHull;
 
                 DynamicVao hullVao = vao.Item2;
-                _engine.GraphicsDevice.RasterizerState = _engine.Rs;
+                _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
                 _engine.GraphicsDevice.BlendState = _bsHull;
                 _fxHullParamVp.SetValue(_engine.Camera.ViewProjection);
                 _fxHullParamColor.SetValue(isShadowTypeSolid ? TransparentColor : WhiteColor);

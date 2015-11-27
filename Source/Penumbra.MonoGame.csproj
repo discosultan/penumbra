@@ -60,11 +60,11 @@
     <Reference Include="System.Core" />
     <Compile Include="Graphics\EffectManager.cs" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
-    <Compile Include="Graphics\Renderers\RenderHelper.cs" />
+    <Compile Include="Graphics\Renderers\DebugRenderer.cs" />
     <Compile Include="Graphics\Vao.cs" />
     <Compile Include="Graphics\Renderers\LightRenderer.cs" />
     <Compile Include="Graphics\Renderers\ShadowRenderer.cs" />
-    <Compile Include="Graphics\Renderers\LightMapRenderer.cs" />
+    <Compile Include="Graphics\Renderers\LightmapRenderer.cs" />
     <Compile Include="Graphics\Providers\CameraProvider.cs" />
     <Compile Include="Graphics\Providers\TextureProvider.cs" />
     <Compile Include="Graphics\Providers\GraphicsProvider.cs" />

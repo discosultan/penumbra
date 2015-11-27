@@ -27,7 +27,7 @@ namespace Penumbra.Graphics.Renderers
         private BlendState _bsLight;
         private DepthStencilState _dssOccludedLight;
 
-        public void Load(PenumbraEngine engine)
+        public void Initialize(PenumbraEngine engine)
         {            
             _engine = engine;
 
@@ -50,17 +50,22 @@ namespace Penumbra.Graphics.Renderers
             BuildGraphicsResources();
         }        
 
+        public void PreRender()
+        {
+            if (_engine.NormalMappedLightingEnabled)
+            {
+                _fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
+                _fxLight.Parameters["NormalMap"].SetValue(_engine.Textures.NormalMap);                
+            }
+        }
+
         public void Render(Light light)
         {
             EffectTechnique fxTech = light.ApplyEffectParams(this, _engine.NormalMappedLightingEnabled);
             if (_engine.NormalMappedLightingEnabled)
-            {
-                _fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-                _fxLight.Parameters["NormalMap"].SetValue(_engine.Textures.NormalMap);
+            {                
                 _fxLight.Parameters["SpecularIntensity"].SetValue(0.0f);
-            }
-            //_fxLight.Parameters["ScreenWidth"].SetValue(_engine.GraphicsDevice.Viewport.Width);
-            //_fxLight.Parameters["ScreenHeight"].SetValue(_engine.GraphicsDevice.Viewport.Height);
+            }            
 
             Matrix wvp;
             Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
@@ -70,7 +75,7 @@ namespace Penumbra.Graphics.Renderers
                 ? _dssOccludedLight
                 : DepthStencilState.None;
             _engine.GraphicsDevice.BlendState = _bsLight;
-            _engine.GraphicsDevice.RasterizerState = _engine.Rs;
+            _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
             _engine.GraphicsDevice.SetVertexArrayObject(_quadVao);            
             _fxLightParamWvp.SetValue(wvp);
             fxTech.Passes[0].Apply();
@@ -79,7 +84,7 @@ namespace Penumbra.Graphics.Renderers
             if (_engine.Debug)
             {
                 _engine.GraphicsDevice.BlendState = BlendState.Opaque;
-                _engine.GraphicsDevice.RasterizerState = _engine.RsDebug;
+                _engine.GraphicsDevice.RasterizerState = _engine.RasterizerStateDebug;
 
                 // Draw debug quad.
                 //const float factor = 0.41f;
