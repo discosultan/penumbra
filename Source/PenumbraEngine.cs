@@ -1,13 +1,9 @@
 ﻿// TODO: Features:
-// TODO:    1.  Provide similar transforming capabilities for camera as are for light and hull. Currently
-// TODO:        user must provide custom matrix for camera transformations.
-// TODO:    2.  Occluded shadow type which illuminates the first hull the light ray intersects, but any hull
-// TODO:        behind the ray is fully shadowed.
-// TODO:    3.  Instead of specifying predefined shadow types for lights, use depth buffer instead to determine
+// TODO:    1.  Occluded shadow type to work correctly for concave hulls.
+// TODO:    2.  Instead of specifying predefined shadow types for lights, use depth buffer instead to determine
 // TODO:        illumination for hulls and allow users to change the height for hull or light. This would also
 // TODO:        allow to render hulls in a single draw call instead of per light, since the illumination is no
 // TODO:        longer dependant on the shadow type of a concrete light.
-// TODO:    4.  Normal mapped lighting.
 
 using System;
 using System.Collections.ObjectModel;

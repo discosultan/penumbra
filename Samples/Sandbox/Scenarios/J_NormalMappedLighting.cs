@@ -1,6 +1,4 @@
-﻿using System;
-using Common;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra;
@@ -10,15 +8,16 @@ namespace Sandbox.Scenarios
 {
     class J_NormalMappedLighting : Scenario
     {
-        private Light _light;
         private const float RotationSpeed = MathHelper.TwoPi / 6;
-        private Texture2D normal;
-        private Texture2D diffuse;
+
+        private Light _light;        
+        private Texture2D _normal;
+        private Texture2D _diffuse;
 
         public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
-            normal = content.Load<Texture2D>("199_norm");
-            diffuse = content.Load<Texture2D>("199");
+            _normal = content.Load<Texture2D>("199_norm");
+            _diffuse = content.Load<Texture2D>("199");
             //normal = content.Load<Texture2D>("metal_normal");
             //diffuse = content.Load<Texture2D>("metal");
             //normal = content.Load<Texture2D>("floor_normal");
@@ -34,7 +33,7 @@ namespace Sandbox.Scenarios
                 Color = Color.White,
                 Scale = new Vector2(2000),
                 Radius = 20,
-                Height = 50,
+                Height = 200,
                 Intensity = 1                
             };
             penumbra.Lights.Add(_light);
@@ -56,9 +55,9 @@ namespace Sandbox.Scenarios
         public override void DrawDiffuse(PrimitiveRenderer renderer)
         {
             //var size = new Vector2(Device.Viewport.Width, Device.Viewport.Height);
-            var size = new Vector2(diffuse.Width, diffuse.Height);
+            var size = new Vector2(_diffuse.Width, _diffuse.Height);
             renderer.RenderQuad(
-                diffuse,
+                _diffuse,
                 -size/2,
                 size);
         }
@@ -66,10 +65,10 @@ namespace Sandbox.Scenarios
         public override void DrawNormals(PrimitiveRenderer renderer)
         {
             //var size = new Vector2(Device.Viewport.Width, Device.Viewport.Height);
-            var size = new Vector2(normal.Width, normal.Height);
+            var size = new Vector2(_normal.Width, _normal.Height);
             renderer.RenderQuad(
-                normal,
-                -size/2,
+                _normal,
+                -size / 2,
                 size);
         }
     }

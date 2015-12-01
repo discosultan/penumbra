@@ -89,6 +89,8 @@
     <Compile Include="Graphics\StaticVao.cs" />
     <Compile Include="Utilities\Calculate.cs" />
     <MonoGameContentReference Include="Content\Content.mgcb" />
+    <EmbeddedResource Include="Content\Compiled\LightNormalMapped.dx11.mgfxo" />
+    <EmbeddedResource Include="Content\Compiled\LightNormalMapped.ogl.mgfxo" />
     <None Include="packages.config" />
     <None Include="Content\Macros.fxh" />
     <None Include="Content\Shadow.fx" />
@@ -105,7 +107,7 @@
     <EmbeddedResource Include="Content\Compiled\Texture.dx11.mgfxo" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\LightNormal.fx" />
+    <None Include="Content\LightNormalMapped.fx" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
@@ -116,11 +118,13 @@
   <PropertyGroup>
     <PreBuildEvent>$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.dx11.mgfxo /Profile:DirectX_11
 $(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.dx11.mgfxo /Profile:DirectX_11
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\LightNormalMapped.fx $(ProjectDir)Content\Compiled\LightNormalMapped.dx11.mgfxo /Profile:DirectX_11
 $(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.dx11.mgfxo /Profile:DirectX_11
 $(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.dx11.mgfxo /Profile:DirectX_11
 
 $(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.ogl.mgfxo /Profile:OpenGL
 $(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.ogl.mgfxo /Profile:OpenGL
+$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\LightNormalMapped.fx $(ProjectDir)Content\Compiled\LightNormalMapped.ogl.mgfxo /Profile:OpenGL
 $(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.ogl.mgfxo /Profile:OpenGL
 $(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.ogl.mgfxo /Profile:OpenGL</PreBuildEvent>
   </PropertyGroup>

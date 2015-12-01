@@ -21,7 +21,7 @@ namespace Penumbra
         /// </summary>
         public float ConeDecay { get; set; } = 1.5f;
 
-        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
+        internal sealed override EffectPass ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
         {
             base.ApplyEffectParams(renderer, isNormalMapped);
 
@@ -31,7 +31,7 @@ namespace Penumbra
             renderer._fxLightParamConeAngle.SetValue(halfAngle);
             renderer._fxLightParamConeDecay.SetValue(ConeDecay);
 
-            return renderer._fxSpotLightTech;
+            return renderer._fxLightPassSpot;
         }
     }
 }

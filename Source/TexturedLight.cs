@@ -28,13 +28,13 @@ namespace Penumbra
         /// </summary>
         public Texture2D Texture { get; set; }
 
-        internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
+        internal sealed override EffectPass ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
         {
             base.ApplyEffectParams(renderer, isNormalMapped);
 
             renderer._fxLightParamTexture.SetValue(Texture);
 
-            return renderer._fxTexturedLightTech;
+            return renderer._fxLightPassTextured;
         }
     }
 }

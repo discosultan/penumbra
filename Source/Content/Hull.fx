@@ -1,31 +1,24 @@
 ﻿#include "Macros.fxh"
 
-cbuffer cbPerObject : register(c0)
-{
-	float4 Color;
-};
-
-cbuffer cbPerFrame : register(c1)
+cbuffer cbPerFrame
 {
 	float4x4 ViewProjection;
 };
 
-struct VertexIn
+cbuffer cbPerObject
 {
-	float2 Position : SV_POSITION0;
+	float4 Color;
 };
 
 struct VertexOut
 {
-	float4 Position : SV_POSITION;
+	float4 Position : SV_POSITION0;
 };
 
-VertexOut VS(VertexIn vin)
+VertexOut VS(float2 posW : SV_POSITION0)
 {
 	VertexOut vout;
-
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), ViewProjection);
-
+	vout.Position = mul(float4(posW.x, posW.y, 0.0, 1.0), ViewProjection);
 	return vout;
 }
 

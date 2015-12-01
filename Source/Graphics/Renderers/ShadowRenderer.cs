@@ -23,13 +23,13 @@ namespace Penumbra.Graphics.Renderers
         private PenumbraEngine _engine;
 
         private Effect _fxShadow;
-        private EffectTechnique _fxShadowTech;
-        private EffectTechnique _fxShadowTechDebug;
+        private EffectPass _fxShadowPass;
+        private EffectPass _fxShadowPassDebug;
         private EffectParameter _fxShadowParamLightPosition;
         private EffectParameter _fxShadowParamLightRadius;
         private EffectParameter _fxShadowParamVp;
         private Effect _fxHull;
-        private EffectTechnique _fxHullTech;
+        private EffectPass _fxHullPass;
         private EffectParameter _fxHullParamVp;
         private EffectParameter _fxHullParamColor;
         private BlendState _bsShadow;
@@ -42,8 +42,8 @@ namespace Penumbra.Graphics.Renderers
             _engine = engine;
 
             _fxShadow = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "Shadow");
-            _fxShadowTech = _fxShadow.Techniques["Main"];
-            _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
+            _fxShadowPass = _fxShadow.Techniques["Main"].Passes[0];
+            _fxShadowPassDebug = _fxShadow.Techniques["Debug"].Passes[0];
             _fxShadowParamLightPosition = _fxShadow.Parameters["LightPosition"];
             _fxShadowParamLightRadius = _fxShadow.Parameters["LightRadius"];
             _fxShadowParamVp = _fxShadow.Parameters["ViewProjection"];
@@ -51,7 +51,7 @@ namespace Penumbra.Graphics.Renderers
             _fxShadow.Parameters["Color"].SetValue(DebugColor);
 
             _fxHull = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "Hull");
-            _fxHullTech = _fxHull.Techniques["Main"];
+            _fxHullPass = _fxHull.Techniques["Main"].Passes[0];
             _fxHullParamVp = _fxHull.Parameters["ViewProjection"];
             _fxHullParamColor = _fxHull.Parameters["Color"];
             
@@ -70,7 +70,6 @@ namespace Penumbra.Graphics.Renderers
                 return;
 
             _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
-            _engine.GraphicsDevice.DepthStencilState = DepthStencilState.None;
             _engine.GraphicsDevice.DepthStencilState = light.ShadowType == ShadowType.Occluded
                 ? _dsOccludedShadow
                 : DepthStencilState.None;
@@ -84,7 +83,7 @@ namespace Penumbra.Graphics.Renderers
                 DynamicVao shadowVao = vao.Item1;
                 _engine.GraphicsDevice.BlendState = _bsShadow;                                                
                 _engine.GraphicsDevice.SetVertexArrayObject(shadowVao);
-                _fxShadowTech.Passes[0].Apply();
+                _fxShadowPass.Apply();
                 _engine.GraphicsDevice.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.VertexCount, 0, shadowVao.PrimitiveCount);                
 
                 // Draw shadows borders if debugging.
@@ -92,7 +91,7 @@ namespace Penumbra.Graphics.Renderers
                 {
                     _engine.GraphicsDevice.RasterizerState = _engine.RasterizerStateDebug;
                     _engine.GraphicsDevice.BlendState = BlendState.Opaque;                                       
-                    _fxShadowTechDebug.Passes[0].Apply();                    
+                    _fxShadowPassDebug.Apply();                    
                     _engine.GraphicsDevice.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.VertexCount, 0, shadowVao.PrimitiveCount);                    
                 }
             }
@@ -110,7 +109,7 @@ namespace Penumbra.Graphics.Renderers
                 _fxHullParamVp.SetValue(_engine.Camera.ViewProjection);
                 _fxHullParamColor.SetValue(isShadowTypeSolid ? TransparentColor : WhiteColor);
                 _engine.GraphicsDevice.SetVertexArrayObject(hullVao);
-                _fxHullTech.Passes[0].Apply();
+                _fxHullPass.Apply();
                 _engine.GraphicsDevice.DrawIndexedPrimitives(hullVao.PrimitiveTopology, 0, 0, hullVao.VertexCount, 0, hullVao.PrimitiveCount);
             }
         }

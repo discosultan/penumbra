@@ -11,17 +11,29 @@ namespace Penumbra.Graphics.Renderers
         private PenumbraEngine _engine;
 
         internal Effect _fxLight;
-        internal EffectTechnique _fxPointLightTech;
-        internal EffectTechnique _fxSpotLightTech;
-        internal EffectTechnique _fxTexturedLightTech;
-        internal EffectTechnique _fxDebugLightTech;
+        internal EffectPass _fxLightPassPoint;
+        internal EffectPass _fxLightPassSpot;
+        internal EffectPass _fxLightPassTextured;
+        internal EffectPass _fxLightPassDebug;
+        internal EffectParameter _fxLightParamWorld;
         internal EffectParameter _fxLightParamTexture;
-        internal EffectParameter _fxLightParamTextureTransform;
-        internal EffectParameter _fxLightParamWvp;
+        internal EffectParameter _fxLightParamViewProjection;
         internal EffectParameter _fxLightParamColor;
         internal EffectParameter _fxLightParamIntensity;
         internal EffectParameter _fxLightParamConeDecay;
         internal EffectParameter _fxLightParamConeAngle;
+
+        internal Effect _fxLightNormal;
+        internal EffectPass _fxLightNormalPassPoint;
+        internal EffectParameter _fxLightNormalParamLightTexture;
+        internal EffectParameter _fxLightNormalParamNormalMap;
+        internal EffectParameter _fxLightNormalParamViewProjection;
+        internal EffectParameter _fxLightNormalParamWorld;
+        internal EffectParameter _fxLightNormalParamLightPosition;
+        internal EffectParameter _fxLightNormalParamLightIntensity;
+        internal EffectParameter _fxLightNormalParamLightColor;
+        internal EffectParameter _fxLightNormalParamSpecularIntensity;
+
         private StaticVao _quadVao;
         private StaticVao _circleVao;
         private BlendState _bsLight;
@@ -32,17 +44,28 @@ namespace Penumbra.Graphics.Renderers
             _engine = engine;
 
             _fxLight = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "Light");
-            _fxPointLightTech = _fxLight.Techniques["PointLight"];
-            _fxSpotLightTech = _fxLight.Techniques["Spotlight"];
-            _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];
-            _fxDebugLightTech = _fxLight.Techniques["DebugLight"];
-            _fxLightParamTexture = _fxLight.Parameters["Texture"];
-            _fxLightParamTextureTransform = _fxLight.Parameters["TextureTransform"];
-            _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
+            _fxLightPassPoint = _fxLight.Techniques["PointLight"].Passes[0];
+            _fxLightPassSpot = _fxLight.Techniques["Spotlight"].Passes[0];
+            _fxLightPassTextured = _fxLight.Techniques["TexturedLight"].Passes[0];
+            _fxLightPassDebug = _fxLight.Techniques["DebugLight"].Passes[0];
+            _fxLightParamViewProjection = _fxLight.Parameters["ViewProjection"];
+            _fxLightParamWorld = _fxLight.Parameters["World"];
+            _fxLightParamTexture = _fxLight.Parameters["LightTexture"];            
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
             _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
             _fxLightParamConeAngle = _fxLight.Parameters["ConeHalfAngle"];
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
+
+            _fxLightNormal = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "LightNormalMapped");
+            _fxLightNormalPassPoint = _fxLightNormal.Techniques["PointLight"].Passes[0];
+            _fxLightNormalParamLightTexture = _fxLightNormal.Parameters["LightTexture"];
+            _fxLightNormalParamNormalMap = _fxLightNormal.Parameters["NormalMap"];
+            _fxLightNormalParamViewProjection = _fxLightNormal.Parameters["ViewProjection"];
+            _fxLightNormalParamWorld = _fxLightNormal.Parameters["World"];
+            _fxLightNormalParamLightPosition = _fxLightNormal.Parameters["LightPosition"];
+            _fxLightNormalParamLightIntensity = _fxLightNormal.Parameters["LightIntensity"];
+            _fxLightNormalParamLightColor = _fxLightNormal.Parameters["LightColor"];
+            _fxLightNormalParamSpecularIntensity = _fxLightNormal.Parameters["SpecularIntensity"];
 
             // Constant shader param.
             _fxLight.Parameters["Color"].SetValue(DebugColor);
@@ -54,31 +77,34 @@ namespace Penumbra.Graphics.Renderers
         {
             if (_engine.NormalMappedLightingEnabled)
             {
-                _fxLight.Parameters["ViewProjection"].SetValue(_engine.Camera.ViewProjection);
-                _fxLight.Parameters["NormalMap"].SetValue(_engine.Textures.NormalMap);                
+                _fxLightNormalParamViewProjection.SetValue(_engine.Camera.ViewProjection);
+                _fxLightNormalParamNormalMap.SetValue(_engine.Textures.NormalMap);
+            }
+            else
+            {
+                _fxLightParamViewProjection.SetValue(_engine.Camera.ViewProjection);
             }
         }
 
         public void Render(Light light)
         {
-            EffectTechnique fxTech = light.ApplyEffectParams(this, _engine.NormalMappedLightingEnabled);
-            if (_engine.NormalMappedLightingEnabled)
-            {                
-                _fxLight.Parameters["SpecularIntensity"].SetValue(0.0f);
-            }            
+            EffectPass fxPass = light.ApplyEffectParams(this, _engine.NormalMappedLightingEnabled);
+            //if (_engine.NormalMappedLightingEnabled)
+            //{                
+            //    _fxLightNormal.Parameters["SpecularIntensity"].SetValue();
+            //}            
 
-            Matrix wvp;
-            Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
-
-            _engine.GraphicsDevice.DepthStencilState = DepthStencilState.None;
+            //Matrix wvp;
+            //Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
+            
             _engine.GraphicsDevice.DepthStencilState = light.ShadowType == ShadowType.Occluded
                 ? _dssOccludedLight
                 : DepthStencilState.None;
             _engine.GraphicsDevice.BlendState = _bsLight;
             _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
-            _engine.GraphicsDevice.SetVertexArrayObject(_quadVao);            
-            _fxLightParamWvp.SetValue(wvp);
-            fxTech.Passes[0].Apply();
+            _engine.GraphicsDevice.SetVertexArrayObject(_quadVao);
+            //_fxLightParamWvp.SetValue(wvp);
+            fxPass.Apply();
             _engine.GraphicsDevice.DrawPrimitives(_quadVao.PrimitiveTopology, 0, _quadVao.PrimitiveCount);
 
             if (_engine.Debug)
@@ -95,25 +121,28 @@ namespace Penumbra.Graphics.Renderers
                 //_fxDebugLightTech.Passes[0].Apply();
                 //_engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
 
-                Matrix world = Matrix.Identity;
-                // Scaling.
-                world.M11 = light.Radius;
-                world.M22 = light.Radius;
-                // Translation.
-                world.M41 = light.Position.X;
-                world.M42 = light.Position.Y;
-                Matrix.Multiply(ref world, ref _engine.Camera.ViewProjection, out wvp);
+
+
+                //Matrix world = Matrix.Identity;
+                //// Scaling.
+                //world.M11 = light.Radius;
+                //world.M22 = light.Radius;
+                //// Translation.
+                //world.M41 = light.Position.X;
+                //world.M42 = light.Position.Y;
+                //Matrix.Multiply(ref world, ref _engine.Camera.ViewProjection, out wvp);
                 
-                _engine.GraphicsDevice.SetVertexArrayObject(_circleVao);                
-                _fxLightParamWvp.SetValue(wvp);                
-                _fxDebugLightTech.Passes[0].Apply();
-                _engine.GraphicsDevice.DrawIndexedPrimitives(_circleVao.PrimitiveTopology, 0, 0, _circleVao.VertexCount, 0, _circleVao.PrimitiveCount);
+                //_engine.GraphicsDevice.SetVertexArrayObject(_circleVao);                
+                //_fxLightParamWvp.SetValue(wvp);                
+                //_fxLightPassDebug.Apply();
+                //_engine.GraphicsDevice.DrawIndexedPrimitives(_circleVao.PrimitiveTopology, 0, 0, _circleVao.VertexCount, 0, _circleVao.PrimitiveCount);
             }
         }
 
         public void Dispose()
         {
             _fxLight?.Dispose();
+            _fxLightNormal?.Dispose();
             _quadVao?.Dispose();
             _circleVao?.Dispose();
             _bsLight?.Dispose();

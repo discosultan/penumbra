@@ -1,33 +1,26 @@
 ﻿#include "Macros.fxh"
 
-cbuffer cbConstant : register(c0)
+cbuffer cbConstant
 {
 	float4 Color; // Used for debugging.
 };
 
-cbuffer cbPerFrame : register(c1)
+cbuffer cbPerFrame
 {
 	float4x4 ViewProjection;
 };
 
-cbuffer cbPerObject : register(c5)
+cbuffer cbPerObject
 {		
 	float2 LightPosition;
 	float LightRadius;
 };
 
-struct VertexIn
-{	
-	float2 SegmentA : TEXCOORD0;
-	float2 SegmentB : TEXCOORD1;
-	float2 Stencil : SV_POSITION0;
-};
-
 struct VertexOut
 {
-	float4 Position : SV_POSITION;
-	float4 Penumbra : TEXCOORD1;
-	float ClipValue : TEXCOORD2;
+	float4 Position : SV_POSITION0;
+	float4 Penumbra : TEXCOORD0;
+	float ClipValue : TEXCOORD1;
 };
 
 float2x2 Invert(float2x2 m)
@@ -35,14 +28,14 @@ float2x2 Invert(float2x2 m)
 	return float2x2(m._m11, -m._m01, -m._m10, m._m00) / determinant(m);
 }
 
-VertexOut VS(VertexIn vin)
+VertexOut VS(float2 segmentA : TEXCOORD0, float2 segmentB : TEXCOORD1, float2 stencil : SV_POSITION0)
 {
 	// Segments are in CCW order.
 	// Stencil.x=0: dealing with segment vertex A; X=1: dealing with segment vertex B.	
 	// Stencil.y=0: not projecting the vertex; y=1: projecting the vertex.	
 	
-	float2 toSegmentA = vin.SegmentA - LightPosition;
-	float2 toSegmentB = vin.SegmentB - LightPosition;
+	float2 toSegmentA = segmentA - LightPosition;
+	float2 toSegmentB = segmentB - LightPosition;
 
 	// Find radius offsets 90deg left and right from light source relative to vertex.
 	float2 toLightOffsetA = float2(-LightRadius, LightRadius)*normalize(toSegmentA).yx;
@@ -51,21 +44,21 @@ VertexOut VS(VertexIn vin)
 	float2 lightOffsetB = LightPosition + toLightOffsetB; // 90 CW.
 
 	// From each edge, project a quad. We have 4 vertices per edge.	
-	float2 position = lerp(vin.SegmentA, vin.SegmentB, vin.Stencil.x);
-	float2 projectionOffset = lerp(lightOffsetA, lightOffsetB, vin.Stencil.x);
+	float2 position = lerp(segmentA, segmentB, stencil.x);
+	float2 projectionOffset = lerp(lightOffsetA, lightOffsetB, stencil.x);
 	// Setting projected.w to 0 will cause the position to be projected (scaled) infinitely far away in the 
 	// perspective division phase. Instead of dividing by 0, the pipeline seems to divide by a very small positive number instead.
-	float4 projected = float4(position - projectionOffset*vin.Stencil.y, 0.0, 1.0 - vin.Stencil.y);
+	float4 projected = float4(position - projectionOffset*stencil.y, 0.0, 1.0 - stencil.y);
 
 	// Transform to clip space.
 	float4 clipPosition = mul(projected, ViewProjection);
 		
-	float2 penumbraA = mul(projected.xy - vin.SegmentA*projected.w, Invert(float2x2(toLightOffsetA, toSegmentA)));
-	float2 penumbraB = mul(projected.xy - vin.SegmentB*projected.w, Invert(float2x2(toLightOffsetB, toSegmentB)));	
+	float2 penumbraA = mul(projected.xy - segmentA*projected.w, Invert(float2x2(toLightOffsetA, toSegmentA)));
+	float2 penumbraB = mul(projected.xy - segmentB*projected.w, Invert(float2x2(toLightOffsetB, toSegmentB)));	
 
 	// Find the edge normal. A to B CW 90 deg.
 	// ClipValue < 0 means the projection is pointing towards light => no shadow should be generated.
-	float2 clipNormal = (vin.SegmentB - vin.SegmentA).yx*float2(1.0, -1.0);	
+	float2 clipNormal = (segmentB - segmentA).yx*float2(1.0, -1.0);	
 	float clipValue = dot(clipNormal, projected.xy - projected.w*position);
 	
 	VertexOut vout;

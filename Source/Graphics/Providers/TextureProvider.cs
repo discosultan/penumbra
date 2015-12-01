@@ -68,19 +68,21 @@ namespace Penumbra.Graphics.Providers
         {
             DestroyRenderTargets();
 
-            PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;
-            
-            Lightmap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
-                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+            Lightmap = NewFullScreenRenderTarget();
             LightmapBindings[0] = Lightmap;
-            DiffuseMap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
-                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+            DiffuseMap = NewFullScreenRenderTarget();
             DiffuseMapBindings[0] = DiffuseMap;
-            NormalMap = new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
-                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+            NormalMap = NewFullScreenRenderTarget(); // TODO: Create only when normal mapped lighting is enabled.
             NormalMapBindings[0] = NormalMap;
 
             Logger.Write("New textures created.");
+        }
+
+        private RenderTarget2D NewFullScreenRenderTarget()
+        {
+            PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;            
+            return new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
         }
 
         private void DestroyRenderTargets()

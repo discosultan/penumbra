@@ -1,61 +1,43 @@
 ﻿#include "Macros.fxh"
 
-Texture2D Texture : register(t0);
-Texture2D NormalMap : register(t1);
-SamplerState TextureSampler;
+Texture2D LightTexture : register(t0);
+SamplerState TextureSampler : register(s0);
 
-cbuffer cbConstant : register(c0)
+cbuffer cbConstant 
 {
 	float4 Color;
 };
 
-cbuffer cbPerLight : register(c1)
-{	
-	float4x4 World;
+cbuffer cbPerFrame 
+{
 	float4x4 ViewProjection;
-	float4x4 WorldViewProjection;
-	float3 LightColor;
-	float LightIntensity;
-	float SpecularIntensity;
-
-	float3 LightPosition;
-	float ScreenWidth;
-	float ScreenHeight;
 };
 
-cbuffer cbPerSpotlight : register(c6)
+cbuffer cbPerLight 
+{	
+	float4x4 World;	
+	float3 LightColor;
+	float LightIntensity;
+};
+
+cbuffer cbPerSpotlight 
 {
 	float ConeHalfAngle;
 	float ConeDecay;
 };
 
-struct VertexIn
-{
-	float2 Position : SV_POSITION0;
-	float2 TexCoord : TEXCOORD0;
-};
-
 struct VertexOut
 {
-	float4 Position : SV_POSITION;
-	//float3 PosW : TEXCOORD1;
-	float3 NormalW : TEXCOORD1;
-	float2 PosC : TEXCOORD2;
+	float4 Position : SV_POSITION0;	
 	float2 TexCoord : TEXCOORD0;
 };
 
-VertexOut VS(VertexIn vin)
+VertexOut VS(float2 posL : SV_POSITION0, float2 texCoord : TEXCOORD0)
 {
 	VertexOut vout;
 	
-	vout.Position = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), WorldViewProjection);	
-	vout.PosC = vout.Position.xy / vout.Position.w;
-
-	float4 posW = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), World);
-
-	//vout.PosW = mul(float4(vin.Position.x, vin.Position.y, 0.0, 1.0), World).xyz;
-	vout.NormalW = LightPosition - float3(posW.x, posW.y, 0);
-	vout.TexCoord = vin.TexCoord;
+	vout.Position = mul(float4(posL.x, posL.y, 0.0, 1.0), mul(World, ViewProjection));		
+	vout.TexCoord = texCoord;
 
 	return vout;
 }
@@ -73,33 +55,6 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 	float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
 	float alpha = saturate(1.0 - halfMagnitude * 2.0);
 	return GetComputedColor(alpha);
-}
-
-float4 PSPointLightNormalMapped(VertexOut pin) : SV_TARGET
-{
-	float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
-	float attenuation = saturate(1.0 - halfMagnitude * 2.0);
-
-	float2 clipPosition = pin.PosC;
-
-	// Bring from clip space to fullscreen texture coord space.
-	float2 normalMapTexCoord = float2(
-		clipPosition.x*0.5 + 0.5,
-		-clipPosition.y*0.5 + 0.5);
-	
-	float3 surfaceNormal = 2.0 * NormalMap.Sample(TextureSampler, normalMapTexCoord) - 1.0f;
-
-	float3 lightNormal = normalize(pin.NormalW);
-	float3 halfVec = float3(0, 0, 1);
-
-	float amount = max(dot(surfaceNormal, lightNormal), 0);	
-				
-	//float3 reflectNormal = reflect(lightNormal, surfaceNormal); 
-	float3 reflectNormal = normalize(lightNormal - 2 * surfaceNormal * amount);
-	float specular = min(pow(saturate(dot(reflectNormal, halfVec)), 10), amount);	
-	float3 finalLight = attenuation * LightColor * LightIntensity * amount; //+ specular * attenuation * SpecularIntensity;
-
-	return float4(finalLight, 1.0f);
 }
 
 float4 PSSpotLight(VertexOut pin) : SV_TARGET
@@ -122,7 +77,7 @@ float4 PSSpotLight(VertexOut pin) : SV_TARGET
 
 float4 PSTexturedLight(VertexOut pin) : SV_TARGET
 {
-	float alpha = Texture.Sample(TextureSampler, pin.TexCoord).x;
+	float alpha = LightTexture.Sample(TextureSampler, pin.TexCoord).x;
 	
 	// Shift tex coord to range [-0.5...0.5] and take absolute value.
 	float2 tc = abs(pin.TexCoord - float2(0.5, 0.5));
@@ -139,7 +94,6 @@ float4 PSDebugLight(VertexOut pin) : SV_TARGET
 }
 
 TECHNIQUE(PointLight, VS, PSPointLight);
-TECHNIQUE(PointLightNormalMapped, VS, PSPointLightNormalMapped);
 TECHNIQUE(Spotlight, VS, PSSpotLight);
 TECHNIQUE(TexturedLight, VS, PSTexturedLight);
 TECHNIQUE(DebugLight, VS, PSDebugLight);
