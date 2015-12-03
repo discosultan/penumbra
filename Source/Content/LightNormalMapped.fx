@@ -2,7 +2,7 @@
 
 struct VertexOut
 {
-	float4 Position : SV_POSITION0;
+	float4 Position : SV_POSITION;
 	float2 PosN : TEXCOORD0;
 	float2 TexCoord : TEXCOORD1;
 	float3 NormalW : TEXCOORD2;		
@@ -15,6 +15,7 @@ SamplerState TextureSampler : register (s0);
 cbuffer cbPerFrame
 {
 	float4x4 ViewProjection;
+	float2 Resolution;
 };
 
 cbuffer cbPerLight
@@ -30,12 +31,13 @@ VertexOut VS(float2 posL : SV_POSITION0, float2 texCoord : TEXCOORD0)
 {
 	VertexOut vout;
 	
-	float3 posW = mul(float3(posL, 0.0), World);
+	float3 posW = mul(float3(posL, 0.0), World);		
 
 	vout.NormalW = LightPosition - posW;	
+	vout.NormalW.z=-vout.NormalW.z;
 
 	vout.Position = mul(float4(posW, 1.0), ViewProjection);
-	vout.PosN = vout.Position.xy; // / vout.Position.w;	
+	vout.PosN = vout.Position.xy; // / vout.Position.w;		
 	
 	vout.TexCoord = texCoord;
 
@@ -54,13 +56,16 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 	float2 normalMapTexCoord = float2(
 		clipPosition.x*0.5 + 0.5,
 		-clipPosition.y*0.5 + 0.5);
+
+	//float2 normalMapTexCoord = screenPos / Resolution;
 	
-	float3 surfaceNormal = 2.0*NormalMap.Sample(TextureSampler, normalMapTexCoord) - 1.0f;
+	// Sample the normal and convert from [0..1] to [-1..1].
+	float3 surfaceNormal = normalize(2.0*NormalMap.Sample(TextureSampler, normalMapTexCoord) - 1.0);
 	//surfaceNormal = float3(0,0,1);
 
 	//lightDir = float3(0, 0, 1);
 
-	float3 diffuse = saturate(dot(lightDir, surfaceNormal)) * LightColor;
+	float3 diffuse = max(dot(lightDir, surfaceNormal), 0.0) * LightColor;
 		
 	//float3 viewDir = float3(0, 0, 1);	
 
@@ -68,7 +73,7 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 	
 	//float specular = pow(saturate(dot(surfaceNormal, halfwayDir)), SpecularIntensity);	
 
-//	float3 final = diffuse + specular;
+	//float3 final = diffuse + specular;
 
 	//float amount = ax(dot(surfaceNormal, lightNormal), 0);	
 				
@@ -80,4 +85,29 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 	return float4(diffuse /*+ specular*/, 1.0f);
 }
 
-TECHNIQUE(PointLight, VS, PSPointLight);
+float4 PSDebugLightNormals(VertexOut pin) : SV_TARGET
+{
+	float3 lightDir = normalize(pin.NormalW);
+	float3 color = lightDir*0.5 + 0.5;
+	return float4(color, 1.0);
+}
+
+technique PointLight
+{ 
+	pass 
+	{ 
+		VertexShader = compile vs_4_0_level_9_1 VS();
+		PixelShader = compile ps_4_0_level_9_1 PSPointLight();
+	} 
+}
+
+technique Debug
+{ 
+	pass 
+	{ 
+		VertexShader = compile vs_4_0_level_9_1 VS();
+		PixelShader = compile ps_4_0_level_9_1 PSDebugLightNormals();
+	} 
+}
+
+//TECHNIQUE(PointLight, VS, PSPointLight);

@@ -57,7 +57,8 @@ namespace Penumbra.Graphics.Renderers
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
             _fxLightNormal = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "LightNormalMapped");
-            _fxLightNormalPassPoint = _fxLightNormal.Techniques["PointLight"].Passes[0];
+            //_fxLightNormalPassPoint = _fxLightNormal.Techniques["PointLight"].Passes[0];
+            _fxLightNormalPassPoint = _fxLightNormal.Techniques["Debug"].Passes[0]; // TODO: TEMP
             _fxLightNormalParamLightTexture = _fxLightNormal.Parameters["LightTexture"];
             _fxLightNormalParamNormalMap = _fxLightNormal.Parameters["NormalMap"];
             _fxLightNormalParamViewProjection = _fxLightNormal.Parameters["ViewProjection"];
@@ -79,6 +80,7 @@ namespace Penumbra.Graphics.Renderers
             {
                 _fxLightNormalParamViewProjection.SetValue(_engine.Camera.ViewProjection);
                 _fxLightNormalParamNormalMap.SetValue(_engine.Textures.NormalMap);
+                _fxLightNormal.Parameters["Resolution"].SetValue(new Vector2(_engine.GraphicsDevice.Viewport.Width, _engine.GraphicsDevice.Viewport.Height));
             }
             else
             {
@@ -100,7 +102,8 @@ namespace Penumbra.Graphics.Renderers
             _engine.GraphicsDevice.DepthStencilState = light.ShadowType == ShadowType.Occluded
                 ? _dssOccludedLight
                 : DepthStencilState.None;
-            _engine.GraphicsDevice.BlendState = _bsLight;
+            //_engine.GraphicsDevice.BlendState = _bsLight;
+            _engine.GraphicsDevice.BlendState = BlendState.Opaque;
             _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
             _engine.GraphicsDevice.SetVertexArrayObject(_quadVao);
             //_fxLightParamWvp.SetValue(wvp);

@@ -6,6 +6,8 @@ namespace Penumbra.Graphics.Renderers
 {
     internal class DebugRenderer : IDisposable
     {
+        const int width = 300;
+
         private PenumbraEngine _engine;
         private SpriteBatch _spriteBatch;
 
@@ -18,6 +20,11 @@ namespace Penumbra.Graphics.Renderers
         public void Dispose()
         {
             _spriteBatch?.Dispose();
+        }
+
+        public void PreRender()
+        {
+
         }
 
         public void Render(Texture2D texture, Rectangle destination)

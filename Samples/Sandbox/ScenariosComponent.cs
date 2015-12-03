@@ -35,15 +35,15 @@ namespace Sandbox
             _camera = camera;
         }
 
+        public Scenario ActiveScenario { get; private set; }
+
         public override void Initialize()
         {
             base.Initialize();            
             LoadScenarios();
             SwitchScenario();
             _renderer = new PrimitiveRenderer(GraphicsDevice, Game.Content);
-        }
-
-        public Scenario ActiveScenario { get; private set; }        
+        }        
 
         public void NextScenario()
         {

@@ -36,8 +36,8 @@ namespace Penumbra.Utilities
 
             Vector2 transformedOrigin;
             transformedOrigin.X = scaledOrigin.X * cos - scaledOrigin.Y * sin;
-            transformedOrigin.Y = scaledOrigin.X * sin + scaledOrigin.Y * cos;            
-            
+            transformedOrigin.Y = scaledOrigin.X * sin + scaledOrigin.Y * cos;
+
             transform.M11 = scale.X * cos;
             transform.M12 = scale.X * sin;
             transform.M13 = 0.0f;
@@ -45,7 +45,7 @@ namespace Penumbra.Utilities
             transform.M21 = scale.Y * -sin;
             transform.M22 = scale.Y * cos;
             transform.M23 = 0.0f;
-            transform.M24 = 0.0f;            
+            transform.M24 = 0.0f;
             transform.M31 = 0.0f;
             transform.M32 = 0.0f;
             transform.M33 = 1.0f;

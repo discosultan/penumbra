@@ -21,7 +21,7 @@ namespace Penumbra
     {        
         private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
 
-        private readonly DebugRenderer RenderHelper = new DebugRenderer();
+        private readonly DebugRenderer DebugRenderer = new DebugRenderer();
         private readonly ShadowRenderer ShadowRenderer = new ShadowRenderer();
         private readonly LightRenderer LightRenderer = new LightRenderer();
         private readonly LightmapRenderer LightMapRenderer = new LightmapRenderer();
@@ -37,7 +37,7 @@ namespace Penumbra
             {                
                 _nonPremultipliedAmbient = value;
                 Calculate.FromNonPremultiplied(value, out _ambientColor);
-                _ambientColor.W = 1.0f;                
+                _ambientColor.W = 1.0f;
             }
         }
 
@@ -86,7 +86,7 @@ namespace Penumbra
             LightMapRenderer.Initialize(this);
             ShadowRenderer.Initialize(this);
             LightRenderer.Initialize(this);
-            RenderHelper.Initialize(this);
+            DebugRenderer.Initialize(this);
         }                
 
         public void BeginNormalMap()
@@ -122,6 +122,7 @@ namespace Penumbra
             GraphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Stencil | ClearOptions.Target, _ambientColor, 1f, 0);
 
             // Set per frame shader data.
+            DebugRenderer.PreRender();
             LightRenderer.PreRender();
             ShadowRenderer.PreRender();
 
@@ -167,7 +168,8 @@ namespace Penumbra
             {
                 const int width = 300;
                 float aspect = (float) Textures.NormalMap.Height/Textures.NormalMap.Width;
-                RenderHelper.Render(Textures.NormalMap, new Rectangle(0, 0, width, (int) (width*aspect)));
+                DebugRenderer.Render(Textures.NormalMap, new Rectangle(0, 0, width, (int) (width*aspect)));
+                DebugRenderer.Render(Textures.Lightmap, new Rectangle(width, 0, width, (int)(width * aspect)));
             }
 
             // Reset per frame flags.
