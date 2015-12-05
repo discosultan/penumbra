@@ -12,7 +12,7 @@ namespace Sandbox
     class ScenariosComponent : DrawableGameComponent
     {
         private static readonly Color BackgroundColor = Color.White;
-        private static readonly Color DefaultNormals = new Color(Vector4.Normalize(new Vector4(0.5f, 0.5f, 1.0f, 0.0f)));
+        private static readonly Color DefaultNormals = new Color(new Vector4(0.5f, 0.5f, 1.0f, 0.0f));
 
         private readonly SandboxGame _game;
         private readonly PenumbraComponent _penumbra;
@@ -72,7 +72,6 @@ namespace Sandbox
             {
                 _penumbra.BeginNormalMapped();
                 GraphicsDevice.Clear(DefaultNormals);
-                GraphicsDevice.BlendState = BlendState.Opaque;
                 ActiveScenario.DrawNormals(_renderer);
             }
 

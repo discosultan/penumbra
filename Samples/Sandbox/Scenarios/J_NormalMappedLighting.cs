@@ -16,14 +16,12 @@ namespace Sandbox.Scenarios
 
         public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
-            _normal = content.Load<Texture2D>("199_norm");
-            _diffuse = content.Load<Texture2D>("199");
-            //normal = content.Load<Texture2D>("metal_normal");
-            //diffuse = content.Load<Texture2D>("metal");
-            //normal = content.Load<Texture2D>("floor_normal");
-            //diffuse = content.Load<Texture2D>("floor");
-            //normal = content.Load<Texture2D>("stone_normal");
-            //diffuse = content.Load<Texture2D>("stone");
+            //_normal = content.Load<Texture2D>("199_norm");
+            //_diffuse = content.Load<Texture2D>("199");            
+            _normal = content.Load<Texture2D>("floor_normal");
+            _diffuse = content.Load<Texture2D>("floor");
+            //_normal = content.Load<Texture2D>("stone_normal");
+            //_diffuse = content.Load<Texture2D>("stone");
 
             penumbra.NormalMappedLightingEnabled = true;
 
@@ -33,7 +31,7 @@ namespace Sandbox.Scenarios
                 Color = Color.White,
                 Scale = new Vector2(2000),
                 Radius = 20,
-                Height = 200,
+                Height = 100,
                 Intensity = 1                
             };
             penumbra.Lights.Add(_light);
@@ -58,7 +56,7 @@ namespace Sandbox.Scenarios
             var size = new Vector2(_diffuse.Width, _diffuse.Height);
             renderer.RenderQuad(
                 _diffuse,
-                -size/2,
+                -size / 2,
                 size);
         }
 

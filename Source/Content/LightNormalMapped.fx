@@ -5,7 +5,8 @@ struct VertexOut
 	float4 Position : SV_POSITION;
 	float2 PosN : TEXCOORD0;
 	float2 TexCoord : TEXCOORD1;
-	float3 NormalW : TEXCOORD2;		
+	float3 NormalW : TEXCOORD2;	
+	float2 PosW : TEXCOORD3;
 };
 
 Texture2D LightTexture : register(t0);
@@ -31,10 +32,11 @@ VertexOut VS(float2 posL : SV_POSITION0, float2 texCoord : TEXCOORD0)
 {
 	VertexOut vout;
 	
-	float3 posW = mul(float3(posL, 0.0), World);		
+	float3 posW = mul(float3(posL, 0.0), World);
 
-	vout.NormalW = LightPosition - posW;	
-	vout.NormalW.z=-vout.NormalW.z;
+	vout.PosW = posW;
+
+	vout.NormalW = LightPosition - posW;
 
 	vout.Position = mul(float4(posW, 1.0), ViewProjection);
 	vout.PosN = vout.Position.xy; // / vout.Position.w;		
@@ -46,7 +48,6 @@ VertexOut VS(float2 posL : SV_POSITION0, float2 texCoord : TEXCOORD0)
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET
 {
-	float2 clipPosition = pin.PosN;	
 	float3 lightDir = normalize(pin.NormalW);
 
 	//float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
@@ -54,8 +55,8 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 
 	// Bring from clip space to fullscreen texture coord space.
 	float2 normalMapTexCoord = float2(
-		clipPosition.x*0.5 + 0.5,
-		-clipPosition.y*0.5 + 0.5);
+		pin.PosN.x*0.5 + 0.5,
+		-pin.PosN.y*0.5 + 0.5);
 
 	//float2 normalMapTexCoord = screenPos / Resolution;
 	
@@ -87,9 +88,33 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 
 float4 PSDebugLightNormals(VertexOut pin) : SV_TARGET
 {
-	float3 lightDir = normalize(pin.NormalW);
+	float3 lightDir = normalize(LightPosition - float3(pin.PosW, 0.0));
+	//float3 lightDir = normalize(pin.NormalW);
 	float3 color = lightDir*0.5 + 0.5;
 	return float4(color, 1.0);
+}
+
+float4 PSDebugDotNL(VertexOut pin) : SV_TARGET
+{
+//	float3 lightDir = normalize(LightPosition - float3(pin.PosW, 0.0));
+	// Bring from clip space to fullscreen texture coord space.
+	float2 normalMapTexCoord = float2(
+		pin.PosN.x*0.5 + 0.5,
+		-pin.PosN.y*0.5 + 0.5);
+
+	float3 lightPos = mul(LightPosition, ViewProjection);
+	lightPos.z=LightPosition.z;
+
+	float3 lightDir = normalize(lightPos - float3(pin.PosN.xy, 0.0));
+
+	float3 normal = NormalMap.Sample(TextureSampler, normalMapTexCoord);
+	float3 surfaceNormal = normalize(2.0*normal - 1.0);
+	float doty = dot(lightDir, surfaceNormal);
+	//return float4(surfaceNormal.zzz, 1.0f);
+	return float4(doty, doty, doty, 1.0);
+	//return float4(lightDir, 1.0);
+	/*float3 dotNL = max(dot(lightDir, surfaceNormal), 0.0);
+	return float4(dotNL, 1.0);*/
 }
 
 technique PointLight
@@ -101,13 +126,22 @@ technique PointLight
 	} 
 }
 
-technique Debug
+technique DebugNormals
 { 
 	pass 
 	{ 
 		VertexShader = compile vs_4_0_level_9_1 VS();
 		PixelShader = compile ps_4_0_level_9_1 PSDebugLightNormals();
 	} 
+}
+
+technique DebugDotNL
+{
+	pass
+	{
+		VertexShader = compile vs_4_0_level_9_1 VS();
+		PixelShader = compile ps_4_0_level_9_1 PSDebugDotNL();
+	}
 }
 
 //TECHNIQUE(PointLight, VS, PSPointLight);

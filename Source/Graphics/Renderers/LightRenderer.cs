@@ -57,8 +57,8 @@ namespace Penumbra.Graphics.Renderers
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
             _fxLightNormal = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "LightNormalMapped");
-            //_fxLightNormalPassPoint = _fxLightNormal.Techniques["PointLight"].Passes[0];
-            _fxLightNormalPassPoint = _fxLightNormal.Techniques["Debug"].Passes[0]; // TODO: TEMP
+            _fxLightNormalPassPoint = _fxLightNormal.Techniques["PointLight"].Passes[0];
+            //_fxLightNormalPassPoint = _fxLightNormal.Techniques["DebugDotNL"].Passes[0]; // TODO: TEMP
             _fxLightNormalParamLightTexture = _fxLightNormal.Parameters["LightTexture"];
             _fxLightNormalParamNormalMap = _fxLightNormal.Parameters["NormalMap"];
             _fxLightNormalParamViewProjection = _fxLightNormal.Parameters["ViewProjection"];
@@ -102,8 +102,7 @@ namespace Penumbra.Graphics.Renderers
             _engine.GraphicsDevice.DepthStencilState = light.ShadowType == ShadowType.Occluded
                 ? _dssOccludedLight
                 : DepthStencilState.None;
-            //_engine.GraphicsDevice.BlendState = _bsLight;
-            _engine.GraphicsDevice.BlendState = BlendState.Opaque;
+            _engine.GraphicsDevice.BlendState = _bsLight;
             _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
             _engine.GraphicsDevice.SetVertexArrayObject(_quadVao);
             //_fxLightParamWvp.SetValue(wvp);
@@ -134,9 +133,9 @@ namespace Penumbra.Graphics.Renderers
                 //world.M41 = light.Position.X;
                 //world.M42 = light.Position.Y;
                 //Matrix.Multiply(ref world, ref _engine.Camera.ViewProjection, out wvp);
-                
-                //_engine.GraphicsDevice.SetVertexArrayObject(_circleVao);                
-                //_fxLightParamWvp.SetValue(wvp);                
+
+                //_engine.GraphicsDevice.SetVertexArrayObject(_circleVao);
+                //_fxLightParamWvp.SetValue(wvp);
                 //_fxLightPassDebug.Apply();
                 //_engine.GraphicsDevice.DrawIndexedPrimitives(_circleVao.PrimitiveTopology, 0, 0, _circleVao.VertexCount, 0, _circleVao.PrimitiveCount);
             }
