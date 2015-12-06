@@ -103,7 +103,7 @@ namespace Penumbra
 
             base.Initialize();
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
-            _engine.Initialize(GraphicsDevice, deviceManager);
+            _engine.Initialize(GraphicsDevice, deviceManager, Game.Content);
             _initialized = true;
         }
 

@@ -15,7 +15,7 @@ namespace Penumbra.Graphics.Renderers
         internal EffectPass _fxLightPassSpot;
         internal EffectPass _fxLightPassTextured;
         internal EffectPass _fxLightPassDebug;
-        internal EffectParameter _fxLightParamWorld;
+        internal EffectParameter _fxLightParamWvp;
         internal EffectParameter _fxLightParamTexture;
         internal EffectParameter _fxLightParamViewProjection;
         internal EffectParameter _fxLightParamColor;
@@ -27,7 +27,7 @@ namespace Penumbra.Graphics.Renderers
         internal EffectPass _fxLightNormalPassPoint;
         internal EffectParameter _fxLightNormalParamLightTexture;
         internal EffectParameter _fxLightNormalParamNormalMap;
-        internal EffectParameter _fxLightNormalParamViewProjection;
+        internal EffectParameter _fxLightNormalParamWvp;
         internal EffectParameter _fxLightNormalParamWorld;
         internal EffectParameter _fxLightNormalParamLightPosition;
         internal EffectParameter _fxLightNormalParamLightIntensity;
@@ -49,19 +49,20 @@ namespace Penumbra.Graphics.Renderers
             _fxLightPassTextured = _fxLight.Techniques["TexturedLight"].Passes[0];
             _fxLightPassDebug = _fxLight.Techniques["DebugLight"].Passes[0];
             _fxLightParamViewProjection = _fxLight.Parameters["ViewProjection"];
-            _fxLightParamWorld = _fxLight.Parameters["World"];
+            _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
             _fxLightParamTexture = _fxLight.Parameters["LightTexture"];            
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
             _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
             _fxLightParamConeAngle = _fxLight.Parameters["ConeHalfAngle"];
             _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
 
-            _fxLightNormal = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "LightNormalMapped");
+            //_fxLightNormal = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "LightNormalMapped");            
+            _fxLightNormal = engine.Content.Load<Effect>("LightNormalMapped");
             _fxLightNormalPassPoint = _fxLightNormal.Techniques["PointLight"].Passes[0];
             //_fxLightNormalPassPoint = _fxLightNormal.Techniques["DebugDotNL"].Passes[0]; // TODO: TEMP
             _fxLightNormalParamLightTexture = _fxLightNormal.Parameters["LightTexture"];
             _fxLightNormalParamNormalMap = _fxLightNormal.Parameters["NormalMap"];
-            _fxLightNormalParamViewProjection = _fxLightNormal.Parameters["ViewProjection"];
+            _fxLightNormalParamWvp = _fxLightNormal.Parameters["WorldViewProjection"];
             _fxLightNormalParamWorld = _fxLightNormal.Parameters["World"];
             _fxLightNormalParamLightPosition = _fxLightNormal.Parameters["LightPosition"];
             _fxLightNormalParamLightIntensity = _fxLightNormal.Parameters["LightIntensity"];
@@ -78,13 +79,13 @@ namespace Penumbra.Graphics.Renderers
         {
             if (_engine.NormalMappedLightingEnabled)
             {
-                _fxLightNormalParamViewProjection.SetValue(_engine.Camera.ViewProjection);
-                _fxLightNormalParamNormalMap.SetValue(_engine.Textures.NormalMap);
-                _fxLightNormal.Parameters["Resolution"].SetValue(new Vector2(_engine.GraphicsDevice.Viewport.Width, _engine.GraphicsDevice.Viewport.Height));
+                //_fxLightNormalParamWvp.SetValue(_engine.Camera.ViewProjection);                
+                _fxLightNormalParamNormalMap?.SetValue(_engine.Textures.NormalMap);
+                //_fxLightNormal.Parameters["Resolution"].SetValue(new Vector2(_engine.GraphicsDevice.Viewport.Width, _engine.GraphicsDevice.Viewport.Height));
             }
             else
             {
-                _fxLightParamViewProjection.SetValue(_engine.Camera.ViewProjection);
+                //_fxLightParamViewProjection.SetValue(_engine.Camera.ViewProjection);
             }
         }
 
@@ -96,16 +97,20 @@ namespace Penumbra.Graphics.Renderers
             //    _fxLightNormal.Parameters["SpecularIntensity"].SetValue();
             //}            
 
-            //Matrix wvp;
-            //Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
-            
+            Matrix wvp;
+            Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
+
             _engine.GraphicsDevice.DepthStencilState = light.ShadowType == ShadowType.Occluded
                 ? _dssOccludedLight
                 : DepthStencilState.None;
             _engine.GraphicsDevice.BlendState = _bsLight;
             _engine.GraphicsDevice.RasterizerState = _engine.RasterizerState;
             _engine.GraphicsDevice.SetVertexArrayObject(_quadVao);
-            //_fxLightParamWvp.SetValue(wvp);
+            
+            // TODO: fix
+            _fxLightParamWvp.SetValue(wvp);
+            _fxLightNormalParamWvp.SetValue(wvp);
+
             fxPass.Apply();
             _engine.GraphicsDevice.DrawPrimitives(_quadVao.PrimitiveTopology, 0, _quadVao.PrimitiveCount);
 
@@ -117,11 +122,11 @@ namespace Penumbra.Graphics.Renderers
                 // Draw debug quad.
                 //const float factor = 0.41f;
                 //wvp.M11 = wvp.M11 * factor;
-                //wvp.M22 = wvp.M22 * factor;                
+                //wvp.M22 = wvp.M22 * factor;
 
                 //_fxLightParamWvp.SetValue(wvp);
-                //_fxDebugLightTech.Passes[0].Apply();
-                //_engine.Device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
+                _fxLightPassDebug.Apply();
+                _engine.GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
 
 
 
@@ -154,7 +159,8 @@ namespace Penumbra.Graphics.Renderers
         {            
             // We build the quad a little larger than required in order to be able to also properly clear the alpha
             // for the region. The reason we need larger quad is due to camera rotation.
-            var d = (float) (1 / Math.Sqrt(2));            
+            var d = (float) (1 / Math.Sqrt(2));
+            d = 0;
 
             // Quad.
             VertexPosition2Texture[] quadVertices =

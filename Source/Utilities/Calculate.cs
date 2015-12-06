@@ -53,7 +53,7 @@ namespace Penumbra.Utilities
             transform.M41 = position.X - transformedOrigin.X;
             transform.M42 = position.Y - transformedOrigin.Y;
             transform.M43 = 0.0f;
-            transform.M44 = 1.0f;
+            transform.M44 = 1.0f;            
         }
     }
 }

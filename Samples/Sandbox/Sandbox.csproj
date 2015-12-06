@@ -102,11 +102,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PythonInterpreter.MonoGame, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuakeConsole.PythonInterpreter.MonoGame.WindowsDX.0.1.16-alpha\lib\net4\PythonInterpreter.MonoGame.dll</HintPath>
+      <HintPath>..\..\packages\QuakeConsole.PythonInterpreter.MonoGame.WindowsDX.0.1.17-alpha\lib\net4\PythonInterpreter.MonoGame.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QuakeConsole.MonoGame, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QuakeConsole.MonoGame.WindowsDX.0.1.16-alpha\lib\net4\QuakeConsole.MonoGame.dll</HintPath>
+      <HintPath>..\..\packages\QuakeConsole.MonoGame.WindowsDX.0.1.17-alpha\lib\net4\QuakeConsole.MonoGame.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

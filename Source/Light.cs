@@ -161,13 +161,16 @@ namespace Penumbra
             {                
                 renderer._fxLightNormalParamWorld.SetValue(LocalToWorld);
                 renderer._fxLightNormalParamLightColor.SetValue(_color);
-                renderer._fxLightNormalParamLightIntensity.SetValue(Intensity);
+                //renderer._fxLightNormalParamLightIntensity.SetValue(Intensity);
                 renderer._fxLightNormalParamLightPosition.SetValue(new Vector3(Position, Height));
-                renderer._fxLightNormalParamSpecularIntensity.SetValue(SpecularIntensity);
+                //renderer._fxLightNormalParamSpecularIntensity.SetValue(SpecularIntensity);
+
+
+                Vector2 rollerpauk = Vector2.Transform(Vector2.Zero, LocalToWorld);                
             }
             else
             {
-                renderer._fxLightParamWorld.SetValue(LocalToWorld);
+                //renderer._fxLightParamWorld.SetValue(LocalToWorld);
                 renderer._fxLightParamColor.SetValue(_color);
                 renderer._fxLightParamIntensity.SetValue(Intensity);
             }

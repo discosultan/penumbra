@@ -67,7 +67,7 @@ namespace Penumbra.Graphics.Providers
         private void BuildRenderTargets()
         {
             DestroyRenderTargets();
-
+            
             Lightmap = NewFullScreenRenderTarget();
             LightmapBindings[0] = Lightmap;
             DiffuseMap = NewFullScreenRenderTarget();
@@ -82,7 +82,7 @@ namespace Penumbra.Graphics.Providers
         {
             PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;            
             return new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
-                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.DiscardContents);
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.PlatformContents);
         }
 
         private void DestroyRenderTargets()

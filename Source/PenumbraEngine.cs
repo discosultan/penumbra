@@ -14,6 +14,7 @@ using Penumbra.Graphics;
 using Penumbra.Graphics.Providers;
 using Penumbra.Graphics.Renderers;
 using Penumbra.Utilities;
+using Microsoft.Xna.Framework.Content;
 
 namespace Penumbra
 {
@@ -71,10 +72,13 @@ namespace Penumbra
         public RasterizerState RasterizerState => Camera.InvertedY ? _rasterizerStateCw : _rasterizerStateCcw;
         public RasterizerState RasterizerStateDebug { get; private set; }
 
-        public void Initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphicsDeviceManager)
+        public ContentManager Content { get; private set; }
+
+        public void Initialize(GraphicsDevice graphicsDevice, GraphicsDeviceManager graphicsDeviceManager, ContentManager content)
         {
             GraphicsDevice = graphicsDevice;
             GraphicsDeviceManager = graphicsDeviceManager;
+            Content = content;
 
             BuildGraphicsResources();
 

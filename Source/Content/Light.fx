@@ -8,14 +8,14 @@ cbuffer cbConstant
 	float4 Color;
 };
 
-cbuffer cbPerFrame 
-{
-	float4x4 ViewProjection;
-};
+//cbuffer cbPerFrame 
+//{
+//	float4x4 ViewProjection;
+//};
 
 cbuffer cbPerLight 
 {	
-	float4x4 World;	
+	float4x4 WorldViewProjection;	
 	float3 LightColor;
 	float LightIntensity;
 };
@@ -36,7 +36,7 @@ VertexOut VS(float2 posL : SV_POSITION0, float2 texCoord : TEXCOORD0)
 {
 	VertexOut vout;
 	
-	vout.Position = mul(float4(posL.x, posL.y, 0.0, 1.0), mul(World, ViewProjection));		
+	vout.Position = mul(float4(posL.x, posL.y, 0.0, 1.0), WorldViewProjection);		
 	vout.TexCoord = texCoord;
 
 	return vout;

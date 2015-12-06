@@ -29,10 +29,10 @@ namespace Sandbox.Scenarios
             {
                 Position = new Vector2(-300, 0),
                 Color = Color.White,
-                Scale = new Vector2(2000),
+                Scale = new Vector2(1200),
                 Radius = 20,
                 Height = 100,
-                Intensity = 1                
+                Intensity = 1                                
             };
             penumbra.Lights.Add(_light);
             penumbra.Hulls.Add(Hull.CreateRectangle(scale: new Vector2(50f)));
