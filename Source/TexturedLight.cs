@@ -32,9 +32,9 @@ namespace Penumbra
         {
             base.ApplyEffectParams(renderer, isNormalMapped);
 
-            renderer._fxLightParamTexture.SetValue(Texture);
+            renderer.LightEffect.SetLightTexture(Texture);
 
-            return renderer._fxLightPassTextured;
+            return renderer.LightEffect.TexturedLightPass;
         }
     }
 }

@@ -5,6 +5,7 @@ using Penumbra.Geometry;
 using Penumbra.Graphics.Providers;
 using Penumbra.Graphics.Renderers;
 using Penumbra.Utilities;
+using Penumbra.Graphics.Effects;
 
 namespace Penumbra
 {
@@ -137,7 +138,7 @@ namespace Penumbra
                     Dirty = true;
                 }
             }
-        }                
+        }
         
         /// <summary>
         /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
@@ -145,8 +146,7 @@ namespace Penumbra
         /// </summary>
         public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
 
-        public float Height { get; set; } = 100;
-        public float SpecularIntensity { get; set; } = 1.0f;
+        public float Height { get; set; } = 100;        
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
         internal bool Dirty;
@@ -157,23 +157,24 @@ namespace Penumbra
 
         internal virtual EffectPass ApplyEffectParams(LightRenderer renderer, bool isNormalMapped)
         {
+            LightEffect effect;
             if (isNormalMapped)
-            {                
-                renderer._fxLightNormalParamWorld.SetValue(LocalToWorld);
-                renderer._fxLightNormalParamLightColor.SetValue(_color);
-                //renderer._fxLightNormalParamLightIntensity.SetValue(Intensity);
-                renderer._fxLightNormalParamLightPosition.SetValue(new Vector3(Position, Height));
-                //renderer._fxLightNormalParamSpecularIntensity.SetValue(SpecularIntensity);
+            {
+                NormalMappedLightEffect normalEffect = renderer.NormalMappedLightEffect;
+                effect = normalEffect;
+                var position = new Vector3(Position, Height);
 
-
-                Vector2 rollerpauk = Vector2.Transform(Vector2.Zero, LocalToWorld);                
+                normalEffect.SetWorld(ref LocalToWorld);                
+                normalEffect.SetLightPosition(ref position);
             }
             else
             {
-                //renderer._fxLightParamWorld.SetValue(LocalToWorld);
-                renderer._fxLightParamColor.SetValue(_color);
-                renderer._fxLightParamIntensity.SetValue(Intensity);
+                effect = renderer.LightEffect;
             }
+
+            effect.SetLightColor(ref _color);
+            effect.SetLightIntensity(Intensity);
+
             return null; 
         }
 

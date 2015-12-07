@@ -1,38 +1,18 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Penumbra.Graphics.Effects;
 
 namespace Penumbra.Graphics.Renderers
 {
     internal class LightRenderer : IDisposable
     {        
-        private static readonly Vector4 DebugColor = Color.Green.ToVector4();
+        private static Vector4 DebugColor = Color.Green.ToVector4();
 
         private PenumbraEngine _engine;
 
-        internal Effect _fxLight;
-        internal EffectPass _fxLightPassPoint;
-        internal EffectPass _fxLightPassSpot;
-        internal EffectPass _fxLightPassTextured;
-        internal EffectPass _fxLightPassDebug;
-        internal EffectParameter _fxLightParamWvp;
-        internal EffectParameter _fxLightParamTexture;
-        internal EffectParameter _fxLightParamViewProjection;
-        internal EffectParameter _fxLightParamColor;
-        internal EffectParameter _fxLightParamIntensity;
-        internal EffectParameter _fxLightParamConeDecay;
-        internal EffectParameter _fxLightParamConeAngle;
-
-        internal Effect _fxLightNormal;
-        internal EffectPass _fxLightNormalPassPoint;
-        internal EffectParameter _fxLightNormalParamLightTexture;
-        internal EffectParameter _fxLightNormalParamNormalMap;
-        internal EffectParameter _fxLightNormalParamWvp;
-        internal EffectParameter _fxLightNormalParamWorld;
-        internal EffectParameter _fxLightNormalParamLightPosition;
-        internal EffectParameter _fxLightNormalParamLightIntensity;
-        internal EffectParameter _fxLightNormalParamLightColor;
-        internal EffectParameter _fxLightNormalParamSpecularIntensity;
+        public LightEffect LightEffect { get; } = new LightEffect();
+        public NormalMappedLightEffect NormalMappedLightEffect { get; } = new NormalMappedLightEffect();
 
         private StaticVao _quadVao;
         private StaticVao _circleVao;
@@ -40,37 +20,14 @@ namespace Penumbra.Graphics.Renderers
         private DepthStencilState _dssOccludedLight;
 
         public void Initialize(PenumbraEngine engine)
-        {            
+        {
             _engine = engine;
 
-            _fxLight = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "Light");
-            _fxLightPassPoint = _fxLight.Techniques["PointLight"].Passes[0];
-            _fxLightPassSpot = _fxLight.Techniques["Spotlight"].Passes[0];
-            _fxLightPassTextured = _fxLight.Techniques["TexturedLight"].Passes[0];
-            _fxLightPassDebug = _fxLight.Techniques["DebugLight"].Passes[0];
-            _fxLightParamViewProjection = _fxLight.Parameters["ViewProjection"];
-            _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
-            _fxLightParamTexture = _fxLight.Parameters["LightTexture"];            
-            _fxLightParamColor = _fxLight.Parameters["LightColor"];
-            _fxLightParamIntensity = _fxLight.Parameters["LightIntensity"];
-            _fxLightParamConeAngle = _fxLight.Parameters["ConeHalfAngle"];
-            _fxLightParamConeDecay = _fxLight.Parameters["ConeDecay"];
-
-            //_fxLightNormal = EffectManager.LoadEffectFromEmbeddedResource(_engine.GraphicsDevice, "LightNormalMapped");            
-            _fxLightNormal = engine.Content.Load<Effect>("LightNormalMapped");
-            _fxLightNormalPassPoint = _fxLightNormal.Techniques["PointLight"].Passes[0];
-            //_fxLightNormalPassPoint = _fxLightNormal.Techniques["DebugDotNL"].Passes[0]; // TODO: TEMP
-            _fxLightNormalParamLightTexture = _fxLightNormal.Parameters["LightTexture"];
-            _fxLightNormalParamNormalMap = _fxLightNormal.Parameters["NormalMap"];
-            _fxLightNormalParamWvp = _fxLightNormal.Parameters["WorldViewProjection"];
-            _fxLightNormalParamWorld = _fxLightNormal.Parameters["World"];
-            _fxLightNormalParamLightPosition = _fxLightNormal.Parameters["LightPosition"];
-            _fxLightNormalParamLightIntensity = _fxLightNormal.Parameters["LightIntensity"];
-            _fxLightNormalParamLightColor = _fxLightNormal.Parameters["LightColor"];
-            _fxLightNormalParamSpecularIntensity = _fxLightNormal.Parameters["SpecularIntensity"];
+            LightEffect.Initialize(_engine.GraphicsDevice);
+            NormalMappedLightEffect.Initialize(_engine.GraphicsDevice);
 
             // Constant shader param.
-            _fxLight.Parameters["Color"].SetValue(DebugColor);
+            LightEffect.SetDebugColor(ref DebugColor);
 
             BuildGraphicsResources();
         }        
@@ -79,8 +36,8 @@ namespace Penumbra.Graphics.Renderers
         {
             if (_engine.NormalMappedLightingEnabled)
             {
-                //_fxLightNormalParamWvp.SetValue(_engine.Camera.ViewProjection);                
-                _fxLightNormalParamNormalMap?.SetValue(_engine.Textures.NormalMap);
+                //_fxLightNormalParamWvp.SetValue(_engine.Camera.ViewProjection);                                
+                NormalMappedLightEffect.SetNormalMap(_engine.Textures.NormalMap);
                 //_fxLightNormal.Parameters["Resolution"].SetValue(new Vector2(_engine.GraphicsDevice.Viewport.Width, _engine.GraphicsDevice.Viewport.Height));
             }
             else
@@ -91,11 +48,7 @@ namespace Penumbra.Graphics.Renderers
 
         public void Render(Light light)
         {
-            EffectPass fxPass = light.ApplyEffectParams(this, _engine.NormalMappedLightingEnabled);
-            //if (_engine.NormalMappedLightingEnabled)
-            //{                
-            //    _fxLightNormal.Parameters["SpecularIntensity"].SetValue();
-            //}            
+            EffectPass fxPass = light.ApplyEffectParams(this, _engine.NormalMappedLightingEnabled);        
 
             Matrix wvp;
             Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
@@ -108,8 +61,8 @@ namespace Penumbra.Graphics.Renderers
             _engine.GraphicsDevice.SetVertexArrayObject(_quadVao);
             
             // TODO: fix
-            _fxLightParamWvp.SetValue(wvp);
-            _fxLightNormalParamWvp.SetValue(wvp);
+            LightEffect.SetWorldViewProjection(ref wvp);
+            NormalMappedLightEffect.SetWorldViewProjection(ref wvp);
 
             fxPass.Apply();
             _engine.GraphicsDevice.DrawPrimitives(_quadVao.PrimitiveTopology, 0, _quadVao.PrimitiveCount);
@@ -125,7 +78,7 @@ namespace Penumbra.Graphics.Renderers
                 //wvp.M22 = wvp.M22 * factor;
 
                 //_fxLightParamWvp.SetValue(wvp);
-                _fxLightPassDebug.Apply();
+                LightEffect.DebugLightPass.Apply();
                 _engine.GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleStrip, 0, _quadVao.VertexCount - 2);
 
 
@@ -148,8 +101,8 @@ namespace Penumbra.Graphics.Renderers
 
         public void Dispose()
         {
-            _fxLight?.Dispose();
-            _fxLightNormal?.Dispose();
+            LightEffect.Dispose();
+            NormalMappedLightEffect.Dispose();
             _quadVao?.Dispose();
             _circleVao?.Dispose();
             _bsLight?.Dispose();
@@ -160,7 +113,7 @@ namespace Penumbra.Graphics.Renderers
             // We build the quad a little larger than required in order to be able to also properly clear the alpha
             // for the region. The reason we need larger quad is due to camera rotation.
             var d = (float) (1 / Math.Sqrt(2));
-            d = 0;
+            //d = 0;
 
             // Quad.
             VertexPosition2Texture[] quadVertices =

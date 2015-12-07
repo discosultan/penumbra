@@ -10,8 +10,8 @@ namespace Penumbra
         {
             base.ApplyEffectParams(renderer, isNormalMapped);
             return isNormalMapped 
-                ? renderer._fxLightNormalPassPoint 
-                : renderer._fxLightPassPoint;
+                ? renderer.NormalMappedLightEffect.PointLightPass
+                : renderer.LightEffect.PointLightPass;
         }
     }
 }

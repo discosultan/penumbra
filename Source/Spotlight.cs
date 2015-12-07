@@ -28,10 +28,10 @@ namespace Penumbra
             // MathHelper.Pi - 2 x ArcTan reduced.
             float halfAngle = MathHelper.PiOver2 - (float) Math.Atan(2 * Scale.X / Scale.Y);
 
-            renderer._fxLightParamConeAngle.SetValue(halfAngle);
-            renderer._fxLightParamConeDecay.SetValue(ConeDecay);
+            renderer.LightEffect.SetConeHalfAngle(halfAngle);
+            renderer.LightEffect.SetConeDecay(ConeDecay);
 
-            return renderer._fxLightPassSpot;
+            return renderer.LightEffect.SpotlightPass;
         }
     }
 }

@@ -1,0 +1,31 @@
+Light
+	Enabled
+	CastsShadows
+	ShadowType
+	Color
+	Position
+	Scale
+	Radius
+	Origin?
+	Rotation?
+	Source: 
+		-Point
+		-Spot
+			Rotation?
+			ConeDecay
+		-Texture
+			Rotation?
+			Origin?
+			Texture
+	Attenuation:
+		-Linear
+		-ConstantLinearQuadratic
+			Falloff
+	Shading:
+		-Flat
+		-NormalMapped (requires user to render normal map)
+			Height
+	
+What about:
+	Only texture source allows origin
+	Only spot and texture source allow rotation

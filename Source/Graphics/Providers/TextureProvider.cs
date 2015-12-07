@@ -72,7 +72,7 @@ namespace Penumbra.Graphics.Providers
             LightmapBindings[0] = Lightmap;
             DiffuseMap = NewFullScreenRenderTarget();
             DiffuseMapBindings[0] = DiffuseMap;
-            NormalMap = NewFullScreenRenderTarget(); // TODO: Create only when normal mapped lighting is enabled.
+            NormalMap = NewFullScreenRenderTarget(); // TODO: Lazy load
             NormalMapBindings[0] = NormalMap;
 
             Logger.Write("New textures created.");
@@ -81,8 +81,13 @@ namespace Penumbra.Graphics.Providers
         private RenderTarget2D NewFullScreenRenderTarget()
         {
             PresentationParameters pp = Engine.GraphicsDevice.PresentationParameters;            
-            return new RenderTarget2D(Engine.GraphicsDevice, BackBufferWidth, BackBufferHeight, false,
-                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.PlatformContents);
+            return new RenderTarget2D(
+                Engine.GraphicsDevice, 
+                BackBufferWidth, BackBufferHeight, 
+                false,
+                pp.BackBufferFormat, pp.DepthStencilFormat, 
+                pp.MultiSampleCount, 
+                RenderTargetUsage.PlatformContents);
         }
 
         private void DestroyRenderTargets()

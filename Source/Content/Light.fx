@@ -5,13 +5,8 @@ SamplerState TextureSampler : register(s0);
 
 cbuffer cbConstant 
 {
-	float4 Color;
+	float4 DebugColor;
 };
-
-//cbuffer cbPerFrame 
-//{
-//	float4x4 ViewProjection;
-//};
 
 cbuffer cbPerLight 
 {	
@@ -42,6 +37,19 @@ VertexOut VS(float2 posL : SV_POSITION0, float2 texCoord : TEXCOORD0)
 	return vout;
 }
 
+float CalculateDistanceAttenuation(float magnitude) 
+{
+	// LINEAR
+	return saturate(1.0 - magnitude);
+
+	//return saturate(1.0 - magnitude*magnitude);
+
+	// CONSTANT-LINEAR-QUADRATIC
+	float3 falloff = float3(0.14, 3, 20);
+	//return lerp(0.0, 1.0 / (falloff.x + (falloff.y*magnitude) + (falloff.z*magnitude*magnitude)), step(magnitude, 1.0));
+	//return 1.0 / (falloff.x + (falloff.y*magnitude) + (falloff.z*magnitude*magnitude)) * (1 - magnitude*magnitude*magnitude*magnitude);
+}
+
 float4 GetComputedColor(float alpha)
 {
 	alpha = abs(alpha);
@@ -52,22 +60,23 @@ float4 GetComputedColor(float alpha)
 
 float4 PSPointLight(VertexOut pin) : SV_TARGET
 {	
-	float halfMagnitude = length(pin.TexCoord - float2(0.5, 0.5));
-	float alpha = saturate(1.0 - halfMagnitude * 2.0);
+	float magnitude = min(length(pin.TexCoord - float2(0.5, 0.5)) * 2, 1.0);
+	float alpha = CalculateDistanceAttenuation(magnitude);
 	return GetComputedColor(alpha);
 }
 
 float4 PSSpotLight(VertexOut pin) : SV_TARGET
 {
 	float2 lightVector = (pin.TexCoord - float2(0.0, 0.5));
-	float magnitude = length(lightVector);
+	float magnitude = min(length(lightVector), 1.0);
 	float2 lightDir = lightVector / magnitude;
 	
 	float halfAngle = acos(dot(lightDir, float2(1.0, 0.0)));
 
 	float occlusion = step(halfAngle, ConeHalfAngle);
 
-	float distanceAttenuation = saturate(1.0 - magnitude);
+	//float distanceAttenuation = saturate(1.0 - magnitude);
+	float distanceAttenuation = CalculateDistanceAttenuation(magnitude);
 	float coneAttenuation = 1.0 - pow(halfAngle / ConeHalfAngle, ConeDecay);
 
 	float alpha = distanceAttenuation * coneAttenuation;
@@ -90,7 +99,7 @@ float4 PSTexturedLight(VertexOut pin) : SV_TARGET
 
 float4 PSDebugLight(VertexOut pin) : SV_TARGET
 {
-	return Color;
+	return DebugColor;
 }
 
 TECHNIQUE(PointLight, VS, PSPointLight);

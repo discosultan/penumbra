@@ -23,7 +23,7 @@ cbuffer cbPerLight
 	float4x4 WorldViewProjection;		
 	float4x4 World;
 	float3 LightPosition;
-	//float LightIntensity;
+	float LightIntensity;
 	float3 LightColor;
 	//float SpecularIntensity;
 };
@@ -70,10 +70,12 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 
 	float3 falloff = float3(0.14, 3, 20);
 
-	float magnitude = min(length(pin.TexCoord - float2(0.5, 0.5)) * 2.0, 1.0);
+	float magnitude = length(pin.TexCoord - float2(0.5, 0.5)) * 2.0;
 	//float distanceAttenuation = max(1.0 - magnitude, 0.0);
 
-	float distanceAttenuation = 1.0 / (  falloff.x + ( falloff.y*magnitude) + ( falloff.z*magnitude*magnitude) );
+	//float distanceAttenuation = 1.0 / (  falloff.x + ( falloff.y*magnitude) + ( falloff.z*magnitude*magnitude) );
+	float distanceAttenuation = clamp(1.0 - magnitude*magnitude, 0.0, 1.0);
+	distanceAttenuation *= distanceAttenuation;
 
 	//distanceAttenuation = abs(distanceAttenuation);
 	//float3 intensity = distanceAttenuation;
@@ -95,7 +97,7 @@ float4 PSPointLight(VertexOut pin) : SV_TARGET
 	//float specular = min(pow(saturate(dot(reflectNormal, halfVec)), 10), amount);	
 	//float3 finalLight = attenuation * LightColor * LightIntensity + specular * attenuation * SpecularIntensity;
 
-	float3 intensity = diffuse * distanceAttenuation;
+	float3 intensity = diffuse * LightIntensity * distanceAttenuation;
 
 	return float4(intensity /*+ specular*/, 1.0f);
 }
