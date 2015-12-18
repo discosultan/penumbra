@@ -13,6 +13,7 @@ Penumbra allows users to easily add 2D lighting with shadowing effects to their 
 The following is required to successfully compile the Penumbra MonoGame solution:
 
 - Visual studio 2015+ (due to C# 6 syntax)
+- MonoGame 3.4+
 - [DirectX End-User Runtimes (June 2010)](http://www.microsoft.com/en-us/download/details.aspx?id=8109) (to compile effect shaders)
 
 ### Using Penumbra
