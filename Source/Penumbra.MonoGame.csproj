@@ -101,15 +101,15 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.dx11.mgfxo /Profile:DirectX_11
+    <PreBuildEvent>"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Hull.fx" "$(ProjectDir)Content\Compiled\Hull.dx11.mgfxo" /Profile:DirectX_11
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Light.fx" "$(ProjectDir)Content\Compiled\Light.dx11.mgfxo" /Profile:DirectX_11
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Shadow.fx" "$(ProjectDir)Content\Compiled\Shadow.dx11.mgfxo" /Profile:DirectX_11
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Texture.fx" "$(ProjectDir)Content\Compiled\Texture.dx11.mgfxo" /Profile:DirectX_11
 
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.ogl.mgfxo /Profile:OpenGL
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.ogl.mgfxo /Profile:OpenGL
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.ogl.mgfxo /Profile:OpenGL
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.ogl.mgfxo /Profile:OpenGL</PreBuildEvent>
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Hull.fx" "$(ProjectDir)Content\Compiled\Hull.ogl.mgfxo" /Profile:OpenGL
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Light.fx" "$(ProjectDir)Content\Compiled\Light.ogl.mgfxo" /Profile:OpenGL
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Shadow.fx" "$(ProjectDir)Content\Compiled\Shadow.ogl.mgfxo" /Profile:OpenGL
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Texture.fx" "$(ProjectDir)Content\Compiled\Texture.ogl.mgfxo" /Profile:OpenGL</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
