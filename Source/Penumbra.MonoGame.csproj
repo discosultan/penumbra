@@ -31,10 +31,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <OutputPath>bin\Release\MonoGame\net40\</OutputPath>
-    <DocumentationFile>bin\Release\MonoGame\net40\Penumbra.MonoGame.xml</DocumentationFile>
+    <Optimize>true</Optimize>    
+    <OutputPath>bin\Release\MonoGame\</OutputPath>
+    <DocumentationFile>bin\Release\MonoGame\Penumbra.MonoGame.xml</DocumentationFile>
     <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
