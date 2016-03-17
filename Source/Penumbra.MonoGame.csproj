@@ -31,7 +31,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>    
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release\MonoGame\</OutputPath>
     <DocumentationFile>bin\Release\MonoGame\Penumbra.MonoGame.xml</DocumentationFile>
     <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
@@ -71,7 +71,6 @@
     <Compile Include="Graphics\DynamicVao.cs" />
     <Compile Include="PointLight.cs" />
     <Compile Include="Spotlight.cs" />
-    <Compile Include="Utilities\CallerAttributes.cs" />
     <Compile Include="Utilities\ExtendedObservableCollection.cs" />
     <Compile Include="Utilities\FastList.cs" />
     <Compile Include="Utilities\Logger.cs" />
