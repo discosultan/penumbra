@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Penumbra</RootNamespace>
     <AssemblyName>Penumbra.MonoGame</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <MonoGamePlatform>Windows</MonoGamePlatform>
@@ -32,9 +32,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <OutputPath>bin\Release\MonoGame\net40\</OutputPath>
-    <DocumentationFile>bin\Release\MonoGame\net40\Penumbra.MonoGame.xml</DocumentationFile>
+    <OutputPath>bin\Release\MonoGame\</OutputPath>
+    <DocumentationFile>bin\Release\MonoGame\Penumbra.MonoGame.xml</DocumentationFile>
     <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -42,8 +41,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.4.0.459, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.4.0.459\lib\net40\MonoGame.Framework.dll</HintPath>
+    <None Include="packages.config" />
+    <Reference Include="MonoGame.Framework, Version=3.5.0.1678, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.5.0.1678\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -74,7 +74,6 @@
     <Compile Include="Graphics\DynamicVao.cs" />
     <Compile Include="PointLight.cs" />
     <Compile Include="Spotlight.cs" />
-    <Compile Include="Utilities\CallerAttributes.cs" />
     <Compile Include="Utilities\ExtendedObservableCollection.cs" />
     <Compile Include="Utilities\FastList.cs" />
     <Compile Include="Utilities\Logger.cs" />
@@ -108,17 +107,15 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\LightNormalMapped.fx $(ProjectDir)Content\Compiled\LightNormalMapped.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.dx11.mgfxo /Profile:DirectX_11
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.dx11.mgfxo /Profile:DirectX_11
+    <PreBuildEvent>"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Hull.fx" "$(ProjectDir)Content\Compiled\Hull.dx11.mgfxo" /Profile:DirectX_11
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Light.fx" "$(ProjectDir)Content\Compiled\Light.dx11.mgfxo" /Profile:DirectX_11
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Shadow.fx" "$(ProjectDir)Content\Compiled\Shadow.dx11.mgfxo" /Profile:DirectX_11
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Texture.fx" "$(ProjectDir)Content\Compiled\Texture.dx11.mgfxo" /Profile:DirectX_11
 
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Hull.fx $(ProjectDir)Content\Compiled\Hull.ogl.mgfxo /Profile:OpenGL
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Light.fx $(ProjectDir)Content\Compiled\Light.ogl.mgfxo /Profile:OpenGL
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\LightNormalMapped.fx $(ProjectDir)Content\Compiled\LightNormalMapped.ogl.mgfxo /Profile:OpenGL
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Shadow.fx $(ProjectDir)Content\Compiled\Shadow.ogl.mgfxo /Profile:OpenGL
-$(SolutionDir)Tools\2mgfx $(ProjectDir)Content\Texture.fx $(ProjectDir)Content\Compiled\Texture.ogl.mgfxo /Profile:OpenGL</PreBuildEvent>
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Hull.fx" "$(ProjectDir)Content\Compiled\Hull.ogl.mgfxo" /Profile:OpenGL
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Light.fx" "$(ProjectDir)Content\Compiled\Light.ogl.mgfxo" /Profile:OpenGL
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Shadow.fx" "$(ProjectDir)Content\Compiled\Shadow.ogl.mgfxo" /Profile:OpenGL
+"$(SolutionDir)Tools\2mgfx" "$(ProjectDir)Content\Texture.fx" "$(ProjectDir)Content\Compiled\Texture.ogl.mgfxo" /Profile:OpenGL</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
