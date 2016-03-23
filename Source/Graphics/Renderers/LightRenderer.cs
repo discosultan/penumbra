@@ -94,7 +94,7 @@ namespace Penumbra.Graphics.Renderers
                 _engine.Device.SetVertexArrayObject(_circleVao);                
                 _fxLightParamWvp.SetValue(wvp);                
                 _fxDebugLightTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(_circleVao.PrimitiveTopology, 0, 0, _circleVao.VertexCount, 0, _circleVao.PrimitiveCount);
+                _engine.Device.DrawIndexedPrimitives(_circleVao.PrimitiveTopology, 0, 0, _circleVao.PrimitiveCount);
             }
         }
 

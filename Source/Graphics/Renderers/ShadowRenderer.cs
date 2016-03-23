@@ -85,7 +85,7 @@ namespace Penumbra.Graphics.Renderers
                 _engine.Device.BlendState = _bsShadow;                                                
                 _engine.Device.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.VertexCount, 0, shadowVao.PrimitiveCount);                
+                _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.PrimitiveCount);                
 
                 // Draw shadows borders if debugging.
                 if (_engine.Debug)
@@ -93,7 +93,7 @@ namespace Penumbra.Graphics.Renderers
                     _engine.Device.RasterizerState = _engine.RsDebug;
                     _engine.Device.BlendState = BlendState.Opaque;                                       
                     _fxShadowTechDebug.Passes[0].Apply();                    
-                    _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.VertexCount, 0, shadowVao.PrimitiveCount);                    
+                    _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.PrimitiveCount);                    
                 }
             }
 
@@ -111,7 +111,7 @@ namespace Penumbra.Graphics.Renderers
                 _fxHullParamColor.SetValue(isShadowTypeSolid ? TransparentColor : WhiteColor);
                 _engine.Device.SetVertexArrayObject(hullVao);
                 _fxHullTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(hullVao.PrimitiveTopology, 0, 0, hullVao.VertexCount, 0, hullVao.PrimitiveCount);
+                _engine.Device.DrawIndexedPrimitives(hullVao.PrimitiveTopology, 0, 0, hullVao.PrimitiveCount);
             }
         }
 
