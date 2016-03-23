@@ -1,4 +1,4 @@
-﻿#include "Macros.fxh"
+﻿#include "macros.fxh"
 
 Texture2D DiffuseMap : register(t0);
 Texture2D Lightmap : register(t1);

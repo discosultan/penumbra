@@ -69,7 +69,8 @@ namespace Penumbra
         private RasterizerState _rsCw;
         public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
 
-        public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager)
+        public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager,
+            Effect fxHull, Effect fxLight, Effect fxShadow, Effect fxTexture)
         {
             Device = device;
             DeviceManager = deviceManager;
@@ -81,9 +82,9 @@ namespace Penumbra
             Textures.Load(this);
 
             // Load renderers.
-            LightMapRenderer.Load(this);
-            ShadowRenderer.Load(this);
-            LightRenderer.Load(this);
+            LightMapRenderer.Load(this, fxTexture);
+            ShadowRenderer.Load(this, fxShadow, fxHull);
+            LightRenderer.Load(this, fxLight);
         }
 
         public void PreRender()

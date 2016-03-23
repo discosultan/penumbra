@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace Penumbra
 {
@@ -18,6 +19,7 @@ namespace Penumbra
     public class PenumbraComponent : DrawableGameComponent
     {        
         private readonly PenumbraEngine _engine = new PenumbraEngine();
+        private ContentManager _content;
 
         private bool _initialized;
         private bool _beginDrawCalled;
@@ -91,7 +93,12 @@ namespace Penumbra
 
             base.Initialize();
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
-            _engine.Load(GraphicsDevice, deviceManager);
+            _content = new ResourceContentManager(Game.Services, Resource.ResourceManager);
+            _engine.Load(GraphicsDevice, deviceManager,
+                _content.Load<Effect>("penumbra_hull"),
+                _content.Load<Effect>("penumbra_light"),
+                _content.Load<Effect>("penumbra_shadow"),
+                _content.Load<Effect>("penumbra_texture"));
             _initialized = true;
         }
 
@@ -133,6 +140,7 @@ namespace Penumbra
         protected override void UnloadContent()
         {
             _engine.Dispose();
+            _content?.Dispose();
         }
 
         /// <inheritdoc />

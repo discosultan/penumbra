@@ -1,4 +1,4 @@
-﻿#include "Macros.fxh"
+﻿#include "macros.fxh"
 
 cbuffer cbConstant : register(c0)
 {

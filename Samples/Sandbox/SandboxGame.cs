@@ -81,7 +81,8 @@ namespace Sandbox
                 pp.BackBufferHeight / 2.0f,
                 0.0f, 1.0f);
 
-            _console.LoadContent(Content.Load<SpriteFont>("Font"), _consoleInterpreter);
+            _console.Font = Content.Load<SpriteFont>("Font");
+            _console.Interpreter = _consoleInterpreter;
         }
 
         /// <summary>

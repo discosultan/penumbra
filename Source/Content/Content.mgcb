@@ -1,7 +1,7 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:bin/Windows
+/outputDir:Compiled
 /intermediateDir:obj/Windows
 /platform:Windows
 /config:
@@ -13,26 +13,27 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Hull.fx
+#begin penumbra_hull.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Hull.fx
+/build:penumbra_hull.fx
 
-#begin Texture.fx
+#begin penumbra_light.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Texture.fx
+/build:penumbra_light.fx
 
-#begin Light.fx
+#begin penumbra_shadow.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Light.fx
+/build:penumbra_shadow.fx
 
-#begin Shadow.fx
+#begin penumbra_texture.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:Shadow.fx
+/build:penumbra_texture.fx
+

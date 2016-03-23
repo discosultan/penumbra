@@ -37,11 +37,11 @@ namespace Penumbra.Graphics.Renderers
         private DepthStencilState _dsOccludedShadow;
         private DepthStencilState _dsOccludedHull;
 
-        public void Load(PenumbraEngine engine)
+        public void Load(PenumbraEngine engine, Effect fxShadow, Effect fxHull)
         {            
             _engine = engine;
 
-            _fxShadow = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Shadow");
+            _fxShadow = fxShadow;
             _fxShadowTech = _fxShadow.Techniques["Main"];
             _fxShadowTechDebug = _fxShadow.Techniques["Debug"];
             _fxShadowParamLightPosition = _fxShadow.Parameters["LightPosition"];
@@ -50,7 +50,7 @@ namespace Penumbra.Graphics.Renderers
 
             _fxShadow.Parameters["Color"].SetValue(DebugColor);
 
-            _fxHull = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Hull");
+            _fxHull = fxHull;
             _fxHullTech = _fxHull.Techniques["Main"];
             _fxHullParamVp = _fxHull.Parameters["ViewProjection"];
             _fxHullParamColor = _fxHull.Parameters["Color"];

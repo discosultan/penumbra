@@ -140,7 +140,8 @@ namespace Platformer2D
             diedOverlay = Content.Load<Texture2D>("Overlays/you_died");
 
             Penumbra.Initialize();
-            Console.LoadContent(consoleFont, Interpreter);
+            Console.Font = consoleFont;
+            Console.Interpreter = Interpreter;
             texturedLight = new TexturedLight(Content.Load<Texture2D>("Sprites/Light"))
             {
                 Origin = new Vector2(0.5f, 0.5f)

@@ -13,11 +13,11 @@ namespace Penumbra.Graphics.Renderers
         private EffectParameter _fxTextureParamLightmap;
         private StaticVao _fullscreenQuadVao;
 
-        public void Load(PenumbraEngine engine)
+        public void Load(PenumbraEngine engine, Effect fxTexture)
         {                        
             _engine = engine;
 
-            _fxTexture = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Texture");
+            _fxTexture = fxTexture;
             _fxTextureParamDiffuseMap = _fxTexture.Parameters["DiffuseMap"];
             _fxTextureParamLightmap = _fxTexture.Parameters["Lightmap"];
 

@@ -27,11 +27,11 @@ namespace Penumbra.Graphics.Renderers
         private BlendState _bsLight;
         private DepthStencilState _dssOccludedLight;
 
-        public void Load(PenumbraEngine engine)
+        public void Load(PenumbraEngine engine, Effect fxLight)
         {            
             _engine = engine;
 
-            _fxLight = EffectManager.LoadEffectFromEmbeddedResource(_engine.Device, "Light");
+            _fxLight = fxLight;
             _fxPointLightTech = _fxLight.Techniques["PointLight"];
             _fxSpotLightTech = _fxLight.Techniques["Spotlight"];
             _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];

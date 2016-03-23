@@ -1,4 +1,4 @@
-﻿#include "Macros.fxh"
+﻿#include "macros.fxh"
 
 Texture2D Texture : register(t0);
 SamplerState TextureSampler;
@@ -47,7 +47,7 @@ float4 GetComputedColor(float alpha)
 {
 	alpha = abs(alpha);
 	float3 lightColor = LightColor * alpha;
-	lightColor = pow(lightColor, LightIntensity);
+	lightColor = pow(abs(lightColor), LightIntensity);
 	return float4(lightColor, 1.0);
 }
 
@@ -69,7 +69,7 @@ float4 PSSpotLight(VertexOut pin) : SV_TARGET
 	float occlusion = step(halfAngle, ConeHalfAngle);
 
 	float distanceAttenuation = saturate(1.0 - magnitude);
-	float coneAttenuation = 1.0 - pow(halfAngle / ConeHalfAngle, ConeDecay);
+	float coneAttenuation = 1.0 - pow(abs(halfAngle / ConeHalfAngle), ConeDecay);
 
 	float alpha = distanceAttenuation * coneAttenuation;
 
