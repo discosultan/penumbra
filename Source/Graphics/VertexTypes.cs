@@ -27,7 +27,7 @@ namespace Penumbra.Graphics
         public Vector2 TexCoord;
 
         public VertexPosition2Texture(Vector2 position, Vector2 texCoord)
-        {
+        {            
             Position = position;
             TexCoord = texCoord;            
         }             
