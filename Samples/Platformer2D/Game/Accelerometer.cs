@@ -1,22 +1,19 @@
 #region File Description
-
 //-----------------------------------------------------------------------------
 // Accelerometer.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
-
 #endregion
 
 #region Using Statements
-
 using System;
 using Microsoft.Xna.Framework;
-
+using Microsoft.Xna.Framework.Input;
 #endregion
 
-namespace Platformer2D.Game
+namespace Platformer2D
 {
     /// <summary>
     /// A static encapsulation of accelerometer input to provide games with a polling-based
@@ -25,7 +22,7 @@ namespace Platformer2D.Game
     public static class Accelerometer
     {
 #if WINDOWS_PHONE
-    // the accelerometer sensor on the device
+        // the accelerometer sensor on the device
         private static Microsoft.Devices.Sensors.Accelerometer accelerometer = new Microsoft.Devices.Sensors.Accelerometer();
         
         // we need an object for locking because the ReadingChanged event is fired
@@ -37,10 +34,10 @@ namespace Platformer2D.Game
 #endif
 
         // we want to prevent the Accelerometer from being initialized twice.
-        private static bool isInitialized;
+        private static bool isInitialized = false;
 
         // whether or not the accelerometer is active
-        private static readonly bool isActive = false;
+        private static bool isActive = false;
 
         /// <summary>
         /// Initializes the Accelerometer for the current game. This method can only be called once per game.
@@ -54,7 +51,7 @@ namespace Platformer2D.Game
             }
 
 #if WINDOWS_PHONE
-    // try to start the sensor only on devices, catching the exception if it fails            
+            // try to start the sensor only on devices, catching the exception if it fails            
             if (Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Device)            
             {
                 try
@@ -79,7 +76,7 @@ namespace Platformer2D.Game
             // remember that we are initialized
             isInitialized = true;
         }
-
+        
 #if WINDOWS_PHONE
         private static void sensor_ReadingChanged(object sender, Microsoft.Devices.Sensors.AccelerometerReadingEventArgs e)
         {
@@ -104,10 +101,10 @@ namespace Platformer2D.Game
             }
 
             // create a new value for our state
-            var stateValue = new Vector3();
+            Vector3 stateValue = new Vector3();
 
 #if WINDOWS_PHONE
-    // if the accelerometer is active
+            // if the accelerometer is active
             if (isActive)
             {
                 if (Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Device)
@@ -152,12 +149,12 @@ namespace Platformer2D.Game
         /// <summary>
         /// Gets the accelerometer's current value in G-force.
         /// </summary>
-        public Vector3 Acceleration { get; }
+        public Vector3 Acceleration { get; private set; }
 
         /// <summary>
         /// Gets whether or not the accelerometer is active and running.
         /// </summary>
-        public bool IsActive { get; }
+        public bool IsActive { get; private set; }
 
         /// <summary>
         /// Initializes a new AccelerometerState.

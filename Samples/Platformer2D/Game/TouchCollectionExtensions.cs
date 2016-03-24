@@ -1,17 +1,15 @@
 ﻿#region File Description
-
 //-----------------------------------------------------------------------------
 // TouchCollectionExtensions.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
-
 #endregion
 
 using Microsoft.Xna.Framework.Input.Touch;
 
-namespace Platformer2D.Game
+namespace Platformer2D
 {
     /// <summary>
     /// Provides extension methods for the TouchCollection type.

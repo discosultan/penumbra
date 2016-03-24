@@ -1,23 +1,22 @@
 ﻿#region File Description
-
 //-----------------------------------------------------------------------------
 // Tile.cs
 //
 // Microsoft XNA Community Game Platform
 // Copyright (C) Microsoft Corporation. All rights reserved.
 //-----------------------------------------------------------------------------
-
 #endregion
 
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Platformer2D.Game
+namespace Platformer2D
 {
     /// <summary>
     /// Controls the collision detection and response behavior of a tile.
     /// </summary>
-    public enum TileCollision
+    enum TileCollision
     {
         /// <summary>
         /// A passable tile is one which does not hinder player motion at all.
@@ -35,13 +34,13 @@ namespace Platformer2D.Game
         /// player is above it. A player can jump up through a platform as well as move
         /// past it to the left and right, but can not fall down through the top of it.
         /// </summary>
-        Platform = 2
+        Platform = 2,
     }
 
     /// <summary>
     /// Stores the appearance and collision behavior of a tile.
     /// </summary>
-    public struct Tile
+    struct Tile
     {
         public Texture2D Texture;
         public TileCollision Collision;
