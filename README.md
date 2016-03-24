@@ -68,7 +68,7 @@ Penumbra supports three types of lights: `PointLight`, `Spotlight`, `TexturedLig
 
 While `PointLight` and `Spotlight` are generated on the shader, `TexturedLight` allows for more customization by requiring a custom texture used for lighting.
 
-Lights provide two types of shadowing schemes: `ShadowType.Illuminated`, `ShadowType.Solid`
+Lights provide three types of shadowing schemes: `ShadowType.Illuminated`, `ShadowType.Solid`, `ShadowType.Occluded`
 
 ![Different types of shadowing](https://jvcontent.blob.core.windows.net/images/shadow_types.png)
 
