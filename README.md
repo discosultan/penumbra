@@ -23,7 +23,7 @@ The following is required to successfully compile the Penumbra MonoGame solution
 Install the assembly through NuGet:
 
 ```powershell
-Install-Package Penumbra.MonoGame.WindowsDX -Pre
+Install-Package MonoGame.Penumbra.WindowsDX
 ```
 
 In the game constructor, create the Penumbra component and add to components:
@@ -94,3 +94,14 @@ To add a hull:
 ```cs
 penumbra.Hulls.Add(hull);
 ```
+
+## Assemblies
+
+- **MonoGame.Penumbra**: The core project for the lighting system.
+
+## Samples
+
+- **HelloPenumbra**: Simple sample which sets up bare basics of Penumbra with a single light source and shadow hull.
+- **Platformer2D**: Penumbra lighting applied to [MonoGame Platformer2D samples game](https://github.com/MonoGame/MonoGame.Samples).
+- **Sandbox**: Generic sandbox for testing out various different scenarios.
+- **Common**: Supporting library providing common functionality for samples.
