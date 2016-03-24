@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Penumbra.MonoGame", "Source\Penumbra.MonoGame.csproj", "{B021F95C-38BC-493A-BB92-C3C575E4B50F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Penumbra", "Source\MonoGame.Penumbra.csproj", "{B021F95C-38BC-493A-BB92-C3C575E4B50F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Samples\Sandbox\Sandbox.csproj", "{42F21905-2DA7-44A3-AA3A-B80C74F49D1A}"
 EndProject

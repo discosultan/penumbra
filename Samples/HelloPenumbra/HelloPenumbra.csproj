@@ -56,9 +56,9 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Penumbra.MonoGame.csproj">
+    <ProjectReference Include="..\..\Source\MonoGame.Penumbra.csproj">
       <Project>{b021f95c-38bc-493a-bb92-c3c575e4b50f}</Project>
-      <Name>Penumbra.MonoGame</Name>
+      <Name>MonoGame.Penumbra</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

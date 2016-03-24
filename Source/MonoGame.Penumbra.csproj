@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Penumbra</RootNamespace>
-    <AssemblyName>Penumbra.MonoGame</AssemblyName>
+    <AssemblyName>MonoGame.Penumbra</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\MonoGame\</OutputPath>
-    <DocumentationFile>bin\Debug\MonoGame\Penumbra.MonoGame.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\MonoGame\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;DEBUG;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,7 +33,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\MonoGame\</OutputPath>
-    <DocumentationFile>bin\Release\MonoGame\Penumbra.MonoGame.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\MonoGame\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

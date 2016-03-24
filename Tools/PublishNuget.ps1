@@ -1,8 +1,8 @@
 # Define variables.
-$id = 'Penumbra.MonoGame.WindowsDX'
+$id = 'MonoGame.Penumbra.WindowsDX'
 
-$nuspecSuffix = '.debug.nuspec'
-$nupkgSuffix = '-alpha.nupkg'
+$nuspecSuffix = '.nuspec'
+$nupkgSuffix = '.nupkg'
 
 $versionRegex = '(?<=(' + $id + '" version\="|\<version\>))\d+.\d+.\d+'
 $newVersion = Read-Host 'What is the new version?'

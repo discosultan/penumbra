@@ -126,9 +126,9 @@
     <MonoGameContentReference Include="Content\Platformer2D.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Source\Penumbra.MonoGame.csproj">
+    <ProjectReference Include="..\..\Source\MonoGame.Penumbra.csproj">
       <Project>{b021f95c-38bc-493a-bb92-c3c575e4b50f}</Project>
-      <Name>Penumbra</Name>
+      <Name>MonoGame.Penumbra</Name>
     </ProjectReference>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{581a9c04-4407-4db7-a139-8e6ca64915a9}</Project>
