@@ -95,16 +95,16 @@
       <HintPath>..\..\packages\IronPython.2.7.5\lib\Net40\Microsoft.Scripting.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.5.0.1678, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.5.0.1678\lib\net40\MonoGame.Framework.dll</HintPath>
+    <Reference Include="MonoGame.Framework, Version=3.5.1.1679, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MonoGame.QuakeConsole, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MonoGame.QuakeConsole.WindowsDX.1.0.1\lib\net45\MonoGame.QuakeConsole.dll</HintPath>
+      <HintPath>..\..\packages\MonoGame.QuakeConsole.WindowsDX.1.1.0\lib\net45\MonoGame.QuakeConsole.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MonoGame.QuakeConsole.PythonInterpreter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\MonoGame.QuakeConsole.PythonInterpreter.WindowsDX.1.0.1\lib\net45\MonoGame.QuakeConsole.PythonInterpreter.dll</HintPath>
+      <HintPath>..\..\packages\MonoGame.QuakeConsole.PythonInterpreter.WindowsDX.1.1.0\lib\net45\MonoGame.QuakeConsole.PythonInterpreter.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
