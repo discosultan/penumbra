@@ -8,7 +8,11 @@ using Penumbra;
 namespace Common
 {
     public class PenumbraControllerComponent : DrawableGameComponent
-    {        
+    {
+        public const Keys EnabledKey = Keys.T;
+        public const Keys ShadowTypeKey = Keys.Y;
+        public const Keys DebugKey = Keys.U;
+
         public event EventHandler ShadowTypeChanged;
 
         private SpriteBatch _spriteBatch;
@@ -32,11 +36,7 @@ namespace Common
             };
         }
 
-        public bool InputEnabled { get; set; } = true;
-
-        public Keys EnabledKey { get; set; } = Keys.T;
-        public Keys ShadowTypeKey { get; set; } = Keys.Y;
-        public Keys DebugKey { get; set; } = Keys.U;
+        public bool InputEnabled { get; set; } = true;        
 
         protected override void LoadContent()
         {

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Penumbra;
-using QuakeConsole;
 
 namespace Sandbox
 {
@@ -21,8 +20,6 @@ namespace Sandbox
         private readonly PenumbraControllerComponent _penumbraController;
         private readonly PenumbraComponent _penumbra;
         private readonly CameraMovementComponent _camera;
-        private readonly ConsoleComponent _console;
-        private readonly PythonInterpreter _consoleInterpreter = new PythonInterpreter();
 
         private KeyboardState _currentKeyState;
         private KeyboardState _previousKeyState;
@@ -43,7 +40,7 @@ namespace Sandbox
             Components.Add(_penumbra);
             _penumbraController = new PenumbraControllerComponent(this, _penumbra);
             Components.Add(_penumbraController);
-            Scenarios = new ScenariosComponent(this, _penumbra, _penumbraController, _consoleInterpreter);
+            Scenarios = new ScenariosComponent(this, _penumbra, _penumbraController);
             Components.Add(Scenarios);
             var ui = new UIComponent(this, _penumbraController)
             {
@@ -52,14 +49,7 @@ namespace Sandbox
             Components.Add(ui);
             _camera = new CameraMovementComponent(this);
             Components.Add(_camera);
-            Components.Add(new FpsGarbageComponent(this));
-            _console = new ConsoleComponent(this);
-            _console.ActionMappings.Remove(ConsoleAction.Tab);
-            _console.ActionMappings.Remove(ConsoleAction.RemoveTab);
-            _console.ActionMappings.Add(Keys.Tab, ConsoleAction.AutocompleteForward);
-            _console.ActionMappings.Add(Keys.LeftShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
-            _console.ActionMappings.Add(Keys.RightShift, Keys.Tab, ConsoleAction.AutocompleteBackward);
-            Components.Add(_console);
+            Components.Add(new FpsGarbageComponent(this));            
 
             // There's a bug when trying to change resolution during window resize.
             // https://github.com/mono/MonoGame/issues/3572
@@ -80,9 +70,6 @@ namespace Sandbox
                 -pp.BackBufferHeight / 2.0f,
                 pp.BackBufferHeight / 2.0f,
                 0.0f, 1.0f);
-
-            _console.Font = Content.Load<SpriteFont>("Font");
-            _console.Interpreter = _consoleInterpreter;
         }
 
         /// <summary>
@@ -106,22 +93,14 @@ namespace Sandbox
 
             _currentKeyState = Keyboard.GetState();
 
-            _penumbraController.InputEnabled = !_console.IsAcceptingInput;
-            _camera.InputEnabled = !_console.IsAcceptingInput;
-            if (!_console.IsAcceptingInput)
-            {
-                if (IsKeyPressed(PauseKey))
-                    Scenarios.Enabled = !Scenarios.Enabled;
+            if (IsKeyPressed(PauseKey))
+                Scenarios.Enabled = !Scenarios.Enabled;
 
-                if (IsKeyPressed(NextScenarioKey))
-                    Scenarios.NextScenario();
+            if (IsKeyPressed(NextScenarioKey))
+                Scenarios.NextScenario();
 
-                if (IsKeyPressed(PreviousScenarioKey))
-                    Scenarios.PreviousScenario();
-            }
-
-            if (IsKeyPressed(Keys.OemTilde))
-                _console.ToggleOpenClose();
+            if (IsKeyPressed(PreviousScenarioKey))
+                Scenarios.PreviousScenario();
 
             _previousKeyState = _currentKeyState;
 
@@ -144,9 +123,6 @@ namespace Sandbox
             base.Draw(gameTime);
         }
 
-        private bool IsKeyPressed(Keys key)
-        {
-            return !_previousKeyState.IsKeyDown(key) && _currentKeyState.IsKeyDown(key);
-        }
+        private bool IsKeyPressed(Keys key) => !_previousKeyState.IsKeyDown(key) && _currentKeyState.IsKeyDown(key);
     }
 }
