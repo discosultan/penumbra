@@ -4,14 +4,9 @@ using Polygon = System.Collections.Generic.IList<Microsoft.Xna.Framework.Vector2
 namespace Penumbra.Geometry
 {
     internal static class PolygonExtensions
-    {
-        /// <summary>
-        /// Assuming the polygon is simple; determines whether the polygon is convex.
-        /// NOTE: It will also return false if the input contains colinear edges.
-        /// </summary>
-        /// <returns>
-        /// 	<c>true</c> if it is convex; otherwise, <c>false</c>.
-        /// </returns>
+    {        
+        // Assuming the polygon is simple; determines whether the polygon is convex.
+        // NOTE: It will also return false if the input contains colinear edges.                
         public static bool IsConvex(this Polygon polygon)
         {
             // Ensure the polygon is convex and the interior

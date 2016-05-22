@@ -11,7 +11,7 @@ namespace Penumbra
         /// Constructs a new instance of <see cref="TexturedLight"/>.
         /// </summary>
         /// <param name="texture">
-        /// Texture used to sample to determined light strength at the sampled point. 
+        /// Texture used to determine light strength at the sampled point. 
         /// Pass NULL to set texture later.
         /// </param>
         public TexturedLight(Texture2D texture = null)

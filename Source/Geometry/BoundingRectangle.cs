@@ -2,9 +2,7 @@
 
 namespace Penumbra.Geometry
 {
-    /// <summary>
-    /// An axis aligned bounding rectangle.
-    /// </summary>
+    // An axis aligned bounding rectangle.    
     internal struct BoundingRectangle
     {
         public Vector2 Min;

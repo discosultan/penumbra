@@ -12,10 +12,7 @@ namespace Penumbra.Utilities
         // Fields
         private const int DefaultCapacity = 4;
         private static readonly T[] EmptyArray = new T[0];
-
-        /// <summary>
-        /// Gets the items.
-        /// </summary>
+        
         public T[] Items { get; private set; }
 
         public static implicit operator T[](FastList<T> collection) => collection.Items;        
@@ -152,11 +149,7 @@ namespace Penumbra.Utilities
         bool ICollection<T>.IsReadOnly => false;
 
         #endregion
-
-        /// <summary>
-        /// Clears this list with a fast-clear option.
-        /// </summary>
-        /// <param name="fastClear">if set to <c>true</c> this method only resets the count elements but doesn't clear items referenced already stored in the list.</param>
+        
         public void Clear(bool fastClear)
         {
             if (!fastClear && Count > 0)

@@ -5,12 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 
 namespace Penumbra.Utilities
-{
-    /// <remarks>
-    /// Adds an AddRange functionality to <see cref="ObservableCollection{T}"/>. We want this so that we don't get
-    /// collection changed events raised after adding each item from a sequence.
-    /// Ref: http://blogs.msdn.com/b/nathannesbit/archive/2009/04/20/addrange-and-observablecollection.aspx
-    /// </remarks>    
+{    
+    // Adds an AddRange functionality to <see cref="ObservableCollection{T}"/>. We want this so that we don't get
+    // collection changed events raised after adding each item from a sequence.
+    // Ref: http://blogs.msdn.com/b/nathannesbit/archive/2009/04/20/addrange-and-observablecollection.aspx    
     internal class ExtendedObservableCollection<T> : ObservableCollection<T>
     {
         public void AddRange(IEnumerable<T> items)

@@ -40,10 +40,8 @@ namespace Penumbra.Graphics.Providers
 
             _loaded = true;
         }
-
-        /// <summary>
-        /// Calculates a screen space rectangle based on world space bounds.
-        /// </summary>        
+        
+        // Calculates a screen space rectangle based on world space bounds.        
         public void GetScissorRectangle(Light light, out BoundingRectangle scissor)
         {
             Matrix transform;
