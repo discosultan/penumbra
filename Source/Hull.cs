@@ -252,9 +252,14 @@ namespace Penumbra
         }
 
         /// <summary>
-        /// Creates a square hull with sides of length one and origin at its center (0.5, 0.5).
+        /// Factory method for creating a rectangular <see cref="Hull"/> with points defined so that 
+        /// min vertex is at (0.0, 0.0) and max vertex is at (1.0, 1.0).
         /// </summary>
-        /// <returns>Square hull with sides of length one and origin at its center (0.5, 0.5)</returns>
+        /// <param name="position">Optional initial position. Default is (0.0, 0.0).</param>
+        /// <param name="scale">Optional initial scale. Default is (1.0, 1.0).</param>
+        /// <param name="rotation">Optional initial rotation in radians. Default is 0.0.</param>
+        /// <param name="origin">Optional initial origin. Default is (0.5, 0.5).</param>
+        /// <returns>A rectangular <see cref="Hull"/>.</returns>
         public static Hull CreateRectangle(Vector2? position = null, Vector2? scale = null, float rotation = 0.0f, Vector2? origin = null) => 
             new Hull(new Vector2(1.0f), new Vector2(0.0f, 1.0f), new Vector2(0.0f), new Vector2(1.0f, 0.0f))
             {
