@@ -27,9 +27,10 @@ namespace Penumbra
         /// </summary>
         /// <param name="points">
         /// Points of the hull polygon. In order for the hull to be valid, the points must form:
-        /// 1. A polygon with atleast 3 points.
-        /// 2. A simple polygon (no two edges intersect with each other).
-        /// Points can be defined in either clockwise or counter-clockwise order.
+        /// <list type="number">
+        /// <item><description>A polygon with at least 3 points.</description></item>
+        /// <item><description>A simple polygon (no two edges intersect with each other).</description></item>
+        /// </list>        
         /// </param>
         public Hull(params Vector2[] points) : this((IEnumerable<Vector2>)points)
         { }
@@ -39,10 +40,11 @@ namespace Penumbra
         /// </summary>
         /// <param name="points">
         /// Points of the hull polygon. In order for the hull to be valid, the points must form:
-        /// 1. A polygon with atleast 3 points.
-        /// 2. A simple polygon (no two edges intersect with each other).
-        /// Points can be defined in either clockwise or counter-clockwise order.
-        /// </param>        
+        /// <list type="number">
+        /// <item><description>A polygon with at least 3 points.</description></item>
+        /// <item><description>A simple polygon (no two edges intersect with each other).</description></item>
+        /// </list>        
+        /// </param>      
         public Hull(IEnumerable<Vector2> points = null)            
         {
             if (points != null)
@@ -70,8 +72,10 @@ namespace Penumbra
 
         /// <summary>
         /// Points of the hull polygon. In order for the hull to be valid, the points must form:
-        /// 1. A polygon with atleast 3 points.
-        /// 2. A simple polygon (no two edges intersect with each other).
+        /// <list type="number">
+        /// <item><description>A polygon with at least 3 points.</description></item>
+        /// <item><description>A simple polygon (no two edges intersect with each other).</description></item>
+        /// </list>
         /// Points can be defined in either clockwise or counter-clockwise order.
         /// </summary>
         public IList<Vector2> Points => _rawLocalPoints;
