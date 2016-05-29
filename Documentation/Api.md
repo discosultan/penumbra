@@ -3,16 +3,16 @@
 <table>
 <tbody>
 <tr>
-<td>[Hull](#hull)</td>
-<td>[PointLight](#pointlight)</td>
+<td><a href="#hull">Hull</a></td>
+<td><a href="#pointlight">PointLight</a></td>
 </tr>
 <tr>
-<td>[Light (abstract)](#light)</td>
-<td>[Spotlight](#spotlight)</td>
+<td><a href="#light">Light (abstract)</a></td>
+<td><a href="#spotlight">Spotlight</a></td>
 </tr>
 <tr>
-<td>[PenumbraComponent](#penumbracomponent)</td>
-<td>[TexturedLight](#texturedlight)</td>
+<td><a href="#penumbracomponent">PenumbraComponent</a></td>
+<td><a href="#texturedlight">TexturedLight</a></td>
 </tr>
 </tbody>
 </table>
