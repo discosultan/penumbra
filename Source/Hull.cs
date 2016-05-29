@@ -11,8 +11,8 @@ using Indices = Penumbra.Utilities.FastList<int>;
 namespace Penumbra
 {
     /// <summary>
-    /// Represents a shadow hull in the scene. A simple convex or concave polygon impassable by light
-    /// from which shadows are cast.
+    /// A hull is an object from which shadows are cast. 
+    /// It is a simple convex or concave polygon impassable by light rays.
     /// </summary>
     public class Hull
     {                                                        
@@ -81,7 +81,8 @@ namespace Penumbra
         public IList<Vector2> Points => _rawLocalPoints;
 
         /// <summary>
-        /// Gets or sets if the hull is enabled and participates in shadow casting.
+        /// Gets or sets if the hull is enabled and participates in shadow casting. 
+        /// Shadows are only cast from enabled hulls.
         /// </summary>
         public bool Enabled { get; set; } = true;
 
@@ -110,7 +111,7 @@ namespace Penumbra
         
         private Vector2 _origin;
         /// <summary>
-        /// Gets or sets the origin ([0;0] point) of the hull's local space.
+        /// Gets or sets the origin ((0, 0) point) of the hull's local space.
         /// </summary>
         public Vector2 Origin
         {
@@ -144,7 +145,7 @@ namespace Penumbra
         
         private Vector2 _scale = Vector2.One;
         /// <summary>
-        /// Gets or sets the scale along X and Y axes.
+        /// Gets or sets the scale (width and height) along X and Y axes.
         /// </summary>
         public Vector2 Scale
         {

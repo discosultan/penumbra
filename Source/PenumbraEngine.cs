@@ -93,7 +93,7 @@ namespace Penumbra
             Device.GetRenderTargets(Textures.GetOriginalRenderTargetBindingsForQuery());
 
             // Switch render target to a diffuse map. This is where users will render content to be lit.
-            Device.SetRenderTargets(Textures.DiffuseMapBindings);            
+            Device.SetRenderTargets(Textures.DiffuseMapBindings);
         }
         
         public void Render()
@@ -152,7 +152,7 @@ namespace Penumbra
 
             // Blend original scene and lightmap and present to backbuffer.
             LightMapRenderer.Present();
-
+             
             // Clear hulls dirty flag.
             Hulls.Dirty = false;
         }

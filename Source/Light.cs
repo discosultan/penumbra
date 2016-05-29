@@ -9,8 +9,12 @@ using Penumbra.Utilities;
 namespace Penumbra
 {
     /// <summary>
-    /// A concept of light source casting shadows from shadow <see cref="Hull"/>s.
+    /// A light is an object which lights the world and casts shadows from <see cref="Hull"/>s.
     /// </summary>
+    /// <remarks>
+    /// It is an abstract class - one of the three concrete implementations should be used instead: 
+    /// <see cref="PointLight" />, <see cref="Spotlight" />, <see cref="TexturedLight" />.
+    /// </remarks>
     public class Light
     {
         private const float Epsilon = 1e-5f;
@@ -47,11 +51,25 @@ namespace Penumbra
 
         private Vector2 _origin = new Vector2(0.5f);
         /// <summary>
-        /// Gets or sets the origin (anchor) of the light. This is used for both positioning and
-        /// rotating. Normalized to the range [0..1].        
+        /// Gets or sets the origin (anchor) of the light. It is used for both positioning and
+        /// rotating. Normalized to the range [0..1].
         /// </summary>
         /// <remarks>
-        /// For example, origin (0.5, 0.5) corresponds to the center of the light.
+        /// <para>
+        /// Each light is essentially a quad. Origin is the anchor point which marks the (0, 0) point on that quad (in local space).
+        /// Depending if you are operating in SpriteBatch's screen space (y-axis runs from top to bottom) origin (0, 0) 
+        /// represents the light quad's top left corner while (1, 1) represents the bottom right corner. The reason it's normalized to [0..1] 
+        /// is so that if you change the scale of the light, you wouldn't need to change the origin: an origin (0.5, 0.5) would still mark 
+        /// the center of the light.         
+        /// </para>
+        /// <para>
+        /// When it comes to the setter, there is no automatic normalization being done: it is expected to be set in its normalized form.
+        /// The reason values outside [0..1] range are allowed is that it might be desirable for some weird rotation scenarios, 
+        /// though such usage should be rather uncommon.
+        /// </para>
+        /// <para>
+        /// Default value is usually sufficient for <see cref="PointLight"/> and <see cref="Spotlight"/>.
+        /// </para>        
         /// </remarks>
         public Vector2 Origin
         {
@@ -85,8 +103,14 @@ namespace Penumbra
 
         private Vector2 _scale = new Vector2(100.0f);
         /// <summary>
-        /// Gets or sets the scale (width and height) of the light.
+        /// Gets or sets the scale (width and height) along X and Y axes.
         /// </summary>
+        /// <remarks>
+        /// Not to be confused with <see cref="Radius"/>, scale determines the attenuation
+        /// of the light or how far the light rays reach (range of the light), while radius
+        /// determines the radius of the light source (the area where light is emitted).
+        /// <see cref="Radius"/> for more info.
+        /// </remarks>
         public Vector2 Scale
         {
             get { return _scale; }
@@ -103,7 +127,8 @@ namespace Penumbra
         private Color _nonPremultipliedColor = Color.White;
         private Vector3 _color = Vector3.One;
         /// <summary>
-        /// Gets or sets the color emitted by the light. Color is in non-premultiplied format.
+        /// Gets or sets the color of the light. Color is in non-premultiplied format.
+        /// Default is white.
         /// </summary>
         public Color Color
         {
@@ -118,6 +143,7 @@ namespace Penumbra
         private float _intensity = 1.0f;
         /// <summary>
         /// Gets or sets the intensity of the color applied to the final scene.
+        /// Color will be raised to the power of intensity.
         /// </summary>        
         public float Intensity
         {
@@ -132,9 +158,15 @@ namespace Penumbra
 
         private float _radius = 20.0f;
         /// <summary>
-        /// Gets or sets the radius of the light source (the area emitting light). 
-        /// This determines the shape of the cast shadow umbra and penumbra regions.
+        /// Gets or sets the radius of the light source (the area where light is emitted). 
+        /// This determines the shape of the umbra and penumbra regions for cast shadows.
         /// </summary>
+        /// <remarks>
+        /// Not to be confused with <see cref="Scale"/>, while radius is only used to control
+        /// the softness of the shadow being cast and should usually be kept at a small value,
+        /// scale is used to determine how far the light rays reach (range of the light).
+        /// <see cref="Scale"/> for more info.
+        /// </remarks>
         public float Radius
         {
             get { return _radius; }

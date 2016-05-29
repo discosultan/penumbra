@@ -3,7 +3,9 @@ using Penumbra.Graphics.Renderers;
 
 namespace Penumbra
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// A <see cref="Light"/> which equally lights the surroundings in all directions.
+    /// </summary>
     public class PointLight : Light
     {
         internal sealed override EffectTechnique ApplyEffectParams(LightRenderer renderer)

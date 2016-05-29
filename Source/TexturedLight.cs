@@ -4,7 +4,10 @@ using Penumbra.Graphics.Renderers;
 
 namespace Penumbra
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// A <see cref="Light"/> which allows its shape to be determined by a
+    /// custom <see cref="Texture2D"/>.
+    /// </summary>
     public class TexturedLight : Light
     {
         /// <summary>

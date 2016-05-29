@@ -5,7 +5,13 @@ using Penumbra.Graphics.Renderers;
 
 namespace Penumbra
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// A <see cref="Light"/> emitting light only in a single direction (similar to flashlight).
+    /// </summary>
+    /// <remarks>
+    /// Default direction is to the right. Use <see cref="Light.Rotation"/> to control
+    /// in which direction the spotlight is aimed at.
+    /// </remarks>
     public class Spotlight : Light
     {
         /// <summary>
@@ -18,6 +24,7 @@ namespace Penumbra
 
         /// <summary>
         /// Gets or sets the rate of cone attenuation to the sides.
+        /// A higher value means softer edges. Default is 1.5.
         /// </summary>
         public float ConeDecay { get; set; } = 1.5f;
 
