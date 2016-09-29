@@ -29,8 +29,8 @@ UpdateVersionInFile (GetNuspecFilename $id) $versionRegex $newVersion
 
 # Create nuget packages with symbol packages.
 Write-Host Creating packages
-nuget pack (GetNuspecFilename $id) -symbols
+.\nuget pack (GetNuspecFilename $id) -symbols
 
 # Publish nuget packages to nuget.org and symbol packages to symbolsource.org
 Write-Host Publishing packages
-nuget push (GetNupkgFilename $id)
+.\nuget push (GetNupkgFilename $id)
