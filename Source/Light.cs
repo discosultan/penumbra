@@ -15,7 +15,7 @@ namespace Penumbra
     /// It is an abstract class - one of the three concrete implementations should be used instead: 
     /// <see cref="PointLight" />, <see cref="Spotlight" />, <see cref="TexturedLight" />.
     /// </remarks>
-    public class Light
+    public abstract class Light
     {
         private const float Epsilon = 1e-5f;
 
