@@ -94,7 +94,7 @@ namespace Penumbra
             base.Initialize();
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
             _content = new ResourceContentManager(Game.Services, Resource.ResourceManager);
-            _engine.Load(GraphicsDevice, deviceManager,
+            _engine.Load(GraphicsDevice, deviceManager, Game.Window,
                 _content.Load<Effect>("penumbra_hull"),
                 _content.Load<Effect>("penumbra_light"),
                 _content.Load<Effect>("penumbra_shadow"),
@@ -111,7 +111,7 @@ namespace Penumbra
             {
                 if (!_initialized)
                     throw new InvalidOperationException(
-                        $"{nameof(PenumbraComponent)} is not initialized. Make sure to call {nameof(PenumbraComponent.Initialize)} when setting up a game.");
+                        $"{nameof(PenumbraComponent)} is not initialized. Make sure to call {nameof(Initialize)} when setting up a game.");
 
                 _engine.PreRender();
                 _beginDrawCalled = true;
@@ -129,7 +129,7 @@ namespace Penumbra
             {
                 if (!_beginDrawCalled)
                     throw new InvalidOperationException(
-                        $"{nameof(PenumbraComponent.BeginDraw)} must be called before rendering a scene to be lit and calling {nameof(PenumbraComponent.Draw)}.");
+                        $"{nameof(BeginDraw)} must be called before rendering a scene to be lit and calling {nameof(Draw)}.");
 
                 _engine.Render();
                 _beginDrawCalled = false;

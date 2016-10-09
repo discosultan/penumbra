@@ -64,16 +64,18 @@ namespace Penumbra
         public LightMapRenderer LightMapRenderer { get; } = new LightMapRenderer();
         public GraphicsDevice Device { get; private set; }
         public GraphicsDeviceManager DeviceManager { get; private set; }
+        public GameWindow Window { get; private set; }
         public RasterizerState RsDebug { get; private set;}
         private RasterizerState _rsCcw;
         private RasterizerState _rsCw;
         public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
 
-        public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager,
+        public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, GameWindow window,
             Effect fxHull, Effect fxLight, Effect fxShadow, Effect fxTexture)
         {
             Device = device;
             DeviceManager = deviceManager;
+            Window = window;
 
             BuildGraphicsResources();
 

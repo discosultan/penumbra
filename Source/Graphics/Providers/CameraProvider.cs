@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
 using Penumbra.Utilities;
 
@@ -52,7 +51,7 @@ namespace Penumbra.Graphics.Providers
 
         protected override void OnSizeChanged()
         {
-            Logger.Write($"Screen size changed to {BackBufferWidth}x{BackBufferHeight}.");
+            Logger.Write($"Screen size changed to {ViewportWidth}x{ViewportHeight}.");
             CalculateSpriteBatchTransform();
             CalculateClipToScreen();
             CalculateViewProjectionAndBounds();                        
@@ -60,19 +59,17 @@ namespace Penumbra.Graphics.Providers
 
         private void CalculateSpriteBatchTransform()
         {
-            PresentationParameters pp = Engine.Device.PresentationParameters;
             Matrix.CreateOrthographicOffCenter(
                 0,
-                pp.BackBufferWidth,
-                pp.BackBufferHeight,
+                ViewportWidth,
+                ViewportHeight,
                 0,
                 0.0f, 1.0f, out _spriteBatchTransform);
         }
 
         private void CalculateClipToScreen()
         {
-            PresentationParameters pp = Engine.Device.PresentationParameters;
-            _clipToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, pp.BackBufferWidth, pp.BackBufferHeight, 0, 0, 1));            
+            _clipToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, ViewportWidth, ViewportHeight, 0, 0, 1));            
         }
 
         private void CalculateViewProjectionAndBounds()
