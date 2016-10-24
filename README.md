@@ -2,7 +2,9 @@
 
 Penumbra allows users to easily add 2D lighting with shadowing effects to their games.
 
-![Platformer2D sample](https://jvcontent.blob.core.windows.net/images/screen_09.jpg)
+> Note that this project is no longer in development. I do try to fix any bugs though!
+
+![Platformer2D sample](Documentation/Platformer2D.jpg)
 
 - https://www.youtube.com/watch?v=L9w9mEAb9gk&feature=youtu.be
 
@@ -64,13 +66,17 @@ penumbra.SpriteBatchTransformEnabled = false;
 
 Penumbra supports three types of lights: `PointLight`, `Spotlight`, `TexturedLight`
 
-![Different types of light](https://jvcontent.blob.core.windows.net/images/light_types.png)
+![PointLight](Documentation/PointLight.png)
+![Spotlight](Documentation/Spotlight.png)
+![TexturedLight](Documentation/TexturedLight.png)
 
 While `PointLight` and `Spotlight` are generated on the shader, `TexturedLight` allows for more customization by requiring a custom texture used for lighting.
 
-Lights provide three types of shadowing schemes: `ShadowType.Illuminated`, `ShadowType.Solid`, `ShadowType.Occluded`
+Lights provide three types of shadowing schemes: `ShadowType.Solid`, `ShadowType.Occluded`, `ShadowType.Illuminated`
 
-![Different types of shadowing](https://jvcontent.blob.core.windows.net/images/shadow_types.png)
+![Solid](Documentation/Solid.png)
+![Occluded](Documentation/Occluded.png)
+![Illuminated](Documentation/Illuminated.png)
 
 To add a light:
 
