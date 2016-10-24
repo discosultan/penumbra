@@ -20,8 +20,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\MonoGame\</OutputPath>
-    <DocumentationFile>bin\Debug\MonoGame\MonoGame.Penumbra.xml</DocumentationFile>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>bin\Debug\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;DEBUG;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,8 +32,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\MonoGame\</OutputPath>
-    <DocumentationFile>bin\Release\MonoGame\MonoGame.Penumbra.xml</DocumentationFile>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>bin\Release\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
