@@ -69,10 +69,10 @@ namespace Penumbra.Graphics.Providers
             PresentationParameters pp = Engine.Device.PresentationParameters;
             
             Lightmap = new RenderTarget2D(Engine.Device, ViewportWidth, ViewportHeight, false,
-                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.PlatformContents);
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, pp.RenderTargetUsage);
             LightmapBindings[0] = Lightmap;
             DiffuseMap = new RenderTarget2D(Engine.Device, ViewportWidth, ViewportHeight, false,
-                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, RenderTargetUsage.PlatformContents);
+                pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, pp.RenderTargetUsage);
             DiffuseMapBindings[0] = DiffuseMap;
 
             Logger.Write("New lightmap textures created");
