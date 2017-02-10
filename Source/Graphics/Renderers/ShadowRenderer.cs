@@ -152,9 +152,14 @@ namespace Penumbra.Graphics.Renderers
             for (int i = 0; i < hullCount; i++)
             {
                 Hull hull = _engine.Hulls[i];
-                if (!hull.Enabled || !hull.Valid || !light.Intersects(hull))
+                if (!hull.Enabled ||
+                    !hull.Valid ||
+                    light.IgnoredHulls.Contains(hull) ||
+                    !light.Intersects(hull))
+                {
                     continue;
-                
+                }
+
                 Polygon points = hull.WorldPoints;                
 
                 Vector2 prevPoint = points[points.Count - 1];                

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Penumbra.Geometry;
@@ -185,7 +186,12 @@ namespace Penumbra
         /// Gets or sets how the shadow <see cref="Hull"/>s are shadowed. See
         /// <see cref="ShadowType"/> for more information.
         /// </summary>
-        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;               
+        public ShadowType ShadowType { get; set; } = ShadowType.Illuminated;
+
+        /// <summary>
+        /// Gets a list of hulls not participating in the light's shadow casting process.
+        /// </summary>
+        public List<Hull> IgnoredHulls { get; } = new List<Hull>();
 
         // Cleared by the engine. Used by other systems to know if the light's world transform has changed.
         internal bool Dirty;
