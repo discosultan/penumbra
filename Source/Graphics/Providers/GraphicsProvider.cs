@@ -6,7 +6,7 @@ using Penumbra.Utilities;
 namespace Penumbra.Graphics.Providers
 {
     internal abstract class GraphicsProvider : IDisposable
-    {        
+    {
         protected PenumbraEngine Engine { get; private set; }
         protected int ViewportWidth { get; private set; }
         protected int ViewportHeight { get; private set; }
@@ -34,7 +34,7 @@ namespace Penumbra.Graphics.Providers
             if (disposing)
             {
                 //Engine.DeviceManager.PreparingDeviceSettings -= PreparingDeviceSettings;
-                Engine.Window.ClientSizeChanged -= ClientSizeChanged;                
+                Engine.Window.ClientSizeChanged -= ClientSizeChanged;
             }
         }
 
@@ -60,6 +60,6 @@ namespace Penumbra.Graphics.Providers
                 Logger.Write($"Viewport size changed to {ViewportWidth}x{ViewportHeight}");
                 OnSizeChanged();
             }
-        }               
+        }
     }
 }

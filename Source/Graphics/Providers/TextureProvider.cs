@@ -31,7 +31,7 @@ namespace Penumbra.Graphics.Providers
                 if (_queriedBindings[i].RenderTarget == null)
                     break;
                 numQueriedBindingsThisFrame++;
-            }            
+            }
 
             if (numQueriedBindingsThisFrame != _numQueriedBindings)
             {
@@ -40,7 +40,7 @@ namespace Penumbra.Graphics.Providers
                     _originalBindings[i] = _queriedBindings[i];
                 _numQueriedBindings = numQueriedBindingsThisFrame;
             }
-            
+
             return _numQueriedBindings == 0 ? null : _originalBindings;
         }
 
@@ -67,7 +67,7 @@ namespace Penumbra.Graphics.Providers
             DestroyRenderTargets();
 
             PresentationParameters pp = Engine.Device.PresentationParameters;
-            
+
             Lightmap = new RenderTarget2D(Engine.Device, ViewportWidth, ViewportHeight, false,
                 pp.BackBufferFormat, pp.DepthStencilFormat, pp.MultiSampleCount, pp.RenderTargetUsage);
             LightmapBindings[0] = Lightmap;

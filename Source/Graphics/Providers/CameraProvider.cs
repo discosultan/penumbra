@@ -9,7 +9,7 @@ namespace Penumbra.Graphics.Providers
         public Matrix ViewProjection = Matrix.Identity;
         public BoundingRectangle Bounds = new BoundingRectangle(new Vector2(float.MinValue), new Vector2(float.MaxValue));
 
-        private Matrix _inverseViewProjection = Matrix.Identity;        
+        private Matrix _inverseViewProjection = Matrix.Identity;
         private Matrix _clipToScreen = Matrix.Identity;
         private Matrix _spriteBatchTransform = Matrix.Identity;
         private Matrix _custom = Matrix.Identity;
@@ -39,22 +39,22 @@ namespace Penumbra.Graphics.Providers
 
             _loaded = true;
         }
-        
-        // Calculates a screen space rectangle based on world space bounds.        
+
+        // Calculates a screen space rectangle based on world space bounds.
         public void GetScissorRectangle(Light light, out BoundingRectangle scissor)
         {
             Matrix transform;
             Matrix.Multiply(ref ViewProjection, ref _clipToScreen, out transform);
-            
+
             BoundingRectangle.Transform(ref light.Bounds, ref transform, out scissor);
-        }        
+        }
 
         protected override void OnSizeChanged()
         {
             Logger.Write($"Screen size changed to {ViewportWidth}x{ViewportHeight}.");
             CalculateSpriteBatchTransform();
             CalculateClipToScreen();
-            CalculateViewProjectionAndBounds();                        
+            CalculateViewProjectionAndBounds();
         }
 
         private void CalculateSpriteBatchTransform()
@@ -69,7 +69,7 @@ namespace Penumbra.Graphics.Providers
 
         private void CalculateClipToScreen()
         {
-            _clipToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, ViewportWidth, ViewportHeight, 0, 0, 1));            
+            _clipToScreen = Matrix.Invert(Matrix.CreateOrthographicOffCenter(0, ViewportWidth, ViewportHeight, 0, 0, 1));
         }
 
         private void CalculateViewProjectionAndBounds()
@@ -78,7 +78,7 @@ namespace Penumbra.Graphics.Providers
                 Matrix.Multiply(ref _custom, ref _spriteBatchTransform, out ViewProjection);
             else
                 ViewProjection = _custom;
-            
+
             //LogViewProjection();
 
             // Calculate inversion of viewprojection.
@@ -87,10 +87,10 @@ namespace Penumbra.Graphics.Providers
             // Determine if we are dealing with an inverted (upside down) Y axis.
             InvertedY = ViewProjection.M22 < 0 && ViewProjection.M11 >= 0 ||
                         ViewProjection.M22 >= 0 && ViewProjection.M11 < 0;
-            
+
             var size = new Vector2(1.0f);
             var bounds = new BoundingRectangle(-size, size);
-            BoundingRectangle.Transform(ref bounds, ref _inverseViewProjection, out Bounds);            
+            BoundingRectangle.Transform(ref bounds, ref _inverseViewProjection, out Bounds);
         }
 
         private void LogViewProjection()

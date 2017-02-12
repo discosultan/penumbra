@@ -2,7 +2,7 @@
 
 namespace Penumbra.Geometry
 {
-    // An axis aligned bounding rectangle.    
+    // An axis aligned bounding rectangle.
     internal struct BoundingRectangle
     {
         public Vector2 Min;
@@ -23,7 +23,7 @@ namespace Penumbra.Geometry
         {
             Vector2 d1, d2;
             Vector2.Subtract(ref other.Min, ref Max, out d1);
-            Vector2.Subtract(ref Min, ref other.Max, out d2);            
+            Vector2.Subtract(ref Min, ref other.Max, out d2);
 
             if (d1.X > 0.0f || d1.Y > 0.0f)
                 return false;

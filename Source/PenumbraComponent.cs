@@ -17,7 +17,7 @@ namespace Penumbra
     /// in order for the component to be able to later apply generated lightmap.
     /// </remarks>
     public class PenumbraComponent : DrawableGameComponent
-    {        
+    {
         private readonly PenumbraEngine _engine = new PenumbraEngine();
         private ContentManager _content;
 
@@ -121,7 +121,7 @@ namespace Penumbra
         /// <summary>
         /// Generates the lightmap, blends it with whatever was drawn to the scene between the
         /// calls to BeginDraw and this and presents the result to the backbuffer.
-        /// </summary>        
+        /// </summary>
         /// <param name="gameTime">Time passed since the last call to Draw.</param>
         public override void Draw(GameTime gameTime)
         {

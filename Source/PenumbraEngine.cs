@@ -22,19 +22,19 @@ using Penumbra.Utilities;
 namespace Penumbra
 {
     internal class PenumbraEngine : IDisposable
-    {        
+    {
         private readonly ILogger _delegateLogger = new DelegateLogger(x => System.Diagnostics.Debug.WriteLine(x));
-        
+
         private Color _nonPremultipliedAmbient = Color.DarkSlateGray;
         private Vector4 _ambientColor = Color.DarkSlateGray.ToVector4();
         public Color AmbientColor
         {
             get { return _nonPremultipliedAmbient; }
             set
-            {                
+            {
                 _nonPremultipliedAmbient = value;
                 Calculate.FromNonPremultiplied(value, out _ambientColor);
-                _ambientColor.W = 1.0f;                
+                _ambientColor.W = 1.0f;
             }
         }
 
@@ -44,14 +44,14 @@ namespace Penumbra
             get { return _debug; }
             set
             {
-                if (_debug != value)                
+                if (_debug != value)
                 {
                     if (value)
-                        Logger.Add(_delegateLogger);                    
+                        Logger.Add(_delegateLogger);
                     else
                         Logger.Remove(_delegateLogger);
                     _debug = value;
-                }                
+                }
             }
         }
 
@@ -68,7 +68,7 @@ namespace Penumbra
         public RasterizerState RsDebug { get; private set;}
         private RasterizerState _rsCcw;
         private RasterizerState _rsCw;
-        public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;        
+        public RasterizerState Rs => Camera.InvertedY ? _rsCw : _rsCcw;
 
         public void Load(GraphicsDevice device, GraphicsDeviceManager deviceManager, GameWindow window,
             Effect fxHull, Effect fxLight, Effect fxShadow, Effect fxTexture)
@@ -97,12 +97,12 @@ namespace Penumbra
             // Switch render target to a diffuse map. This is where users will render content to be lit.
             Device.SetRenderTargets(Textures.DiffuseMapBindings);
         }
-        
+
         public void Render()
         {
             // Update hulls internal data structures.
             Hulls.Update();
-                     
+
             // We want to use clamping sampler state throughout the lightmap rendering process.
             // This is required when drawing lights. Since light rendering and alpha clearing is done 
             // in a single step, light is rendered with slightly larger quad where tex coords run out of the [0..1] range.
@@ -131,7 +131,7 @@ namespace Penumbra
                 light.Update();
 
                 // Continue only if light is within camera view.
-                if (!light.Intersects(Camera))                
+                if (!light.Intersects(Camera))
                     continue;
 
                 // Set scissor rectangle to clip any shadows outside of light's range.
@@ -139,7 +139,7 @@ namespace Penumbra
                 Camera.GetScissorRectangle(light, out scissor);
                 Device.SetScissorRectangle(ref scissor);
 
-                // Mask shadowed areas by reducing alpha.                
+                // Mask shadowed areas by reducing alpha.
                 ShadowRenderer.Render(light);
 
                 // Draw light and clear alpha (reset it to 1 [fully lit] for next light).
@@ -154,7 +154,7 @@ namespace Penumbra
 
             // Blend original scene and lightmap and present to backbuffer.
             LightMapRenderer.Present();
-             
+
             // Clear hulls dirty flag.
             Hulls.Dirty = false;
         }
@@ -187,6 +187,6 @@ namespace Penumbra
                 FillMode = FillMode.WireFrame,
                 ScissorTestEnable = true
             };
-        }        
+        }
     }
 }

@@ -4,9 +4,9 @@ using Polygon = System.Collections.Generic.IList<Microsoft.Xna.Framework.Vector2
 namespace Penumbra.Geometry
 {
     internal static class PolygonExtensions
-    {        
+    {
         // Assuming the polygon is simple; determines whether the polygon is convex.
-        // NOTE: It will also return false if the input contains colinear edges.                
+        // NOTE: It will also return false if the input contains colinear edges.
         public static bool IsConvex(this Polygon polygon)
         {
             // Ensure the polygon is convex and the interior
@@ -51,7 +51,7 @@ namespace Penumbra.Geometry
                 Vector2 a1 = polygon[i];
                 Vector2 a2 = polygon[(i + 1) % polyCount];
                 var seg1 = new LineSegment(a1, a2);
-                
+
                 for (int j = 0; j < polyCount - 3; ++j)
                 {
                     Vector2 b1 = polygon[(i + 2 + j) % polyCount];
@@ -84,13 +84,13 @@ namespace Penumbra.Geometry
         }
 
         public static void ReverseWindingOrder(this Polygon polygon)
-        {            
+        {
             var temp = new Vector2[polygon.Count];
             polygon.CopyTo(temp, 0);
 
             polygon.Clear();
             polygon.Add(temp[0]);
-            
+
             for (int i = 1; i < temp.Length; i++)
                 polygon.Add(temp[temp.Length - i]);
         }

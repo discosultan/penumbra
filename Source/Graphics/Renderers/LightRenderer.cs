@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Penumbra.Graphics.Renderers
 {
     internal class LightRenderer : IDisposable
-    {        
+    {
         private static readonly Vector4 DebugColor = Color.Green.ToVector4();
 
-        private PenumbraEngine _engine;        
+        private PenumbraEngine _engine;
 
         private Effect _fxLight;
         internal EffectTechnique _fxPointLightTech;
@@ -28,7 +28,7 @@ namespace Penumbra.Graphics.Renderers
         private DepthStencilState _dssOccludedLight;
 
         public void Load(PenumbraEngine engine, Effect fxLight)
-        {            
+        {
             _engine = engine;
 
             _fxLight = fxLight;
@@ -48,7 +48,7 @@ namespace Penumbra.Graphics.Renderers
             _fxLight.Parameters["Color"].SetValue(DebugColor);
 
             BuildGraphicsResources();
-        }        
+        }
 
         public void Render(Light light)
         {
@@ -63,7 +63,7 @@ namespace Penumbra.Graphics.Renderers
                 : DepthStencilState.None;
             _engine.Device.BlendState = _bsLight;
             _engine.Device.RasterizerState = _engine.Rs;
-            _engine.Device.SetVertexArrayObject(_quadVao);            
+            _engine.Device.SetVertexArrayObject(_quadVao);
             _fxLightParamWvp.SetValue(wvp);
             fxTech.Passes[0].Apply();
             _engine.Device.DrawPrimitives(_quadVao.PrimitiveTopology, 0, _quadVao.PrimitiveCount);
@@ -76,7 +76,7 @@ namespace Penumbra.Graphics.Renderers
                 // Draw debug quad.
                 //const float factor = 0.41f;
                 //wvp.M11 = wvp.M11 * factor;
-                //wvp.M22 = wvp.M22 * factor;                
+                //wvp.M22 = wvp.M22 * factor;
 
                 //_fxLightParamWvp.SetValue(wvp);
                 //_fxDebugLightTech.Passes[0].Apply();
@@ -90,9 +90,9 @@ namespace Penumbra.Graphics.Renderers
                 world.M41 = light.Position.X;
                 world.M42 = light.Position.Y;
                 Matrix.Multiply(ref world, ref _engine.Camera.ViewProjection, out wvp);
-                
-                _engine.Device.SetVertexArrayObject(_circleVao);                
-                _fxLightParamWvp.SetValue(wvp);                
+
+                _engine.Device.SetVertexArrayObject(_circleVao);
+                _fxLightParamWvp.SetValue(wvp);
                 _fxDebugLightTech.Passes[0].Apply();
                 _engine.Device.DrawIndexedPrimitives(_circleVao.PrimitiveTopology, 0, 0, _circleVao.PrimitiveCount);
             }
@@ -107,10 +107,10 @@ namespace Penumbra.Graphics.Renderers
         }
 
         private void BuildGraphicsResources()
-        {            
+        {
             // We build the quad a little larger than required in order to be able to also properly clear the alpha
             // for the region. The reason we need larger quad is due to camera rotation.
-            var d = (float) (1 / Math.Sqrt(2));            
+            var d = (float) (1 / Math.Sqrt(2));
 
             // Quad.
             VertexPosition2Texture[] quadVertices =
@@ -119,7 +119,7 @@ namespace Penumbra.Graphics.Renderers
                 new VertexPosition2Texture(new Vector2(1.0f + d, 1.0f + d), new Vector2(1.0f + d, 0.0f - d)),
                 new VertexPosition2Texture(new Vector2(0.0f - d, 0.0f - d), new Vector2(0.0f - d, 1.0f + d)),
                 new VertexPosition2Texture(new Vector2(1.0f + d, 0.0f - d), new Vector2(1.0f + d, 1.0f + d))
-            };            
+            };
 
             _quadVao = StaticVao.New(_engine.Device, quadVertices, VertexPosition2Texture.Layout, PrimitiveType.TriangleStrip);
 
@@ -169,6 +169,6 @@ namespace Penumbra.Graphics.Renderers
                 StencilFunction = CompareFunction.Always,
                 StencilPass = StencilOperation.Zero
             };
-        }        
+        }
     }
 }

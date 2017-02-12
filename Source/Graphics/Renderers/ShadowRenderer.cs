@@ -38,7 +38,7 @@ namespace Penumbra.Graphics.Renderers
         private DepthStencilState _dsOccludedHull;
 
         public void Load(PenumbraEngine engine, Effect fxShadow, Effect fxHull)
-        {            
+        {
             _engine = engine;
 
             _fxShadow = fxShadow;
@@ -54,12 +54,12 @@ namespace Penumbra.Graphics.Renderers
             _fxHullTech = _fxHull.Techniques["Main"];
             _fxHullParamVp = _fxHull.Parameters["ViewProjection"];
             _fxHullParamColor = _fxHull.Parameters["Color"];
-            
+
             BuildGraphicsResources();
         }
 
         public void PreRender()
-        {            
+        {
             _fxShadowParamVp.SetValue(_engine.Camera.ViewProjection);
         }
 
@@ -82,23 +82,23 @@ namespace Penumbra.Graphics.Renderers
 
                 // Draw shadows.
                 DynamicVao shadowVao = vao.Item1;
-                _engine.Device.BlendState = _bsShadow;                                                
+                _engine.Device.BlendState = _bsShadow;
                 _engine.Device.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
-                _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.PrimitiveCount);                
+                _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.PrimitiveCount);
 
                 // Draw shadows borders if debugging.
                 if (_engine.Debug)
                 {
                     _engine.Device.RasterizerState = _engine.RsDebug;
-                    _engine.Device.BlendState = BlendState.Opaque;                                       
-                    _fxShadowTechDebug.Passes[0].Apply();                    
-                    _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.PrimitiveCount);                    
+                    _engine.Device.BlendState = BlendState.Opaque;
+                    _fxShadowTechDebug.Passes[0].Apply();
+                    _engine.Device.DrawIndexedPrimitives(shadowVao.PrimitiveTopology, 0, 0, shadowVao.PrimitiveCount);
                 }
             }
 
-            // Draw hulls.                  
-            bool isShadowTypeSolid = light.ShadowType == ShadowType.Solid;      
+            // Draw hulls.
+            bool isShadowTypeSolid = light.ShadowType == ShadowType.Solid;
             if (light.CastsShadows || isShadowTypeSolid)
             {
                 if (light.ShadowType == ShadowType.Occluded)
@@ -139,7 +139,7 @@ namespace Penumbra.Graphics.Renderers
         }
 
         private Tuple<DynamicVao, DynamicVao> TryBuildVaoForLight(Light light)
-        {                        
+        {
             _hullVertices.Clear();
             _shadowVertices.Clear();
             _shadowIndices.Clear();
@@ -154,17 +154,17 @@ namespace Penumbra.Graphics.Renderers
                 Hull hull = _engine.Hulls[i];
                 if (!hull.Enabled || !hull.Valid || !light.Intersects(hull))
                     continue;
-                
-                Polygon points = hull.WorldPoints;                
 
-                Vector2 prevPoint = points[points.Count - 1];                
+                Polygon points = hull.WorldPoints;
+
+                Vector2 prevPoint = points[points.Count - 1];
 
                 int pointCount = points.Count;
                 numSegments += pointCount;
                 for (int j = 0; j < pointCount; j++)
-                {                    
+                {
                     Vector2 currentPoint = points[j];
-                    
+
                     _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 0.0f)));
                     _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(1.0f, 0.0f)));
                     _shadowVertices.Add(new VertexShadow(prevPoint, currentPoint, new Vector2(0.0f, 1.0f)));
@@ -176,7 +176,7 @@ namespace Penumbra.Graphics.Renderers
 
                     _shadowIndices.Add(shadowIndexOffset * 4 + 1);
                     _shadowIndices.Add(shadowIndexOffset * 4 + 3);
-                    _shadowIndices.Add(shadowIndexOffset * 4 + 2);                    
+                    _shadowIndices.Add(shadowIndexOffset * 4 + 2);
 
                     prevPoint = currentPoint;
                     shadowIndexOffset++;
@@ -218,7 +218,7 @@ namespace Penumbra.Graphics.Renderers
                 AlphaBlendFunction = BlendFunction.ReverseSubtract,
                 AlphaSourceBlend = Blend.One,
                 AlphaDestinationBlend = Blend.One
-            };            
+            };
             _bsHull = new BlendState
             {
                 ColorWriteChannels = ColorWriteChannels.Alpha,
@@ -236,11 +236,11 @@ namespace Penumbra.Graphics.Renderers
                 StencilFunction = CompareFunction.Always,
                 StencilPass = StencilOperation.Replace,
                 ReferenceStencil = 1
-            };            
+            };
             _dsOccludedHull = new DepthStencilState
             {
                 DepthBufferEnable = false,
-                
+
                 StencilEnable = true,
                 StencilWriteMask = 0x00,
                 StencilMask = 0xff,
@@ -249,6 +249,6 @@ namespace Penumbra.Graphics.Renderers
                 StencilFail = StencilOperation.Keep,
                 ReferenceStencil = 1
             };
-        }        
-    }        
+        }
+    }
 }
