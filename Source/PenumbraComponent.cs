@@ -84,6 +84,16 @@ namespace Penumbra
         public ObservableCollection<Hull> Hulls => _engine.Hulls;
 
         /// <summary>
+        /// Gets the diffuse map render target used by Penumbra.
+        /// </summary>
+        public RenderTarget2D DiffuseMap => _engine.Textures.DiffuseMap;
+
+        /// <summary>
+        /// Gets the lightmap render target used by Penumbra.
+        /// </summary>
+        public RenderTarget2D LightMap => _engine.Textures.Lightmap;
+
+        /// <summary>
         /// Explicitly initializes the engine. This should only be called if the
         /// component was not added to the game's components list through <c>Components.Add</c>.
         /// </summary>
