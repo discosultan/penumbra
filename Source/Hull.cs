@@ -298,10 +298,14 @@ namespace Penumbra
             for (int i = 0; i < hullCount; i++)
             {
                 Hull hull = this[i];
-                // If hull is valid and enabled:
+                // If hull is not ignored by light, valid and enabled:
                 // 1. test AABB intersection
                 // 2. test point is contained in polygon
-                if (hull.Enabled && hull.Valid && light.Bounds.Intersects(ref hull.Bounds) && hull.WorldPoints.Contains(ref light._position))
+                if (!light.IgnoredHulls.Contains(hull) &&
+                    hull.Enabled && 
+                    hull.Valid && 
+                    light.Bounds.Intersects(ref hull.Bounds) && 
+                    hull.WorldPoints.Contains(ref light._position))
                     return true;
             }
             return false;
