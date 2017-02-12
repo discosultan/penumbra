@@ -12,7 +12,7 @@ namespace Penumbra.Utilities
         // Fields
         private const int DefaultCapacity = 4;
         private static readonly T[] EmptyArray = new T[0];
-        
+
         public T[] Items { get; private set; }
 
         public static implicit operator T[](FastList<T> collection) => collection.Items;        
@@ -149,7 +149,7 @@ namespace Penumbra.Utilities
         bool ICollection<T>.IsReadOnly => false;
 
         #endregion
-        
+
         public void Clear(bool fastClear)
         {
             if (!fastClear && Count > 0)

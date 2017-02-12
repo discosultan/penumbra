@@ -37,20 +37,20 @@ namespace Penumbra.Utilities
     }
 
     internal static class Logger
-    {        
+    {
         private static readonly List<ILogger> Loggers = new List<ILogger>();
-        
+
         public static void Write(string message, [CallerMemberName]string caller = "")
         {
             foreach (ILogger logger in Loggers)
                 logger.Write(message, caller);
         }
-        
+
         public static void Add(ILogger logger)
         {
             Loggers.Add(logger);
         }
-        
+
         public static void Remove(ILogger logger)
         {
             Loggers.Remove(logger);

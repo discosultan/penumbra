@@ -12,7 +12,7 @@ namespace Penumbra.Utilities
     internal class ExtendedObservableCollection<T> : ObservableCollection<T>
     {
         public void AddRange(IEnumerable<T> items)
-        {                        
+        {
             CheckReentrancy();
             //
             // We need the starting index later.
