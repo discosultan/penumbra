@@ -104,6 +104,10 @@ Gets or sets the color of the light. Color is in non-premultiplied format. Defau
 
 Gets or sets if the light is enabled and should be rendered.
 
+### IgnoredHulls
+
+Gets a list of hulls not participating in the light's shadow casting process.
+
 ### Intensity
 
 Gets or sets the intensity of the color applied to the final scene. Color will be raised to the power of intensity.
@@ -179,6 +183,10 @@ Sets up the lightmap generation sequence. This should be called before Draw.
 
 Gets or sets if debug outlines should be drawn for shadows and light sources and if logging is enabled.
 
+### DiffuseMap
+
+Gets the diffuse map render target used by Penumbra.
+
 ### Draw(gameTime)
 
 Generates the lightmap, blends it with whatever was drawn to the scene between the calls to BeginDraw and this and presents the result to the backbuffer.
@@ -194,6 +202,10 @@ Gets the list of shadow hulls registered with the engine.
 ### Initialize
 
 Explicitly initializes the engine. This should only be called if the component was not added to the game's components list through `Components.Add`.
+
+### LightMap
+
+Gets the lightmap render target used by Penumbra.
 
 ### Lights
 
