@@ -160,7 +160,7 @@ namespace Penumbra.Graphics.Renderers
                     continue;
                 }
 
-                Polygon points = hull.WorldPoints;                
+                Polygon points = hull.WorldPoints;
 
                 Vector2 prevPoint = points[points.Count - 1];
 
