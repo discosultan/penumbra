@@ -41,7 +41,7 @@ namespace FarseerPhysics
 
         DebugViewXNA PhysicsDebugView;
 
-        // 64 Pixel of your screen should be 1 Meter in our physics simulation
+        // 64 Pixel of your screen should be 1 Meter in our physical world
         private float MeterInPixels = 64f;
 
         // Projection Matrix for PhysicsDebugView
@@ -255,13 +255,11 @@ namespace FarseerPhysics
             spriteBatch.Begin(SpriteSortMode.Deferred, null);
 
             // Draw the texture of the physics body
-            spriteBatch.Draw(tBodyTexture, new Vector2(
-                ConvertUnits.ToDisplayUnits(tBody.Position).X,
-                 ConvertUnits.ToDisplayUnits(tBody.Position).Y), null,
-                        Color.White, tBody.Rotation, tBodyOrigin,
-                        1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(tBodyTexture, ConvertUnits.ToDisplayUnits(tBody.Position), null,
+                        Color.Tomato, tBody.Rotation, tBodyOrigin, 1f, SpriteEffects.None, 0);
 
             spriteBatch.End();
+
             penumbra.Draw(gameTime);
 
             // Draw items NOT affected by lighting here ... (UI, for example)
