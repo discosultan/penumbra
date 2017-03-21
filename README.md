@@ -15,7 +15,7 @@ Penumbra allows users to easily add 2D lighting with shadowing effects to their 
 The following is required to successfully compile the Penumbra MonoGame solution:
 
 - Visual studio 2015+ (due to C# 6 syntax)
-- MonoGame 3.5.1+
+- MonoGame 3.6+
 - [DirectX End-User Runtimes (June 2010)](http://www.microsoft.com/en-us/download/details.aspx?id=8109) (to compile effect shaders)
 
 ### Using Penumbra
@@ -111,4 +111,4 @@ penumbra.Hulls.Add(hull);
 - **Platformer2D**: Penumbra lighting applied to [MonoGame Platformer2D samples game](https://github.com/MonoGame/MonoGame.Samples).
 - **Sandbox**: Generic sandbox for testing out various different scenarios.
 - **Common**: Supporting library providing common functionality for samples.
-- **![FarseerPhysics](https://github.com/sqrMin1/penumbra/tree/master/Samples/FarseerPhysics)**: Create physical bodies out of sprites and add them as hulls to Penumbra!
+- **[FarseerPhysics](https://github.com/discosultan/penumbra/tree/master/Samples/FarseerPhysics)**: Create physical bodies out of sprites and add them as hulls to Penumbra!
