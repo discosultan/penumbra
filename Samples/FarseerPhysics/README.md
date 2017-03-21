@@ -8,7 +8,7 @@ This sample project shows how you could create a complex body from a sprite and 
 
 The following is required to successfully compile the solution:
 
-- MonoGame 3.5.1
+- MonoGame 3.6
 - FarseerPhysics 3.5 (Source included)
 
 ### How To
