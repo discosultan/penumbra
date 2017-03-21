@@ -33,4 +33,4 @@ Write-Host Creating packages
 
 # Publish nuget packages to nuget.org and symbol packages to symbolsource.org
 Write-Host Publishing packages
-.\nuget push (GetNupkgFilename $id)
+.\nuget push (GetNupkgFilename $id) -Source https://www.nuget.org/api/v2/package
