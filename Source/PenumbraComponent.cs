@@ -103,12 +103,18 @@ namespace Penumbra
 
             base.Initialize();
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
-            _content = new ResourceContentManager(Game.Services, Resource.ResourceManager);
+            _content = new ResourceContentManager(Game.Services,
+#if WINDOWSDX
+                Resource_WindowsDX.ResourceManager
+#elif DESKTOPGL
+                Resource_DesktopGL.ResourceManager
+#endif
+                );
             _engine.Load(GraphicsDevice, deviceManager, Game.Window,
-                _content.Load<Effect>("penumbra_hull"),
-                _content.Load<Effect>("penumbra_light"),
-                _content.Load<Effect>("penumbra_shadow"),
-                _content.Load<Effect>("penumbra_texture"));
+                _content.Load<Effect>("PenumbraHull"),
+                _content.Load<Effect>("PenumbraLight"),
+                _content.Load<Effect>("PenumbraShadow"),
+                _content.Load<Effect>("PenumbraTexture"));
             _initialized = true;
         }
 

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B021F95C-38BC-493A-BB92-C3C575E4B50F}</ProjectGuid>
+    <ProjectGuid>{3F53D144-2287-485F-91ED-FDA8435396B9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Penumbra</RootNamespace>
@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <MonoGamePlatform>Windows</MonoGamePlatform>
+    <MonoGamePlatform>DesktopGL</MonoGamePlatform>
     <MonoGameContentBuilderExe>
     </MonoGameContentBuilderExe>
   </PropertyGroup>
@@ -22,7 +22,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DocumentationFile>bin\Debug\MonoGame.Penumbra.xml</DocumentationFile>
-    <DefineConstants>TRACE;DEBUG;MONOGAME;DIRECTX</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONOGAME;DESKTOPGL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -34,24 +34,26 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>bin\Release\MonoGame.Penumbra.xml</DocumentationFile>
-    <DefineConstants>TRACE;MONOGAME;DIRECTX</DefineConstants>
+    <DefineConstants>TRACE;MONOGAME;DESKTOPGL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="Content\Compiled\penumbra_hull.xnb" />
-    <None Include="Content\Compiled\penumbra_light.xnb" />
-    <None Include="Content\Compiled\penumbra_shadow.xnb" />
-    <None Include="Content\Compiled\penumbra_texture.xnb" />
-    <None Include="Content\penumbra_hull.fx" />
-    <None Include="Content\penumbra_light.fx" />
-    <None Include="Content\penumbra_shadow.fx" />
-    <None Include="Content\penumbra_texture.fx" />
+    <None Include="Content\bin\DesktopGL\PenumbraHull.xnb" />
+    <None Include="Content\bin\DesktopGL\PenumbraLight.xnb" />
+    <None Include="Content\bin\DesktopGL\PenumbraShadow.xnb" />
+    <None Include="Content\bin\DesktopGL\PenumbraTexture.xnb" />
+    <None Include="Content\Content.DesktopGL.mgcb" />
+    <None Include="Content\Macros.fxh" />
+    <None Include="Content\PenumbraHull.fx" />
+    <None Include="Content\PenumbraLight.fx" />
+    <None Include="Content\PenumbraShadow.fx" />
+    <None Include="Content\PenumbraTexture.fx" />
     <None Include="packages.config" />
     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MonoGame.Framework.WindowsDX.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>
+      <HintPath>..\packages\MonoGame.Framework.DesktopGL.3.6.0.1625\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -73,11 +75,6 @@
     <Compile Include="Graphics\Triangulator.cs" />
     <Compile Include="PenumbraComponent.cs" />
     <Compile Include="PenumbraEngine.cs" />
-    <Compile Include="Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
     <Compile Include="TexturedLight.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Graphics\DynamicVao.cs" />
@@ -88,13 +85,16 @@
     <Compile Include="Utilities\Logger.cs" />
     <Compile Include="Graphics\StaticVao.cs" />
     <Compile Include="Utilities\Calculate.cs" />
-    <MonoGameContentReference Include="Content\Content.mgcb" />
-    <None Include="Content\macros.fxh" />
+    <Compile Include="Resource.DesktopGL.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resource.DesktopGL.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resource.resx">
+    <EmbeddedResource Include="Resource.DesktopGL.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <LastGenOutput>Resource.DesktopGL.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,0 +1,2 @@
+# We want to include the Content bin folder so that the .resx file can pick up the contents and embed to assembly on build.
+!bin

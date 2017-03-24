@@ -1,4 +1,4 @@
-﻿#include "macros.fxh"
+﻿#include "Macros.fxh"
 
 Texture2D Texture : register(t0);
 SamplerState TextureSampler;

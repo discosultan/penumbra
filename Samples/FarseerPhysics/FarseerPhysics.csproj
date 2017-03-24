@@ -66,7 +66,7 @@
       <Project>{0aad36e3-51a5-4a07-ab60-5c8a66bd38b7}</Project>
       <Name>Farseer Physics MonoGame</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Source\MonoGame.Penumbra.csproj">
+    <ProjectReference Include="..\..\Source\MonoGame.Penumbra.WindowsDX.csproj">
       <Project>{b021f95c-38bc-493a-bb92-c3c575e4b50f}</Project>
       <Name>MonoGame.Penumbra</Name>
     </ProjectReference>

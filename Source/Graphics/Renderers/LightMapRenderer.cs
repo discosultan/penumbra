@@ -16,10 +16,17 @@ namespace Penumbra.Graphics.Renderers
         public void Load(PenumbraEngine engine, Effect fxTexture)
         {
             _engine = engine;
-
             _fxTexture = fxTexture;
+
+            // Effect parameters are named differently based on target platform.
+            // See issue: https://github.com/MonoGame/MonoGame/issues/641
+#if WINDOWSDX
             _fxTextureParamDiffuseMap = _fxTexture.Parameters["DiffuseMap"];
             _fxTextureParamLightmap = _fxTexture.Parameters["Lightmap"];
+#elif DESKTOPGL
+            _fxTextureParamDiffuseMap = _fxTexture.Parameters["TextureSampler+DiffuseMap"];
+            _fxTextureParamLightmap = _fxTexture.Parameters["TextureSampler+Lightmap"];
+#endif
 
             BuildGraphicsResources();
         }

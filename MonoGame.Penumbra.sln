@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Penumbra", "Source\MonoGame.Penumbra.csproj", "{B021F95C-38BC-493A-BB92-C3C575E4B50F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Penumbra.WindowsDX", "Source\MonoGame.Penumbra.WindowsDX.csproj", "{B021F95C-38BC-493A-BB92-C3C575E4B50F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Samples\Sandbox\Sandbox.csproj", "{42F21905-2DA7-44A3-AA3A-B80C74F49D1A}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer Physics MonoGame", "Samples\Shared\FarseerPhysics Source\Farseer Physics Engine 3.5\Farseer Physics MonoGame.csproj", "{0AAD36E3-51A5-4A07-AB60-5C8A66BD38B7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{177E650F-BD72-4837-9AAB-9D096D145BAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Penumbra.DesktopGL", "Source\MonoGame.Penumbra.DesktopGL.csproj", "{3F53D144-2287-485F-91ED-FDA8435396B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,14 @@ Global
 		{0AAD36E3-51A5-4A07-AB60-5C8A66BD38B7}.Release|Any CPU.Build.0 = Release|x86
 		{0AAD36E3-51A5-4A07-AB60-5C8A66BD38B7}.Release|x86.ActiveCfg = Release|x86
 		{0AAD36E3-51A5-4A07-AB60-5C8A66BD38B7}.Release|x86.Build.0 = Release|x86
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F53D144-2287-485F-91ED-FDA8435396B9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

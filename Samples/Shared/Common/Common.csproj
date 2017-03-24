@@ -48,7 +48,7 @@
     <Compile Include="Utilities\Garbage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Source\MonoGame.Penumbra.csproj">
+    <ProjectReference Include="..\..\..\Source\MonoGame.Penumbra.WindowsDX.csproj">
       <Project>{b021f95c-38bc-493a-bb92-c3c575e4b50f}</Project>
       <Name>MonoGame.Penumbra</Name>
     </ProjectReference>

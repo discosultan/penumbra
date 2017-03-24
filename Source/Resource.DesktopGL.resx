@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="penumbra_hull" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\Compiled\penumbra_hull.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="PenumbraHull" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Content\bin\DesktopGL\PenumbraHull.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="penumbra_light" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\Compiled\penumbra_light.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="PenumbraLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Content\bin\DesktopGL\PenumbraLight.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="penumbra_shadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\Compiled\penumbra_shadow.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="PenumbraShadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Content\bin\DesktopGL\PenumbraShadow.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="penumbra_texture" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\Compiled\penumbra_texture.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="PenumbraTexture" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Content\bin\DesktopGL\PenumbraTexture.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

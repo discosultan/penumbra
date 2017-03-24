@@ -1,9 +1,9 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:Compiled
-/intermediateDir:obj/Windows
-/platform:Windows
+/outputDir:bin/DesktopGL
+/intermediateDir:obj/DesktopGL
+/platform:DesktopGL
 /config:
 /profile:Reach
 /compress:False
@@ -13,27 +13,27 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin penumbra_hull.fx
+#begin PenumbraHull.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:penumbra_hull.fx
+/build:PenumbraHull.fx
 
-#begin penumbra_light.fx
+#begin PenumbraLight.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:penumbra_light.fx
+/build:PenumbraLight.fx
 
-#begin penumbra_shadow.fx
+#begin PenumbraShadow.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:penumbra_shadow.fx
+/build:PenumbraShadow.fx
 
-#begin penumbra_texture.fx
+#begin PenumbraTexture.fx
 /importer:EffectImporter
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
-/build:penumbra_texture.fx
+/build:PenumbraTexture.fx
 

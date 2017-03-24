@@ -22,14 +22,14 @@ namespace Penumbra {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resource {
+    internal class Resource_DesktopGL {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resource() {
+        internal Resource_DesktopGL() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace Penumbra {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Penumbra.Resource", typeof(Resource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Penumbra.Resource.DesktopGL", typeof(Resource_DesktopGL).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,9 +63,9 @@ namespace Penumbra {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] penumbra_hull {
+        internal static byte[] PenumbraHull {
             get {
-                object obj = ResourceManager.GetObject("penumbra_hull", resourceCulture);
+                object obj = ResourceManager.GetObject("PenumbraHull", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace Penumbra {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] penumbra_light {
+        internal static byte[] PenumbraLight {
             get {
-                object obj = ResourceManager.GetObject("penumbra_light", resourceCulture);
+                object obj = ResourceManager.GetObject("PenumbraLight", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -83,9 +83,9 @@ namespace Penumbra {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] penumbra_shadow {
+        internal static byte[] PenumbraShadow {
             get {
-                object obj = ResourceManager.GetObject("penumbra_shadow", resourceCulture);
+                object obj = ResourceManager.GetObject("PenumbraShadow", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -93,9 +93,9 @@ namespace Penumbra {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] penumbra_texture {
+        internal static byte[] PenumbraTexture {
             get {
-                object obj = ResourceManager.GetObject("penumbra_texture", resourceCulture);
+                object obj = ResourceManager.GetObject("PenumbraTexture", resourceCulture);
                 return ((byte[])(obj));
             }
         }
