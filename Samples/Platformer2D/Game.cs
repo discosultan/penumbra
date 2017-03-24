@@ -63,7 +63,7 @@ namespace Platformer2D
         public PlatformerGame()
         {
             graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";            
+            Content.RootDirectory = "Content";
 
 #if WINDOWS_PHONE
             TargetElapsedTime = TimeSpan.FromTicks(333333);
@@ -79,7 +79,7 @@ namespace Platformer2D
             // Create our lighting component and register it as a service so that subsystems can access it.
             penumbra = new PenumbraComponent(this)
             {
-                AmbientColor = new Color(new Vector3(0.1f))                
+                AmbientColor = new Color(new Vector3(0.1f))
             };
             Services.AddService(penumbra);
         }
