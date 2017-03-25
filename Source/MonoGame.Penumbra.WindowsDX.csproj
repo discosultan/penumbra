@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\WindowsDX\</OutputPath>
-	<IntermediateOutputPath>obj\Debug\WindowsDX\</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Debug\WindowsDX\</IntermediateOutputPath>
     <DocumentationFile>bin\Debug\WindowsDX\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;DEBUG;MONOGAME;WINDOWSDX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -34,7 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\WindowsDX\</OutputPath>
-	<IntermediateOutputPath>obj\Release\WindowsDX\</IntermediateOutputPath>
+    <IntermediateOutputPath>obj\Release\WindowsDX\</IntermediateOutputPath>
     <DocumentationFile>bin\Release\WindowsDX\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;MONOGAME;WINDOWSDX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
