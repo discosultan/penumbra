@@ -21,6 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\DesktopGL\</OutputPath>
+	<IntermediateOutputPath>obj\Debug\DesktopGL\</IntermediateOutputPath>
     <DocumentationFile>bin\Debug\DesktopGL\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;DEBUG;MONOGAME;DESKTOPGL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -33,6 +34,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\DesktopGL\</OutputPath>
+	<IntermediateOutputPath>obj\Release\DesktopGL\</IntermediateOutputPath>
     <DocumentationFile>bin\Release\DesktopGL\MonoGame.Penumbra.xml</DocumentationFile>
     <DefineConstants>TRACE;MONOGAME;DESKTOPGL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>

@@ -36,7 +36,11 @@ namespace Penumbra.Graphics.Renderers
             _fxSpotLightTech = _fxLight.Techniques["Spotlight"];
             _fxTexturedLightTech = _fxLight.Techniques["TexturedLight"];
             _fxDebugLightTech = _fxLight.Techniques["DebugLight"];
+#if WINDOWSDX
             _fxLightParamTexture = _fxLight.Parameters["Texture"];
+#elif DESKTOPGL
+            _fxLightParamTexture = _fxLight.Parameters["TextureSampler+Texture"];
+#endif
             _fxLightParamTextureTransform = _fxLight.Parameters["TextureTransform"];
             _fxLightParamWvp = _fxLight.Parameters["WorldViewProjection"];
             _fxLightParamColor = _fxLight.Parameters["LightColor"];
