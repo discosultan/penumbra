@@ -27,15 +27,15 @@ namespace Penumbra.Graphics
         public Vector2 TexCoord;
 
         public VertexPosition2Texture(Vector2 position, Vector2 texCoord)
-        {            
+        {
             Position = position;
-            TexCoord = texCoord;            
-        }             
+            TexCoord = texCoord;
+        }
 
         public override string ToString() =>
             $"{nameof(Position)}:{Position} {nameof(TexCoord)}:{TexCoord}";
     }
-    
+
     [StructLayout(LayoutKind.Sequential)]
     internal struct VertexShadow
     {
@@ -45,7 +45,7 @@ namespace Penumbra.Graphics
             new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
             new VertexElement(8, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 1),
             new VertexElement(16, VertexElementFormat.Vector2, VertexElementUsage.Position, 0));
-        
+
         public Vector2 SegmentA;
         public Vector2 SegmentB;
         public Vector2 Stencil;
@@ -54,7 +54,7 @@ namespace Penumbra.Graphics
         {
             SegmentA = segA;
             SegmentB = segB;
-            Stencil = stencil;                        
+            Stencil = stencil;
         }
 
         public override string ToString() =>

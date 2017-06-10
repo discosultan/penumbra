@@ -11,13 +11,13 @@ using Indices = Penumbra.Utilities.FastList<int>;
 namespace Penumbra
 {
     /// <summary>
-    /// A hull is an object from which shadows are cast. 
+    /// A hull is an object from which shadows are cast.
     /// It is a simple convex or concave polygon impassable by light rays.
     /// </summary>
     public class Hull
-    {                                                        
-        private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints = 
-            new ExtendedObservableCollection<Vector2>();                
+    {
+        private readonly ExtendedObservableCollection<Vector2> _rawLocalPoints =
+            new ExtendedObservableCollection<Vector2>();
 
         private bool _worldDirty = true;
         private bool _pointsDirty = true;
@@ -30,7 +30,7 @@ namespace Penumbra
         /// <list type="number">
         /// <item><description>A polygon with at least 3 points.</description></item>
         /// <item><description>A simple polygon (no two edges intersect with each other).</description></item>
-        /// </list>        
+        /// </list>
         /// </param>
         public Hull(params Vector2[] points) : this((IEnumerable<Vector2>)points)
         { }
@@ -43,9 +43,9 @@ namespace Penumbra
         /// <list type="number">
         /// <item><description>A polygon with at least 3 points.</description></item>
         /// <item><description>A simple polygon (no two edges intersect with each other).</description></item>
-        /// </list>        
-        /// </param>      
-        public Hull(IEnumerable<Vector2> points = null)            
+        /// </list>
+        /// </param>
+        public Hull(IEnumerable<Vector2> points = null)
         {
             if (points != null)
             {
@@ -63,11 +63,11 @@ namespace Penumbra
                     ConvertRawLocalPointsToLocalPoints();
                     if (e.Action == NotifyCollectionChangedAction.Add)
                         foreach (Vector2 point in e.NewItems)
-                            Logger.Write($"New point at {point}.");                    
+                            Logger.Write($"New point at {point}.");
                     _worldDirty = true;
                     _pointsDirty = true;
-                }                
-            };            
+                }
+            };
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Penumbra
         public IList<Vector2> Points => _rawLocalPoints;
 
         /// <summary>
-        /// Gets or sets if the hull is enabled and participates in shadow casting. 
+        /// Gets or sets if the hull is enabled and participates in shadow casting.
         /// Shadows are only cast from enabled hulls.
         /// </summary>
         public bool Enabled { get; set; } = true;
@@ -90,7 +90,7 @@ namespace Penumbra
         /// Gets if the hull forms a valid polygon and participates in shadow casting. See
         /// Points property for rules of a valid polygon.
         /// </summary>
-        public bool Valid { get; private set; }        
+        public bool Valid { get; private set; }
 
         private Vector2 _position;
         /// <summary>
@@ -102,13 +102,13 @@ namespace Penumbra
             set
             {
                 if (_position != value)
-                {                    
+                {
                     _position = value;
                     _worldDirty = true;
                 }
             }
         }
-        
+
         private Vector2 _origin;
         /// <summary>
         /// Gets or sets the origin ((0, 0) point) of the hull's local space.
@@ -119,13 +119,13 @@ namespace Penumbra
             set
             {
                 if (_origin != value)
-                {                    
+                {
                     _origin = value;
                     _worldDirty = true;
                 }
             }
         }
-        
+
         private float _rotation;
         /// <summary>
         /// Gets or sets the rotation of the hull in radians.
@@ -136,13 +136,13 @@ namespace Penumbra
             set
             {
                 if (_rotation != value)
-                {                    
+                {
                     _rotation = value;
                     _worldDirty = true;
                 }
             }
         }
-        
+
         private Vector2 _scale = Vector2.One;
         /// <summary>
         /// Gets or sets the scale (width and height) along X and Y axes.
@@ -153,12 +153,12 @@ namespace Penumbra
             set
             {
                 if (_scale != value)
-                {                    
+                {
                     _scale = value;
                     _worldDirty = true;
                 }
             }
-        }        
+        }
 
         internal bool Dirty;
 
@@ -172,7 +172,7 @@ namespace Penumbra
 
         internal Indices Indices { get; } = new Indices();
 
-        internal bool IsConvex;                        
+        internal bool IsConvex;
 
         internal void Update()
         {
@@ -180,17 +180,17 @@ namespace Penumbra
             {
                 UpdatePoints();
 
-                // Calculate local to world transform.                
+                // Calculate local to world transform.
                 Calculate.Transform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
 
                 // Calculate points in world space.
-                WorldPoints.Clear();                
+                WorldPoints.Clear();
                 int pointCount = LocalPoints.Count;
                 for (int i = 0; i < pointCount; i++)
                 {
                     Vector2 originalPos = LocalPoints[i];
                     Vector2 transformedPos;
-                    Vector2.Transform(ref originalPos, ref LocalToWorld, out transformedPos);                    
+                    Vector2.Transform(ref originalPos, ref LocalToWorld, out transformedPos);
                     WorldPoints.Add(transformedPos);
                 }
 
@@ -207,7 +207,7 @@ namespace Penumbra
             if (_pointsDirty)
             {
                 IsConvex = LocalPoints.IsConvex();
-                Indices.Clear();                
+                Indices.Clear();
 
                 if (IsConvex)
                 {
@@ -224,7 +224,7 @@ namespace Penumbra
                     Triangulator.Process(LocalPoints, Indices);
                 }
 
-                _pointsDirty = false;                
+                _pointsDirty = false;
             }
         }
 
@@ -234,7 +234,7 @@ namespace Penumbra
             LocalPoints.Clear();
             LocalPoints.AddRange(_rawLocalPoints);
             if (!LocalPoints.IsCounterClockWise())
-                LocalPoints.ReverseWindingOrder();            
+                LocalPoints.ReverseWindingOrder();
         }
 
         private void ValidateRawLocalPoints()
@@ -257,7 +257,7 @@ namespace Penumbra
         }
 
         /// <summary>
-        /// Factory method for creating a rectangular <see cref="Hull"/> with points defined so that 
+        /// Factory method for creating a rectangular <see cref="Hull"/> with points defined so that
         /// min vertex is at (0.0, 0.0) and max vertex is at (1.0, 1.0).
         /// </summary>
         /// <param name="position">Optional initial position. Default is (0.0, 0.0).</param>
@@ -265,10 +265,10 @@ namespace Penumbra
         /// <param name="rotation">Optional initial rotation in radians. Default is 0.0.</param>
         /// <param name="origin">Optional initial origin. Default is (0.5, 0.5).</param>
         /// <returns>A rectangular <see cref="Hull"/>.</returns>
-        public static Hull CreateRectangle(Vector2? position = null, Vector2? scale = null, float rotation = 0.0f, Vector2? origin = null) => 
+        public static Hull CreateRectangle(Vector2? position = null, Vector2? scale = null, float rotation = 0.0f, Vector2? origin = null) =>
             new Hull(new Vector2(1.0f), new Vector2(0.0f, 1.0f), new Vector2(0.0f), new Vector2(1.0f, 0.0f))
             {
-                Position = position ?? Vector2.Zero,                
+                Position = position ?? Vector2.Zero,
                 Origin = origin ?? new Vector2(0.5f),
                 Scale = scale ?? new Vector2(1.0f),
                 Rotation = rotation
@@ -286,7 +286,7 @@ namespace Penumbra
             {
                 Hull hull = this[i];
 
-                hull.Update();                
+                hull.Update();
                 Dirty = Dirty || hull.Dirty;
                 hull.Dirty = false;
             }
@@ -302,9 +302,9 @@ namespace Penumbra
                 // 1. test AABB intersection
                 // 2. test point is contained in polygon
                 if (!light.IgnoredHulls.Contains(hull) &&
-                    hull.Enabled && 
-                    hull.Valid && 
-                    light.Bounds.Intersects(ref hull.Bounds) && 
+                    hull.Enabled &&
+                    hull.Valid &&
+                    light.Bounds.Intersects(ref hull.Bounds) &&
                     hull.WorldPoints.Contains(ref light._position))
                     return true;
             }

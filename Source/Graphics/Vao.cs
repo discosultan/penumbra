@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Penumbra.Graphics
 {
     internal abstract class Vao : IDisposable
-    {        
+    {
         protected Vao(VertexDeclaration vertexDeclaration, PrimitiveType primitiveTopology)
         {
             VertexDeclaration = vertexDeclaration;
@@ -15,10 +15,10 @@ namespace Penumbra.Graphics
         public IndexBuffer IndexBuffer { get; protected set; }
         public int PrimitiveCount { get; private set; }
         public VertexDeclaration VertexDeclaration { get; }
-        public PrimitiveType PrimitiveTopology { get; }                
+        public PrimitiveType PrimitiveTopology { get; }
         public bool HasIndices => IndexBuffer != null;
         public virtual int VertexCount => VertexBuffer.VertexCount;
-        public virtual int IndexCount => IndexBuffer.IndexCount;        
+        public virtual int IndexCount => IndexBuffer.IndexCount;
 
         public void Dispose()
         {

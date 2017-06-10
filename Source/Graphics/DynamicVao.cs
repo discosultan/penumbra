@@ -7,22 +7,22 @@ namespace Penumbra.Graphics
     {
         private const int DefaultVertexCount = 32;
 
-        private readonly GraphicsDevice _graphicsDevice;        
-        
+        private readonly GraphicsDevice _graphicsDevice;
+
         private int _currentVertexCount;
         private int _currentIndexCount;
         private int _vertexCountInUse;
         private int _indexCountInUse;
 
         private DynamicVao(
-            GraphicsDevice graphicsDevice,            
+            GraphicsDevice graphicsDevice,
             VertexDeclaration vertexDecl,
             PrimitiveType primitiveTopology,
             int initialVertexCount,
-            int initialIndexCount,            
+            int initialIndexCount,
             bool useIndices) : base(vertexDecl, primitiveTopology)
         {
-            _graphicsDevice = graphicsDevice;                        
+            _graphicsDevice = graphicsDevice;
 
             _currentVertexCount = initialVertexCount;
             _currentIndexCount = initialIndexCount;
@@ -34,7 +34,7 @@ namespace Penumbra.Graphics
 
         public override int VertexCount => _vertexCountInUse;
 
-        public override int IndexCount => _indexCountInUse;        
+        public override int IndexCount => _indexCountInUse;
 
         public void SetVertices<T>(T[] fromData) where T : struct
         {
@@ -79,15 +79,15 @@ namespace Penumbra.Graphics
         }
 
         private void CreateVertexBuffer()
-        {            
-            VertexBuffer = new DynamicVertexBuffer(_graphicsDevice, VertexDeclaration, _currentVertexCount, BufferUsage.WriteOnly);                                        
+        {
+            VertexBuffer = new DynamicVertexBuffer(_graphicsDevice, VertexDeclaration, _currentVertexCount, BufferUsage.WriteOnly);
             Logger.Write($"Created dynamic vao vertex buffer with size {_currentVertexCount}");
         }
 
         private void CreateIndexBuffer()
-        {                        
+        {
             IndexBuffer = new DynamicIndexBuffer(_graphicsDevice, IndexElementSize.ThirtyTwoBits, _currentIndexCount,
-                BufferUsage.WriteOnly);            
+                BufferUsage.WriteOnly);
             Logger.Write($"Created dynamic vao index buffer with size {_currentIndexCount}");
         }
 
@@ -112,6 +112,6 @@ namespace Penumbra.Graphics
             bool useIndices = false)
         {
             return new DynamicVao(graphicsDevice, vertexDecl, primitiveTopology, vertexCount, indexCount, useIndices);
-        }        
+        }
     }
 }

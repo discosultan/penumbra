@@ -11,7 +11,7 @@ namespace Penumbra.Utilities
     }
 
     internal class DelegateLogger : ILogger
-    {        
+    {
         private readonly StringBuilder _stringBuilder = new StringBuilder();
 
         public DelegateLogger(Action<string> log)

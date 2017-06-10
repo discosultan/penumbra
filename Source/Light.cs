@@ -14,7 +14,7 @@ namespace Penumbra
     /// A light is an object which lights the world and casts shadows from <see cref="Hull"/>s.
     /// </summary>
     /// <remarks>
-    /// It is an abstract class - one of the three concrete implementations should be used instead: 
+    /// It is an abstract class - one of the three concrete implementations should be used instead:
     /// <see cref="PointLight" />, <see cref="Spotlight" />, <see cref="TexturedLight" />.
     /// </remarks>
     public abstract class Light
@@ -68,19 +68,19 @@ namespace Penumbra
         /// <remarks>
         /// <para>
         /// Each light is essentially a quad. Origin is the anchor point which marks the (0, 0) point on that quad (in local space).
-        /// Depending if you are operating in SpriteBatch's screen space (y-axis runs from top to bottom) origin (0, 0) 
-        /// represents the light quad's top left corner while (1, 1) represents the bottom right corner. The reason it's normalized to [0..1] 
-        /// is so that if you change the scale of the light, you wouldn't need to change the origin: an origin (0.5, 0.5) would still mark 
-        /// the center of the light.         
+        /// Depending if you are operating in SpriteBatch's screen space (y-axis runs from top to bottom) origin (0, 0)
+        /// represents the light quad's top left corner while (1, 1) represents the bottom right corner. The reason it's normalized to [0..1]
+        /// is so that if you change the scale of the light, you wouldn't need to change the origin: an origin (0.5, 0.5) would still mark
+        /// the center of the light.
         /// </para>
         /// <para>
         /// When it comes to the setter, there is no automatic normalization being done: it is expected to be set in its normalized form.
-        /// The reason values outside [0..1] range are allowed is that it might be desirable for some weird rotation scenarios, 
+        /// The reason values outside [0..1] range are allowed is that it might be desirable for some weird rotation scenarios,
         /// though such usage should be rather uncommon.
         /// </para>
         /// <para>
         /// Default value is usually sufficient for <see cref="PointLight"/> and <see cref="Spotlight"/>.
-        /// </para>        
+        /// </para>
         /// </remarks>
         public Vector2 Origin
         {
@@ -155,7 +155,7 @@ namespace Penumbra
         /// <summary>
         /// Gets or sets the intensity of the color applied to the final scene.
         /// Color will be raised to the power of intensity.
-        /// </summary>        
+        /// </summary>
         public float Intensity
         {
             get { return _intensity; }
@@ -169,7 +169,7 @@ namespace Penumbra
 
         private float _radius = 20.0f;
         /// <summary>
-        /// Gets or sets the radius of the light source (the area where light is emitted). 
+        /// Gets or sets the radius of the light source (the area where light is emitted).
         /// This determines the shape of the umbra and penumbra regions for cast shadows.
         /// </summary>
         /// <remarks>
@@ -214,7 +214,7 @@ namespace Penumbra
         {
             renderer._fxLightParamColor.SetValue(_color);
             renderer._fxLightParamIntensity.SetValue(IntensityFactor);
-            return null; 
+            return null;
         }
 
         internal void Update()
@@ -230,7 +230,7 @@ namespace Penumbra
             }
         }
 
-        internal bool Intersects(CameraProvider camera) => Bounds.Intersects(ref camera.Bounds);        
+        internal bool Intersects(CameraProvider camera) => Bounds.Intersects(ref camera.Bounds);
 
         internal bool Intersects(Hull hull) => Bounds.Intersects(ref hull.Bounds);
 

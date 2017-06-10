@@ -104,7 +104,7 @@ namespace Penumbra
             Hulls.Update();
 
             // We want to use clamping sampler state throughout the lightmap rendering process.
-            // This is required when drawing lights. Since light rendering and alpha clearing is done 
+            // This is required when drawing lights. Since light rendering and alpha clearing is done
             // in a single step, light is rendered with slightly larger quad where tex coords run out of the [0..1] range.
             Device.SamplerStates[0] = SamplerState.LinearClamp;
 

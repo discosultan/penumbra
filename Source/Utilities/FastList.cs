@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Penumbra.Utilities
 {
-    // Differs from List{T} by allowing direct access to the underlying array.    
+    // Differs from List{T} by allowing direct access to the underlying array.
     // ref: https://github.com/SiliconStudio/paradox/blob/master/sources/common/core/SiliconStudio.Core/Collections/FastList.cs
     internal class FastList<T> : IList<T>
     {
@@ -15,7 +15,7 @@ namespace Penumbra.Utilities
 
         public T[] Items { get; private set; }
 
-        public static implicit operator T[](FastList<T> collection) => collection.Items;        
+        public static implicit operator T[](FastList<T> collection) => collection.Items;
 
         public FastList(IEnumerable<T> collection)
         {

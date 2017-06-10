@@ -28,7 +28,7 @@ namespace Penumbra
         /// Constructs a new instance of <see cref="PenumbraComponent"/>.
         /// </summary>
         /// <param name="game">Game object to associate the engine with.</param>
-        public PenumbraComponent(Game game) 
+        public PenumbraComponent(Game game)
             : base(game)
         {
             // We only need to draw this component.

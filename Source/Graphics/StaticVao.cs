@@ -5,8 +5,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace Penumbra.Graphics
 {
     internal sealed class StaticVao : Vao
-    {        
-        private StaticVao(VertexBuffer vertexBuffer, IndexBuffer indexBuffer, VertexDeclaration vertexDeclaration, PrimitiveType primitiveTopology) 
+    {
+        private StaticVao(VertexBuffer vertexBuffer, IndexBuffer indexBuffer, VertexDeclaration vertexDeclaration, PrimitiveType primitiveTopology)
             : base(vertexDeclaration, primitiveTopology)
         {
             IndexBuffer = indexBuffer;
@@ -37,6 +37,6 @@ namespace Penumbra.Graphics
                 result = new StaticVao(vb, ib, vertexDeclaration, primitiveTopology);
             }
             return result;
-        }    
-    }    
+        }
+    }
 }

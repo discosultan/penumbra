@@ -14,7 +14,7 @@ namespace Penumbra
         /// Constructs a new instance of <see cref="TexturedLight"/>.
         /// </summary>
         /// <param name="texture">
-        /// Texture used to determine light strength at the sampled point. 
+        /// Texture used to determine light strength at the sampled point.
         /// Pass NULL to set texture later.
         /// </param>
         public TexturedLight(Texture2D texture = null)
@@ -27,7 +27,7 @@ namespace Penumbra
         /// <summary>
         /// Gets or sets the texture used to determine in what shape to render the light.
         /// A spotlight could be simulated with a spotlight texture. If no texture is set,
-        /// uses a linear falloff equation to render a point light shaped light. 
+        /// uses a linear falloff equation to render a point light shaped light.
         /// </summary>
         public Texture2D Texture { get; set; }
 
