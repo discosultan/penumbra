@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace Penumbra.Utilities
 {
     // Differs from List{T} by allowing direct access to the underlying array.
-    // ref: https://github.com/SiliconStudio/paradox/blob/master/sources/common/core/SiliconStudio.Core/Collections/FastList.cs
+    // Ref: https://github.com/SiliconStudio/paradox/blob/master/sources/common/core/SiliconStudio.Core/Collections/FastList.cs
     internal class FastList<T> : IList<T>
     {
         // Fields
@@ -34,9 +34,7 @@ namespace Penumbra.Utilities
                 using (IEnumerator<T> enumerator = collection.GetEnumerator())
                 {
                     while (enumerator.MoveNext())
-                    {
                         Add(enumerator.Current);
-                    }
                 }
             }
         }

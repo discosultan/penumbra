@@ -31,7 +31,7 @@ namespace Sandbox
         public SandboxGame()
         {
             var deviceManager = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";            
+            Content.RootDirectory = "Content";
             _penumbra = new PenumbraComponent(this)
             {
                 SpriteBatchTransformEnabled = false,
@@ -49,14 +49,14 @@ namespace Sandbox
             Components.Add(ui);
             _camera = new CameraMovementComponent(this);
             Components.Add(_camera);
-            Components.Add(new FpsGarbageComponent(this));            
+            Components.Add(new FpsGarbageComponent(this));
 
             // There's a bug when trying to change resolution during window resize.
             // https://github.com/mono/MonoGame/issues/3572
             deviceManager.PreferredBackBufferWidth = 1280;
             deviceManager.PreferredBackBufferHeight = 720;
-            Window.AllowUserResizing = false;            
-            IsMouseVisible = true;            
+            Window.AllowUserResizing = false;
+            IsMouseVisible = true;
         }
 
         protected override void LoadContent()

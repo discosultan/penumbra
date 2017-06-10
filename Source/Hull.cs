@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using Microsoft.Xna.Framework;
 using Penumbra.Geometry;
 using Penumbra.Graphics;
@@ -55,19 +54,7 @@ namespace Penumbra
                     ConvertRawLocalPointsToLocalPoints();
             }
 
-            _rawLocalPoints.CollectionChanged += (s, e) =>
-            {
-                ValidateRawLocalPoints();
-                if (Valid)
-                {
-                    ConvertRawLocalPointsToLocalPoints();
-                    if (e.Action == NotifyCollectionChangedAction.Add)
-                        foreach (Vector2 point in e.NewItems)
-                            Logger.Write($"New point at {point}.");
-                    _worldDirty = true;
-                    _pointsDirty = true;
-                }
-            };
+            _rawLocalPoints.CollectionChanged += (s, e) => _pointsDirty = true;
         }
 
         /// <summary>
@@ -176,36 +163,20 @@ namespace Penumbra
 
         internal void Update()
         {
-            if (_worldDirty)
-            {
+            if (_pointsDirty)
                 UpdatePoints();
 
-                // Calculate local to world transform.
-                Calculate.Transform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
-
-                // Calculate points in world space.
-                WorldPoints.Clear();
-                int pointCount = LocalPoints.Count;
-                for (int i = 0; i < pointCount; i++)
-                {
-                    Vector2 originalPos = LocalPoints[i];
-                    Vector2 transformedPos;
-                    Vector2.Transform(ref originalPos, ref LocalToWorld, out transformedPos);
-                    WorldPoints.Add(transformedPos);
-                }
-
-                // Calculate bounds.
-                WorldPoints.GetBounds(out Bounds);
-
-                _worldDirty = false;
-                Dirty = true;
-            }
+            if (_worldDirty)
+                UpdateWorld();
         }
 
         private void UpdatePoints()
         {
-            if (_pointsDirty)
+            ValidateRawLocalPoints();
+            if (Valid)
             {
+                ConvertRawLocalPointsToLocalPoints();
+
                 IsConvex = LocalPoints.IsConvex();
                 Indices.Clear();
 
@@ -224,8 +195,32 @@ namespace Penumbra
                     Triangulator.Process(LocalPoints, Indices);
                 }
 
-                _pointsDirty = false;
+                _worldDirty = true;
             }
+            _pointsDirty = false;
+        }
+
+        private void UpdateWorld()
+        {
+            // Calculate local to world transform.
+            Calculate.Transform(ref _position, ref _origin, ref _scale, _rotation, out LocalToWorld);
+
+            // Calculate points in world space.
+            WorldPoints.Clear();
+            int pointCount = LocalPoints.Count;
+            for (int i = 0; i < pointCount; i++)
+            {
+                Vector2 originalPos = LocalPoints[i];
+                Vector2 transformedPos;
+                Vector2.Transform(ref originalPos, ref LocalToWorld, out transformedPos);
+                WorldPoints.Add(transformedPos);
+            }
+
+            // Calculate bounds.
+            WorldPoints.GetBounds(out Bounds);
+
+            Dirty = true;
+            _worldDirty = false;
         }
 
         // Raw local points are points unmodified by the system. Local points are always in CCW order.

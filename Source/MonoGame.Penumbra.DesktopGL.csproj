@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Graphics\GraphicsExtensions.cs" />
     <Compile Include="Graphics\Vao.cs" />
     <Compile Include="Graphics\Renderers\LightRenderer.cs" />
