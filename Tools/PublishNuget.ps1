@@ -31,10 +31,10 @@ UpdateVersionInFile (GetNuspecFilename $idDesktopGL) $versionRegex $newVersion
 
 # Create nuget packages with symbol packages.
 Write-Host Creating packages
-.\nuget pack (GetNuspecFilename $idWindowsDX) -symbols
-.\nuget pack (GetNuspecFilename $idDesktopGL) -symbols
+nuget pack (GetNuspecFilename $idWindowsDX) -symbols
+nuget pack (GetNuspecFilename $idDesktopGL) -symbols
 
 # Publish nuget packages to nuget.org and symbol packages to symbolsource.org
 Write-Host Publishing packages
-.\nuget push (GetNupkgFilename $idWindowsDX) -Source https://www.nuget.org/api/v2/package
-.\nuget push (GetNupkgFilename $idDesktopGL) -Source https://www.nuget.org/api/v2/package
+nuget push (GetNupkgFilename $idWindowsDX) -Source https://www.nuget.org/api/v2/package
+nuget push (GetNupkgFilename $idDesktopGL) -Source https://www.nuget.org/api/v2/package
