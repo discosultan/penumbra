@@ -22,7 +22,7 @@ namespace Sandbox
         public abstract void Activate(PenumbraComponent penumbra, ContentManager content);
 
         public virtual void Update(float deltaSeconds)
-        {            
+        {
         }
     }
 }

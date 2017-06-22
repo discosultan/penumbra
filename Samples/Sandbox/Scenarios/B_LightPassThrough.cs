@@ -12,7 +12,7 @@ namespace Sandbox.Scenarios
         private const float LightPaddingFromEdge = 120f;
         private const float HullSpacing = 160f;
 
-        private PenumbraComponent _penumbra;        
+        private PenumbraComponent _penumbra;
 
         private Light _light1;
         //private Light _light2;
@@ -47,7 +47,7 @@ namespace Sandbox.Scenarios
             //    ShadowType = ShadowType.Illuminated
             //};
             _penumbra.Lights.Add(_light1);
-            //_penumbra.Lights.Add(_light2);            
+            //_penumbra.Lights.Add(_light2);
 
             _penumbra.Hulls.Add(new Hull(vertices) { Position = new Vector2(-HullSpacing, 0), Scale = new Vector2(50f) });
             _penumbra.Hulls.Add(new Hull(vertices) { Position = new Vector2(0, 0), Scale = new Vector2(50f) });
@@ -59,20 +59,20 @@ namespace Sandbox.Scenarios
             //float angle = deltaSeconds * HullRotationSpeed;
             //for (int i = 0; i < _penumbra.Hulls.Count; i++)
             //{
-            //    Hull hull = _penumbra.Hulls[i];                
-            //    if (i % 2 == 0)                
+            //    Hull hull = _penumbra.Hulls[i];
+            //    if (i % 2 == 0)
             //        hull.Rotation += angle;
             //    else
             //        hull.Rotation -= angle;
             //}
 
             _progress = Math.Min(_progress + deltaSeconds / LightSpeed, 1f);
-            
+
             float halfWidth = _penumbra.GraphicsDevice.Viewport.Width / 2f;
-                        
-            float posX1 = MathHelper.SmoothStep(halfWidth - LightPaddingFromEdge, -halfWidth + LightPaddingFromEdge, _progress);                            
-            float posX2 = MathHelper.SmoothStep(-halfWidth + LightPaddingFromEdge, halfWidth - LightPaddingFromEdge, _progress);                
-            
+
+            float posX1 = MathHelper.SmoothStep(halfWidth - LightPaddingFromEdge, -halfWidth + LightPaddingFromEdge, _progress);
+            float posX2 = MathHelper.SmoothStep(-halfWidth + LightPaddingFromEdge, halfWidth - LightPaddingFromEdge, _progress);
+
             _light1.Position = new Vector2(_isMovingLeft ? posX1 : posX2, 0);
             //_light2.Position = new Vector2(_isMovingLeft ? posX2 : posX1, 0);
 
@@ -80,7 +80,7 @@ namespace Sandbox.Scenarios
             {
                 _progress = 0;
                 _isMovingLeft = !_isMovingLeft;
-            }            
+            }
         }
     }
 }

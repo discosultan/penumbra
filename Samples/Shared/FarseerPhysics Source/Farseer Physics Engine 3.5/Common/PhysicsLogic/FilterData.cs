@@ -30,7 +30,7 @@ namespace FarseerPhysics.Common.PhysicsLogic
         public int EnabledOnGroup;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="body"></param>
         /// <returns></returns>

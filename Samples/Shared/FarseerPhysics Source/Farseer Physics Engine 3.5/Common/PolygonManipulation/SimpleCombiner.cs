@@ -1,6 +1,6 @@
 ﻿/*
 * C# Version Ported by Matt Bettcher and Ian Qvist 2009-2010
-* 
+*
 * Original C++ Version Copyright (c) 2007 Eric Jordan
 *
 * This software is provided 'as-is', without any express or implied
@@ -32,7 +32,7 @@ namespace FarseerPhysics.Common.PolygonManipulation
     {
         /// <summary>
         /// Combine a list of triangles into a list of convex polygons.
-        /// 
+        ///
         /// Note: This only works on triangles.
         /// </summary>
         ///<param name="triangles">The triangles.</param>

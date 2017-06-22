@@ -518,7 +518,7 @@ namespace FarseerPhysics.Common.TextureTools
                     // get x-coord of every polygon edge which crosses y
                     xCoords = SearchCrossingEdges(polygon, y);
 
-                    // We need an even number of crossing edges. 
+                    // We need an even number of crossing edges.
                     // It's always a pair of start and end edge: nothing | polygon | hole | polygon | nothing ...
                     // If it's not then don't bother, it's probably a peak ...
                     // ...which should be filtered out by SearchCrossingEdges() anyway.
@@ -540,10 +540,10 @@ namespace FarseerPhysics.Common.TextureTools
                                 // In that case the polygon edge doesn't lie on the texture's solid pixel, because of the hull tolearance.
                                 // If the edge lies before the first solid pixel then we need to skip our transparent pixel finds.
 
-                                // The algorithm starts to search for a relevant transparent pixel (which indicates a possible hole) 
+                                // The algorithm starts to search for a relevant transparent pixel (which indicates a possible hole)
                                 // after it has found a solid pixel.
 
-                                // After we've found a solid and a transparent pixel (a hole's left edge) 
+                                // After we've found a solid and a transparent pixel (a hole's left edge)
                                 // we search for a solid pixel again (a hole's right edge).
                                 // When found the distance of that coodrinate has to be greater then the hull tolerance.
 
@@ -776,7 +776,7 @@ namespace FarseerPhysics.Common.TextureTools
             if (polygon.Count > 2)
             {
                 // There is a gap between the last and the first vertex in the vertex list.
-                // We will bridge that by setting the last vertex (vertex2) to the last 
+                // We will bridge that by setting the last vertex (vertex2) to the last
                 // vertex in the list.
                 vertex2 = polygon[polygon.Count - 1];
 
@@ -802,7 +802,7 @@ namespace FarseerPhysics.Common.TextureTools
                                 nextVertex = polygon[(i + 1) % polygon.Count];
                                 nextSlope = vertex1 - nextVertex;
 
-                                // Ignore peaks. 
+                                // Ignore peaks.
                                 // If thwo edges are aligned like this: /\ and the y coordinate lies on the top,
                                 // then we get the same x coord twice and we don't need that.
                                 if (slope.Y > 0)
@@ -912,7 +912,7 @@ namespace FarseerPhysics.Common.TextureTools
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="entrance"></param>
         /// <param name="last"></param>

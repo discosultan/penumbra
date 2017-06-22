@@ -13,29 +13,29 @@ namespace Sandbox
         private readonly PenumbraControllerComponent _penumbraController;
 
         private Scenario[] _scenarios;
-        private int _currentScenarioIndex;        
+        private int _currentScenarioIndex;
 
-        public ScenariosComponent(SandboxGame game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController) 
+        public ScenariosComponent(SandboxGame game, PenumbraComponent penumbra, PenumbraControllerComponent penumbraController)
             : base(game)
-        {            
+        {
             _penumbra = penumbra;
             _penumbraController = penumbraController;
         }
 
         public override void Initialize()
         {
-            base.Initialize();            
+            base.Initialize();
             LoadScenarios();
             SwitchScenario();
         }
 
-        public Scenario ActiveScenario { get; private set; }        
+        public Scenario ActiveScenario { get; private set; }
 
         public void NextScenario()
         {
             _currentScenarioIndex = (_currentScenarioIndex + 1) % _scenarios.Length;
             SwitchScenario();
-        }        
+        }
 
         public void PreviousScenario()
         {
@@ -46,7 +46,7 @@ namespace Sandbox
         }
 
         public override void Update(GameTime gameTime)
-        {            
+        {
             ActiveScenario.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
@@ -72,7 +72,7 @@ namespace Sandbox
             ActiveScenario.Activate(_penumbra, Game.Content);
 
             foreach (Light light in _penumbra.Lights)
-                light.ShadowType = _penumbraController.ActiveShadowType;           
+                light.ShadowType = _penumbraController.ActiveShadowType;
         }
     }
 }

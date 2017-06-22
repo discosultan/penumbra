@@ -13,7 +13,7 @@ namespace Sandbox.Scenarios
         private readonly List<Hull> _hulls = new List<Hull>();
 
         private readonly List<Spotlight> _lights = new List<Spotlight>();
-        
+
         private const float RotationSpeed = MathHelper.TwoPi/8;
 
         public override void Activate(PenumbraComponent penumbra, ContentManager content)
@@ -21,7 +21,7 @@ namespace Sandbox.Scenarios
             _hulls.Clear();
             _lights.Clear();
             _lights.Add(new Spotlight
-            {                
+            {
                 Color = Color.YellowGreen,
                 Scale = new Vector2(400),
                 Radius = 20,
@@ -31,7 +31,7 @@ namespace Sandbox.Scenarios
             {
                 Color = Color.Wheat,
                 Scale = new Vector2(1000),
-                Rotation = MathHelper.Pi - MathHelper.PiOver2 * 0.75f,                                
+                Rotation = MathHelper.Pi - MathHelper.PiOver2 * 0.75f,
                 ConeDecay = 0.5f
             });
             _lights.Add(new Spotlight
@@ -41,7 +41,7 @@ namespace Sandbox.Scenarios
                 Rotation = MathHelper.Pi + MathHelper.PiOver2 * 0.75f,
                 ConeDecay = 1f
             });
-            _lights.ForEach(penumbra.Lights.Add);            
+            _lights.ForEach(penumbra.Lights.Add);
 
             GenerateHulls(penumbra);
         }
@@ -52,7 +52,7 @@ namespace Sandbox.Scenarios
             const float distance = 185;
             for (int i = 0; i < NumHulls; i++)
             {
-                float angle = increment * i;                
+                float angle = increment * i;
                 var hull = new Hull(new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f))
                 {
                     Position = Rotate(new Vector2(0, distance), angle),
@@ -65,7 +65,7 @@ namespace Sandbox.Scenarios
 
         public override void Update(float deltaSeconds)
         {
-            float angle = deltaSeconds*RotationSpeed;            
+            float angle = deltaSeconds*RotationSpeed;
 
             _lights.ForEach(x =>
             {

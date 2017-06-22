@@ -10,7 +10,7 @@ namespace FarseerPhysics.Controllers
     {
         /// <summary>
         /// Controls the rotational drag that the fluid exerts on the bodies within it. Use higher values will simulate thick fluid, like honey, lower values to
-        /// simulate water-like fluids. 
+        /// simulate water-like fluids.
         /// </summary>
         public float AngularDragCoefficient;
 

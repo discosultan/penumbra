@@ -200,7 +200,7 @@ namespace FarseerPhysics.Common
             {
                 int p = (int)(time / _deltaT);
 
-                // 
+                //
                 int p0 = p - 1;
                 if (p0 < 0) p0 = 0;
                 else if (p0 >= ControlPoints.Count - 1) p0 = ControlPoints.Count - 1;

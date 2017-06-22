@@ -45,7 +45,7 @@ namespace Platformer2D
         // When the time remaining is less than the warning time, it blinks on the hud
         private static readonly TimeSpan WarningTime = TimeSpan.FromSeconds(30);
 
-        // We store our input states so that we only poll once per frame, 
+        // We store our input states so that we only poll once per frame,
         // then we use the same input state wherever needed
         private GamePadState gamePadState;
         private KeyboardState keyboardState;
@@ -91,7 +91,7 @@ namespace Platformer2D
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);            
+            spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Load fonts
             hudFont = Content.Load<SpriteFont>("Fonts/Hud");
@@ -138,7 +138,7 @@ namespace Platformer2D
             HandleInput(gameTime);
 
             // update our level, passing down the GameTime along with all of our input states
-            level.Update(gameTime, keyboardState, gamePadState, 
+            level.Update(gameTime, keyboardState, gamePadState,
                          accelerometerState, Window.CurrentOrientation);
 
             if (level.Player.Velocity != Vector2.Zero)
@@ -195,7 +195,7 @@ namespace Platformer2D
             // Unloads the content for the current level before loading the next one.
             if (level != null)
                 level.Dispose();
-            
+
             // Load the level.
             string levelPath = string.Format("Content/Levels/{0}.txt", levelIndex);
             using (Stream fileStream = TitleContainer.OpenStream(levelPath))
@@ -216,8 +216,8 @@ namespace Platformer2D
         {
             // Everything after this call will be affected by the lighting system.
             penumbra.BeginDraw();
-            
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);            
+
+            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null,null, globalTransformation);
             level.Draw(gameTime, spriteBatch);
@@ -229,7 +229,7 @@ namespace Platformer2D
             // Draw stuff that is not affected by lighting (UI, etc).
             spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
             DrawHud();
-            spriteBatch.End();            
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
@@ -262,7 +262,7 @@ namespace Platformer2D
             // Draw score
             float timeHeight = hudFont.MeasureString(timeString).Y;
             DrawShadowedString(hudFont, "SCORE: " + level.Score.ToString(), hudLocation + new Vector2(0.0f, timeHeight * 1.2f), Color.Yellow);
-           
+
             // Determine the status overlay message to show.
             Texture2D status = null;
             if (level.TimeRemaining == TimeSpan.Zero)

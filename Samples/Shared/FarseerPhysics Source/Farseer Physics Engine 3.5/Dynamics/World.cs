@@ -1,23 +1,23 @@
 ﻿/*
 * Farseer Physics Engine:
 * Copyright (c) 2012 Ian Qvist
-* 
+*
 * Original source Box2D:
-* Copyright (c) 2006-2011 Erin Catto http://www.box2d.org 
-* 
-* This software is provided 'as-is', without any express or implied 
-* warranty.  In no event will the authors be held liable for any damages 
-* arising from the use of this software. 
-* Permission is granted to anyone to use this software for any purpose, 
-* including commercial applications, and to alter it and redistribute it 
-* freely, subject to the following restrictions: 
-* 1. The origin of this software must not be misrepresented; you must not 
-* claim that you wrote the original software. If you use this software 
-* in a product, an acknowledgment in the product documentation would be 
-* appreciated but is not required. 
-* 2. Altered source versions must be plainly marked as such, and must not be 
-* misrepresented as being the original software. 
-* 3. This notice may not be removed or altered from any source distribution. 
+* Copyright (c) 2006-2011 Erin Catto http://www.box2d.org
+*
+* This software is provided 'as-is', without any express or implied
+* warranty.  In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+* 1. The origin of this software must not be misrepresented; you must not
+* claim that you wrote the original software. If you use this software
+* in a product, an acknowledgment in the product documentation would be
+* appreciated but is not required.
+* 2. Altered source versions must be plainly marked as such, and must not be
+* misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
 */
 //#define USE_ACTIVE_CONTACT_SET
 //#define USE_AWAKE_BODY_SET
@@ -455,9 +455,9 @@ namespace FarseerPhysics.Dynamics
 #if USE_AWAKE_BODY_SET
 
             // If AwakeBodyList is empty, the Island code will not have a chance
-            // to update the diagnostics timer so reset the timer here. 
+            // to update the diagnostics timer so reset the timer here.
             Island.JointUpdateTime = 0;
-      
+
             Debug.Assert(AwakeBodyList.Count == 0);
             AwakeBodyList.AddRange(AwakeBodySet);
 
@@ -1087,7 +1087,7 @@ namespace FarseerPhysics.Dynamics
 #endif
 
         /// <summary>
-        /// Get the world joint list. 
+        /// Get the world joint list.
         /// </summary>
         /// <value>The joint list.</value>
         public List<Joint> JointList { get; private set; }
@@ -1293,7 +1293,7 @@ namespace FarseerPhysics.Dynamics
 
         /// <summary>
         /// Query the world for all fixtures that potentially overlap the provided AABB.
-        /// 
+        ///
         /// Inside the callback:
         /// Return true: Continues the query
         /// Return false: Terminate the query
@@ -1330,7 +1330,7 @@ namespace FarseerPhysics.Dynamics
         /// Ray-cast the world for all fixtures in the path of the ray. Your callback
         /// controls whether you get the closest point, any point, or n-points.
         /// The ray-cast ignores shapes that contain the starting point.
-        /// 
+        ///
         /// Inside the callback:
         /// return -1: ignore this fixture and continue
         /// return 0: terminate the ray cast

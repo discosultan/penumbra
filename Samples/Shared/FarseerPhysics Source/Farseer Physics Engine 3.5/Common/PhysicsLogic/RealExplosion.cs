@@ -19,7 +19,7 @@ namespace FarseerPhysics.Common.PhysicsLogic
     }
 
     /// <summary>
-    /// This is a comprarer used for 
+    /// This is a comprarer used for
     /// detecting angle difference between rays
     /// </summary>
     internal class RayDataComparer : IComparer<float>

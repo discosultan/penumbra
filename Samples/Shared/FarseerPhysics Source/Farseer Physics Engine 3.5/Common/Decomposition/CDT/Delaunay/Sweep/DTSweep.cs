@@ -33,10 +33,10 @@
  * Sweep-line, Constrained Delauney Triangulation (CDT) See: Domiter, V. and
  * Zalik, B.(2008)'Sweep-line algorithm for constrained Delaunay triangulation',
  * International Journal of Geographical Information Science
- * 
+ *
  * "FlipScan" Constrained Edge Algorithm invented by author of this code.
- * 
- * Author: Thomas Åhlén, thahlen@gmail.com 
+ *
+ * Author: Thomas Åhlén, thahlen@gmail.com
  */
 
 // Changes from the Java version
@@ -103,7 +103,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
         }
 
         /// <summary>
-        /// If this is a Delaunay Triangulation of a pointset we need to fill so the triangle mesh gets a ConvexHull 
+        /// If this is a Delaunay Triangulation of a pointset we need to fill so the triangle mesh gets a ConvexHull
         /// </summary>
         private static void FinalizationConvexHull(DTSweepContext tcx)
         {
@@ -118,10 +118,10 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
 
             // Lets remove triangles connected to the two "algorithm" points
 
-            // XXX: When the first the nodes are points in a triangle we need to do a flip before 
+            // XXX: When the first the nodes are points in a triangle we need to do a flip before
             //      removing triangles or we will lose a valid triangle.
             //      Same for last three nodes!
-            // !!! If I implement ConvexHull for lower right and left boundary this fix should not be 
+            // !!! If I implement ConvexHull for lower right and left boundary this fix should not be
             //     needed and the removed triangles will be added again by default
             n1 = tcx.aFront.Tail.Prev;
             if (n1.Triangle.Contains(n1.Next.Point) && n1.Triangle.Contains(n1.Prev.Point))
@@ -140,7 +140,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
                 tcx.MapTriangleToNodes(t1);
             }
 
-            // Lower right boundary 
+            // Lower right boundary
             TriangulationPoint first = tcx.aFront.Head.Point;
             n2 = tcx.aFront.Tail.Prev;
             t1 = n2.Triangle;
@@ -238,7 +238,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
             AdvancingFrontNode node = tcx.LocateNode(point);
             AdvancingFrontNode newNode = NewFrontTriangle(tcx, point, node);
 
-            // Only need to check +epsilon since point never have smaller 
+            // Only need to check +epsilon since point never have smaller
             // x value than node due to how we fetch nodes from the front
             if (point.X <= node.Point.X + TriangulationUtil.EPSILON)
             {
@@ -289,7 +289,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
                 }
 
                 // For now we will do all needed filling
-                // TODO: integrate with flip process might give some better performance 
+                // TODO: integrate with flip process might give some better performance
                 //       but for now this avoid the issue with cases that needs both flips and fills
                 FillEdgeEvent(tcx, edge, node);
 
@@ -367,7 +367,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
             {
                 if (TriangulationUtil.Orient2d(node.Point, node.Next.Point, node.Next.Next.Point) == Orientation.CCW)
                 {
-                    // Concave 
+                    // Concave
                     FillRightConcaveEdgeEvent(tcx, edge, node);
                 }
                 else
@@ -450,7 +450,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
             {
                 if (TriangulationUtil.Orient2d(node.Point, node.Prev.Point, node.Prev.Prev.Point) == Orientation.CW)
                 {
-                    // Concave 
+                    // Concave
                     FillLeftConcaveEdgeEvent(tcx, edge, node);
                 }
                 else
@@ -508,7 +508,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
                 if (triangle.Contains(eq, p1))
                 {
                     triangle.MarkConstrainedEdge(eq, p1);
-                    // We are modifying the constraint maybe it would be better to 
+                    // We are modifying the constraint maybe it would be better to
                     // not change the given constraint and just keep a variable for the new constraint
                     tcx.EdgeEvent.ConstrainedEdge.Q = p1;
                     triangle = triangle.NeighborAcross(point);
@@ -532,7 +532,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
                 if (triangle.Contains(eq, p2))
                 {
                     triangle.MarkConstrainedEdge(eq, p2);
-                    // We are modifying the constraint maybe it would be better to 
+                    // We are modifying the constraint maybe it would be better to
                     // not change the given constraint and just keep a variable for the new constraint
                     tcx.EdgeEvent.ConstrainedEdge.Q = p2;
                     triangle = triangle.NeighborAcross(point);
@@ -631,9 +631,9 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
         }
 
         /// <summary>
-        /// When we need to traverse from one triangle to the next we need 
+        /// When we need to traverse from one triangle to the next we need
         /// the point in current triangle that is the opposite point to the next
-        /// triangle. 
+        /// triangle.
         /// </summary>
         private static TriangulationPoint NextFlipPoint(TriangulationPoint ep, TriangulationPoint eq, DelaunayTriangle ot, TriangulationPoint op)
         {
@@ -688,8 +688,8 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
 
         /// <summary>
         /// Scan part of the FlipScan algorithm<br>
-        /// When a triangle pair isn't flippable we will scan for the next 
-        /// point that is inside the flip triangle scan area. When found 
+        /// When a triangle pair isn't flippable we will scan for the next
+        /// point that is inside the flip triangle scan area. When found
         /// we generate a new flipEdgeEvent
         /// </summary>
         /// <param name="tcx"></param>
@@ -715,8 +715,8 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
             {
                 // flip with new edge op->eq
                 FlipEdgeEvent(tcx, eq, op, ot, op);
-                // TODO: Actually I just figured out that it should be possible to 
-                //       improve this by getting the next ot and op before the the above 
+                // TODO: Actually I just figured out that it should be possible to
+                //       improve this by getting the next ot and op before the the above
                 //       flip and continue the flipScanEdgeEvent here
                 // set new ot and op here and loop back to inScanArea test
                 // also need to set a new flipTriangle first
@@ -838,7 +838,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
         /// <summary>
         /// Fills a basin that has formed on the Advancing Front to the right
         /// of given node.
-        /// First we decide a left,bottom and right node that forms the 
+        /// First we decide a left,bottom and right node that forms the
         /// boundaries of the basin. Then we do a reqursive fill.
         /// </summary>
         /// <param name="tcx"></param>
@@ -999,7 +999,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
         {
             DelaunayTriangle triangle = new DelaunayTriangle(node.Prev.Point, node.Point, node.Next.Point);
             // TODO: should copy the cEdge value from neighbor triangles
-            //       for now cEdge values are copied during the legalize 
+            //       for now cEdge values are copied during the legalize
             triangle.MarkNeighbor(node.Prev.Triangle);
             triangle.MarkNeighbor(node.Triangle);
             tcx.Triangles.Add(triangle);
@@ -1051,7 +1051,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
 
                     if (inside)
                     {
-                        // Lets mark this shared edge as Delaunay 
+                        // Lets mark this shared edge as Delaunay
                         t.EdgeIsDelaunay[i] = true;
                         ot.EdgeIsDelaunay[oi] = true;
 
@@ -1076,7 +1076,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
 
                         // Reset the Delaunay edges, since they only are valid Delaunay edges
                         // until we add a new triangle or point.
-                        // XXX: need to think about this. Can these edges be tried after we 
+                        // XXX: need to think about this. Can these edges be tried after we
                         //      return to previous recursive level?
                         t.EdgeIsDelaunay[i] = false;
                         ot.EdgeIsDelaunay[oi] = false;
@@ -1094,7 +1094,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
         /// Rotates a triangle pair one vertex CW
         ///       n2                    n2
         ///  P +-----+             P +-----+
-        ///    | t  /|               |\  t |  
+        ///    | t  /|               |\  t |
         ///    |   / |               | \   |
         ///  n1|  /  |n3           n1|  \  |n3
         ///    | /   |    after CW   |   \ |
@@ -1136,8 +1136,8 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
 
             // Remap neighbors
             // XXX: might optimize the markNeighbor by keeping track of
-            //      what side should be assigned to what neighbor after the 
-            //      rotation. Now mark neighbor does lots of testing to find 
+            //      what side should be assigned to what neighbor after the
+            //      rotation. Now mark neighbor does lots of testing to find
             //      the right side.
             t.Neighbors.Clear();
             ot.Neighbors.Clear();

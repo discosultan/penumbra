@@ -20,11 +20,11 @@ namespace Common.Utilities
     }
 
     /// <summary>
-    /// Static class used to display the current and average frames per second.    
+    /// Static class used to display the current and average frames per second.
     /// </summary>
     public static class FPS
     {
-        // Frames per second variables.        
+        // Frames per second variables.
         private static int _fpsCount;
         private static float _timeSinceLastUpdateInSeconds;
 
@@ -32,7 +32,7 @@ namespace Common.Utilities
         private static int _numberOfSecondsToComputerAverageOver = 10;
         private static readonly Queue<int> FpsQueue = new Queue<int>();
         // Stores the sum of all the FPS numbers in the FPS queue.
-        private static int _fpsQueueSum;        
+        private static int _fpsQueueSum;
 
         /// <summary>
         /// Event handler that fires every second, directly after the CurrentFPS and AverageFPS have been updated.
@@ -50,7 +50,7 @@ namespace Common.Utilities
 
         /// <summary>
         /// Gets the average number of Frames Per Second being achieved.
-        /// </summary>        
+        /// </summary>
         public static float AverageFPS { get; private set; }
 
         /// <summary>
@@ -67,13 +67,13 @@ namespace Common.Utilities
         /// Gets or sets the number of seconds that the average FPS should be computed over.
         /// </summary>
         /// <param name="value">
-        /// The number of seconds that the average FPS should be computed over. 
+        /// The number of seconds that the average FPS should be computed over.
         /// NOTE: This must be greater than 1.
         /// </param>
-        public static int NumberOfSecondsToComputeAverageOver 
+        public static int NumberOfSecondsToComputeAverageOver
         {
             get { return _numberOfSecondsToComputerAverageOver; }
-            set 
+            set
             {
                 // If a valid number has been specified.
                 if (value > 1) {
@@ -135,7 +135,7 @@ namespace Common.Utilities
                 // Let any listeners know that the FPS and average FPS have been updated.
                 RaiseFpsUpdated();
             }
-        }        
+        }
 
         /// <summary>
         /// Function to erase the current FPS values being used to calculate the average and to start over.

@@ -6,13 +6,13 @@ namespace FarseerPhysics.Common.Decomposition
 {
     /// <summary>
     /// Convex decomposition algorithm created by unknown
-    /// 
+    ///
     /// Properties:
     /// - No support for holes
     /// - Very fast
     /// - Only works on simple polygons
     /// - Only works on counter clockwise polygons
-    /// 
+    ///
     /// More information: http://www.flipcode.com/archives/Efficient_Polygon_Triangulation.shtml
     /// </summary>
     internal static class FlipcodeDecomposer
@@ -23,10 +23,10 @@ namespace FarseerPhysics.Common.Decomposition
 
         /// <summary>
         /// Decompose the polygon into triangles.
-        /// 
+        ///
         /// Properties:
         /// - Only works on counter clockwise polygons
-        /// 
+        ///
         /// </summary>
         /// <param name="vertices">The list of points describing the polygon</param>
         public static List<Vertices> ConvexPartition(Vertices vertices)
@@ -48,7 +48,7 @@ namespace FarseerPhysics.Common.Decomposition
 
             for (int v = nv - 1; nv > 2; )
             {
-                // If we loop, it is probably a non-simple polygon 
+                // If we loop, it is probably a non-simple polygon
                 if (0 >= (count--))
                 {
                     // Triangulate: ERROR - probable bad polygon!
@@ -58,13 +58,13 @@ namespace FarseerPhysics.Common.Decomposition
                 // Three consecutive vertices in current polygon, <u,v,w>
                 int u = v;
                 if (nv <= u)
-                    u = 0; // Previous 
+                    u = 0; // Previous
                 v = u + 1;
                 if (nv <= v)
-                    v = 0; // New v   
+                    v = 0; // New v
                 int w = v + 1;
                 if (nv <= w)
-                    w = 0; // Next 
+                    w = 0; // Next
 
                 _tmpA = vertices[polygon[u]];
                 _tmpB = vertices[polygon[v]];
@@ -81,7 +81,7 @@ namespace FarseerPhysics.Common.Decomposition
                     triangle.Add(_tmpC);
                     result.Add(triangle);
 
-                    // Remove v from remaining polygon 
+                    // Remove v from remaining polygon
                     for (s = v, t = v + 1; t < nv; s++, t++)
                     {
                         polygon[s] = polygon[t];
@@ -120,7 +120,7 @@ namespace FarseerPhysics.Common.Decomposition
         }
 
         /// <summary>
-        /// Cut a the contour and add a triangle into V to describe the 
+        /// Cut a the contour and add a triangle into V to describe the
         /// location of the cut
         /// </summary>
         /// <param name="contour">The list of points defining the polygon</param>

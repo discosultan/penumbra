@@ -12,7 +12,7 @@ namespace Sandbox.Scenarios
         private const float Light2MovementSpeed = -MathHelper.TwoPi / 5f;
         private const float Light3MovementSpeed = MathHelper.TwoPi / 6f;
         private static readonly Color[] LightColors =
-        {            
+        {
             Color.Red, Color.Orange, Color.Yellow
         };
 

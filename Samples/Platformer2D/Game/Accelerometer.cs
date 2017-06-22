@@ -24,7 +24,7 @@ namespace Platformer2D
 #if WINDOWS_PHONE
         // the accelerometer sensor on the device
         private static Microsoft.Devices.Sensors.Accelerometer accelerometer = new Microsoft.Devices.Sensors.Accelerometer();
-        
+
         // we need an object for locking because the ReadingChanged event is fired
         // on a different thread than our game
         private static object threadLock = new object();
@@ -51,8 +51,8 @@ namespace Platformer2D
             }
 
 #if WINDOWS_PHONE
-            // try to start the sensor only on devices, catching the exception if it fails            
-            if (Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Device)            
+            // try to start the sensor only on devices, catching the exception if it fails
+            if (Microsoft.Devices.Environment.DeviceType == Microsoft.Devices.DeviceType.Device)
             {
                 try
                 {
@@ -76,7 +76,7 @@ namespace Platformer2D
             // remember that we are initialized
             isInitialized = true;
         }
-        
+
 #if WINDOWS_PHONE
         private static void sensor_ReadingChanged(object sender, Microsoft.Devices.Sensors.AccelerometerReadingEventArgs e)
         {

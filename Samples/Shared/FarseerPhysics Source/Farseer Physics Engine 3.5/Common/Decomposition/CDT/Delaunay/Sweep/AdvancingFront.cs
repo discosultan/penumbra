@@ -88,7 +88,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
         /// </summary>
         private AdvancingFrontNode FindSearchNode(double x)
         {
-            // TODO: implement BST index 
+            // TODO: implement BST index
             return Search;
         }
 

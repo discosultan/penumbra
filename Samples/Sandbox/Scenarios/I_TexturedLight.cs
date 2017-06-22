@@ -20,12 +20,12 @@ namespace Sandbox.Scenarios
         {
             Texture2D tex = content.Load<Texture2D>("LightTexture");
             _light = new TexturedLight(tex)
-            {           
+            {
 				Position = new Vector2(-penumbra.GraphicsDevice.Viewport.Width / 2f, 0),
 				Origin = new Vector2(0.5f, 1),
-                Color = Color.White,                                
+                Color = Color.White,
                 Radius = 150,
-                Rotation = MathHelper.PiOver2                
+                Rotation = MathHelper.PiOver2
             };
             penumbra.Lights.Add(_light);
 			_hull = new Hull(new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f))

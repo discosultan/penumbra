@@ -109,7 +109,7 @@ namespace FarseerPhysics.Common.Decomposition.Seidel
                     // linear time, although I don't see a way around using traditional methods
                     // when using a randomized incremental algorithm
 
-                    // Insertion sort is one of the fastest algorithms for sorting arrays containing 
+                    // Insertion sort is one of the fastest algorithms for sorting arrays containing
                     // fewer than ten elements, or for lists that are already mostly sorted.
 
                     List<Point> points = new List<Point>(edge.MPoints);
@@ -174,7 +174,7 @@ namespace FarseerPhysics.Common.Decomposition.Seidel
             }
 
             // Randomized triangulation improves performance
-            // See Seidel's paper, or O'Rourke's book, p. 57 
+            // See Seidel's paper, or O'Rourke's book, p. 57
             Shuffle(edges);
             return edges;
         }

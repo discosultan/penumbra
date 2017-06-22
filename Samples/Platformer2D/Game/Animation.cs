@@ -77,7 +77,7 @@ namespace Platformer2D
 
         /// <summary>
         /// Constructors a new animation.
-        /// </summary>        
+        /// </summary>
         public Animation(Texture2D texture, float frameTime, bool isLooping)
         {
             this.texture = texture;

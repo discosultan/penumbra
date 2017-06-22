@@ -23,7 +23,7 @@ namespace FarseerPhysics
         SpriteFont Font;
 
         KeyboardState oldKeys;
-        
+
         // Store reference to lighting system.
         PenumbraComponent penumbra;
 
@@ -127,7 +127,7 @@ namespace FarseerPhysics
 
             // Unit conversion rule to get the right position data between simulation space and display space
             ConvertUnits.SetDisplayUnitToSimUnitRatio(MeterInPixels);
-            
+
             _light = new PointLight
             {
                 Position = new Vector2(-250, 0),

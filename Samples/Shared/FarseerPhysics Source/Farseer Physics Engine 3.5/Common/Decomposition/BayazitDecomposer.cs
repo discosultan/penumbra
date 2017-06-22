@@ -8,13 +8,13 @@ namespace FarseerPhysics.Common.Decomposition
 
     /// <summary>
     /// Convex decomposition algorithm created by Mark Bayazit (http://mnbayazit.com/)
-    /// 
+    ///
     /// Properties:
     /// - Tries to decompose using polygons instead of triangles.
     /// - Tends to produce optimal results with low processing time.
     /// - Running time is O(nr), n = number of vertices, r = reflex vertices.
     /// - Does not support holes.
-    /// 
+    ///
     /// For more information about this algorithm, see http://mnbayazit.com/406/bayazit
     /// </summary>
     internal static class BayazitDecomposer

@@ -49,9 +49,9 @@ namespace FarseerPhysics.Common.Decomposition.CDT
         ///               / \
         ///              /   \
         ///            b/     \c
-        ///            +-------+ 
-        ///           /    B    \  
-        ///          /           \ 
+        ///            +-------+
+        ///           /    B    \
+        ///          /           \
         /// </code>
         ///    Facts:
         ///  d has to be in area B to have a chance to be inside the circle formed by a,b and c

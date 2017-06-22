@@ -26,7 +26,7 @@ namespace Sandbox.Scenarios
                 Color = Color.White,
                 Intensity = 1.5f,
                 Scale = new Vector2(1200),
-                Radius = MinLightRadius                
+                Radius = MinLightRadius
             };
             penumbra.Lights.Add(_light);
 
@@ -53,7 +53,7 @@ namespace Sandbox.Scenarios
             {
                 _progress = 0;
                 _isRadiusIncreasing = !_isRadiusIncreasing;
-            }            
+            }
         }
     }
 }

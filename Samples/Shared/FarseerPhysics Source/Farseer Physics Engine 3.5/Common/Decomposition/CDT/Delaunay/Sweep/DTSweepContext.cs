@@ -32,14 +32,14 @@
 namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
 {
     /**
-     * 
+     *
      * @author Thomas Åhlén, thahlen@gmail.com
      *
      */
 
     internal class DTSweepContext : TriangulationContext
     {
-        // Inital triangle factor, seed triangle will extend 30% of 
+        // Inital triangle factor, seed triangle will extend 30% of
         // PointSet width to both left and right.
         private const float ALPHA = 0.3f;
 
@@ -142,7 +142,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Delaunay.Sweep
         }
 
         /// <summary>
-        /// Try to map a node to all sides of this triangle that don't have 
+        /// Try to map a node to all sides of this triangle that don't have
         /// a neighbor.
         /// </summary>
         public void MapTriangleToNodes(DelaunayTriangle t)

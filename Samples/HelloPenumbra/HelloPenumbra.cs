@@ -5,17 +5,17 @@ using Penumbra;
 using System;
 
 namespace HelloPenumbra
-{    
+{
     public class HelloPenumbra : Game
     {
-        GraphicsDeviceManager graphics;        
+        GraphicsDeviceManager graphics;
 
         // Store reference to lighting system.
         PenumbraComponent penumbra;
 
         // Create sample light source and shadow hull.
         Light light = new PointLight
-        {            
+        {
             Scale = new Vector2(1000f), // Range of the light source (how far the light will travel)
             ShadowType = ShadowType.Solid // Will not lit hulls themselves
         };
@@ -31,7 +31,7 @@ namespace HelloPenumbra
             Content.RootDirectory = "Content";
 
             // Create the lighting system and add sample light and hull.
-            penumbra = new PenumbraComponent(this);            
+            penumbra = new PenumbraComponent(this);
             penumbra.Lights.Add(light);
             penumbra.Hulls.Add(hull);
         }
@@ -39,7 +39,7 @@ namespace HelloPenumbra
         protected override void Initialize()
         {
             // Initialize the lighting system.
-            penumbra.Initialize();            
+            penumbra.Initialize();
         }
 
         protected override void Update(GameTime gameTime)
@@ -48,7 +48,7 @@ namespace HelloPenumbra
                 Exit();
 
             // Animate light position and hull rotation.
-            light.Position = 
+            light.Position =
                 new Vector2(400f, 240f) + // Offset origin
                 new Vector2( // Position around origin
                     (float)Math.Cos(gameTime.TotalGameTime.TotalSeconds),

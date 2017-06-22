@@ -104,7 +104,7 @@ namespace Platformer2D
             const float BounceSync = -0.75f;
 
             // Bounce along a sine curve over time.
-            // Include the X coordinate so that neighboring gems bounce in a nice wave pattern.            
+            // Include the X coordinate so that neighboring gems bounce in a nice wave pattern.
             double t = gameTime.TotalGameTime.TotalSeconds * BounceRate + Position.X * BounceSync;
             bounce = (float)Math.Sin(t) * BounceHeight * texture.Height;
 

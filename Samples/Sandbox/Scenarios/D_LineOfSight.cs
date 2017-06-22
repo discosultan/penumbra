@@ -21,7 +21,7 @@ namespace Sandbox.Scenarios
 
         private Hull _hull1, _hull2;
         private State _state;
-        private float _progress;        
+        private float _progress;
 
         public override void Activate(PenumbraComponent penumbra, ContentManager content)
         {
@@ -33,12 +33,12 @@ namespace Sandbox.Scenarios
                 Position = new Vector2(0, -100),
                 Color = Color.White,
                 Scale = new Vector2(600),
-                Radius = 20                
+                Radius = 20
             });
 
             Vector2[] hullVertices =
             {
-                new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f)            
+                new Vector2(-0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, -0.5f), new Vector2(-0.5f, -0.5f)
             };
             _hull1 = new Hull(hullVertices)
             {

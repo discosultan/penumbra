@@ -1,6 +1,6 @@
 ﻿/*
 * C# Version Ported by Matt Bettcher and Ian Qvist 2009-2010
-* 
+*
 * Original C++ Version Copyright (c) 2007 Eric Jordan
 *
 * This software is provided 'as-is', without any express or implied
@@ -27,17 +27,17 @@ namespace FarseerPhysics.Common.Decomposition
 {
     /// <summary>
     /// Convex decomposition algorithm using ear clipping
-    /// 
+    ///
     /// Properties:
     /// - Only works on simple polygons.
     /// - Does not support holes.
     /// - Running time is O(n^2), n = number of vertices.
-    /// 
+    ///
     /// Source: http://www.ewjordan.com/earClip/
     /// </summary>
     internal static class EarclipDecomposer
     {
-        //box2D rev 32 - for details, see http://www.box2d.org/forum/viewtopic.php?f=4&t=83&start=50 
+        //box2D rev 32 - for details, see http://www.box2d.org/forum/viewtopic.php?f=4&t=83&start=50
 
         /// <summary>
         /// Decompose the polygon into several smaller non-concave polygon.
@@ -211,12 +211,12 @@ namespace FarseerPhysics.Common.Decomposition
         /// <summary>
         /// Finds and fixes "pinch points," points where two polygon
         /// vertices are at the same point.
-        /// 
+        ///
         /// If a pinch point is found, pin is broken up into poutA and poutB
         /// and true is returned; otherwise, returns false.
-        /// 
+        ///
         /// Mostly for internal use.
-        /// 
+        ///
         /// O(N^2) time, which sucks...
         /// </summary>
         /// <param name="pin">The pin.</param>
@@ -263,7 +263,7 @@ namespace FarseerPhysics.Common.Decomposition
                 int sizeB = pin.Count - sizeA;
                 for (int i = 0; i < sizeB; ++i)
                 {
-                    int ind = Remainder(pinchIndexB + i, pin.Count); // is this right    
+                    int ind = Remainder(pinchIndexB + i, pin.Count); // is this right
                     poutB.Add(pin[ind]);
                 }
             }

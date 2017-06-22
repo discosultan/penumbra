@@ -38,8 +38,8 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Sets
      * A constraint defines an edge between two points in the set, these edges can not
      * be crossed. They will be enforced triangle edges after a triangulation.
      * <p>
-     * 
-     * 
+     *
+     *
      * @author Thomas Åhlén, thahlen@gmail.com
      */
 
@@ -54,7 +54,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Sets
         }
 
         /**
-         * 
+         *
          * @param points - A list of all points in PointSet
          * @param constraints - Pairs of two points defining a constraint, all points <b>must</b> be part of given PointSet!
          */
@@ -102,7 +102,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Sets
          * TODO: TO BE IMPLEMENTED!
          * Peforms a validation on given input<br>
          * 1. Check's if there any constraint edges are crossing or collinear<br>
-         * 2. 
+         * 2.
          * @return
          */
 

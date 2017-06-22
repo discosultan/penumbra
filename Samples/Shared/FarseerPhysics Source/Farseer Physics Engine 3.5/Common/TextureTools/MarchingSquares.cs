@@ -265,7 +265,7 @@ namespace FarseerPhysics.Common.TextureTools
 
         #region Private Methods
 
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         /** Linearly interpolate between (x0 to x1) given a value at these coordinates (v0 and v1)
             such as to approximate value(return) = 0
@@ -286,7 +286,7 @@ namespace FarseerPhysics.Common.TextureTools
             return x0 + t * (x1 - x0);
         }
 
-        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+        //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         /** Recursive linear interpolation for use in marching squares **/
 
@@ -579,10 +579,10 @@ namespace FarseerPhysics.Common.TextureTools
             }
 
             /// <summary>
-            /// pop element from head of list (O(1)) Note: this does not return the object popped! 
-            /// There is good reason to this, and it regards the Alloc list variants which guarantee 
-            /// objects are released to the object pool. You do not want to retrieve an element 
-            /// through pop or else that object may suddenly be used by another piece of code which 
+            /// pop element from head of list (O(1)) Note: this does not return the object popped!
+            /// There is good reason to this, and it regards the Alloc list variants which guarantee
+            /// objects are released to the object pool. You do not want to retrieve an element
+            /// through pop or else that object may suddenly be used by another piece of code which
             /// retrieves it from the object pool.
             /// </summary>
             public CxFastListNode<T> Pop()
@@ -610,7 +610,7 @@ namespace FarseerPhysics.Common.TextureTools
             }
 
             /// <summary>
-            /// removes the element pointed to by 'node' with 'prev' being the previous iterator, 
+            /// removes the element pointed to by 'node' with 'prev' being the previous iterator,
             /// returning an iterator to the element following that of 'node' (O(1))
             /// </summary>
             public CxFastListNode<T> Erase(CxFastListNode<T> prev, CxFastListNode<T> node)
@@ -678,7 +678,7 @@ namespace FarseerPhysics.Common.TextureTools
                 return (Find(value) != null);
             }
 
-            // Non CxFastList Methods 
+            // Non CxFastList Methods
             public CxFastListNode<T> Find(T value)
             {
                 // start at head

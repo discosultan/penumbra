@@ -42,7 +42,7 @@ namespace Platformer2D
         private List<Gem> gems = new List<Gem>();
         private List<Enemy> enemies = new List<Enemy>();
 
-        // Key locations in the level.        
+        // Key locations in the level.
         private Vector2 start;
         private Point exit = InvalidPosition;
         private static readonly Point InvalidPosition = new Point(-1, -1);
@@ -70,7 +70,7 @@ namespace Platformer2D
 
         private const int PointsPerSecond = 5;
 
-        // Level content.        
+        // Level content.
         public ContentManager Content
         {
             get { return content; }
@@ -104,7 +104,7 @@ namespace Platformer2D
 
             timeRemaining = TimeSpan.FromMinutes(2.0);
 
-            LoadTiles(fileStream);                        
+            LoadTiles(fileStream);
 
             // Load background layer textures. For now, all levels must
             // use the same backgrounds and only use the left-most part of them.
@@ -356,7 +356,7 @@ namespace Platformer2D
             return new Hull(tilePoints)
             {
                 Position = new Vector2(bounds.X, bounds.Y),
-                Scale = new Vector2(bounds.Width * width, bounds.Height)                
+                Scale = new Vector2(bounds.Width * width, bounds.Height)
             };
         }
 
@@ -384,7 +384,7 @@ namespace Platformer2D
 
         /// <summary>
         /// Gets the bounding rectangle of a tile in world space.
-        /// </summary>        
+        /// </summary>
         public Rectangle GetBounds(int x, int y)
         {
             return new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
@@ -415,9 +415,9 @@ namespace Platformer2D
         /// and handles the time limit with scoring.
         /// </summary>
         public void Update(
-            GameTime gameTime, 
-            KeyboardState keyboardState, 
-            GamePadState gamePadState, 
+            GameTime gameTime,
+            KeyboardState keyboardState,
+            GamePadState gamePadState,
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {

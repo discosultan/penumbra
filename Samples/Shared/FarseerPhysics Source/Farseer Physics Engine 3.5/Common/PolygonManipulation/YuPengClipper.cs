@@ -42,15 +42,15 @@ namespace FarseerPhysics.Common.PolygonManipulation
     }
 
     /// <summary>
-    /// Implements "A new algorithm for Boolean operations on general polygons" 
+    /// Implements "A new algorithm for Boolean operations on general polygons"
     /// available here: http://liama.ia.ac.cn/wiki/_media/user:dong:dong_cg_05.pdf
-    /// Merges two polygons, a subject and a clip with the specified operation. Polygons may not be 
+    /// Merges two polygons, a subject and a clip with the specified operation. Polygons may not be
     /// self-intersecting.
-    /// 
+    ///
     /// Warning: May yield incorrect results or even crash if polygons contain collinear points.
     /// </summary>
     /// <param name="subject">The subject polygon.</param>
-    /// <param name="clip">The clip polygon, which is added, 
+    /// <param name="clip">The clip polygon, which is added,
     /// substracted or intersected with the subject</param>
     /// <param name="clipType">The operation to be performed. Either
     /// Union, Difference or Intersection.</param>

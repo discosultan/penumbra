@@ -26,9 +26,9 @@ namespace Sandbox
         public ScenariosComponent Scenarios { get; }
 
         protected override void LoadContent()
-        {            
+        {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _font = Game.Content.Load<SpriteFont>("Font");            
+            _font = Game.Content.Load<SpriteFont>("Font");
         }
 
         public override void Draw(GameTime gameTime)
@@ -38,7 +38,7 @@ namespace Sandbox
 
             _spriteBatch.Begin();
 
-            // Draw key instructions.            
+            // Draw key instructions.
             float progressX = margin;
             float progressY = GraphicsDevice.Viewport.Height - margin - sizeY;
             for (int i = _instructionKeys.Length - 1; i >= 0; i--)
@@ -51,7 +51,7 @@ namespace Sandbox
 
                 progressY -= sizeY;
                 progressX = margin;
-            }            
+            }
 
             // Draw current setup info.
             progressY = GraphicsDevice.Viewport.Height - margin - sizeY;
@@ -67,14 +67,14 @@ namespace Sandbox
             }
 
             _spriteBatch.End();
-        }   
+        }
 
         private string[] _instructionPrefixes =
         {
             "Previous scenario [ ",
             "Next scenario [ ",
             "Change shadow type [ ",
-            "Show debug lines [ ",            
+            "Show debug lines [ ",
             "Pause/resume simulation [ "
         };
         private string[] _instructionKeys =

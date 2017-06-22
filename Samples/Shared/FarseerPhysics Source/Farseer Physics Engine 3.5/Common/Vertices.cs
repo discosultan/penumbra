@@ -275,7 +275,7 @@ namespace FarseerPhysics.Common
 
         /// <summary>
         /// Rotate the vertices with the defined value in radians.
-        /// 
+        ///
         /// Warning: Using this method on an active set of vertices of a Body,
         /// will cause problems with collisions. Use Body.Rotation instead.
         /// </summary>
@@ -305,7 +305,7 @@ namespace FarseerPhysics.Common
         /// <summary>
         /// Determines whether the polygon is convex.
         /// O(n^2) running time.
-        /// 
+        ///
         /// Assumptions:
         /// - The polygon is in counter clockwise order
         /// - The polygon has no overlapping edges
@@ -404,7 +404,7 @@ namespace FarseerPhysics.Common
         ///
         /// Performs a full check, for simplicity, convexity,
         /// orientation, minimum angle, and volume.
-        /// 
+        ///
         /// From Eric Jordan's convex decomposition library
         /// </summary>
         /// <returns>PolygonError.NoError if there were no error.</returns>
@@ -516,9 +516,9 @@ namespace FarseerPhysics.Common
         }
 
         /// <summary>
-        /// Compute the sum of the angles made between the test point and each pair of points making up the polygon. 
-        /// If this sum is 2pi then the point is an interior point, if 0 then the point is an exterior point. 
-        /// ref: http://ozviz.wasp.uwa.edu.au/~pbourke/geometry/insidepoly/  - Solution 2 
+        /// Compute the sum of the angles made between the test point and each pair of points making up the polygon.
+        /// If this sum is 2pi then the point is an interior point, if 0 then the point is an exterior point.
+        /// ref: http://ozviz.wasp.uwa.edu.au/~pbourke/geometry/insidepoly/  - Solution 2
         /// </summary>
         public bool PointInPolygonAngle(ref Vector2 point)
         {

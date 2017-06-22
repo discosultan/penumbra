@@ -207,7 +207,7 @@ namespace FarseerPhysics.Common.Decomposition.CDT.Polygon
         /// <param name="newPoint">The point to insert into the polygon</param>
         public void InsertPointAfter(PolygonPoint point, PolygonPoint newPoint)
         {
-            // Validate that 
+            // Validate that
             int index = _points.IndexOf(point);
             if (index == -1)
                 throw new ArgumentException(

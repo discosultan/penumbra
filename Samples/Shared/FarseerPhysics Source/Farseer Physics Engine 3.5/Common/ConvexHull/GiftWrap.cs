@@ -5,7 +5,7 @@ namespace FarseerPhysics.Common.ConvexHull
     /// <summary>
     /// Giftwrap convex hull algorithm.
     /// O(nh) time complexity, where n is the number of points and h is the number of points on the convex hull.
-    /// 
+    ///
     /// See http://en.wikipedia.org/wiki/Gift_wrapping_algorithm for more details.
     /// </summary>
     public static class GiftWrap

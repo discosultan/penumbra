@@ -57,7 +57,7 @@ namespace Common
         public bool InputEnabled { get; set; } = true;
 
         public CameraMovementComponent(Game game) : base(game)
-        { }        
+        { }
 
         public override void Update(GameTime gameTime)
         {
@@ -114,7 +114,7 @@ namespace Common
         {
             Transform =
                 Matrix.CreateTranslation(new Vector3(-Position, 0)) *
-                Matrix.CreateRotationZ(-Rotation) *                
+                Matrix.CreateRotationZ(-Rotation) *
                 Matrix.CreateScale(Scale) *
                 Matrix.CreateTranslation(new Vector3(Origin, 0));
         }

@@ -16,14 +16,14 @@ namespace FarseerPhysics.Common.Decomposition
     /// <summary>
     /// 2D constrained Delaunay triangulation algorithm.
     /// Based on the paper "Sweep-line algorithm for constrained Delaunay triangulation" by V. Domiter and and B. Zalik
-    /// 
+    ///
     /// Properties:
     /// - Creates triangles with a large interior angle.
     /// - Supports holes
     /// - Generate a lot of garbage due to incapsulation of the Poly2Tri library.
     /// - Running time is O(n^2), n = number of vertices.
     /// - Does not care about winding order.
-    /// 
+    ///
     /// Source: http://code.google.com/p/poly2tri/
     /// </summary>
     internal static class CDTDecomposer

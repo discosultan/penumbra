@@ -21,7 +21,7 @@ namespace Common
         }
 
         public void DisableFpsLimit()
-        {            
+        {
             Game.IsFixedTimeStep = false;
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
             deviceManager.SynchronizeWithVerticalRetrace = false;
@@ -36,7 +36,7 @@ namespace Common
             if (_fpsOrGarbageDirty)
             {
                 _fpsOrGarbageDirty = false;
-                Game.Window.Title = $"FPS {_fps} | Garbage per sec KB {_garbage.ToString(CultureInfo.InvariantCulture)}";                
+                Game.Window.Title = $"FPS {_fps} | Garbage per sec KB {_garbage.ToString(CultureInfo.InvariantCulture)}";
             }
         }
     }

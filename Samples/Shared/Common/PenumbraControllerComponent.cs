@@ -36,11 +36,11 @@ namespace Common
             };
         }
 
-        public bool InputEnabled { get; set; } = true;        
+        public bool InputEnabled { get; set; } = true;
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);            
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
         public ShadowType ActiveShadowType => ShadowTypes[_currentShadowType];

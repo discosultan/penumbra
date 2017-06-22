@@ -1,23 +1,23 @@
 ﻿/*
 * Farseer Physics Engine:
 * Copyright (c) 2012 Ian Qvist
-* 
+*
 * Original source Box2D:
-* Copyright (c) 2006-2011 Erin Catto http://www.box2d.org 
-* 
-* This software is provided 'as-is', without any express or implied 
-* warranty.  In no event will the authors be held liable for any damages 
-* arising from the use of this software. 
-* Permission is granted to anyone to use this software for any purpose, 
-* including commercial applications, and to alter it and redistribute it 
-* freely, subject to the following restrictions: 
-* 1. The origin of this software must not be misrepresented; you must not 
-* claim that you wrote the original software. If you use this software 
-* in a product, an acknowledgment in the product documentation would be 
-* appreciated but is not required. 
-* 2. Altered source versions must be plainly marked as such, and must not be 
-* misrepresented as being the original software. 
-* 3. This notice may not be removed or altered from any source distribution. 
+* Copyright (c) 2006-2011 Erin Catto http://www.box2d.org
+*
+* This software is provided 'as-is', without any express or implied
+* warranty.  In no event will the authors be held liable for any damages
+* arising from the use of this software.
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+* 1. The origin of this software must not be misrepresented; you must not
+* claim that you wrote the original software. If you use this software
+* in a product, an acknowledgment in the product documentation would be
+* appreciated but is not required.
+* 2. Altered source versions must be plainly marked as such, and must not be
+* misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
 */
 
 using System;
@@ -35,7 +35,7 @@ namespace FarseerPhysics
 
         /// <summary>
         /// If true, all collision callbacks have to return the same value, and agree
-        /// if there was a collision or not. Swtich this to false to revert to the 
+        /// if there was a collision or not. Swtich this to false to revert to the
         /// collision agreement used in FPE 3.3.x
         /// </summary>
         public const bool AllCollisionCallbacksAgree = true;
@@ -118,21 +118,21 @@ namespace FarseerPhysics
         public static bool UseFPECollisionCategories;
 
         /// <summary>
-        /// This is used by the Fixture constructor as the default value 
+        /// This is used by the Fixture constructor as the default value
         /// for Fixture.CollisionCategories member. Note that you may need to change this depending
         /// on the setting of UseFPECollisionCategories, above.
         /// </summary>
         public static Category DefaultFixtureCollisionCategories = Category.Cat1;
 
         /// <summary>
-        /// This is used by the Fixture constructor as the default value 
+        /// This is used by the Fixture constructor as the default value
         /// for Fixture.CollidesWith member.
         /// </summary>
         public static Category DefaultFixtureCollidesWith = Category.All;
 
 
         /// <summary>
-        /// This is used by the Fixture constructor as the default value 
+        /// This is used by the Fixture constructor as the default value
         /// for Fixture.IgnoreCCDWith member.
         /// </summary>
         public static Category DefaultFixtureIgnoreCCDWith = Category.None;

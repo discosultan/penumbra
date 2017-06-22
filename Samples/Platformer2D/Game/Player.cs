@@ -87,7 +87,7 @@ namespace Platformer2D
         private const float JumpLaunchVelocity = -3500.0f;
         private const float GravityAcceleration = 3400.0f;
         private const float MaxFallSpeed = 550.0f;
-        private const float JumpControlPower = 0.14f; 
+        private const float JumpControlPower = 0.14f;
 
         // Input configuration
         private const float MoveStickScale = 1.0f;
@@ -152,14 +152,14 @@ namespace Platformer2D
             celebrateAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Celebrate"), 0.1f, false);
             dieAnimation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/Die"), 0.1f, false);
 
-            // Calculate bounds within texture size.            
+            // Calculate bounds within texture size.
             int width = (int)(idleAnimation.FrameWidth * 0.4);
             int left = (idleAnimation.FrameWidth - width) / 2;
             int height = (int)(idleAnimation.FrameWidth * 0.8);
             int top = idleAnimation.FrameHeight - height;
             localBounds = new Rectangle(left, top, width, height);
 
-            // Load sounds.            
+            // Load sounds.
             killedSound = Level.Content.Load<SoundEffect>("Sounds/PlayerKilled");
             jumpSound = Level.Content.Load<SoundEffect>("Sounds/PlayerJump");
             fallSound = Level.Content.Load<SoundEffect>("Sounds/PlayerFall");
@@ -186,9 +186,9 @@ namespace Platformer2D
         /// we need to reverse our motion when the orientation is in the LandscapeRight orientation.
         /// </remarks>
         public void Update(
-            GameTime gameTime, 
-            KeyboardState keyboardState, 
-            GamePadState gamePadState, 
+            GameTime gameTime,
+            KeyboardState keyboardState,
+            GamePadState gamePadState,
             AccelerometerState accelState,
             DisplayOrientation orientation)
         {
@@ -217,9 +217,9 @@ namespace Platformer2D
         /// Gets player horizontal movement and jump commands from input.
         /// </summary>
         private void GetInput(
-            KeyboardState keyboardState, 
+            KeyboardState keyboardState,
             GamePadState gamePadState,
-            AccelerometerState accelState, 
+            AccelerometerState accelState,
             DisplayOrientation orientation)
         {
             // Get analog horizontal movement.
@@ -284,7 +284,7 @@ namespace Platformer2D
             else
                 velocity.X *= AirDragFactor;
 
-            // Prevent the player from running faster than his top speed.            
+            // Prevent the player from running faster than his top speed.
             velocity.X = MathHelper.Clamp(velocity.X, -MaxMoveSpeed, MaxMoveSpeed);
 
             // Apply velocity.

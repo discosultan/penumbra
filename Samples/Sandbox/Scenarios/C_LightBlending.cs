@@ -38,7 +38,7 @@ namespace Sandbox.Scenarios
                 Color = LightColors[0],
                 Intensity = 1f,
                 Scale = new Vector2(800),
-                Radius = 20                
+                Radius = 20
             };
             _light2 = new PointLight
             {

@@ -45,7 +45,7 @@ namespace Platformer2D
 	}
 #elif IPHONE
 	[Register ("AppDelegate")]
-	class Program : UIApplicationDelegate 
+	class Program : UIApplicationDelegate
 	{
 		private PlatformerGame game;
 
