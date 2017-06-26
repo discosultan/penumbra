@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
@@ -105,11 +106,11 @@ namespace Penumbra
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
             _content = new ResourceContentManager(Game.Services,
 #if WINDOWSDX
-                Resource_WindowsDX.ResourceManager
+                new ResourceManager("Penumbra.Resource.WindowsDX", typeof(PenumbraComponent).Assembly)
 #elif DESKTOPGL
-                Resource_DesktopGL.ResourceManager
+                new ResourceManager("Penumbra.Resource.DesktopGL", typeof(PenumbraComponent).Assembly)
 #endif
-                );
+            );
             _engine.Load(GraphicsDevice, deviceManager, Game.Window,
                 _content.Load<Effect>("PenumbraHull"),
                 _content.Load<Effect>("PenumbraLight"),

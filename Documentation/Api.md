@@ -3,19 +3,42 @@
 <table>
 <tbody>
 <tr>
+<td><a href="#extensions">Extensions</a></td>
 <td><a href="#hull">Hull</a></td>
-<td><a href="#pointlight">PointLight</a></td>
 </tr>
 <tr>
-<td><a href="#light">Light (abstract)</a></td>
-<td><a href="#spotlight">Spotlight</a></td>
-</tr>
-<tr>
+<td><a href="#light">Light</a></td>
 <td><a href="#penumbracomponent">PenumbraComponent</a></td>
+</tr>
+<tr>
+<td><a href="#pointlight">PointLight</a></td>
+<td><a href="#shadowtype">ShadowType</a></td>
+</tr>
+<tr>
+<td><a href="#spotlight">Spotlight</a></td>
 <td><a href="#texturedlight">TexturedLight</a></td>
 </tr>
 </tbody>
 </table>
+
+
+## Extensions
+
+Provides extension methods for various types.
+
+### AddRange\`\`1(listInterface, collection)
+
+Adds the elements of the specified collection to the end of the <a href="#system.collections.generic.ilist\`1">System.Collections.Generic.IList\`1</a>.
+
+#### Type Parameters
+
+- T - Type of collection elements.
+
+| Name | Description |
+| ---- | ----------- |
+| listInterface | *System.Collections.Generic.IList{\`\`0}*<br>The <a href="#system.collections.generic.ilist\`1">System.Collections.Generic.IList\`1</a> to add elements to. |
+| collection | *System.Collections.Generic.IEnumerable{\`\`0}*<br>The collection whose elements should be added to the end of the <a href="#system.collections.generic.ilist\`1">System.Collections.Generic.IList\`1</a>. The collection itself cannot be `null`, but it can contain elements that are `null`, if type T is a reference type. |
+
 
 ## Hull
 
@@ -62,7 +85,7 @@ Gets or sets the origin ((0, 0) point) of the hull's local space.
 
 ### Points
 
-Points of the hull polygon. In order for the hull to be valid, the points must form:
+Points of the hull polygon. In order for the hull to be valid, the points must form: 
 1. A polygon with at least 3 points.
 2. A simple polygon (no two edges intersect with each other).
 Points can be defined in either clockwise or counter-clockwise order.
@@ -91,6 +114,10 @@ A light is an object which lights the world and casts shadows from <a href="#hul
 #### Remarks
 
 It is an abstract class - one of the three concrete implementations should be used instead: <a href="#pointlight">PointLight</a>, <a href="#spotlight">Spotlight</a>, <a href="#texturedlight">TexturedLight</a>.
+
+### Constructor
+
+Initializes a new instance of the <a href="#light">Light</a> class.
 
 ### CastsShadows
 
@@ -187,6 +214,8 @@ Gets or sets if debug outlines should be drawn for shadows and light sources and
 
 Gets the diffuse map render target used by Penumbra.
 
+### Dispose(System.Boolean)
+
 ### Draw(gameTime)
 
 Generates the lightmap, blends it with whatever was drawn to the scene between the calls to BeginDraw and this and presents the result to the backbuffer.
@@ -218,6 +247,8 @@ Gets or sets if this component is used with <a href="#microsoft.xna.framework.gr
 ### Transform
 
 Gets or sets the custom transformation matrix used by the component.
+
+### UnloadContent
 
 
 ## PointLight
