@@ -1,11 +1,11 @@
 ﻿#include "Macros.fxh"
 
-cbuffer cbPerObject : register(c0)
+cbuffer cbPerObject
 {
 	float4 Color;
 };
 
-cbuffer cbPerFrame : register(c1)
+cbuffer cbPerFrame
 {
 	float4x4 ViewProjection;
 };

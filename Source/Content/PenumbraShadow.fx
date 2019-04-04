@@ -1,16 +1,16 @@
 ﻿#include "Macros.fxh"
 
-cbuffer cbConstant : register(c0)
+cbuffer cbConstant
 {
 	float4 Color; // Used for debugging.
 };
 
-cbuffer cbPerFrame : register(c1)
+cbuffer cbPerFrame
 {
 	float4x4 ViewProjection;
 };
 
-cbuffer cbPerObject : register(c5)
+cbuffer cbPerObject
 {		
 	float2 LightPosition;
 	float LightRadius;

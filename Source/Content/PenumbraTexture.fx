@@ -1,7 +1,7 @@
 ﻿#include "Macros.fxh"
 
-Texture2D DiffuseMap : register(t0);
-Texture2D Lightmap : register(t1);
+Texture2D DiffuseMap;
+Texture2D Lightmap;
 SamplerState TextureSampler;
 
 struct VertexIn

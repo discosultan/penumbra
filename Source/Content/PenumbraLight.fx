@@ -1,21 +1,21 @@
 ﻿#include "Macros.fxh"
 
-Texture2D Texture : register(t0);
+Texture2D Texture;
 SamplerState TextureSampler;
 
-cbuffer cbConstant : register(c0)
+cbuffer cbConstant
 {
 	float4 Color;
 };
 
-cbuffer cbPerLight : register(c1)
+cbuffer cbPerLight
 {	
 	float4x4 WorldViewProjection;
 	float3 LightColor;
 	float LightIntensity;
 };
 
-cbuffer cbPerSpotlight : register(c6)
+cbuffer cbPerSpotlight
 {
 	float ConeHalfAngle;
 	float ConeDecay;
