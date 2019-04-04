@@ -211,8 +211,7 @@ namespace Penumbra
             for (int i = 0; i < pointCount; i++)
             {
                 Vector2 originalPos = LocalPoints[i];
-                Vector2 transformedPos;
-                Vector2.Transform(ref originalPos, ref LocalToWorld, out transformedPos);
+                Vector2.Transform(ref originalPos, ref LocalToWorld, out Vector2 transformedPos);
                 WorldPoints.Add(transformedPos);
             }
 

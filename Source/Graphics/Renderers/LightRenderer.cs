@@ -58,8 +58,7 @@ namespace Penumbra.Graphics.Renderers
         {
             EffectTechnique fxTech = light.ApplyEffectParams(this);
 
-            Matrix wvp;
-            Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out wvp);
+            Matrix.Multiply(ref light.LocalToWorld, ref _engine.Camera.ViewProjection, out Matrix wvp);
 
             _engine.Device.DepthStencilState = DepthStencilState.None;
             _engine.Device.DepthStencilState = light.ShadowType == ShadowType.Occluded

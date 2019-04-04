@@ -133,8 +133,7 @@ namespace Penumbra.Graphics.Renderers
             if (light.Dirty || _engine.Hulls.Dirty)
                 return TryBuildVaoForLight(light);
 
-            Tuple<DynamicVao, DynamicVao> vao;
-            _lightsVaos.TryGetValue(light, out vao);
+            _lightsVaos.TryGetValue(light, out Tuple<DynamicVao, DynamicVao> vao);
             return vao;
         }
 
@@ -198,8 +197,7 @@ namespace Penumbra.Graphics.Renderers
             if (numSegments == 0)
                 return null;
 
-            Tuple<DynamicVao, DynamicVao> lightVaos;
-            if (!_lightsVaos.TryGetValue(light, out lightVaos))
+            if (!_lightsVaos.TryGetValue(light, out Tuple<DynamicVao, DynamicVao> lightVaos))
             {
                 lightVaos = Tuple.Create(
                     DynamicVao.New(_engine.Device, VertexShadow.Layout, PrimitiveType.TriangleList, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
