@@ -53,7 +53,7 @@
     <None Include="Content\PenumbraLight.fx" />
     <None Include="Content\PenumbraShadow.fx" />
     <None Include="Content\PenumbraTexture.fx" />
-    <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
