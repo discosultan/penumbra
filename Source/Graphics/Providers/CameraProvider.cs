@@ -43,8 +43,7 @@ namespace Penumbra.Graphics.Providers
         // Calculates a screen space rectangle based on world space bounds.
         public void GetScissorRectangle(Light light, out BoundingRectangle scissor)
         {
-            Matrix transform;
-            Matrix.Multiply(ref ViewProjection, ref _clipToScreen, out transform);
+            Matrix.Multiply(ref ViewProjection, ref _clipToScreen, out Matrix transform);
 
             BoundingRectangle.Transform(ref light.Bounds, ref transform, out scissor);
         }

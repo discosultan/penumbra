@@ -238,12 +238,10 @@ namespace Penumbra
         {
             if (_rotation == 0.0f)
             {
-                Vector2 min;
-                Vector2.Multiply(ref _origin, ref _scale, out min);
+                Vector2.Multiply(ref _origin, ref _scale, out Vector2 min);
                 Vector2.Subtract(ref _position, ref min, out min);
 
-                Vector2 max;
-                Vector2.Add(ref min, ref _scale, out max);
+                Vector2.Add(ref min, ref _scale, out Vector2 max);
 
                 Bounds = new BoundingRectangle(min, max);
             }

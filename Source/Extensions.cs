@@ -21,16 +21,14 @@ namespace Penumbra
         public static void AddRange<T>(this IList<T> listInterface, IEnumerable<T> collection)
         {
             // Use fast path in case of extended observable collection.
-            var extendedObservableCollection = listInterface as ExtendedObservableCollection<T>;
-            if (extendedObservableCollection != null)
+            if (listInterface is ExtendedObservableCollection<T> extendedObservableCollection)
             {
                 extendedObservableCollection.AddRange(collection);
                 return;
             }
 
             // Use fast path in case of list.
-            var list = listInterface as List<T>;
-            if (list != null)
+            if (listInterface is List<T> list)
             {
                 list.AddRange(collection);
                 return;

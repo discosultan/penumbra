@@ -7,8 +7,7 @@ namespace Penumbra.Utilities
     {
         public static void FromNonPremultiplied(Color nonPremultiplied, out Vector3 premultiplied)
         {
-            Vector4 intermediary;
-            FromNonPremultiplied(nonPremultiplied, out intermediary);
+            FromNonPremultiplied(nonPremultiplied, out Vector4 intermediary);
             premultiplied = new Vector3(intermediary.X, intermediary.Y, intermediary.Z);
         }
 
@@ -31,8 +30,7 @@ namespace Penumbra.Utilities
             var cos = (float)Math.Cos(rotation);
             var sin = (float)Math.Sin(rotation);
 
-            Vector2 scaledOrigin;
-            Vector2.Multiply(ref origin, ref scale, out scaledOrigin);
+            Vector2.Multiply(ref origin, ref scale, out Vector2 scaledOrigin);
 
             Vector2 transformedOrigin;
             transformedOrigin.X = scaledOrigin.X * cos - scaledOrigin.Y * sin;

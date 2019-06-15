@@ -14,7 +14,7 @@ namespace Penumbra.Utilities
         private static readonly PropertyChangedEventArgs ItemsPropertyChangedEventArgs = new PropertyChangedEventArgs(nameof(Items));
 
         // We must not use NULL for changedItem param as ObservableCollection will throw for that.
-        private static object _dummy = new object();
+        private static readonly object _dummy = new object();
         private static readonly NotifyCollectionChangedEventArgs DefaultNotifyCollectionChangedEventArgs
             = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _dummy, 0);
 

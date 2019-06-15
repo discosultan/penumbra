@@ -135,8 +135,7 @@ namespace Penumbra
                     continue;
 
                 // Set scissor rectangle to clip any shadows outside of light's range.
-                BoundingRectangle scissor;
-                Camera.GetScissorRectangle(light, out scissor);
+                Camera.GetScissorRectangle(light, out BoundingRectangle scissor);
                 Device.SetScissorRectangle(ref scissor);
 
                 // Mask shadowed areas by reducing alpha.
