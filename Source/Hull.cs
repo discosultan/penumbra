@@ -273,6 +273,11 @@ namespace Penumbra
     {
         public bool Dirty { get; set; }
 
+        public HullList()
+        {
+            CollectionChanged += (s, e) => Dirty = true;
+        }
+
         public void Update()
         {
             int hullCount = Count;

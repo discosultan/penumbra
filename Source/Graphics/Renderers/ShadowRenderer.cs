@@ -7,6 +7,13 @@ using Polygon = Penumbra.Utilities.FastList<Microsoft.Xna.Framework.Vector2>;
 
 namespace Penumbra.Graphics.Renderers
 {
+    internal class LightVaos
+    {
+        public DynamicVao ShadowVao { get; set; }
+        public DynamicVao HullVao { get; set; }
+        public bool Enabled { get; set; }
+    }
+
     internal class ShadowRenderer : IDisposable
     {
         private static readonly Vector4 DebugColor = Color.Red.ToVector4();
@@ -17,8 +24,7 @@ namespace Penumbra.Graphics.Renderers
         private readonly FastList<Vector2> _hullVertices = new FastList<Vector2>();
         private readonly FastList<int> _shadowIndices = new FastList<int>();
         private readonly FastList<int> _hullIndices = new FastList<int>();
-        private readonly Dictionary<Light, Tuple<DynamicVao, DynamicVao>> _lightsVaos =
-            new Dictionary<Light, Tuple<DynamicVao, DynamicVao>>();
+        private readonly Dictionary<Light, LightVaos> _lightsVaos = new Dictionary<Light, LightVaos>();
 
         private PenumbraEngine _engine;
 
@@ -65,8 +71,8 @@ namespace Penumbra.Graphics.Renderers
 
         public void Render(Light light)
         {
-            Tuple<DynamicVao, DynamicVao> vao = TryGetVaoForLight(light);
-            if (vao == null)
+            LightVaos vaos = GetVaosForLight(light);
+            if (!vaos.Enabled)
                 return;
 
             _engine.Device.RasterizerState = _engine.Rs;
@@ -81,7 +87,7 @@ namespace Penumbra.Graphics.Renderers
                 _fxShadowParamLightRadius.SetValue(light.Radius);
 
                 // Draw shadows.
-                DynamicVao shadowVao = vao.Item1;
+                DynamicVao shadowVao = vaos.ShadowVao;
                 _engine.Device.BlendState = _bsShadow;
                 _engine.Device.SetVertexArrayObject(shadowVao);
                 _fxShadowTech.Passes[0].Apply();
@@ -104,7 +110,7 @@ namespace Penumbra.Graphics.Renderers
                 if (light.ShadowType == ShadowType.Occluded)
                     _engine.Device.DepthStencilState = _dsOccludedHull;
 
-                DynamicVao hullVao = vao.Item2;
+                DynamicVao hullVao = vaos.HullVao;
                 _engine.Device.RasterizerState = _engine.Rs;
                 _engine.Device.BlendState = _bsHull;
                 _fxHullParamVp.SetValue(_engine.Camera.ViewProjection);
@@ -121,23 +127,28 @@ namespace Penumbra.Graphics.Renderers
             _fxHull?.Dispose();
             _bsShadow?.Dispose();
             _bsHull?.Dispose();
-            foreach (var shadowAndHullTuple in _lightsVaos.Values)
+            foreach (LightVaos lightVaos in _lightsVaos.Values)
             {
-                shadowAndHullTuple.Item1.Dispose();
-                shadowAndHullTuple.Item2.Dispose();
+                lightVaos.ShadowVao?.Dispose();
+                lightVaos.HullVao?.Dispose();
             }
         }
 
-        private Tuple<DynamicVao, DynamicVao> TryGetVaoForLight(Light light)
+        private LightVaos GetVaosForLight(Light light)
         {
-            if (light.Dirty || _engine.Hulls.Dirty)
-                return TryBuildVaoForLight(light);
+            if (!_lightsVaos.TryGetValue(light, out LightVaos lightVaos))
+            {
+                lightVaos = new LightVaos();
+                _lightsVaos[light] = lightVaos;
+            }
 
-            _lightsVaos.TryGetValue(light, out Tuple<DynamicVao, DynamicVao> vao);
-            return vao;
+            if (light.Dirty || _engine.Hulls.Dirty)
+                BuildVaosForLight(light, lightVaos);
+
+            return lightVaos;
         }
 
-        private Tuple<DynamicVao, DynamicVao> TryBuildVaoForLight(Light light)
+        private void BuildVaosForLight(Light light, LightVaos lightVaos)
         {
             _hullVertices.Clear();
             _shadowVertices.Clear();
@@ -194,23 +205,32 @@ namespace Penumbra.Graphics.Renderers
                 hullIndexOffset += pointCount;
             }
 
-            if (numSegments == 0)
-                return null;
+            lightVaos.Enabled = numSegments > 0;
+            if (!lightVaos.Enabled)
+                return;
 
-            if (!_lightsVaos.TryGetValue(light, out Tuple<DynamicVao, DynamicVao> lightVaos))
+            if (lightVaos.ShadowVao == null)
             {
-                lightVaos = Tuple.Create(
-                    DynamicVao.New(_engine.Device, VertexShadow.Layout, PrimitiveType.TriangleList, _shadowVertices.Count, _shadowIndices.Count, useIndices: true),
-                    DynamicVao.New(_engine.Device, VertexPosition2.Layout, PrimitiveType.TriangleList, _hullVertices.Count, _hullIndices.Count, useIndices: true));
-                _lightsVaos.Add(light, lightVaos);
+                lightVaos.ShadowVao = DynamicVao.New(
+                    _engine.Device,
+                    VertexShadow.Layout,
+                    PrimitiveType.TriangleList,
+                    _shadowVertices.Count,
+                    _shadowIndices.Count,
+                    useIndices: true);
+                lightVaos.HullVao = DynamicVao.New(
+                    _engine.Device,
+                    VertexPosition2.Layout,
+                    PrimitiveType.TriangleList,
+                    _hullVertices.Count,
+                    _hullIndices.Count,
+                    useIndices: true);
             }
 
-            lightVaos.Item1.SetVertices(_shadowVertices);
-            lightVaos.Item1.SetIndices(_shadowIndices);
-            lightVaos.Item2.SetVertices(_hullVertices);
-            lightVaos.Item2.SetIndices(_hullIndices);
-
-            return lightVaos;
+            lightVaos.ShadowVao.SetVertices(_shadowVertices);
+            lightVaos.ShadowVao.SetIndices(_shadowIndices);
+            lightVaos.HullVao.SetVertices(_hullVertices);
+            lightVaos.HullVao.SetIndices(_hullIndices);
         }
 
         private void BuildGraphicsResources()
