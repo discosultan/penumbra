@@ -9,19 +9,12 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>MonoGame.Penumbra.DesktopGL</PackageId>
     <Title>MonoGame.Penumbra</Title>
-    <Version>2.0.0-pre</Version>
+    <Version>2.0.0</Version>
     <Authors>Jaanus Varus</Authors>
     <Description>Penumbra allows users to easily add 2D lighting and shadow effects to their games.</Description>
     <PackageTags>monogame penumbra lighting shadowing 2d</PackageTags>
     <RepositoryUrl>https://github.com/discosultan/penumbra</RepositoryUrl>
   </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resource.DesktopGL.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.DesktopGL.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
@@ -30,6 +23,13 @@
 
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.DesktopGL.mgcb" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.DesktopGL.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.DesktopGL.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
