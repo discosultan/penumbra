@@ -26,7 +26,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resource.WindowsDX.resx" />
+    <EmbeddedResource Include="Resource.WindowsDX.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.WindowsDX.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resource.WindowsDX.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.WindowsDX.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <PropertyGroup>

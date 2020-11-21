@@ -17,6 +17,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resource.DesktopGL.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.DesktopGL.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
   </ItemGroup>
@@ -26,7 +33,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resource.DesktopGL.resx" />
+    <Compile Update="Resource.DesktopGL.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.DesktopGL.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <PropertyGroup>
