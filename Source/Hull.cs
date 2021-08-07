@@ -273,7 +273,7 @@ namespace Penumbra
         /// Factory method for creating a circular <see cref="Hull"/>
         /// </summary>
         /// <param name="position">Optional initial position. Default is (0.0, 0.0).</param>
-        /// <param name="radius">Optional initial position. Default is 4.</param>
+        /// <param name="radius">Optional initial radius. Default is 4.</param>
         /// <param name="precision">Optional "roundness" of circle. Default is 12. More points = more round, but more memory.</param>
         /// <returns>A circular <see cref="Hull"/>.</returns>
         public static Hull CreateCircle(Vector2? position = null, float? radius = null, int precision = 12)
