@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Xna.Framework;
 using Penumbra.Geometry;
@@ -267,6 +268,28 @@ namespace Penumbra
                 Scale = scale ?? new Vector2(1.0f),
                 Rotation = rotation
             };
+
+        /// <summary>
+        /// Factory method for creating a circular <see cref="Hull"/>
+        /// </summary>
+        /// <param name="position">Optional initial position. Default is (0.0, 0.0).</param>
+        /// <param name="radius">Optional initial position. Default is 4.</param>
+        /// <param name="precision">Optional "roundness" of circle. Default is 12. More points = more round, but more memory.</param>
+        /// <returns>A circular <see cref="Hull"/>.</returns>
+        public static Hull CreateCircle(Vector2? position = null, float? radius = null, int precision = 12)
+        {
+             Vector2 circleCenter = position ?? Vector2.Zero;
+            radius = radius ?? 4;
+            float angle = 0;
+            Vector2[] points = new Vector2[precision];
+            for (int i = 0; i < precision; i++)
+            {
+                angle += (float)Math.PI * 2 / precision;
+                points[i] = new Vector2(circleCenter.X + (float)(radius * Math.Cos(angle)), circleCenter.Y + (float)(radius * Math.Sin(angle)));
+            }
+            return new Hull(points);
+        }
+
     }
 
     internal class HullList : ObservableCollection<Hull>
