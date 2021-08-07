@@ -119,15 +119,15 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="PenumbraHull" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\WindowsDX\PenumbraHull.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\Windows\Content.WindowsDX\PenumbraHull.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PenumbraLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\WindowsDX\PenumbraLight.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\Windows\Content.WindowsDX\PenumbraLight.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PenumbraShadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\WindowsDX\PenumbraShadow.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\Windows\Content.WindowsDX\PenumbraShadow.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PenumbraTexture" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\WindowsDX\PenumbraTexture.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\Windows\Content.WindowsDX\PenumbraTexture.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

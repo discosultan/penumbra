@@ -14,8 +14,8 @@ Penumbra allows users to easily add 2D lighting with shadowing effects to their 
 
 The following is required to successfully compile the Penumbra MonoGame solution:
 
-- Visual studio 2015+ (due to C# 6 syntax)
-- MonoGame 3.6+
+- Visual studio 2019+
+- MonoGame 3.8+
 - [DirectX End-User Runtimes (June 2010)](http://www.microsoft.com/en-us/download/details.aspx?id=8109) (to compile effect shaders)
 
 ### Using Penumbra
@@ -112,3 +112,24 @@ penumbra.Hulls.Add(hull);
 - **Sandbox**: Generic sandbox for testing out various different scenarios.
 - **Common**: Supporting library providing common functionality for samples.
 - **[FarseerPhysics](https://github.com/discosultan/penumbra/tree/master/Samples/FarseerPhysics)**: Create physical bodies out of sprites and add them as hulls to Penumbra!
+
+## Development
+
+### Release a New Version
+
+* Make sure version numbers are updated in .csproj files.
+* Create packages:
+
+```sh
+dotnet pack -c Release MonoGame.Penumbra.DesktopGL.sln
+dotnet pack -c Release MonoGame.Penumbra.WindowsDX.sln
+```
+
+* Publish packages (substitute `<version>` with version to be released):
+
+```sh
+VERSION=<version>
+dotnet nuget push Source/bin/Release/MonoGame.Penumbra.DesktopGL.$VERSION.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+dotnet nuget push Source/bin/Release/MonoGame.Penumbra.WindowsDX.$VERSION.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+```
+
