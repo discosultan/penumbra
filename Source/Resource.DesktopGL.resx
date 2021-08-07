@@ -119,15 +119,15 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="PenumbraHull" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\DesktopGL\PenumbraHull.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\DesktopGL\Content.DesktopGL\PenumbraHull.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PenumbraLight" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\DesktopGL\PenumbraLight.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\DesktopGL\Content.DesktopGL\PenumbraLight.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PenumbraShadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\DesktopGL\PenumbraShadow.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\DesktopGL\Content.DesktopGL\PenumbraShadow.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="PenumbraTexture" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Content\bin\DesktopGL\PenumbraTexture.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Content\bin\DesktopGL\Content.DesktopGL\PenumbraTexture.xnb;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

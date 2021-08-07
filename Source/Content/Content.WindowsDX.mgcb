@@ -1,8 +1,8 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:bin/WindowsDX
-/intermediateDir:obj/WindowsDX
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
 /platform:Windows
 /config:
 /profile:Reach

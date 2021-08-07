@@ -106,9 +106,9 @@ namespace Penumbra
             var deviceManager = (GraphicsDeviceManager)Game.Services.GetService<IGraphicsDeviceManager>();
             _content = new ResourceContentManager(Game.Services,
 #if DESKTOPGL
-                new ResourceManager("Penumbra.Resource.DesktopGL", typeof(PenumbraComponent).Assembly)
+                MonoGame.Penumbra.DesktopGL.Resource_DesktopGL.ResourceManager
 #else
-                new ResourceManager("Penumbra.Resource.WindowsDX", typeof(PenumbraComponent).Assembly)
+                MonoGame.Penumbra.WindowsDX.Resource_WindowsDX.ResourceManager
 #endif
             );
             _engine.Load(GraphicsDevice, deviceManager, Game.Window,
