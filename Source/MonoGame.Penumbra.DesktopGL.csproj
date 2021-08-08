@@ -9,7 +9,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>MonoGame.Penumbra.DesktopGL</PackageId>
     <Title>MonoGame.Penumbra</Title>
-    <Version>2.0.0</Version>
+    <Version>2.1.0</Version>
     <Authors>Jaanus Varus</Authors>
     <Description>Penumbra allows users to easily add 2D lighting and shadow effects to their games.</Description>
     <PackageTags>monogame penumbra lighting shadowing 2d</PackageTags>

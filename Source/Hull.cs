@@ -278,7 +278,7 @@ namespace Penumbra
         /// <returns>A circular <see cref="Hull"/>.</returns>
         public static Hull CreateCircle(Vector2? position = null, float? radius = null, int precision = 12)
         {
-             Vector2 circleCenter = position ?? Vector2.Zero;
+            Vector2 circleCenter = position ?? Vector2.Zero;
             radius = radius ?? 4;
             float angle = 0;
             Vector2[] points = new Vector2[precision];
@@ -289,7 +289,6 @@ namespace Penumbra
             }
             return new Hull(points);
         }
-
     }
 
     internal class HullList : ObservableCollection<Hull>
@@ -334,4 +333,3 @@ namespace Penumbra
         }
     }
 }
-
