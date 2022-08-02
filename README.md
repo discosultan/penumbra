@@ -14,8 +14,8 @@ Penumbra allows users to easily add 2D lighting with shadowing effects to their 
 
 The following is required to successfully compile the Penumbra MonoGame solution:
 
-- Visual studio 2019+
-- MonoGame 3.8+
+- Visual studio 2022+
+- MonoGame 3.8.1+
 - [DirectX End-User Runtimes (June 2010)](http://www.microsoft.com/en-us/download/details.aspx?id=8109) (to compile effect shaders)
 
 ### Using Penumbra

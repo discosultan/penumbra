@@ -21,9 +21,8 @@ namespace Penumbra.Geometry
 
         public bool Intersects(ref BoundingRectangle other)
         {
-            Vector2 d1, d2;
-            Vector2.Subtract(ref other.Min, ref Max, out d1);
-            Vector2.Subtract(ref Min, ref other.Max, out d2);
+            Vector2.Subtract(ref other.Min, ref Max, out Vector2 d1);
+            Vector2.Subtract(ref Min, ref other.Max, out Vector2 d2);
 
             if (d1.X > 0.0f || d1.Y > 0.0f)
                 return false;
@@ -51,13 +50,12 @@ namespace Penumbra.Geometry
             Vector2.Transform(ref c3, ref transform, out c3);
             Vector2.Transform(ref c4, ref transform, out c4);
 
-            Vector2 min, max;
 
-            Vector2.Min(ref c1, ref c2, out min);
+            Vector2.Min(ref c1, ref c2, out Vector2 min);
             Vector2.Min(ref min, ref c3, out min);
             Vector2.Min(ref min, ref c4, out min);
 
-            Vector2.Max(ref c1, ref c2, out max);
+            Vector2.Max(ref c1, ref c2, out Vector2 max);
             Vector2.Max(ref max, ref c3, out max);
             Vector2.Max(ref max, ref c4, out max);
 
